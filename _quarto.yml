@@ -1,0 +1,51 @@
+project:
+  type: website
+  preview:
+    port: 4300
+    browser: false
+  render:
+    - "*.qmd"
+    - "!deliverables-solutions/"
+
+editor:  
+  render-on-save: true
+  preview: true
+
+execute:
+  freeze: false
+  keep-ipynb: false
+  fig-align: center
+
+website:
+  title: "AD 698 Applied Generative AI for Business Analytics"
+  navbar: false
+  # --- Uncomment below if navigation is needed ---
+  # search: true
+  # left:
+  #   - text: Syllabus
+  #     href: index.qmd
+  #   - text: Schedule
+  #     href: schedule.qmd
+  #   - text: Deliverables
+  #     href: deliverables.qmd
+  #   - text: "Module 01"
+  #     menu:
+  #       - text: "Lecture Notes 01.1"
+  #         href: M01/M01_LN01.qmd
+  #       - text: "Presentation 01.1"
+  #         href: M01/M01_P01.qmd
+
+format:
+  html:
+    theme: [cosmo, ./analytics_themes/web-analytics.scss]
+    toc: true
+    number-sections: true
+    embed-resources: true
+    highlight-style: github
+    code-overflow: wrap
+    html-math-method: mathml
+
+crossref:
+  fig-title: '**Figure**'
+  fig-labels: arabic
+  title-delim: "**.**"

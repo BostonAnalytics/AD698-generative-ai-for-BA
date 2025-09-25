@@ -1,0 +1,18 @@
+---
+title: "Project Introduction"
+subtitle: "M01 Project Milestone"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+logo: "../analytics_themes/met_signature_toptier_rgb.png"
+format:
+  revealjs:
+    theme: [../analytics_themes/presentation.scss]
+    html-math-method: mathml
+    slide-number: c/t
+  pptx:
+    reference-doc: ../analytics_themes/AD688_Presentation.pptx
+categories: ['Project', 'Introduction']
+description: "Project milestone: Project Introduction."
+---
