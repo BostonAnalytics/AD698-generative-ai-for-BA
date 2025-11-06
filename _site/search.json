@@ -1,0 +1,415 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "",
+    "text": "Section\nTitle\nInstructor\nDay\nTime\n\n\n\n\nA1\nGenerative Artificial Intelligence for Business Analytics\nNakul Padalkar\nMon\n14:30:00\n\n\nO1\nGenerative Artificial Intelligence for Business Analytics\nNakul Padalkar\nTue\n7:00PM"
+  },
+  {
+    "objectID": "index.html#course-sections",
+    "href": "index.html#course-sections",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "",
+    "text": "Section\nTitle\nInstructor\nDay\nTime\n\n\n\n\nA1\nGenerative Artificial Intelligence for Business Analytics\nNakul Padalkar\nMon\n14:30:00\n\n\nO1\nGenerative Artificial Intelligence for Business Analytics\nNakul Padalkar\nTue\n7:00PM"
+  },
+  {
+    "objectID": "index.html#course-content-and-objectives",
+    "href": "index.html#course-content-and-objectives",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "2 Course Content and Objectives",
+    "text": "2 Course Content and Objectives\n\n2.1 Course Description\nThis course is designed for analytics developers and advanced business students seeking to build practical, production-ready applications using Generative AI (GenAI). Emphasizing hands-on learning, students will explore key techniques such as prompt engineering, in-context learning (ICL), retrieval-augmented generation (RAG), AI agents, and responsible AI design.\nStudents will work with open-source tools and APIs including LangChain, LlamaIndex, and embedding models, while learning to implement GenAI systems across the entire development lifecycle — from prompt design and knowledge retrieval to fine-tuning and deployment.\nThe course will emphasize practical development over theoretical model internals and will cover topics such as:\n\nModel optimization strategies (e.g., quantization, adapter-based tuning)\nInference pipelines and GenAI app deployment\nEvaluation and benchmarking of model performance\nResponsible and explainable GenAI usage in enterprise settings\n\nStudents will complete five applied assignments and a capstone project, culminating in the deployment of a custom GenAI-powered analytics application.\nThis course bridges the gap between business analytics fluency and technical AI development, equipping students to build domain-specific LLM applications that solve real-world problems."
+  },
+  {
+    "objectID": "index.html#course-learning-objectives",
+    "href": "index.html#course-learning-objectives",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "3 Course Learning Objectives",
+    "text": "3 Course Learning Objectives\nBy the end of this course, students will be able to:\n\nDesign and implement prompt workflows to extract relevant, accurate, and useful outputs from large language models using in-context learning (ICL) strategies.\nBuild retrieval-augmented generation (RAG) systems that combine language models with structured and unstructured knowledge bases.\nDevelop autonomous AI agents that can reason, retrieve, and execute tasks across business workflows using frameworks such as LangChain and AutoGen.\nFine-tune and customize foundation models (e.g., LLaMA, Mistral) using parameter-efficient techniques like LoRA and QLoRA to adapt to business-specific domains.\nEvaluate and audit generative models for quality, risk, bias, and alignment using both manual and automated tools (e.g., OpenAI Evals, GPT-judge, Trulens).\nDeploy GenAI applications using lightweight serverless pipelines (e.g., Streamlit, FastAPI, GitHub Actions) and optimize for cost and performance.\nCritically assess ethical and governance implications of deploying GenAI in enterprise settings, including risks of hallucination, misinformation, and data leakage.\nCollaborate using modern software development workflows, including version control (Git/GitHub), cloud-based inference, and reproducible notebooks."
+  },
+  {
+    "objectID": "index.html#course-resources",
+    "href": "index.html#course-resources",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "4 Course Resources",
+    "text": "4 Course Resources\nThere is no required textbook for this course. All core readings, technical documentation, and video tutorials will be provided on the course site (Canvas or Quarto site).\nRecommended (not required):\n\nDesigning LLM Applications with LangChain (docs.langchain.com)\nOpenAI Cookbook (cookbook.openai.com)\nThe Hitchhiker’s Guide to LLMOps (arize.com)\nGenerative AI with Python and Hugging Face Transformers (available via BU Library or Hugging Face Hub)\n\nTools & Platforms Used:\n\nJupyter, VS Code, GitHub, Python (LangChain, LlamaIndex, OpenAI, Hugging Face)\nAPIs: OpenAI, Cohere, Claude (Anthropic), Gemini (Google)\nDeployment tools: Streamlit, FastAPI, GitHub Actions\nVector DBs: FAISS, ChromaDB\nEvaluation tools: GPT-Eval, Trulens, PromptLayer\n\nAll resources are available through GitHub Education and GitHub Classrooms. Students are required to create a GitHub account using their Boston University email address in the first week.\n\n4.1 Recommended Textbook"
+  },
+  {
+    "objectID": "index.html#course-schedule",
+    "href": "index.html#course-schedule",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "5 Course Schedule",
+    "text": "5 Course Schedule\n\n5.1 Class Schedule\n\n\n\n\n\n\n\nLecture\nTitle\nDescription\nOnline\nOn Campus\n\n\n\n\nLecture 0.1\nCourse Introduction & Generative AI Landscape\nOverview of course objectives and use of GenAI in business contexts.\n-\n-\n\n\nLecture 0.2\nLocal Dev Setup: GitHub, Jupyter, VS Code\nSetup instructions for local development using GitHub, Jupyter, and APIs.\n-\n-\n\n\nLecture 1.1\nPrompt Engineering Fundamentals\nCore prompting strategies including few-shot, CoT, and ReAct.\n02-Sep\n08-Sep\n\n\nLecture 1.2\nBusiness Use Cases with Prompts\nApplying prompt templates to generate emails, reports, SQL, and summaries.\n02-Sep\n15-Sep\n\n\nLecture 2.1\nRAG Basics: Embeddings, Chunking, Indexing\nUnderstanding vector databases and embedding models for RAG.\n09-Sep\n22-Sep\n\n\nLecture 2.2\nRAG Query Pipelines with LangChain & LlamaIndex\nImplementing retrieval-based Q&A systems using LangChain and LlamaIndex.\n09-Sep\n29-Sep\n\n\nLecture 3.1\nIntro to Agents: ReAct, Tool Use\nIntroduction to AI agents and tool-use chains with LangChain.\n16-Sep\n06-Oct\n\n\nLecture 3.2\nMulti-Agent Systems (AutoGen, CrewAI)\nDesigning multi-agent systems for business process automation.\n16-Sep\n20-Oct\n\n\nLecture 4.1\nLoRA, QLoRA, PEFT Techniques\nOverview of parameter-efficient tuning strategies for LLMs.\n23-Sep\n27-Oct\n\n\nLecture 4.2\nFine-Tuning Pipelines & Data Handling\nRunning LoRA/QLoRA fine-tunes and comparing to base models.\n23-Sep\n03-Nov\n\n\nLecture 5.1\nEmbeddings & Similarity Search\nUsing embedding models for semantic similarity and clustering.\n30-Sep\n10-Nov\n\n\nLecture 5.2\nMemory & Context Management\nBuilding memory modules to preserve context in long tasks.\n30-Sep\n17-Nov\n\n\nLecture 6.1\nModel Evaluation & GPT-Eval\nEvaluation methods for LLMs including hallucination and output quality.\n07-Oct\n24-Nov\n\n\nLecture 6.2\nResponsible AI & Bias Detection\nAuditing AI outputs for bias, fairness, and responsible use.\n07-Oct\n01-Dec\n\n\nLecture 7.1\nModel Optimization Techniques\nTechniques for reducing model size and optimizing inference speed.\n-\n08-Dec\n\n\nLecture 7.2\nDeployment: GitHub Actions + Streamlit\nDeploying GenAI applications using GitHub Actions and Streamlit.\n-\n-\n\n\nLecture 8.1\nCapstone Project Presentations\nnan\n-\n-\n\n\nLecture 8.2\nPeer Feedback & Industry Outlook\nnan\n-\n-"
+  },
+  {
+    "objectID": "index.html#boston-university-library-information",
+    "href": "index.html#boston-university-library-information",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "6 Boston University Library Information",
+    "text": "6 Boston University Library Information\nAs Boston University students, you have full access to various articles and resources within the BU Library. From any computer, you can gain access to anything at the library that is electronically formatted. These articles are downloadable without extra charges from the BU Library by following the steps. They are easily downloadable from BU Library, e-Journals (name & password protected). You may be asked to login with your BU login name and Kerberos password.\n\nGo to BU Library main page http://www.bu.edu/library and from Library Location on the top right of the page, select Pardee Management Library.\nFrom the Pardee Management Library main page, select eJournals under Related Links (right-hand side of page).\nIn the Advanced Search window, type “Harvard business review” or “MIT Sloan Management Review” or your preferred title of a journal and click Search.\nSelect the title of the journal Online Access Available.\nOn the page that opens, click on Business Source Complete (for HBR) or ProQuest (for MIT Sloan MR).\nLogin with your BU name and Kerberos account\nClick on the icon PDF Full text.\nClick on the Download icon (in Mozilla Firefox the location of the icon is on the top right of the main screen).\nSave the file on your computer.\n\nPlease note that you are not to post attachments of the required or other readings in the water cooler or other areas of the course, as it is an infringement on copyright laws and department policy. All students have access to the library system and will need to develop research skills that include how to find articles through library systems and databases."
+  },
+  {
+    "objectID": "index.html#blackboard-course-website",
+    "href": "index.html#blackboard-course-website",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "7 Blackboard Course Website",
+    "text": "7 Blackboard Course Website\nTo access your course website, go to http://learn.bu.edu/ and select AD688 Web Analytics for Business\n\n7.1 Software Applications & Remote Access to Virtual Labs\nIn this course, students will be using AWS Academy and a massive dataset connected through Azure cloud. The instructions can be found in the Module 0 Lecture 1 video. As part of the tuition, all BU students can use these software applications free of charge. For directions to get free remote access to our BU MET Virtual Labs, please visit\nhttps://www.bu.edu/metit/services/client-technology/virtual-lab/\n\n\n7.2 Live Classroom in Zoom\nSelect Live Classroom from the left-hand navigator of the course website and follow the instructions."
+  },
+  {
+    "objectID": "index.html#grading-and-assessment",
+    "href": "index.html#grading-and-assessment",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "8 Grading and Assessment",
+    "text": "8 Grading and Assessment\n\n8.1 Grading Structure\nOn the course homepage, all of the material is presented by modules and each module covers two lectures. In the on-campus version of this course, each week we will have a live classroom session that will cover one lecture. In addition, students will work in teams in our virtual labs and will participate in group discussion boards. Please review the Course Calendar & Outline document to get the full schedule of this course."
+  },
+  {
+    "objectID": "index.html#grading-breakdown",
+    "href": "index.html#grading-breakdown",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "9 Grading Breakdown",
+    "text": "9 Grading Breakdown\n\n9.1 Certification Points:\n\nAWS Academy Generative AI Foundations\nGithub + githubpages ePortfolio Creation\n\nAWS Academy Generative AI Foundations is a self-paced course that will be completed in the first 10 weeks of the course. The final deliverable is completion badge from the AWS Academy. Points are based on the AWS cloud module check grades translated to 100 points.\n\n\n9.2 Weekly Labs (On Campus Class Only):\nThe labs consist of Weekly Quizzes and Problem Solving Exercises. Each week, students will take part in a set of focused weekly in class exercise that concern the material covered during that week’s content. Participation requirements include the jupyter or quarto notebook. These assignments will be done individually. The exercises are due by Day 6 at 11:59 PM.\n\n\n9.3 Individual Assignments:\nAssignments are associated with the modules and will be submitted in the “Assignments” section accessible from the left-hand course menu. All assignment dates are given in the course Study Guide.\n\n\n9.4 Group Project:\nThe Term Project consists of one midterm check-in, a managerial report and a final presentation. These assignments strengthen your understanding of the core concepts introduced in this course and build on their knowledge acquired in the foundations of a business analytics course. The Term Project and some of the assignments require students to work with a conceptual website that you will build over the assignments.\n\nProject Milestones through GitHub\n\nGitHub setup, team charter, repo planning\nData + Corpus Engineering\nGenAI Pipeline + Insights Prototype\nModel Evaluation + Deployment Readiness\n\nManagerial report - In the form of a GitHub Website\nPresentation\nGroup Feedback\n\n\n\n9.5 Grade Points\n\n\n\n\n\n\n\nClass Activity\nCount\nPoints\nMax Points\n\n\n\n\nAWS Academy Generative AI Foundations\n1\n100\n100\n\n\nGithub+githubpages ePortfolio Creation\n1\n40\n40\n\n\nLabs*\n10\n20\n200\n\n\nAssignment\n5\n50\n250\n\n\nManagerial report with Application Demo\n1\n80\n80\n\n\nGit and git website setup\n1\n-\n-\n\n\nApi and data gathering\n1\n-\n-\n\n\nData cleaning and EDA\n1\n-\n-\n\n\nAnalytics, including full website\n1\n-\n-\n\n\nGroup Project Presentation\n1\n40\n40\n\n\nGroup Feedback\n1\n40\n40\n\n\nTotal\n-\n-\n750\n\n\n\n\n\n*=On Campus Class Only"
+  },
+  {
+    "objectID": "index.html#class-policies",
+    "href": "index.html#class-policies",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "10 Class Policies",
+    "text": "10 Class Policies\n\n10.1 Attendance & Absences\nClass attendance is mandatory. Please inform your instructor if you know in advance that you will need to miss a class. More than two absences will influence your participation grade in this class.\nRegularly engaging in discussions on course-related topics, any cases and readings (during the class and on the Discussion Board), asking questions that lead to better understanding of a concept by the class as a whole, clarifying concepts, readiness to help peers during the consultation sessions and between classes, and sharing professional experience about course-related topics constitute superior class participation and contribute to our collective learning.\n\n\n10.2 Submission Format\nAll written contributions should follow the APA writing style, in particular, the requirements how to lay out a paper, as well as how to cite and reference correctly You can get an excellent guide to APA style here.\n\n\n10.3 Assignment Completion & Due Dates & Late Work\nStudents should submit completed assignments on the Blackboard course website. All work requests from the instructor (quizzes, assignments, contributions in the teamwork, etc.) have due dates. These are the last dates that stated material is due. This means that it is a good idea to set personal targets before then as your personal completion date to avoid difficulties. Dates are often viewed by students as the date to turn in an assignment. We view assignment due dates as the last date on which to turn in an assignment. With this warning, please note that we are not inclined to accept late work; if late work should be accepted it will be done only after considerable weighing of rationale, and with penalty.\n\n\n10.4 Academic Conduct Code\nStudents are expected to adhere to the highest standards of honesty and integrity for this course. Cheating and plagiarism will not be tolerated in any Metropolitan College course. They will result in no credit for the assignment or examination and may lead to disciplinary actions. Please take the time to review the Student Academic Code of Conduct\nThis should not be understood as a discouragement for discussing the material or your particular approach to a problem with other students in the class. On the contrary – you should share your thoughts, questions and solutions. Naturally, if you choose to work in a group, you will be expected to come up with more than one and highly original solutions rather than the same mistakes.\n\n\n10.5 Request for Accommodations\nIf you have a disability and will be requesting accommodations for this course, please inform the instructor early in the semester. Advance notice and appropriate documentation are required for accommodations."
+  },
+  {
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "AD 698 Applied Generative AI Business Analytics",
+    "section": "11 References",
+    "text": "11 References"
+  },
+  {
+    "objectID": "schedule.html",
+    "href": "schedule.html",
+    "title": "Schedule",
+    "section": "",
+    "text": "Course schedule goes here."
+  },
+  {
+    "objectID": "M07/M07_Wrapup.html",
+    "href": "M07/M07_Wrapup.html",
+    "title": "M07 Wrapup",
+    "section": "",
+    "text": "1 M07 Wrapup"
+  },
+  {
+    "objectID": "M07/M07_P02.html",
+    "href": "M07/M07_P02.html",
+    "title": "M07 Presentation 02",
+    "section": "",
+    "text": "1 M07 Presentation 02"
+  },
+  {
+    "objectID": "M07/M07_Lab02.html",
+    "href": "M07/M07_Lab02.html",
+    "title": "M07 Lab02",
+    "section": "",
+    "text": "1 M07 Lab02"
+  },
+  {
+    "objectID": "M07/M07_LN02.html",
+    "href": "M07/M07_LN02.html",
+    "title": "M07 Lecture Note 02",
+    "section": "",
+    "text": "1 M07 Lecture Note 02"
+  },
+  {
+    "objectID": "M07/M07_Highlights.html",
+    "href": "M07/M07_Highlights.html",
+    "title": "M07 Highlights",
+    "section": "",
+    "text": "1 M07 Highlights"
+  },
+  {
+    "objectID": "M06/M06_Wrapup.html",
+    "href": "M06/M06_Wrapup.html",
+    "title": "M06 Wrapup",
+    "section": "",
+    "text": "1 M06 Wrapup"
+  },
+  {
+    "objectID": "M06/M06_P02.html",
+    "href": "M06/M06_P02.html",
+    "title": "M06 Presentation 02",
+    "section": "",
+    "text": "1 M06 Presentation 02"
+  },
+  {
+    "objectID": "M06/M06_Lab02.html",
+    "href": "M06/M06_Lab02.html",
+    "title": "M06 Lab02",
+    "section": "",
+    "text": "1 M06 Lab02"
+  },
+  {
+    "objectID": "M06/M06_LN02.html",
+    "href": "M06/M06_LN02.html",
+    "title": "M06 Lecture Note 02",
+    "section": "",
+    "text": "1 M06 Lecture Note 02"
+  },
+  {
+    "objectID": "M06/M06_Highlights.html",
+    "href": "M06/M06_Highlights.html",
+    "title": "M06 Highlights",
+    "section": "",
+    "text": "1 M06 Highlights"
+  },
+  {
+    "objectID": "M05/M05_Wrapup.html",
+    "href": "M05/M05_Wrapup.html",
+    "title": "M05 Wrapup",
+    "section": "",
+    "text": "1 M05 Wrapup"
+  },
+  {
+    "objectID": "M05/M05_P02.html",
+    "href": "M05/M05_P02.html",
+    "title": "M05 Presentation 02",
+    "section": "",
+    "text": "1 M05 Presentation 02"
+  },
+  {
+    "objectID": "M05/M05_Lab02.html",
+    "href": "M05/M05_Lab02.html",
+    "title": "M05 Lab02",
+    "section": "",
+    "text": "1 M05 Lab02"
+  },
+  {
+    "objectID": "M05/M05_LN02.html",
+    "href": "M05/M05_LN02.html",
+    "title": "M05 Lecture Note 02",
+    "section": "",
+    "text": "1 M05 Lecture Note 02"
+  },
+  {
+    "objectID": "M05/M05_Highlights.html",
+    "href": "M05/M05_Highlights.html",
+    "title": "M05 Highlights",
+    "section": "",
+    "text": "1 M05 Highlights"
+  },
+  {
+    "objectID": "M04/M04_Wrapup.html",
+    "href": "M04/M04_Wrapup.html",
+    "title": "M04 Wrapup",
+    "section": "",
+    "text": "1 M04 Wrapup"
+  },
+  {
+    "objectID": "M04/M04_P02.html",
+    "href": "M04/M04_P02.html",
+    "title": "M04 Presentation 02",
+    "section": "",
+    "text": "1 M04 Presentation 02"
+  },
+  {
+    "objectID": "M04/M04_Lab02.html",
+    "href": "M04/M04_Lab02.html",
+    "title": "M04 Lab02",
+    "section": "",
+    "text": "1 M04 Lab02"
+  },
+  {
+    "objectID": "M04/M04_LN02.html",
+    "href": "M04/M04_LN02.html",
+    "title": "M04 Lecture Note 02",
+    "section": "",
+    "text": "1 M04 Lecture Note 02"
+  },
+  {
+    "objectID": "M04/M04_Highlights.html",
+    "href": "M04/M04_Highlights.html",
+    "title": "M04 Highlights",
+    "section": "",
+    "text": "1 M04 Highlights"
+  },
+  {
+    "objectID": "M03/M03_Wrapup.html",
+    "href": "M03/M03_Wrapup.html",
+    "title": "M03 Wrapup",
+    "section": "",
+    "text": "1 M03 Wrapup"
+  },
+  {
+    "objectID": "M03/M03_P02.html",
+    "href": "M03/M03_P02.html",
+    "title": "M03 Presentation 02",
+    "section": "",
+    "text": "1 M03 Presentation 02"
+  },
+  {
+    "objectID": "M03/M03_Lab02.html",
+    "href": "M03/M03_Lab02.html",
+    "title": "M03 Lab02",
+    "section": "",
+    "text": "1 M03 Lab02"
+  },
+  {
+    "objectID": "M03/M03_LN02.html",
+    "href": "M03/M03_LN02.html",
+    "title": "M03 Lecture Note 02",
+    "section": "",
+    "text": "1 M03 Lecture Note 02"
+  },
+  {
+    "objectID": "M03/M03_Highlights.html",
+    "href": "M03/M03_Highlights.html",
+    "title": "M03 Highlights",
+    "section": "",
+    "text": "1 M03 Highlights"
+  },
+  {
+    "objectID": "M02/M02_Wrapup.html",
+    "href": "M02/M02_Wrapup.html",
+    "title": "M02 Wrapup",
+    "section": "",
+    "text": "1 M02 Wrapup"
+  },
+  {
+    "objectID": "M02/M02_P02.html",
+    "href": "M02/M02_P02.html",
+    "title": "M02 Presentation 02",
+    "section": "",
+    "text": "1 M02 Presentation 02"
+  },
+  {
+    "objectID": "M02/M02_Lab02.html",
+    "href": "M02/M02_Lab02.html",
+    "title": "M02 Lab02",
+    "section": "",
+    "text": "1 M02 Lab02"
+  },
+  {
+    "objectID": "M02/M02_LN02.html",
+    "href": "M02/M02_LN02.html",
+    "title": "M02 Lecture Note 02",
+    "section": "",
+    "text": "1 M02 Lecture Note 02"
+  },
+  {
+    "objectID": "M02/M02_Highlights.html",
+    "href": "M02/M02_Highlights.html",
+    "title": "M02 Highlights",
+    "section": "",
+    "text": "1 M02 Highlights"
+  },
+  {
+    "objectID": "M01/M01_Wrapup.html",
+    "href": "M01/M01_Wrapup.html",
+    "title": "M01 Wrapup",
+    "section": "",
+    "text": "1 M01 Wrapup"
+  },
+  {
+    "objectID": "M01/M01_P02.html",
+    "href": "M01/M01_P02.html",
+    "title": "M01 Presentation 02",
+    "section": "",
+    "text": "1 M01 Presentation 02"
+  },
+  {
+    "objectID": "M01/M01_Lab02.html",
+    "href": "M01/M01_Lab02.html",
+    "title": "M01 Lab02",
+    "section": "",
+    "text": "1 M01 Lab02"
+  },
+  {
+    "objectID": "M01/M01_LN02.html",
+    "href": "M01/M01_LN02.html",
+    "title": "M01 Lecture Note 02",
+    "section": "",
+    "text": "1 M01 Lecture Note 02"
+  },
+  {
+    "objectID": "M01/M01_Highlights.html",
+    "href": "M01/M01_Highlights.html",
+    "title": "M01 Highlights",
+    "section": "",
+    "text": "1 M01 Highlights"
+  },
+  {
+    "objectID": "M00/M00_Wrapup.html",
+    "href": "M00/M00_Wrapup.html",
+    "title": "M00 Wrapup",
+    "section": "",
+    "text": "1 M00 Wrapup"
+  },
+  {
+    "objectID": "M00/M00_P02.html",
+    "href": "M00/M00_P02.html",
+    "title": "M00 Presentation 02",
+    "section": "",
+    "text": "1 M00 Presentation 02"
+  },
+  {
+    "objectID": "M00/M00_Lab02.html",
+    "href": "M00/M00_Lab02.html",
+    "title": "M00 Lab02",
+    "section": "",
+    "text": "1 M00 Lab02"
+  },
+  {
+    "objectID": "M00/M00_LN02.html",
+    "href": "M00/M00_LN02.html",
+    "title": "M00 Lecture Note 02",
+    "section": "",
+    "text": "1 M00 Lecture Note 02"
+  },
+  {
+    "objectID": "M00/M00_Proj.html",
+    "href": "M00/M00_Proj.html",
+    "title": "M00 Project",
+    "section": "",
+    "text": "1 M00 Project"
+  },
+  {
+    "objectID": "M01/M01_A.html",
+    "href": "M01/M01_A.html",
+    "title": "M01 Assignment",
+    "section": "",
+    "text": "1 M01 Assignment"
+  },
+  {
+    "objectID": "M02/M02_A.html",
+    "href": "M02/M02_A.html",
+    "title": "M02 Assignment",
+    "section": "",
+    "text": "1 M02 Assignment"
+  },
+  {
+    "objectID": "M03/M03_A.html",
+    "href": "M03/M03_A.html",
+    "title": "M03 Assignment",
+    "section": "",
+    "text": "1 M03 Assignment"
+  },
+  {
+    "objectID": "M05/M05_A.html",
+    "href": "M05/M05_A.html",
+    "title": "M05 Assignment",
+    "section": "",
+    "text": "1 M05 Assignment"
+  },
+  {
+    "objectID": "M06/M06_A.html",
+    "href": "M06/M06_A.html",
+    "title": "M06 Assignment",
+    "section": "",
+    "text": "1 M06 Assignment"
+  },
+  {
+    "objectID": "deliverables.html",
+    "href": "deliverables.html",
+    "title": "Deliverables",
+    "section": "",
+    "text": "Assignments, labs, and projects will appear here."
+  }
+]

@@ -7,7 +7,6 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-csl: ../mis-quarterly.csl
 categories: ['Lecture', 'Notes', 'M04:']
 description: "Lecture covering AI-Powered Data Analytics & SQL Automation."
 ---

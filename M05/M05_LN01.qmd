@@ -7,7 +7,6 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-csl: ../mis-quarterly.csl
 categories: ['M05:', 'Notes', 'Lecture']
 description: "Lecture covering AI for Workflow Automation & API Integration."
 ---

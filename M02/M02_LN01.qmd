@@ -7,7 +7,6 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-csl: ../mis-quarterly.csl
 categories: ['Notes', 'Lecture', 'M02:']
 description: "Lecture covering Prompt Engineering & In-Context Learning (ICL)."
 ---

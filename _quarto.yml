@@ -17,7 +17,7 @@ execute:
   fig-align: center
 
 website:
-  title: "AD 698 Applied Generative AI for Business Analytics"
+  title: "AD 698 Applied Generative AI Business Analytics"
   navbar: false
   # --- Uncomment below if navigation is needed ---
   # search: true
@@ -37,7 +37,7 @@ website:
 
 format:
   html:
-    theme: [cosmo, ./analytics_themes/web-analytics.scss]
+    theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
     embed-resources: true
