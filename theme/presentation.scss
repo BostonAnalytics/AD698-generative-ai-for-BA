@@ -30,43 +30,44 @@ $button-bg: #dbe9f1; // Button background color
 $button-text: #000000; // Button text color
 
 
-// TITLE SLIDE 
-.reveal .slide-background.quarto-title-block {
-  background-image:
-    url(""); // Replace this with the actual path to your SVG file
-  // url('D:/Repositories/AD899-CSP03/Presentations/Lightcast_Project/antenna-cw-cj_nFa14-unsplash.jpg'); // Background image from Unsplash
-  background-color: #fff;
+.reveal p {
+  // font-weight: 300;
+  font-weight: 500;
+  font-size: 18pt;
+  margin-top: 1.0em;
+  margin-bottom: 1.0em;
+  color: #343434;
+}
 
-  background-size: auto 103%; // Adjust background sizes
-  background-position: top center, center; // Position SVG and image
+// Background image (optional)
+.reveal .slide-background.quarto-title-block {
+  background-image: url(""); // Replace with path to your image
+  background-color: #fff;
+  background-size: auto 103%;
+  background-position: top center, center;
   background-repeat: no-repeat, no-repeat;
 }
 
+// Title Slide Styles
 #title-slide {
-  //background-image: url(""); // Adjust path as needed
-  // background-size: cover;
-  // background-position: center;
-  // height: 100vh;
-  // margin: 0;
-  // padding: 0;
-
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; // Push content to bottom
+  justify-content: flex-end;
   align-items: flex-start;
-  padding-left: -2em;
-  padding-bottom: 0em;
-  position: relative;
-  text-align: left;
+  position: absolute;
+  text-align: left !important;
+  margin-left: -36pt; // ✅ EFFECTIVE LEFT SHIFT
+  padding-left: -36pt;
 
+
+  // Top content: authors, affiliation, date
   .author,
   .quarto-title-author-name {
     order: 0;
-    color: #FFFFFF; // Reddish-brown
+    color: #ffffff;
     font-size: 18pt;
     font-weight: 500;
-    margin-top: 0.25em;
-    text-align: left;
+    margin-top: 0.15em;
   }
 
   .quarto-title-authors {
@@ -76,19 +77,16 @@ $button-text: #000000; // Button text color
     justify-content: flex-start;
     gap: 4em;
     flex-wrap: wrap;
-    text-align: left;
   }
 
   .quarto-title-author {
     padding: 0;
-    text-align: left;
   }
 
   .quarto-title-affiliation {
     font-size: 16pt;
     font-style: italic;
     color: $name-color;
-    text-align: left;
   }
 
   .date,
@@ -97,7 +95,7 @@ $button-text: #000000; // Button text color
     font-size: 12pt;
     font-weight: 400;
     margin-top: 4px;
-    text-align: left;
+    padding-left: -36pt;
   }
 
   .date-label {
@@ -106,7 +104,6 @@ $button-text: #000000; // Button text color
     color: #eaeaea;
     font-weight: bold;
     margin-bottom: 2px;
-    text-align: left;
   }
 
   .date-container {
@@ -120,43 +117,121 @@ $button-text: #000000; // Button text color
     display: flex;
     flex-direction: column;
     margin-right: 2em;
-    text-align: left;
   }
 
-    h1.title {
+  // Title block
+  h1.title {
     order: 1;
-    color: $title-color; // Soft cream
+    color: $title-color;
     font-size: 24pt;
     font-weight: 700;
-    text-align: left;
     width: 70%;
+    line-height: 1.3em;
+    word-wrap: break-word;
     margin-left: 0;
-    padding-left: -24pt;
-    line-height: 1.3em;     // ⬅️ Improves readability on wrap
-    word-wrap: break-word;  // ⬅️ Ensures long words wrap
+    padding-left: 0;
   }
 
   .subtitle {
     font-size: 18pt;
-    color: $subtitle-color; // Dusty neutral
+    color: $subtitle-color;
     font-style: italic;
     font-weight: 500;
+    width: 40%;
+    line-height: 1.3em;
+    word-wrap: break-word;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
-    text-align: left;
-    width: 40%;
-    line-height: 1.3em;     // ⬅️ Improves readability on wrap
-    word-wrap: break-word;  // ⬅️ Ensures long words wrap
   }
 
-    .subtitle::after {
+  .subtitle::after {
     content: "";
     display: block;
     width: 95%;
     height: 3px;
-    background-color: #3b71b1; // Turquoise
+    background-color: #3b71b1;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }
+}
 
+// Only apply to h1–h4 inside slides (excluding title slide)
+.reveal .slides section:not(.title-slide) h1,
+.reveal .slides section:not(.title-slide) h2,
+.reveal .slides section:not(.title-slide) h3,
+.reveal .slides section:not(.title-slide) h4 {
+  font-family: "Roboto Slab", serif;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 5pt;
+  margin-bottom: 7pt;
+}
+
+// h1 (slide title)
+.reveal .slides section:not(.title-slide) h1 {
+  font-size: 24pt;
+  color: $title-color;
+  padding-bottom: 2.4pt;
+  letter-spacing: 0.5pt;
+}
+
+// h2
+.reveal .slides section:not(.title-slide) h2 {
+  font-size: 20pt;
+  color: $subtitle-color;
+  border-left: 5px solid $accent2;
+  padding-left: 7.2pt;
+  letter-spacing: 0.3pt;
+}
+
+// h3
+.reveal .slides section:not(.title-slide) h3 {
+  font-size: 16pt;
+  color: $accent3;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+}
+
+// h4
+.reveal .slides section:not(.title-slide) h4 {
+  font-size: 14pt;
+  color: $dark-gray;
+  font-weight: 500;
+  border-left: 3px solid $name-color;
+  padding-left: 6pt;
+  margin-left: 0;
+}
+
+// Base unordered list style
+.reveal ul {
+  list-style-type: disc;
+  padding-left: 1.2em;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+
+// Level 1 list items
+.reveal ul > li {
+  font-size: 18pt;
+  margin-bottom: 0.4em;
+  font-family: "Source Sans 3", sans-serif;
+  color: $darker-gray;
+}
+
+// Level 2 (nested ul inside li)
+.reveal ul li > ul > li {
+  font-size: 16pt;
+  margin-bottom: 0.3em;
+  font-family: "Source Sans 3", sans-serif;
+  color: $dark-gray;
+}
+
+// Level 3
+.reveal ul li ul li > ul > li {
+  font-size: 16pt;
+  margin-bottom: 0.2em;
+  font-style: italic;
+  font-family: "Source Sans 3", sans-serif;
+  color: $dark-gray;
 }
