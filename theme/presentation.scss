@@ -1,0 +1,162 @@
+/*-- scss:defaults --*/
+
+// fonts
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Slab:wght@100..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Roboto+Slab:wght@100..900&display=swap');
+$font-family-sans-serif: "Roboto Slab",
+serif !default;
+$presentation-heading-font: "Roboto Slab",
+serif !default;
+$presentation-body-font: "Source Sans 3",
+sans-serif !default;
+$code-font: "Fira Code",
+monospace !default;
+
+
+// colors
+$body-bg: #ffffff !default;
+$title-color: #ffac00;
+$subtitle-color: #06A2CB !default;
+$code-color: #e64f1e;
+$name-color: #CC5B23;
+$accent: #003366;
+$accent2: #06A2CB;
+$accent3: #993366;
+$dark-gray: #565656;
+$light-blue: #f0f8ff; // Light blue background
+$darker-gray: #131516; // Text color
+$button-bg: #dbe9f1; // Button background color
+$button-text: #000000; // Button text color
+
+
+// TITLE SLIDE 
+.reveal .slide-background.quarto-title-block {
+  background-image:
+    url(""); // Replace this with the actual path to your SVG file
+  // url('D:/Repositories/AD899-CSP03/Presentations/Lightcast_Project/antenna-cw-cj_nFa14-unsplash.jpg'); // Background image from Unsplash
+  background-color: #fff;
+
+  background-size: auto 103%; // Adjust background sizes
+  background-position: top center, center; // Position SVG and image
+  background-repeat: no-repeat, no-repeat;
+}
+
+#title-slide {
+  //background-image: url(""); // Adjust path as needed
+  // background-size: cover;
+  // background-position: center;
+  // height: 100vh;
+  // margin: 0;
+  // padding: 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; // Push content to bottom
+  align-items: flex-start;
+  padding-left: -2em;
+  padding-bottom: 0em;
+  position: relative;
+  text-align: left;
+
+  .author,
+  .quarto-title-author-name {
+    order: 0;
+    color: #FFFFFF; // Reddish-brown
+    font-size: 18pt;
+    font-weight: 500;
+    margin-top: 0.25em;
+    text-align: left;
+  }
+
+  .quarto-title-authors {
+    font-size: 18pt;
+    font-weight: bold;
+    display: flex;
+    justify-content: flex-start;
+    gap: 4em;
+    flex-wrap: wrap;
+    text-align: left;
+  }
+
+  .quarto-title-author {
+    padding: 0;
+    text-align: left;
+  }
+
+  .quarto-title-affiliation {
+    font-size: 16pt;
+    font-style: italic;
+    color: $name-color;
+    text-align: left;
+  }
+
+  .date,
+  .date-modified {
+    color: #ffffff;
+    font-size: 12pt;
+    font-weight: 400;
+    margin-top: 4px;
+    text-align: left;
+  }
+
+  .date-label {
+    font-size: 12pt;
+    text-transform: uppercase;
+    color: #eaeaea;
+    font-weight: bold;
+    margin-bottom: 2px;
+    text-align: left;
+  }
+
+  .date-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .date-item {
+    display: flex;
+    flex-direction: column;
+    margin-right: 2em;
+    text-align: left;
+  }
+
+    h1.title {
+    order: 1;
+    color: $title-color; // Soft cream
+    font-size: 24pt;
+    font-weight: 700;
+    text-align: left;
+    width: 70%;
+    margin-left: 0;
+    padding-left: -24pt;
+    line-height: 1.3em;     // ⬅️ Improves readability on wrap
+    word-wrap: break-word;  // ⬅️ Ensures long words wrap
+  }
+
+  .subtitle {
+    font-size: 18pt;
+    color: $subtitle-color; // Dusty neutral
+    font-style: italic;
+    font-weight: 500;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    text-align: left;
+    width: 40%;
+    line-height: 1.3em;     // ⬅️ Improves readability on wrap
+    word-wrap: break-word;  // ⬅️ Ensures long words wrap
+  }
+
+    .subtitle::after {
+    content: "";
+    display: block;
+    width: 95%;
+    height: 3px;
+    background-color: #3b71b1; // Turquoise
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+}
