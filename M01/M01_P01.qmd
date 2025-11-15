@@ -21,8 +21,6 @@ format:
     theme: [../theme/presentation.scss]
     html-math-method: mathml
     slide-number: c/t
-  pptx:
-    reference-doc: ../theme/AD_Presentation.pptx
 categories: ['Presentation', 'M01:']
 description: "Presentation slides on Introduction to Generative AI & Business Applications."
 title-slide-attributes:

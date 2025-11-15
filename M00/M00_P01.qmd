@@ -19,8 +19,6 @@ format:
     theme: [../theme/presentation.scss]
     html-math-method: mathml
     slide-number: c/t
-  pptx:
-    reference-doc: ../theme/AD_Presentation.pptx
 categories: ['M00:', 'Presentation']
 description: "Presentation slides on GitHub and AI Development Environment Setup."
 title-slide-attributes:
