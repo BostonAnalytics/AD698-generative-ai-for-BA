@@ -1,18 +1,30 @@
 ---
 title: "M04: Presentation"
 subtitle: "AI-Powered Data Analytics & SQL Automation"
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: BU
+        department: "Administrative Sciences"
+        name: Boston University
+        city: Boston
+        state: MA
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-logo: "../analytics_themes/met_signature_toptier_rgb.png"
+bibliography: ../references.bib
+csl: ../ieee.csl
+logo: "../theme/met_signature_toptier_rgb.png"
 format:
   revealjs:
-    theme: [../analytics_themes/presentation.scss]
+    theme: [../theme/presentation.scss]
     html-math-method: mathml
     slide-number: c/t
-  pptx:
-    reference-doc: ../analytics_themes/AD688_Presentation.pptx
+title-slide-attributes:
+    data-background-image: "../theme/qbtIZvmk8jQ-unsplash.jpg"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
 categories: ['M04:', 'Presentation']
 description: "Presentation slides on AI-Powered Data Analytics & SQL Automation."
 ---
