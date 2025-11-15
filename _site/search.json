@@ -32,14 +32,14 @@
     "href": "index.html#course-resources",
     "title": "AD 698 Applied Generative AI Business Analytics",
     "section": "4 Course Resources",
-    "text": "4 Course Resources\nThere is no required textbook for this course. All core readings, technical documentation, and video tutorials will be provided on the course site (Canvas or Quarto site).\nRecommended (not required):\n\nDesigning LLM Applications with LangChain (docs.langchain.com)\nOpenAI Cookbook (cookbook.openai.com)\nThe Hitchhiker’s Guide to LLMOps (arize.com)\nGenerative AI with Python and Hugging Face Transformers (available via BU Library or Hugging Face Hub)\n\nTools & Platforms Used:\n\nJupyter, VS Code, GitHub, Python (LangChain, LlamaIndex, OpenAI, Hugging Face)\nAPIs: OpenAI, Cohere, Claude (Anthropic), Gemini (Google)\nDeployment tools: Streamlit, FastAPI, GitHub Actions\nVector DBs: FAISS, ChromaDB\nEvaluation tools: GPT-Eval, Trulens, PromptLayer\n\nAll resources are available through GitHub Education and GitHub Classrooms. Students are required to create a GitHub account using their Boston University email address in the first week.\n\n4.1 Recommended Textbook"
+    "text": "4 Course Resources\nThere is no required textbook for this course. All core readings, technical documentation, and video tutorials will be provided on the course site (Canvas or Quarto site).\nRecommended (not required):\n\nDesigning LLM Applications with LangChain (docs.langchain.com)\nOpenAI Cookbook (cookbook.openai.com)\nThe Hitchhiker’s Guide to LLMOps (arize.com)\nGenerative AI with Python and Hugging Face Transformers (available via BU Library or Hugging Face Hub)\n\nTools & Platforms Used:\n\nJupyter, VS Code, GitHub, Python (LangChain, LlamaIndex, OpenAI, Hugging Face)\nAPIs: OpenAI, Cohere, Claude (Anthropic), Gemini (Google)\nDeployment tools: Streamlit, FastAPI, GitHub Actions\nVector DBs: FAISS, ChromaDB\nEvaluation tools: GPT-Eval, Trulens, PromptLayer\n\nAll resources are available through GitHub Education and GitHub Classrooms. Students are required to create a GitHub account using their Boston University email address in the first week."
   },
   {
     "objectID": "index.html#course-schedule",
     "href": "index.html#course-schedule",
     "title": "AD 698 Applied Generative AI Business Analytics",
     "section": "5 Course Schedule",
-    "text": "5 Course Schedule\n\n5.1 Class Schedule\n\n\n\n\n\n\n\nLecture\nTitle\nDescription\nOnline\nOn Campus\n\n\n\n\nLecture 0.1\nCourse Introduction & Generative AI Landscape\nOverview of course objectives and use of GenAI in business contexts.\n-\n-\n\n\nLecture 0.2\nLocal Dev Setup: GitHub, Jupyter, VS Code\nSetup instructions for local development using GitHub, Jupyter, and APIs.\n-\n-\n\n\nLecture 1.1\nPrompt Engineering Fundamentals\nCore prompting strategies including few-shot, CoT, and ReAct.\n02-Sep\n08-Sep\n\n\nLecture 1.2\nBusiness Use Cases with Prompts\nApplying prompt templates to generate emails, reports, SQL, and summaries.\n02-Sep\n15-Sep\n\n\nLecture 2.1\nRAG Basics: Embeddings, Chunking, Indexing\nUnderstanding vector databases and embedding models for RAG.\n09-Sep\n22-Sep\n\n\nLecture 2.2\nRAG Query Pipelines with LangChain & LlamaIndex\nImplementing retrieval-based Q&A systems using LangChain and LlamaIndex.\n09-Sep\n29-Sep\n\n\nLecture 3.1\nIntro to Agents: ReAct, Tool Use\nIntroduction to AI agents and tool-use chains with LangChain.\n16-Sep\n06-Oct\n\n\nLecture 3.2\nMulti-Agent Systems (AutoGen, CrewAI)\nDesigning multi-agent systems for business process automation.\n16-Sep\n20-Oct\n\n\nLecture 4.1\nLoRA, QLoRA, PEFT Techniques\nOverview of parameter-efficient tuning strategies for LLMs.\n23-Sep\n27-Oct\n\n\nLecture 4.2\nFine-Tuning Pipelines & Data Handling\nRunning LoRA/QLoRA fine-tunes and comparing to base models.\n23-Sep\n03-Nov\n\n\nLecture 5.1\nEmbeddings & Similarity Search\nUsing embedding models for semantic similarity and clustering.\n30-Sep\n10-Nov\n\n\nLecture 5.2\nMemory & Context Management\nBuilding memory modules to preserve context in long tasks.\n30-Sep\n17-Nov\n\n\nLecture 6.1\nModel Evaluation & GPT-Eval\nEvaluation methods for LLMs including hallucination and output quality.\n07-Oct\n24-Nov\n\n\nLecture 6.2\nResponsible AI & Bias Detection\nAuditing AI outputs for bias, fairness, and responsible use.\n07-Oct\n01-Dec\n\n\nLecture 7.1\nModel Optimization Techniques\nTechniques for reducing model size and optimizing inference speed.\n-\n08-Dec\n\n\nLecture 7.2\nDeployment: GitHub Actions + Streamlit\nDeploying GenAI applications using GitHub Actions and Streamlit.\n-\n-\n\n\nLecture 8.1\nCapstone Project Presentations\nnan\n-\n-\n\n\nLecture 8.2\nPeer Feedback & Industry Outlook\nnan\n-\n-"
+    "text": "5 Course Schedule\nThe class will generally run for 12 weeks with 6 modules. Module 0 will be a prep module open at the same time as Module 1. Module 7 and 8 are advanced contain materials and are optional.\n\n5.1 Class Schedule\n\n\n\n\n\n\n\nLecture\nTitle\nDescription\nOnline\nOn-Campus\n\n\n\n\nL0.1\nDev Setup: GitHub, Jupyter, VS Code, Colab\nCourse tools setup and basic version control with GitHub, notebooks, and IDEs.\n-\n-\n\n\nL0.2\nIntroduction to Neural Networks\nUnderstanding the basics of neural networks as a foundation for generative models.\n-\n-\n\n\nL1.1\nIntroduction to Course, Natural Language, and Generative AI Landscape\nOverview of generative AI, its business relevance, and natural language as a data type.\n-\n-\n\n\nL1.2\nIntroduction to Natural Language Processing\nCore NLP concepts: tokenization, POS tagging, parsing, and text pre-processing.\n-\n-\n\n\nL2.1\nPrompt Engineering Fundamentals\nLearn prompt design, zero-/few-shot techniques, and ICL with business use cases.\n-\n-\n\n\nL2.2\nTokenization, Embeddings, and Vector Semantics\nDeep dive into tokenization methods, word embeddings, and semantic search foundations.\n-\n-\n\n\nL3.1\nLLM Internals: Attention, Transformers, and Positional Encoding\nExplore transformer architecture, attention mechanisms, and context windows.\n-\n-\n\n\nL3.2\nFine-Tuning Pipelines & Data Handling\nSet up custom model pipelines and format datasets for supervised fine-tuning.\n-\n-\n\n\nL4.1\nRAG Basics: Embeddings, Chunking, Indexing\nUnderstanding retrieval-augmented generation concepts and corpus preparation.\n-\n-\n\n\nL4.2\nRAG Query Pipelines with LangChain & LlamaIndex\nBuild Q&A systems using vector DBs, LangChain chains, and document loaders.\n-\n-\n\n\nL5.1\nLoRA, QLoRA, PEFT Techniques\nLearn parameter-efficient fine-tuning methods to adapt base models.\n-\n-\n\n\nL5.2\nEmbeddings & Similarity Search\nWork with sentence embeddings for document clustering, search, and relevance.\n-\n-\n\n\nL6.1\nMemory & Context Management\nStrategies for working with limited context: caching, summaries, and memory buffers.\n-\n-\n\n\nL6.2\nMultimodal Models and Use Cases\nExplore vision-language models and multimodal business applications.\n-\n-\n\n\nL7.1\nModel Evaluation & GPT-Eval\nEvaluate generated outputs using automated tools, manual rubrics, and hallucination detection.\n-\n-\n\n\nL7.2\nResponsible AI & Bias Detection\nAssess bias, fairness, and ethics in generated outputs using toolkits and guidelines.\n-\n-\n\n\nL8.1\nIntro to Agents: ReAct, Tool Use\nOverview of agent-based systems and tool-augmented LLM workflows.\n-\n-\n\n\nL8.2\nMulti-Agent Systems (AutoGen, CrewAI)\nDesign and orchestrate multi-agent collaborative systems for enterprise tasks.\n-\n-"
   },
   {
     "objectID": "index.html#boston-university-library-information",
@@ -86,9 +86,9 @@
   {
     "objectID": "schedule.html",
     "href": "schedule.html",
-    "title": "Schedule",
+    "title": "AD 6698 Generative AI for Business Analytics",
     "section": "",
-    "text": "Course schedule goes here."
+    "text": "Please adhere to the due dates posted on the course website. Late work is not accepted.\n\n\n\n\n  \n    \n      Day\n      A1\n      A2\n      A3\n    \n  \n  \n    \n      Day 1\n      Tuesday\n      Thursday\n      Wednesday\n    \n    \n      Day 2\n      Wednesday\n      Friday\n      Thursday\n    \n    \n      Day 3\n      Thursday\n      Saturday\n      Friday\n    \n    \n      Day 4\n      Friday\n      Sunday\n      Saturday\n    \n    \n      Day 5\n      Saturday\n      Monday\n      Sunday\n    \n    \n      Day 6\n      Sunday\n      Tuesday\n      Monday\n    \n    \n      Day 7\n      Monday\n      Wednesday\n      Tuesday\n    \n  \n\n\n\n\n\n\n\n\n\n  \n    \n      Lecture\n      Title\n      Description\n      Online\n      On-Campus\n    \n  \n  \n    \n      L0.1\n      Dev Setup: GitHub, Jupyter, VS Code, Colab\n      Course tools setup and basic version control with GitHub, notebooks, and IDEs.\n      nan\n      nan\n    \n    \n      L0.2\n      Introduction to Neural Networks\n      Understanding the basics of neural networks as a foundation for generative models.\n      nan\n      nan\n    \n    \n      L1.1\n      Introduction to Course, Natural Language, and Generative AI Landscape\n      Overview of generative AI, its business relevance, and natural language as a data type.\n      nan\n      nan\n    \n    \n      L1.2\n      Introduction to Natural Language Processing\n      Core NLP concepts: tokenization, POS tagging, parsing, and text pre-processing.\n      nan\n      nan\n    \n    \n      L2.1\n      Prompt Engineering Fundamentals\n      Learn prompt design, zero-/few-shot techniques, and ICL with business use cases.\n      nan\n      nan\n    \n    \n      L2.2\n      Tokenization, Embeddings, and Vector Semantics\n      Deep dive into tokenization methods, word embeddings, and semantic search foundations.\n      nan\n      nan\n    \n    \n      L3.1\n      LLM Internals: Attention, Transformers, and Positional Encoding\n      Explore transformer architecture, attention mechanisms, and context windows.\n      nan\n      nan\n    \n    \n      L3.2\n      Fine-Tuning Pipelines & Data Handling\n      Set up custom model pipelines and format datasets for supervised fine-tuning.\n      nan\n      nan\n    \n    \n      L4.1\n      RAG Basics: Embeddings, Chunking, Indexing\n      Understanding retrieval-augmented generation concepts and corpus preparation.\n      nan\n      nan\n    \n    \n      L4.2\n      RAG Query Pipelines with LangChain & LlamaIndex\n      Build Q&A systems using vector DBs, LangChain chains, and document loaders.\n      nan\n      nan\n    \n    \n      L5.1\n      LoRA, QLoRA, PEFT Techniques\n      Learn parameter-efficient fine-tuning methods to adapt base models.\n      nan\n      nan\n    \n    \n      L5.2\n      Embeddings & Similarity Search\n      Work with sentence embeddings for document clustering, search, and relevance.\n      nan\n      nan\n    \n    \n      L6.1\n      Memory & Context Management\n      Strategies for working with limited context: caching, summaries, and memory buffers.\n      nan\n      nan\n    \n    \n      L6.2\n      Multimodal Models and Use Cases\n      Explore vision-language models and multimodal business applications.\n      nan\n      nan\n    \n    \n      L7.1\n      Model Evaluation & GPT-Eval\n      Evaluate generated outputs using automated tools, manual rubrics, and hallucination detection.\n      nan\n      nan\n    \n    \n      L7.2\n      Responsible AI & Bias Detection\n      Assess bias, fairness, and ethics in generated outputs using toolkits and guidelines.\n      nan\n      nan\n    \n    \n      L8.1\n      Intro to Agents: ReAct, Tool Use\n      Overview of agent-based systems and tool-augmented LLM workflows.\n      nan\n      nan\n    \n    \n      L8.2\n      Multi-Agent Systems (AutoGen, CrewAI)\n      Design and orchestrate multi-agent collaborative systems for enterprise tasks.\n      nan\n      nan"
   },
   {
     "objectID": "M07/M07_Wrapup.html",
@@ -364,6 +364,13 @@
     "text": "1 M00 Lecture Note 02"
   },
   {
+    "objectID": "M00/M00_Highlights.html",
+    "href": "M00/M00_Highlights.html",
+    "title": "M00 Highlights",
+    "section": "",
+    "text": "1 M00 Highlights"
+  },
+  {
     "objectID": "M00/M00_Proj.html",
     "href": "M00/M00_Proj.html",
     "title": "M00 Project",
@@ -378,39 +385,11 @@
     "text": "1 M01 Assignment"
   },
   {
-    "objectID": "M02/M02_A.html",
-    "href": "M02/M02_A.html",
-    "title": "M02 Assignment",
+    "objectID": "M01/M01_P01.html",
+    "href": "M01/M01_P01.html",
+    "title": "AD698 - Applied Generative AI",
     "section": "",
-    "text": "1 M02 Assignment"
-  },
-  {
-    "objectID": "M03/M03_A.html",
-    "href": "M03/M03_A.html",
-    "title": "M03 Assignment",
-    "section": "",
-    "text": "1 M03 Assignment"
-  },
-  {
-    "objectID": "M05/M05_A.html",
-    "href": "M05/M05_A.html",
-    "title": "M05 Assignment",
-    "section": "",
-    "text": "1 M05 Assignment"
-  },
-  {
-    "objectID": "M06/M06_A.html",
-    "href": "M06/M06_A.html",
-    "title": "M06 Assignment",
-    "section": "",
-    "text": "1 M06 Assignment"
-  },
-  {
-    "objectID": "deliverables.html",
-    "href": "deliverables.html",
-    "title": "Deliverables",
-    "section": "",
-    "text": "Assignments, labs, and projects will appear here."
+    "text": "Understand the breadth of generative AI technologies\nExplore core generative model architectures\nGain insights into practical applications"
   },
   {
     "objectID": "M01/M01_P01.html#course-welcome",
@@ -438,7 +417,7 @@
     "href": "M01/M01_P01.html#generative-model-landscape-key-generative-model-architectures",
     "title": "AD698 - Applied Generative AI",
     "section": "4 Generative Model Landscape: Key Generative Model Architectures",
-    "text": "4 Generative Model Landscape: Key Generative Model Architectures\n\nLanguage Models\n\n\nGPT (Generative Pre-trained Transformer)\nBERT (Bidirectional Encoder Representations)\n\n\nImage Generation Models\n\n\nDALL-E\nStable Diffusion\nMidjourney\n\n\nMultimodal Models\n\n\nAmazon Nova\nMeta Llama 3.2 and 3.3\nGemini\nGPT-4\n\nTransformer Architecture - Fundamental Concepts"
+    "text": "4 Generative Model Landscape: Key Generative Model Architectures\n\nFoundation Models and Algorithms\n\nConvolutional Neural Networks (CNNs)\nRecurrent Neural Networks (RNNs)\nTransformer Architecture\nGenerative Adversarial Networks (GANs)\n\nLanguage Models\n\nGPT (Generative Pre-trained Transformer)\nBERT (Bidirectional Encoder Representations)\n\nImage Generation Models\n\nDALL-E\nStable Diffusion\nMidjourney\n\nMultimodal Models\n\nAmazon Nova\nMeta Llama\nGemini\nGPT"
   },
   {
     "objectID": "M01/M01_P01.html#nlp-prior-to-embeddings-and-transformers",
@@ -551,5 +530,89 @@
     "title": "AD698 - Applied Generative AI",
     "section": "20 Week 2 Focus: In-Context’ Learning (ICL)",
     "text": "20 Week 2 Focus: In-Context’ Learning (ICL)\n\nFew-shot learning mechanisms\nPractical ICL implementation\nAdvanced prompt engineering techniques\n\n\n\n\n\n[1] A. Zewe, “Explained: Generative AI,” MIT News, Nov. 2023, Available: https://news.mit.edu/2023/explained-generative-ai-1109"
+  },
+  {
+    "objectID": "M02/M02_A.html",
+    "href": "M02/M02_A.html",
+    "title": "M02 Assignment",
+    "section": "",
+    "text": "1 M02 Assignment"
+  },
+  {
+    "objectID": "M03/M03_A.html",
+    "href": "M03/M03_A.html",
+    "title": "M03 Assignment",
+    "section": "",
+    "text": "1 M03 Assignment"
+  },
+  {
+    "objectID": "M05/M05_A.html",
+    "href": "M05/M05_A.html",
+    "title": "M05 Assignment",
+    "section": "",
+    "text": "1 M05 Assignment"
+  },
+  {
+    "objectID": "M06/M06_A.html",
+    "href": "M06/M06_A.html",
+    "title": "M06 Assignment",
+    "section": "",
+    "text": "1 M06 Assignment"
+  },
+  {
+    "objectID": "deliverables.html",
+    "href": "deliverables.html",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "",
+    "text": "Day\nA1\nO1\n\n\n\n\nDay 1\nMonday\nTuesday\n\n\nDay 2\nTuesday\nWednesday\n\n\nDay 3\nWednesday\nThursday\n\n\nDay 4\nThursday\nFriday\n\n\nDay 5\nFriday\nSaturday\n\n\nDay 6\nSaturday\nSunday\n\n\nDay 7\nSunday\nMonday\n\n\n\n\n\n\nSection A1\n\nThe first day of the week (Day 1) for section A1 is Monday, this is the day we will conduct our live classroom sessions.\nThe last day of the week (Day 7) for section A1 is Sunday.\n\nSection O1\n\nThe first day of the week (Day 1) for section O1 is Tuesday, this is the day we will conduct our live classroom sessions.\nThe last day of the week (Day 7) for section O1 is Monday.\n\n\nPlease adhere to the due dates posted on the course website. Late work is not accepted.\n\nAll assignments (for on campus) will open one to two weeks before the due date.\nAll assignments (for online) will open in the first two weeks.\nAll Labs (for on campus) will open one week before the due date.\nAll Labs (for online) will open in the first two weeks and are ungraded."
+  },
+  {
+    "objectID": "schedule.html#course-schedule",
+    "href": "schedule.html#course-schedule",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "",
+    "text": "Please adhere to the due dates posted on the course website. Late work is not accepted.\n\n\n\n\n  \n    \n      Day\n      A1\n      A2\n      A3\n    \n  \n  \n    \n      Day 1\n      Tuesday\n      Thursday\n      Wednesday\n    \n    \n      Day 2\n      Wednesday\n      Friday\n      Thursday\n    \n    \n      Day 3\n      Thursday\n      Saturday\n      Friday\n    \n    \n      Day 4\n      Friday\n      Sunday\n      Saturday\n    \n    \n      Day 5\n      Saturday\n      Monday\n      Sunday\n    \n    \n      Day 6\n      Sunday\n      Tuesday\n      Monday\n    \n    \n      Day 7\n      Monday\n      Wednesday\n      Tuesday\n    \n  \n\n\n\n\n\n\n\n\n\n  \n    \n      Lecture\n      Title\n      Description\n      Online\n      On-Campus\n    \n  \n  \n    \n      L0.1\n      Dev Setup: GitHub, Jupyter, VS Code, Colab\n      Course tools setup and basic version control with GitHub, notebooks, and IDEs.\n      nan\n      nan\n    \n    \n      L0.2\n      Introduction to Neural Networks\n      Understanding the basics of neural networks as a foundation for generative models.\n      nan\n      nan\n    \n    \n      L1.1\n      Introduction to Course, Natural Language, and Generative AI Landscape\n      Overview of generative AI, its business relevance, and natural language as a data type.\n      nan\n      nan\n    \n    \n      L1.2\n      Introduction to Natural Language Processing\n      Core NLP concepts: tokenization, POS tagging, parsing, and text pre-processing.\n      nan\n      nan\n    \n    \n      L2.1\n      Prompt Engineering Fundamentals\n      Learn prompt design, zero-/few-shot techniques, and ICL with business use cases.\n      nan\n      nan\n    \n    \n      L2.2\n      Tokenization, Embeddings, and Vector Semantics\n      Deep dive into tokenization methods, word embeddings, and semantic search foundations.\n      nan\n      nan\n    \n    \n      L3.1\n      LLM Internals: Attention, Transformers, and Positional Encoding\n      Explore transformer architecture, attention mechanisms, and context windows.\n      nan\n      nan\n    \n    \n      L3.2\n      Fine-Tuning Pipelines & Data Handling\n      Set up custom model pipelines and format datasets for supervised fine-tuning.\n      nan\n      nan\n    \n    \n      L4.1\n      RAG Basics: Embeddings, Chunking, Indexing\n      Understanding retrieval-augmented generation concepts and corpus preparation.\n      nan\n      nan\n    \n    \n      L4.2\n      RAG Query Pipelines with LangChain & LlamaIndex\n      Build Q&A systems using vector DBs, LangChain chains, and document loaders.\n      nan\n      nan\n    \n    \n      L5.1\n      LoRA, QLoRA, PEFT Techniques\n      Learn parameter-efficient fine-tuning methods to adapt base models.\n      nan\n      nan\n    \n    \n      L5.2\n      Embeddings & Similarity Search\n      Work with sentence embeddings for document clustering, search, and relevance.\n      nan\n      nan\n    \n    \n      L6.1\n      Memory & Context Management\n      Strategies for working with limited context: caching, summaries, and memory buffers.\n      nan\n      nan\n    \n    \n      L6.2\n      Multimodal Models and Use Cases\n      Explore vision-language models and multimodal business applications.\n      nan\n      nan\n    \n    \n      L7.1\n      Model Evaluation & GPT-Eval\n      Evaluate generated outputs using automated tools, manual rubrics, and hallucination detection.\n      nan\n      nan\n    \n    \n      L7.2\n      Responsible AI & Bias Detection\n      Assess bias, fairness, and ethics in generated outputs using toolkits and guidelines.\n      nan\n      nan\n    \n    \n      L8.1\n      Intro to Agents: ReAct, Tool Use\n      Overview of agent-based systems and tool-augmented LLM workflows.\n      nan\n      nan\n    \n    \n      L8.2\n      Multi-Agent Systems (AutoGen, CrewAI)\n      Design and orchestrate multi-agent collaborative systems for enterprise tasks.\n      nan\n      nan"
+  },
+  {
+    "objectID": "deliverables.html#course-schedule",
+    "href": "deliverables.html#course-schedule",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "",
+    "text": "Day\nA1\nO1\n\n\n\n\nDay 1\nMonday\nTuesday\n\n\nDay 2\nTuesday\nWednesday\n\n\nDay 3\nWednesday\nThursday\n\n\nDay 4\nThursday\nFriday\n\n\nDay 5\nFriday\nSaturday\n\n\nDay 6\nSaturday\nSunday\n\n\nDay 7\nSunday\nMonday\n\n\n\n\n\n\nSection A1\n\nThe first day of the week (Day 1) for section A1 is Monday, this is the day we will conduct our live classroom sessions.\nThe last day of the week (Day 7) for section A1 is Sunday.\n\nSection O1\n\nThe first day of the week (Day 1) for section O1 is Tuesday, this is the day we will conduct our live classroom sessions.\nThe last day of the week (Day 7) for section O1 is Monday.\n\n\nPlease adhere to the due dates posted on the course website. Late work is not accepted.\n\nAll assignments (for on campus) will open one to two weeks before the due date.\nAll assignments (for online) will open in the first two weeks.\nAll Labs (for on campus) will open one week before the due date.\nAll Labs (for online) will open in the first two weeks and are ungraded."
+  },
+  {
+    "objectID": "deliverables.html#online-o1-fall-2025",
+    "href": "deliverables.html#online-o1-fall-2025",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "Online (O1) Fall 2025",
+    "text": "Online (O1) Fall 2025\n\n\n\n\n\nA1\nAssignments\nProject Milestones\nParticipation\n\n\n\n\n02-Sep (Tue)\n\n\n\n\n\n09-Sep (Tue)\nA1 (Due: Sep 10)\nUngraded Milestone 1\n\n\n\n16-Sep (Tue)\nA2 (Due: Sep 17)\nUngraded Milestone 2\n\n\n\n23-Sep (Tue)\nA3 (Due: Sep 24)\nUngraded Milestone 3\n\n\n\n30-Sep (Tue)\nA4 (Due: Oct 01)\nUngraded Milestone 4\n\n\n\n07-Oct (Tue)\n\n\nParticipation 1 + Participation 2\n\n\n14-Oct (Tue)\n\nFinal Project Report + Presentation"
+  },
+  {
+    "objectID": "deliverables.html#on-campus-a1-fall-2025",
+    "href": "deliverables.html#on-campus-a1-fall-2025",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "On Campus (A1) Fall 2025",
+    "text": "On Campus (A1) Fall 2025\n\n\n\n\n\n#\nA1\nLab (Due)\nAssignments\nProject Milestones\nParticipation\n\n\n\n\nL1\n08-Sep (Mon)\n\n\n\n\n\n\nL2\n15-Sep (Mon)\nLab 1\nA1 (Due: Sep 16)\n\n\n\n\nL3\n22-Sep (Mon)\nLab 2\n\n\n\n\n\nL4\n29-Sep (Mon)\nLab 3\nA2 (Due: Sep 30)\nUngraded Milestone 1\n\n\n\nL5\n06-Oct (Mon)\n\n\n\n\n\n\nL6\n20-Oct (Mon)\nLab 4\nA3 (Due: Oct 21)\nUngraded Milestone 2\n\n\n\nL7\n27-Oct (Mon)\nLab 5\n\n\n\n\n\nL8\n03-Nov (Mon)\nLab 6\nA4 (Due: Nov 04)\nUngraded Milestone 3\n\n\n\nL9\n10-Nov (Mon)\n\n\n\n\n\n\nL10\n17-Nov (Mon)\n\nA5 (Due: Nov 18)\nUngraded Milestone 4\n\n\n\nL11\n24-Nov (Mon)\n\n\n\n\n\n\nL12\n01-Dec (Mon)\n\n\nPresentation\nParticipation 1 + Participation 2\n\n\nL13\n08-Dec (Mon)\n\n\nFinal Project Report + Presentation"
+  },
+  {
+    "objectID": "deliverables.html#online-o1-spring",
+    "href": "deliverables.html#online-o1-spring",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "Online (O1) Spring",
+    "text": "Online (O1) Spring"
+  },
+  {
+    "objectID": "deliverables.html#on-campus-a1-spring",
+    "href": "deliverables.html#on-campus-a1-spring",
+    "title": "AD 6698 Generative AI for Business Analytics",
+    "section": "On Campus (A1) Spring",
+    "text": "On Campus (A1) Spring\n\n\n\n\n\n#\nA1\nLab (Due)\nAssignments\nProject Milestones\nParticipation\n\n\n\n\nL1\n26-Jan (Mon)\n\n\n\n\n\n\nL2\n02-Feb (Mon)\nLab 1\n\n\n\n\n\nL3\n09-Feb (Mon)\nLab 2\nA1 (Due: Feb 10)\nUngraded Milestone 1\n\n\n\nL4\n17-Feb (Tue)\nLab 3\n\n\n\n\n\nL5\n23-Feb (Mon)\n\nA2 (Due: Feb 24)\nUngraded Milestone 2\n\n\n\nL6\n02-Mar (Mon)\nLab 5\n\n\n\n\n\nL7\n16-Mar (Mon)\nLab 6\nA3 (Due: Mar 17)\nUngraded Milestone 3\n\n\n\nL8\n23-Mar (Mon)\nLab 7\n\n\n\n\n\nL9\n30-Mar (Mon)\nLab 8\nA4 (Due: Mar 31)\nUngraded Milestone 4\n\n\n\nL10\n06-Apr (Mon)\nLab 9\n\n\n\n\n\nL11\n13-Apr (Mon)\n\nA5 (Due: Apr 14)\nUngraded Milestone 5\n\n\n\nL12\n20-Apr (Mon)\n\n\nPresentation\nParticipation 1 + Participation 2\n\n\nL13\n27-Apr (Mon)\n\n\nFinal Project Report + Presentation"
+  },
+  {
+    "objectID": "M01/M01_P01.html#what-is-generative-ai-1",
+    "href": "M01/M01_P01.html#what-is-generative-ai-1",
+    "title": "AD698 - Applied Generative AI",
+    "section": "3 What is Generative AI?",
+    "text": "3 What is Generative AI?\n\nCore Characteristics:\n\nLearning from existing data\nGenerating novel, contextually relevant outputs\nSpanning multiple modalities (text, image, code, audio)"
   }
 ]

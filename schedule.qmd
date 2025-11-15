@@ -1,5 +1,95 @@
 ---
-title: "Schedule"
+title: "AD 6698 Generative AI for Business Analytics" 
+subtitle: "Schedule"
+number-sections: true
+format:
+    html:
+      toc: false
+
+html-table-processing: none
 ---
 
-Course schedule goes here.
+## Course Schedule
+
+Please adhere to the due dates posted on the course website. [Late work is not accepted]{.bloodred-bold}.
+
+```{python}
+#| echo: false
+#| output: markdown
+
+from datetime import datetime, timedelta
+import pandas as pd
+from IPython.display import display, Markdown
+
+# Function to generate the Day 1 - Day 7 list based on a start date
+def generate_days(start_date):
+    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    start_day_index = days.index(start_date)
+    days_shifted = days[start_day_index:] + days[:start_day_index]
+    return days_shifted
+
+# Start dates for each section
+start_dates = {
+    "A1": "Tuesday",
+    "A2": "Thursday",
+    "A3": "Wednesday"
+}
+
+# Initialize the combined table data
+combined_data = {"Day": [f"Day {i+1}" for i in range(7)]}
+
+# Generate and add columns for each section
+for section, start_date in start_dates.items():
+    combined_data[section] = generate_days(start_date)
+
+# Create a single DataFrame
+combined_table = pd.DataFrame(combined_data)
+
+# Display the combined table without index
+display(combined_table.style.hide(axis="index"))
+
+```
+
+
+### Course Schedule
+
+```{python}
+#| echo: false
+#| output: html
+
+import pandas as pd
+from IPython.display import display, Markdown, HTML
+
+course_schedule = pd.read_excel("./data/AD698-Schedule.xlsx")
+course_schedule = course_schedule.drop('Modules', axis=1)
+
+# Group rows based on the first column
+# grouped_schedule = course_schedule.groupby(course_schedule.columns[0])
+
+# Create a grouped DataFrame by adding a grouping level
+# grouped_table = (
+#     course_schedule.sort_values(by=course_schedule.columns[0])  # Sort by the first column for grouping
+#     .assign(GroupedBy=lambda x: x.iloc[:, 0])  # Add a "GroupedBy" column
+# )
+
+# Define custom CSS for the 4th column
+def restrict_width(column):
+    return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
+
+# Apply styles to restrict the width of the 4th column (index 3 since it's 0-based)
+styled_table = (
+    course_schedule.style
+    .hide(axis="index")  # Hide the index
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [("text-align", "left")]},
+        {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
+        {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}  # nth-child(4) targets the 4th column
+    ])
+)
+
+# Render and display the styled table inline in Quarto
+
+display(HTML(styled_table.to_html()))
+
+```

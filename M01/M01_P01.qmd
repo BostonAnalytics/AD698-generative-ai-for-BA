@@ -44,38 +44,36 @@ title-slide-attributes:
 
 Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on [@Zewe2023].
 
-## What is Generative AI (contd.)?
+## What is Generative AI?
 
 - Core Characteristics:
-- Learning from existing data
-- Generating novel, contextually relevant outputs
-- Spanning multiple modalities (text, image, code, audio)
+  - Learning from existing data
+  - Generating novel, contextually relevant outputs
+  - Spanning multiple modalities (text, image, code, audio)
 
 
 ## Generative Model Landscape: Key Generative Model Architectures
 
-1. Language Models
-
-- GPT (Generative Pre-trained Transformer)
-- BERT (Bidirectional Encoder Representations)
-
-2. Image Generation Models
-
-- DALL-E
-- Stable Diffusion
-- Midjourney
-
-3. Multimodal Models
-
-- Amazon Nova
-- Meta Llama 3.2 and 3.3
-- Gemini
-- GPT-4
-
-Transformer Architecture - Fundamental Concepts
+- Foundation Models and Algorithms
+  -  Convolutional Neural Networks (CNNs)
+  -  Recurrent Neural Networks (RNNs)
+  -  Transformer Architecture
+  -  Generative Adversarial Networks (GANs)
+- Language Models
+  - GPT (Generative Pre-trained Transformer)
+  - BERT (Bidirectional Encoder Representations)
+- Image Generation Models
+  - DALL-E
+  - Stable Diffusion
+  - Midjourney
+- Multimodal Models
+  - Amazon Nova
+  - Meta Llama
+  - Gemini
+  - GPT
 
 ## NLP prior to embeddings and transformers
-
+  
 - Pre-Embedding NLP Representations: Bag of Words
 - Discrete, non-contextual representation of text
 - Treats documents as unordered collections of words
