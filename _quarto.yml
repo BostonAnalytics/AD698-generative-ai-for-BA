@@ -12,7 +12,7 @@ editor:
   preview: true
 
 execute:
-  freeze: auto
+  freeze: true
   keep-ipynb: false
   fig-align: center
 
@@ -20,6 +20,7 @@ website:
   comments: 
     utterances:
       repo: BostonAnalytics/AD698-generative-ai-for-BA
+      issue-term: pathname
   title: "AD 698 Applied Generative AI Business Analytics"
   navbar:
   # --- Uncomment below if navigation is needed ---
