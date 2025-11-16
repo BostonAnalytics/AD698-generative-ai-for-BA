@@ -17,6 +17,9 @@ execute:
   fig-align: center
 
 website:
+  comments: 
+    utterances:
+      repo: BostonAnalytics/AD698-generative-ai-for-BA
   title: "AD 698 Applied Generative AI Business Analytics"
   navbar:
   # --- Uncomment below if navigation is needed ---
