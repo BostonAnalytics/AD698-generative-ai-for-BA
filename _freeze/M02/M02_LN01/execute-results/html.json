@@ -1,0 +1,12 @@
+{
+  "hash": "dea192329fe76c165a0b162438491ef1",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M02: Lecture Notes\"\nsubtitle: \"Prompt Engineering & In-Context Learning (ICL)\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['Notes', 'Lecture', 'M02:']\ndescription: \"Lecture covering Prompt Engineering & In-Context Learning (ICL).\"\n---\n\n",
+    "supporting": [
+      "M02_LN01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

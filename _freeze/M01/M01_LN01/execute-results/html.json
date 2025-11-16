@@ -1,0 +1,12 @@
+{
+  "hash": "84af656693664138b1a26c55a1fc7c49",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M01: Lecture Notes\"\nsubtitle: \"Introduction to Generative AI & Business Applications\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['M01:', 'Notes', 'Lecture']\ndescription: \"Lecture covering Introduction to Generative AI & Business Applications.\"\n---\n\n",
+    "supporting": [
+      "M01_LN01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

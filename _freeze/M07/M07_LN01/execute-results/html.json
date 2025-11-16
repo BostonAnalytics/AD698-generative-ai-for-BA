@@ -1,0 +1,12 @@
+{
+  "hash": "42da81f7b66d27b47af6fcc845f4cdaa",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M07: Lecture Notes\"\nsubtitle: \"AI-Powered Business Dashboards\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['Notes', 'Lecture', 'M07:']\ndescription: \"Lecture covering AI-Powered Business Dashboards.\"\n---\n\n",
+    "supporting": [
+      "M07_LN01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

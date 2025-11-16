@@ -1,0 +1,12 @@
+{
+  "hash": "d7bb15f01d2db5056c7f50dae9c7a291",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M03: Lecture Notes\"\nsubtitle: \"Retrieval-Augmented Generation (RAG) & Vector Search\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['Lecture', 'M03:', 'Notes']\ndescription: \"Lecture covering Retrieval-Augmented Generation (RAG) & Vector Search.\"\n---\n\n",
+    "supporting": [
+      "M03_LN01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

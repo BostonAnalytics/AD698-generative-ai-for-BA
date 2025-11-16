@@ -1,0 +1,12 @@
+{
+  "hash": "391a4203d12dbf868ddffb77b911a7a6",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M00: Lab 1\"\nsubtitle: \"GitHub, VS Code, and Jupyter Setup\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['Lab', 'M00:', '1']\ndescription: \"Hands-on lab activity: GitHub, VS Code, and Jupyter Setup.\"\n---\n\n",
+    "supporting": [
+      "M00_Lab01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

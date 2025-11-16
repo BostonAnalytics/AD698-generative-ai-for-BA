@@ -1,0 +1,12 @@
+{
+  "hash": "a431e323e24fdda6da8a105b8fd32496",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M07: Lab 1\"\nsubtitle: \"Creating interactive dashboards with Plotly/Dash\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['Lab', '1', 'M07:']\ndescription: \"Hands-on lab activity: Creating interactive dashboards with Plotly/Dash.\"\n---\n\n",
+    "supporting": [
+      "M07_Lab01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "hash": "73ed53ae19986cddb3662a01a0c9916f",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M03: Lab 1\"\nsubtitle: \"Using FAISS, ChromaDB in Jupyter\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['M03:', '1', 'Lab']\ndescription: \"Hands-on lab activity: Using FAISS, ChromaDB in Jupyter.\"\n---\n\n",
+    "supporting": [
+      "M03_Lab01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

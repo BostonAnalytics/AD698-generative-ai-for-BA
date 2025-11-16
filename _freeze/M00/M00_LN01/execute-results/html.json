@@ -1,0 +1,12 @@
+{
+  "hash": "d4c0d6f31155ea3f110aef0d0fd1ff9d",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M00: Lecture Notes\"\nsubtitle: \"GitHub and AI Development Environment Setup\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['Lecture', 'M00:', 'Notes']\ndescription: \"Lecture covering GitHub and AI Development Environment Setup.\"\n---\n\n",
+    "supporting": [
+      "M00_LN01_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

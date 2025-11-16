@@ -12,29 +12,42 @@ editor:
   preview: true
 
 execute:
-  freeze: false
+  freeze: auto
   keep-ipynb: false
   fig-align: center
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"
-  navbar: false
+  navbar:
   # --- Uncomment below if navigation is needed ---
-  # search: true
-  # left:
-  #   - text: Syllabus
-  #     href: index.qmd
-  #   - text: Schedule
-  #     href: schedule.qmd
-  #   - text: Deliverables
-  #     href: deliverables.qmd
-  #   - text: "Module 01"
-  #     menu:
-  #       - text: "Lecture Notes 01.1"
-  #         href: M01/M01_LN01.qmd
-  #       - text: "Presentation 01.1"
-  #         href: M01/M01_P01.qmd
-
+    search: true
+    left:
+      - text: Syllabus
+        href: index.qmd
+      - text: Schedule
+        href: schedule.qmd
+      - text: Deliverables
+        href: deliverables.qmd
+      - text: "Module 01"
+        menu:
+          - text: "Lecture Notes 1.1"
+            href: M01/M01_LN01.qmd
+          - text: "Presentation 1.1"
+            href: M01/M01_P01.qmd
+          - text: "Lecture Notes 1.2"
+            href: M01/M01_LN02.qmd
+          - text: "Presentation 1.2"
+            href: M01/M01_P02.qmd
+      - text: "Module 02"
+        menu:
+          - text: "Lecture Notes 2.1"
+            href: M02/M02_LN01.qmd
+          - text: "Presentation 2.1"
+            href: M02/M02_P01.qmd
+          - text: "Lecture Notes 2.2"
+            href: M02/M02_LN02.qmd
+          - text: "Presentation 2.2"
+            href: M02/M02_P02.qmd
 format:
   html:
     theme: [cosmo, ./theme/metanalytics.scss]
