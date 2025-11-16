@@ -12,16 +12,16 @@ editor:
   preview: true
 
 execute:
-  freeze: true
+  freeze: false
   keep-ipynb: false
   fig-align: center
 
 website:
+  title: "AD 698 Applied Generative AI Business Analytics"
   comments: 
     utterances:
       repo: BostonAnalytics/AD698-generative-ai-for-BA
       issue-term: pathname
-  title: "AD 698 Applied Generative AI Business Analytics"
   navbar:
   # --- Uncomment below if navigation is needed ---
     search: true
@@ -52,6 +52,7 @@ website:
             href: M02/M02_LN02.qmd
           - text: "Presentation 2.2"
             href: M02/M02_P02.qmd
+
 format:
   html:
     theme: [cosmo, ./theme/metanalytics.scss]
