@@ -135,7 +135,7 @@ $button-text: #000000; // Button text color
 
   .subtitle {
     font-size: 18pt;
-    color: $h2-color;
+    color: $subtitle-color;
     font-style: italic;
     font-weight: 500;
     width: 40%;
@@ -179,8 +179,8 @@ $button-text: #000000; // Button text color
 // h2
 .reveal .slides section:not(.title-slide) h2 {
   font-size: 20pt;
-  color: $subtitle-color;
-  border-left: 5px solid $accent2;
+  color: $h2-color;
+  border-left: 5px solid $h2-color;
   padding-left: 7.2pt;
   letter-spacing: 0.3pt;
 }
