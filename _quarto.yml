@@ -18,6 +18,11 @@ execute:
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"
+  comments: 
+    utterances:
+      repo: BostonAnalytics/AD698-generative-ai-for-BA
+      label: utterances
+      issue-term: pathname
   navbar:
   # --- Uncomment below if navigation is needed ---
     search: true
@@ -58,11 +63,6 @@ format:
     highlight-style: github
     code-overflow: wrap
     html-math-method: mathml
-    comments: 
-      utterances:
-        repo: BostonAnalytics/AD698-generative-ai-for-BA
-        label: utterances
-        issue-term: pathname
 crossref:
   fig-title: '**Figure**'
   fig-labels: arabic
