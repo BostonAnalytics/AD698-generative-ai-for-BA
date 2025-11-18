@@ -10,3 +10,234 @@ bibliography: ../references.bib
 categories: ['M01:', 'Notes', 'Lecture']
 description: "Lecture covering Introduction to Generative AI & Business Applications."
 ---
+
+
+## Welcome to Applied Generative AI for Business Analytics (AD698)
+
+
+# Your Instructor {.section-title}
+
+## Nakul R. Padalkar
+
+![](https://nakulpadalkar.com/wp-content/uploads/2023/07/na_dc-600x1024.jpg){width="90%"}
+
+
+---
+
+## AD698 – Learning Path
+
+![](./lecture01_figures/ad698path.png){width="95%"}
+
+---
+
+# What This Course Is About
+
+This course explores how modern generative AI systems reshape analytical workflows and business decision-making. You will learn:
+
+- How natural language functions as a data type
+- How LLMs process text, structure information, and generate content
+- How GenAI integrates with business analytics pipelines
+- How to build practical generative-AI solutions with Python, APIs, and automation
+- How to critically evaluate model outputs, reliability, and risks
+- How to design human–AI workflows and deploy GenAI tools effectively in organizations
+
+---
+
+# Why This Course Matters for Your Career
+
+- Every analytics job now intersects with LLMs.
+  - Analysts who master prompt engineering, RAG, automation, and LLM-based workflows will dramatically outperform peers.
+-  [AI-augmented analysts]{.uured-bold} produce more work, more insight, and higher-value deliverables.
+- Organizations expect you to understand:
+  - How AI reads and structures unstructured data
+  - How to integrate AI into dashboards, apps, and analytical workflows
+  - Responsible use, privacy, transparency, and governance principles
+- This course trains you in supporting interviews, project pitches, and job applications while responding to the [AI Augmented Analyst]{.uured-bold} roles.
+
+---
+
+# **Course Overview**
+
+![](./lecture01_figures/course-overview-genai.png){width="98%"}
+
+---
+
+# **Course Structure**
+
+### **Modules 0–7**
+
+Each module has two lectures, one lab, and one assignment. Topics include:
+
+1. **Introduction to LLMs and Natural Language**
+2. **Prompt Engineering & In-Context Learning**
+3. **Vector Search & RAG Systems**
+4. **AI-Driven Data Analytics**
+5. **Automation, Agents & Workflows**
+6. **Generative AI APIs for Business**
+7. **Evaluation, Safety, and Governance**
+8. **Deployment, Documentation & Portfolio**
+
+---
+
+# **Course Grading**
+
+::: {.columns}
+::: {.column width="60%"}
+
+```{python}
+#| echo: false
+#| eval: true
+
+from pywaffle import Waffle
+import pandas as pd
+import matplotlib.pyplot as plt
+
+deliverables = pd.read_excel("../data/AD698-Schedule.xlsx", sheet_name="Grade")
+
+deliverables = deliverables[["Class Activity", "Count", "Points", "Max Points"]]
+points_data = deliverables.dropna(subset=["Points"])
+
+plt.figure(figsize=(8, 4), dpi=100)
+plt.pie(
+    points_data["Points"],
+    labels=points_data["Class Activity"],
+    autopct='%1.1f%%',
+    startangle=140
+)
+plt.show()
+```
+
+:::
+::: {.column width="40%"}
+
+```{python}
+#| echo: false
+#| output: html
+
+import pandas as pd
+from IPython.display import display, HTML
+
+deliverables = pd.read_excel("../data/AD698-Schedule.xlsx", sheet_name="Grade")
+deliverables = deliverables[["Class Activity", "Count", "Points", "Max Points"]]
+
+numeric_cols = ["Count", "Points", "Max Points"]
+deliverables[numeric_cols] = deliverables[numeric_cols].apply(pd.to_numeric, errors="coerce")
+deliverables[numeric_cols] = deliverables[numeric_cols].astype("Int64")
+
+styled = (
+    deliverables.style
+    .hide(axis="index")
+    .format(na_rep="-")
+)
+
+display(HTML(styled.to_html()))
+```
+
+:::
+:::
+
+---
+
+# **Participation Components**
+
+### **LLM Lab Practice**
+
+* Weekly hands-on exercises using LLMs
+* Focus on prompting, automation, and applied business tasks
+
+### **Tooling: GitHub, Python, APIs**
+
+* You will maintain a public portfolio repository
+* Every assignment and project will be submitted via GitHub
+
+---
+
+# **GitHub Repository & Portfolio**
+
+* Lectures 0.1–0.3 walk through:
+
+  * Setting up GitHub
+  * Creating a portfolio site
+  * Connecting your work to Classroom
+* This repo will store:
+
+  * Lab notebooks
+  * Assignments
+  * Code files
+  * Project site generated with Quarto
+
+![](./lecture01_figures/github-portfolio.png){width="50%"}
+
+---
+
+# **In-Class Labs**
+
+Labs are short, guided activities where you:
+
+* Work directly with LLM models
+* Explore generative workflows
+* Build first-draft AI tools that feed into assignments
+* Analyze data, automate tasks, and generate outputs
+* Write practical reports and visualizations
+
+**On-campus:** must submit weekly
+**Online:** optional but recommended for practice
+
+---
+
+# **Individual Assignments**
+
+Four structured assignments that build core competencies:
+
+1. **Prompt Engineering & Automated Analytics**
+2. **RAG and Vector Search**
+3. **AI Pipeline for Business Intelligence**
+4. **Automated Workflow + API Integration**
+
+---
+
+# **Group Project**
+
+A semester-long generative-AI solution to a business problem.
+
+### Components
+
+| Component             | Points | Description                                                                   |
+| --------------------- | ------ | ----------------------------------------------------------------------------- |
+| Milestones via GitHub | 80     | Repo setup, design docs, data prep, RAG prototype, LLM workflow, final output |
+| Presentation          | 40     | Demonstrates model workflow and business impact                               |
+| Peer Evaluation       | 40     | Collaboration, clarity, and contributions                                     |
+
+**Total:** 160 points
+
+---
+
+# **Course Site**
+
+* Central hub for all materials
+* Contains lecture notes, slides, labs, and links
+* Includes schedule, deadlines, and announcements
+* Updated continuously as the course progresses
+
+![](./lecture01_figures/blackboard-ultra-ad698-sandbox.png){width="80%"}
+
+---
+
+# **Office Hours & Consultations**
+
+* Listed on Blackboard
+* Weekly sessions for troubleshooting code, labs, and assignments
+* Dedicated project support sessions (Saturday mornings on Zoom)
+
+---
+
+# **Next: Lecture 1 — Natural Language & the Generative AI Landscape**
+
+Where we cover:
+
+* What natural language *actually is* as a data type
+* How LLMs encode and interpret language
+* Embeddings, tokens, and structure
+* The evolution of modern generative AI systems
+* Business use-cases and early applications
+

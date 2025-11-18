@@ -237,3 +237,25 @@ $button-text: #000000; // Button text color
   font-family: "Source Sans 3", sans-serif;
   color: $dark-gray;
 }
+
+
+// text decorations
+.bloodred-bold {
+  color: #CC1122; // This sets the text color to the specified hexadecimal value
+  font-weight: bold; // This makes the text bold
+}
+
+.uured-bold {
+  color: #d34972; // This sets the text color to the specified hexadecimal value
+  font-weight: bold; // This makes the text bold
+}
+
+.uugreen-bold {
+  color: #669966; // This sets the text color to the specified hexadecimal value
+  font-weight: bold; // This makes the text bold
+}
+
+.uublue-bold {
+  color: #06A2CB; // This sets the text color to the specified hexadecimal value
+  font-weight: bold; // This makes the text bold
+}
