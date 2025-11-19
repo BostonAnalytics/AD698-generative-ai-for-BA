@@ -21,12 +21,6 @@ execute:
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"
-  comments: 
-    utterances:
-      repo: BostonAnalytics/AD698-generative-ai-for-BA
-      label: utterances
-      issue-term: pathname
-      theme: github-light
   navbar:
   # --- Uncomment below if navigation is needed ---
     search: true
@@ -60,6 +54,12 @@ website:
 
 format:
   html:
+    comments: 
+      utterances:
+        repo: BostonAnalytics/AD698-generative-ai-for-BA
+        label: utterances
+        issue-term: pathname
+        theme: github-light
     theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
