@@ -12,9 +12,6 @@ description: "Lecture covering Introduction to Generative AI & Business Applicat
 ---
 
 
-## Welcome to Applied Generative AI for Business Analytics (AD698)
-
-
 # Your Instructor {.section-title}
 
 ## Nakul R. Padalkar
@@ -62,9 +59,9 @@ This course explores how modern generative AI systems reshape analytical workflo
 
 ---
 
-# **Course Structure**
+# Course Structure
 
-### **Modules 0–7**
+### Modules 0–7
 
 Each module has two lectures, one lab, and one assignment. Topics include:
 
@@ -79,7 +76,7 @@ Each module has two lectures, one lab, and one assignment. Topics include:
 
 ---
 
-# **Course Grading**
+# Course Grading*
 
 ::: {.columns}
 ::: {.column width="60%"}
@@ -138,39 +135,21 @@ display(HTML(styled.to_html()))
 
 ---
 
-# **Participation Components**
+# Participation Components
 
-### **LLM Lab Practice**
+## LLM Lab Practice
 
 * Weekly hands-on exercises using LLMs
 * Focus on prompting, automation, and applied business tasks
 
-### **Tooling: GitHub, Python, APIs**
+## Tooling: GitHub, Python, APIs
 
 * You will maintain a public portfolio repository
 * Every assignment and project will be submitted via GitHub
 
 ---
 
-# **GitHub Repository & Portfolio**
-
-* Lectures 0.1–0.3 walk through:
-
-  * Setting up GitHub
-  * Creating a portfolio site
-  * Connecting your work to Classroom
-* This repo will store:
-
-  * Lab notebooks
-  * Assignments
-  * Code files
-  * Project site generated with Quarto
-
-![](./lecture01_figures/github-portfolio.png){width="50%"}
-
----
-
-# **In-Class Labs**
+# In-Class Labs
 
 Labs are short, guided activities where you:
 
@@ -185,7 +164,7 @@ Labs are short, guided activities where you:
 
 ---
 
-# **Individual Assignments**
+# Individual Assignments
 
 Four structured assignments that build core competencies:
 
@@ -196,7 +175,7 @@ Four structured assignments that build core competencies:
 
 ---
 
-# **Group Project**
+# Group Project
 
 A semester-long generative-AI solution to a business problem.
 
@@ -212,7 +191,7 @@ A semester-long generative-AI solution to a business problem.
 
 ---
 
-# **Course Site**
+# Course Site
 
 * Central hub for all materials
 * Contains lecture notes, slides, labs, and links
@@ -223,21 +202,12 @@ A semester-long generative-AI solution to a business problem.
 
 ---
 
-# **Office Hours & Consultations**
-
+# Office Hours & Consultations
 * Listed on Blackboard
 * Weekly sessions for troubleshooting code, labs, and assignments
 * Dedicated project support sessions (Saturday mornings on Zoom)
 
 ---
 
-# **Next: Lecture 1 — Natural Language & the Generative AI Landscape**
-
-Where we cover:
-
-* What natural language *actually is* as a data type
-* How LLMs encode and interpret language
-* Embeddings, tokens, and structure
-* The evolution of modern generative AI systems
-* Business use-cases and early applications
+# Next: Lecture 1 — Natural Language & the Generative AI Landscape
 

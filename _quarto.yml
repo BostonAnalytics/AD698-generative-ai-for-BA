@@ -20,6 +20,9 @@ execute:
   fig-align: center
 
 website:
+  comments: 
+    giscus:
+      repo: BostonAnalytics/AD698-generative-ai-for-BA
   title: "AD 698 Applied Generative AI Business Analytics"
   navbar:
   # --- Uncomment below if navigation is needed ---
@@ -33,6 +36,8 @@ website:
         href: deliverables.qmd
       - text: "Module 01"
         menu:
+          - text: "Module Highlights"
+            href: M01/M01_Highlights.qmd
           - text: "Lecture Notes 1.1"
             href: M01/M01_LN01.qmd
           - text: "Presentation 1.1"
@@ -41,6 +46,16 @@ website:
             href: M01/M01_LN02.qmd
           - text: "Presentation 1.2"
             href: M01/M01_P02.qmd
+          - text: "Lab 1.1"
+            href: M01/M01_Lab01.qmd
+          - text: "Lab 1.2"
+            href: M01/M01_Lab02.qmd
+          - text: "Module 1 Assignment"
+            href: M01/M01_A.qmd
+          - text: "Module 1 Project"
+            href: M01/M01_Proj.qmd 
+          - text: "Module Wrap-Up"
+            href: M01/M01_Wrapup.qmd
       - text: "Module 02"
         menu:
           - text: "Lecture Notes 2.1"
@@ -54,12 +69,6 @@ website:
 
 format:
   html:
-    comments: 
-      utterances:
-        repo: BostonAnalytics/AD698-generative-ai-for-BA
-        label: utterances
-        issue-term: pathname
-        theme: github-light
     theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
@@ -71,3 +80,5 @@ crossref:
   fig-title: '**Figure**'
   fig-labels: arabic
   title-delim: "**.**"
+
+
