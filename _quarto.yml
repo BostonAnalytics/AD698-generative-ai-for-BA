@@ -21,7 +21,7 @@ execute:
 
 website:
   comments: 
-    giscus:
+    utterances:
       repo: BostonAnalytics/AD698-generative-ai-for-BA
   title: "AD 698 Applied Generative AI Business Analytics"
   navbar:
