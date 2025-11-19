@@ -1,5 +1,7 @@
 project:
   type: website
+  output-dir: _site
+
   preview:
     port: 4300
     browser: false
@@ -12,6 +14,7 @@ editor:
   preview: true
 
 execute:
+  cache: true
   freeze: false
   keep-ipynb: false
   fig-align: center

@@ -59,14 +59,13 @@ combined_table.style.hide(axis="index")
 ```
 
 
-- **Section `{python} first_section`**
-  - The first day of the week (Day 1) for section `{python} first_section` is [`{python} first_day`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section `{python} first_section` is [`{python} last_day_first_section`]{.uured-bold}.
+- **Section `{{ first_section }}`**
+  - The first day of the week (Day 1) for section `{{ first_section }}` is [`{{ first_day }}`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
+  - The last day of the week (Day 7) for section `{{ first_section }}` is [`{{ last_day_first_section }}`]{.uured-bold}.
 
-- **Section `{python} second_section`**
-  - The first day of the week (Day 1) for section `{python} second_section` is [`{python} second_day`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section `{python} second_section` is [`{python} last_day_second_section`]{.uured-bold}.
-
+- **Section `{{ second_section }}`**
+  - The first day of the week (Day 1) for section `{{ second_section }}` is [`{{ second_day }}`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
+  - The last day of the week (Day 7) for section `{{ second_section }}` is [`{{ last_day_second_section }}`]{.uured-bold}.
 
 Please adhere to the due dates posted on the course website. [Late work is not accepted]{.bloodred-bold}.
 

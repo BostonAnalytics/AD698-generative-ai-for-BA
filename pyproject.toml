@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "jupyter>=1.1.1",
+    "jupyter-cache>=1.0.1",
     "matplotlib>=3.10.7",
     "numpy>=2.3.4",
     "openpyxl>=3.1.5",
