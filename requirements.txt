@@ -21,6 +21,7 @@ defusedxml==0.7.1
 et-xmlfile==2.0.0
 executing==2.2.1
 fastjsonschema==2.21.2
+fontawesomefree==6.6.0
 fonttools==4.60.1
 fqdn==1.5.1
 h11==0.16.0
@@ -81,6 +82,9 @@ pygments==2.19.2
 pyparsing==3.2.5
 python-dateutil==2.9.0.post0
 python-json-logger==4.0.0
+pytz==2025.2;sys_platform == 'windows'
+pywaffle==1.1.1
+pywinpty==3.0.2;sys_platform == 'windows'
 pyyaml==6.0.3
 pyzmq==27.1.0
 quarto==0.1.0
