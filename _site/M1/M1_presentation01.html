@@ -128,7 +128,7 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-image="../theme/figures/title.png" data-background-opacity="0.95" data-background-size="103% auto" class="quarto-title-block center">
+<section id="title-slide" data-background-image="../theme/figures/blank_red.webp" data-background-opacity="0.65" data-background-size="103% auto" class="quarto-title-block center">
   <h1 class="title">Name of the Course</h1>
   <p class="subtitle">Title of the First Class</p>
 
@@ -156,17 +156,245 @@ Author Two
 <nav role="doc-toc"> 
 <h2 id="toc-title">Table of contents</h2>
 <ul>
-<li><a href="#/title-1" id="/toc-title-1">Title 1</a></li>
+<li><a href="#/week-1-introduction-to-generative-ai-and-applications" id="/toc-week-1-introduction-to-generative-ai-and-applications">Week 1: Introduction to Generative AI and Applications</a></li>
 </ul>
 </nav>
 </section>
 <section>
-<section id="title-1" class="title-slide slide level1 center">
-<h1>Title 1</h1>
-
+<section id="week-1-introduction-to-generative-ai-and-applications" class="title-slide slide level1 center">
+<h1>Week 1: Introduction to Generative AI and Applications</h1>
+<p>Applied Generative AI for AI Developers</p>
+<p>Amit Arora</p>
 </section>
-<section id="subtitle" class="slide level2">
-<h2>Subtitle</h2>
+<section id="course-welcome" class="slide level2">
+<h2>Course Welcome</h2>
+<ul>
+<li>Course Title: Applied Generative AI for AI Developers</li>
+<li>Week 1 Focus: Generative Al Landscape and Fundamentals</li>
+<li>Key Objectives:</li>
+<li>Understand the breadth of generative AI technologies</li>
+<li>Explore core generative model architectures</li>
+<li>Gain insights into practical applications</li>
+</ul>
+</section>
+<section id="what-is-generative-ai" class="slide level2">
+<h2>What is Generative AI?</h2>
+<ul>
+<li>Definition: Al systems that can create new content</li>
+</ul>
+<p>Generative Al can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on.</p>
+<p>Source: https://news.mit.edu/2023/explained-generative-ai-7109</p>
+</section>
+<section id="what-is-generative-al-contd." class="slide level2">
+<h2>What is Generative Al (contd.)?</h2>
+<ul>
+<li>Core Characteristics:</li>
+<li>Learning from existing data</li>
+<li>Generating novel, contextually relevant outputs</li>
+<li>Spanning multiple modalities (text, image, code, audio)</li>
+</ul>
+</section>
+<section id="generative-model-landscape-key-generative-model-architectures" class="slide level2">
+<h2>Generative Model Landscape: Key Generative Model Architectures</h2>
+<ol type="1">
+<li>Language Models</li>
+</ol>
+<ul>
+<li>GPT (Generative Pre-trained Transformer)</li>
+<li>BERT (Bidirectional Encoder Representations)</li>
+</ul>
+<ol start="2" type="1">
+<li>Image Generation Models</li>
+</ol>
+<ul>
+<li>DALL-E</li>
+<li>Stable Diffusion</li>
+<li>Midjourney</li>
+</ul>
+<ol start="3" type="1">
+<li>Multimodal Models</li>
+</ol>
+<ul>
+<li>Amazon Nova</li>
+<li>Meta Llama 3.2 and 3.3</li>
+<li>Gemini</li>
+<li>GPT-4</li>
+</ul>
+<p>Transformer Architecture - Fundamental Concepts</p>
+</section>
+<section id="nlp-prior-to-embeddings-and-transformers" class="slide level2">
+<h2>NLP prior to embeddings and transformers</h2>
+<ul>
+<li>Pre-Embedding NLP Representations: Bag of Words</li>
+<li>Discrete, non-contextual representation of text</li>
+<li>Treats documents as unordered collections of words</li>
+<li>Loses semantic meaning and word order</li>
+<li>High dimensionality with sparse vectors</li>
+<li>No understanding of word relationships</li>
+</ul>
+</section>
+<section id="origins-of-modern-embeddings" class="slide level2">
+<h2>Origins of Modern Embeddings</h2>
+<ul>
+<li>Word2Vec paper Paper, Explainer video for word embeddings</li>
+<li>Breakthrough in sequence-to-sequence learning</li>
+<li>Replaced previous RNN and LSTM architectures</li>
+<li>Enabled dense, contextual word representations</li>
+<li>Captured semantic relationships between words</li>
+</ul>
+</section>
+<section id="core-components-of-transformer-architecture" class="slide level2">
+<h2>Core Components of Transformer Architecture</h2>
+<ol type="1">
+<li>Introduced in “Attention Is All You Need” (Google, 2017). Paper, Explainer video and also this video</li>
+<li>MUST READ: The Illustrated Transformer</li>
+<li>Key Building Blocks</li>
+<li>Self-Attention Mechanism</li>
+</ol>
+<ul>
+<li>Allows model to weigh importance of different parts of input</li>
+<li>Captures contextual relationships dynamically</li>
+<li>Enables parallel processing of entire sequences</li>
+</ul>
+<ol start="2" type="1">
+<li>Positional Encoding</li>
+</ol>
+<ul>
+<li>Adds location information to input embeddings</li>
+<li>Crucial for understanding sequence order</li>
+<li>Enables models to understand context beyond word positioning</li>
+</ul>
+</section>
+<section id="detailed-self-attention-mechanism" class="slide level2">
+<h2>Detailed Self-Attention Mechanism</h2>
+</section>
+<section id="how-self-aitenion-works" class="slide level2">
+<h2>How Self-Aitenion Works</h2>
+<ul>
+<li>Key Components:</li>
+<li>Query (Q)</li>
+<li>Key (K)</li>
+<li>Value (V)</li>
+<li>Attention Calculation:</li>
+</ul>
+<ol type="1">
+<li>Generate Q, K, V matrices</li>
+<li>Compute attention scores</li>
+<li>Apply softmax</li>
+<li>Create weighted representation</li>
+</ol>
+</section>
+<section id="transformer-architecture-visualization" class="slide level2">
+<h2>Transformer Architecture Visualization</h2>
+</section>
+<section id="encoder-decoder-siruciure" class="slide level2">
+<h2>Encoder-Decoder Siruciure</h2>
+<ul>
+<li>Encoder</li>
+<li>Processes input sequence</li>
+<li>Generates contextual representations</li>
+<li>Decoder</li>
+<li>Generates output sequence</li>
+<li>Uses encoder representations</li>
+<li>Multi-Head Attention</li>
+<li>Multiple attention mechanisms in parallel</li>
+<li>Captures different types of dependencies</li>
+</ul>
+</section>
+<section id="transformer-advantages" class="slide level2">
+<h2>Transformer Advantages</h2>
+</section>
+<section id="why-transformers-changed-everything" class="slide level2">
+<h2>Why Transformers Changed Everything</h2>
+<ul>
+<li>Parallel Processing</li>
+<li>Unlike RNNs, can process entire sequences simultaneously</li>
+<li>Long-Range Dependencies</li>
+<li>Effectively capture distant contextual relationships</li>
+<li>Scalability</li>
+<li>Easily parallelizable</li>
+<li>Supports massive model architectures</li>
+</ul>
+</section>
+<section id="limitations-and-challenges" class="slide level2">
+<h2>Limitations and Challenges</h2>
+</section>
+<section id="transformer-architecture-considerations" class="slide level2">
+<h2>Transformer Architecture Considerations</h2>
+<ul>
+<li>Computational Complexity</li>
+<li>Quadratic complexity with sequence length</li>
+<li>Memory Requirements</li>
+<li>Large models need significant computational resources</li>
+<li>Potential Mitigation Strategies</li>
+<li>Sparse Attention</li>
+<li>Efficient Transformer variants</li>
+<li>Model distillation techniques</li>
+</ul>
+</section>
+<section id="practical-implications" class="slide level2">
+<h2>Practical Implications</h2>
+</section>
+<section id="transformers-in-real-world-applications" class="slide level2">
+<h2>Transformers in Real-World Applications</h2>
+<ul>
+<li>Natural Language Processing</li>
+<li>Machine Translation</li>
+<li>Code Generation</li>
+<li>Multimodal Al Systems</li>
+<li>Conversational Al</li>
+</ul>
+</section>
+<section id="references-and-deep-dive-resources" class="slide level2">
+<h2>References and Deep Dive Resources</h2>
+</section>
+<section id="recommended-learning-materials" class="slide level2">
+<h2>Recommended Learning Materials</h2>
+<ol type="1">
+<li>Foundational Papers</li>
+</ol>
+<ul>
+<li>“Efficient Estimation of Word Representations in Vector Space” (Mikolov et al., 2013)</li>
+<li>Word2Vec: Pioneering word embedding techniques</li>
+<li>“Attention Is All You Need” (Vaswani et al., 2017)</li>
+<li>Original Transformer architecture paper</li>
+</ul>
+<ol start="2" type="1">
+<li>Practical Implementation Resources</li>
+</ol>
+<ul>
+<li>Karpathy’s nanoGPT</li>
+<li>GitHub: https://github.com/karpathy/nanoGPT</li>
+<li>Minimalist GPT implementation</li>
+<li>Educational reference for transformer internals</li>
+</ul>
+<ol start="3" type="1">
+<li>Video Explanations</li>
+</ol>
+<ul>
+<li>Andrej Karpathy’s “LLMs in a Hurry”</li>
+<li>video: Comprehensive overview of LLM internals</li>
+<li>3BluelBrown Transformer Visualization</li>
+<li>video: Intuitive mathematical explanation</li>
+</ul>
+<ol start="4" type="1">
+<li>Online Resources</li>
+</ol>
+<ul>
+<li>Hugging Face Transformer Documentation</li>
+<li>Jay Alammar’s “Illustrated Transformer”</li>
+</ul>
+</section>
+<section id="next-week-preview" class="slide level2">
+<h2>Next Week Preview</h2>
+</section>
+<section id="week-2-focus-in-coniexi-learning-icl" class="slide level2">
+<h2>Week 2 Focus: In-Coniexi Learning (ICL)</h2>
+<ul>
+<li>Few-shot learning mechanisms</li>
+<li>Practical ICL implementation</li>
+<li>Advanced prompt engineering techniques</li>
+</ul>
 
 
 </section></section>
