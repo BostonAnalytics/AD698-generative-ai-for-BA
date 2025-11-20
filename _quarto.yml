@@ -86,20 +86,9 @@ format:
     theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
-    embed-resources: true
     highlight-style: github
     code-overflow: wrap
     html-math-method: katex
-    include-in-header: 
-      - text: |
-          <script src="https://utteranc.es/client.js"
-            repo="BostonAnalytics/AD698-generative-ai-for-BA"
-            issue-term="pathname"
-            label="utterance"
-            theme="github-light"
-            crossorigin="anonymous"
-            async>
-          </script>
 
 crossref:
   fig-title: '**Figure**'
