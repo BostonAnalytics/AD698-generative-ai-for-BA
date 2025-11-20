@@ -5,7 +5,14 @@ number-sections: true
 bibliography: references.bib
 csl: chicago-syllabus.csl
 format:
-  html: default
+  html:
+    comments: 
+        utterances:
+            repo: "BostonAnalytics/AD698-generative-ai-for-BA"
+            label: "utterance" # optional
+            theme: "github-light" # optional
+            issue-term: "pathname" # optional
+
 ---
 
 ## Course Sections
