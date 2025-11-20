@@ -39,25 +39,18 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-# Week 1: Introduction to Generative AI and Applications 
-
-Applied Generative AI for AI Developers
-
-Amit Arora
 
 ## Course Welcome
 
-- Course Title: Applied Generative AI for AI Developers
-- Week 1 Focus: Generative Al Landscape and Fundamentals
 - Key Objectives:
-- Understand the breadth of generative AI technologies
-- Explore core generative model architectures
-- Gain insights into practical applications
+  - Understand the breadth of generative AI technologies
+  - Explore core generative model architectures
+  - Gain insights into practical applications
 
 
 ## What is Generative AI?
 
-- Definition: Al systems that can create new content
+- Definition: AI systems that can create new content
 
 Generative Al can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on.
 

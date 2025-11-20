@@ -1,5 +1,41 @@
 ---
 title: "M00 Presentation 02"
+logo: "../theme/figures/met_signature_toptier_rgb.png"
+date: 03/12/2024
+date-modified: today
+date-format: long
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: BU
+        name: Boston University
+        city: Boston
+        state: MA
+  - name: Author Two
+    affiliations:
+      - ref: BU
+format: 
+    revealjs:
+        theme: [../theme/presentation.scss]
+        html-math-method: katex
+        slide-number: c/t
+        toc: true
+        toc-depth: 1
+    pptx:
+        reference-doc: ../theme/presentation_template.pptx
+self-contained-math: true
+fig-align: center
+monofont: Roboto
+title-slide-attributes:
+    data-background-image: "../theme/blank_red.png"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
+execute: 
+  echo: false
+  warning: false
+  message: false
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 ---
 
 # M00 Presentation 02
