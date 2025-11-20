@@ -20,6 +20,12 @@ execute:
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"
+  comments: 
+    utterances:
+        repo: BostonAnalytics/AD698-generative-ai-for-BA
+        label: utterance # optional
+        theme: icy-dark # optional
+        issue-term: pathname # optional
   navbar:
   # --- Uncomment below if navigation is needed ---
     search: true
@@ -84,12 +90,6 @@ format:
     highlight-style: github
     code-overflow: wrap
     html-math-method: katex
-    comments: 
-      utterances:
-        repo: BostonAnalytics/AD698-generative-ai-for-BA
-        label: utterance # optional
-        theme: icy-dark # optional
-        issue-term: pathname # optional
     include-in-header: 
       - text: |
           <script src="https://utteranc.es/client.js"
