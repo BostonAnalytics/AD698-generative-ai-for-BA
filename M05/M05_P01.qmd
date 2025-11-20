@@ -1,0 +1,30 @@
+---
+title: "M05: Presentation"
+subtitle: "AI for Workflow Automation & API Integration"
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: BU
+        department: "Administrative Sciences"
+        name: Boston University
+        city: Boston
+        state: MA
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+bibliography: ../references.bib
+csl: ../ieee.csl
+logo: "../theme/met_signature_toptier_rgb.png"
+format:
+  revealjs:
+    theme: [../theme/presentation.scss]
+    html-math-method: mathml
+    slide-number: c/t
+title-slide-attributes:
+    data-background-image: "../theme/qbtIZvmk8jQ-unsplash.jpg"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
+categories: ['M05:', 'Presentation']
+description: "Presentation slides on AI for Workflow Automation & API Integration."
+---

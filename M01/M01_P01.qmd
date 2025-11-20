@@ -1,0 +1,216 @@
+---
+title: "AD698 - Applied Generative AI"
+subtitle: "Introduction to Generative AI & Business Applications"
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: BU
+        department: "Administrative Sciences"
+        name: Boston University
+        city: Boston
+        state: MA
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+bibliography: ../references.bib
+csl: ../ieee.csl
+logo: "../theme/met_signature_toptier_rgb.png"
+format:
+  revealjs:
+    theme: [../theme/presentation.scss]
+    html-math-method: mathml
+    slide-number: c/t
+categories: ['Presentation', 'M01:']
+description: "Presentation slides on Introduction to Generative AI & Business Applications."
+title-slide-attributes:
+    data-background-image: "../theme/qbtIZvmk8jQ-unsplash.jpg"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
+---
+
+## Course Welcome
+
+- Understand the breadth of generative AI technologies
+- Explore core generative model architectures
+- Gain insights into practical applications
+
+
+## What is Generative AI?
+
+> AI systems that can create new content
+
+Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on [@Zewe2023].
+
+## What is Generative AI?
+
+- Core Characteristics:
+  - Learning from existing data
+  - Generating novel, contextually relevant outputs
+  - Spanning multiple modalities (text, image, code, audio)
+
+
+## Generative Model Landscape: Key Generative Model Architectures
+
+- Foundation Models and Algorithms
+  -  Convolutional Neural Networks (CNNs)
+  -  Recurrent Neural Networks (RNNs)
+  -  Transformer Architecture
+  -  Generative Adversarial Networks (GANs)
+- Language Models
+  - GPT (Generative Pre-trained Transformer)
+  - BERT (Bidirectional Encoder Representations)
+- Image Generation Models
+  - DALL-E
+  - Stable Diffusion
+  - Midjourney
+- Multimodal Models
+  - Amazon Nova
+  - Meta Llama
+  - Gemini
+  - GPT
+
+## NLP prior to embeddings and transformers
+  
+- Pre-Embedding NLP Representations: Bag of Words
+- Discrete, non-contextual representation of text
+- Treats documents as unordered collections of words
+- Loses semantic meaning and word order
+- High dimensionality with sparse vectors
+- No understanding of word relationships
+
+
+## Origins of Modern Embeddings
+
+- Word2Vec paper Paper, Explainer video for word embeddings
+- Breakthrough in sequence-to-sequence learning
+- Replaced previous RNN and LSTM architectures
+- Enabled dense, contextual word representations
+- Captured semantic relationships between words
+
+
+## Core Components of Transformer Architecture
+
+1. Introduced in "Attention Is All You Need" (Google, 2017). Paper, Explainer video and also this video
+2. MUST READ: The Illustrated Transformer
+3. Key Building Blocks
+4. Self-Attention Mechanism
+
+- Allows model to weigh importance of different parts of input
+- Captures contextual relationships dynamically
+- Enables parallel processing of entire sequences
+
+2. Positional Encoding
+
+- Adds location information to input embeddings
+- Crucial for understanding sequence order
+- Enables models to understand context beyond word positioning
+
+
+## Detailed Self-Attention Mechanism
+
+## How Self-Airieniion Works
+
+- Key Components:
+- Query (Q)
+- Key (K)
+- Value (V)
+- Attention Calculation:
+
+1. Generate Q, K, V matrices
+2. Compute attention scores
+3. Apply softmax
+4. Create weighted representation
+
+## Transformer Architecture Visualization
+
+## Encoder-Decoder Siruciure
+
+- Encoder
+- Processes input sequence
+- Generates contextual representations
+- Decoder
+- Generates output sequence
+- Uses encoder representations
+- Multi-Head Attention
+- Multiple attention mechanisms in parallel
+- Captures different types of dependencies
+
+
+## Transformer Advantages
+
+## Why Transformers Changed Everything
+
+- Parallel Processing
+- Unlike RNNs, can process entire sequences simultaneously
+- Long-Range Dependencies
+- Effectively capture distant contextual relationships
+- Scalability
+- Easily parallelizable
+- Supports massive model architectures
+
+
+## Limitations and Challenges
+
+## Transformer Architecture Considerations
+
+- Computational Complexity
+- Quadratic complexity with sequence length
+- Memory Requirements
+- Large models need significant computational resources
+- Potential Mitigation Strategies
+- Sparse Attention
+- Efficient Transformer variants
+- Model distillation techniques
+
+
+## Practical Implications
+
+## Transformers in Real-World Applications
+
+- Natural Language Processing
+- Machine Translation
+- Code Generation
+- Multimodal AI Systems
+- Conversational AI
+
+
+## References and Deep Dive Resources
+
+Recommended Learning Materials
+
+1. Foundational Papers
+
+- "Efficient Estimation of Word Representations in Vector Space" (Mikolov et al., 2013)
+- Word2Vec: Pioneering word embedding techniques
+- "Attention Is All You Need" (Vaswani et al., 2017)
+- Original Transformer architecture paper
+
+2. Practical Implementation Resources
+
+- Karpathy's nanoGPT
+- GitHub: https://github.com/karpathy/nanoGPT
+- Minimalist GPT implementation
+- Educational reference for transformer internals
+
+3. Video Explanations
+
+- Andrej Karpathy's "LLMs in a Hurry"
+- video: Comprehensive overview of LLM internals
+- 3Blue1Brown Transformer Visualization
+- video: Intuitive mathematical explanation
+
+4. Online Resources
+
+- Hugging Face Transformer Documentation
+- Jay Alammar's "Illustrated Transformer"
+
+
+## Next Week Preview
+
+## Week 2 Focus: In-Context' Learning (ICL)
+
+- Few-shot learning mechanisms
+- Practical ICL implementation
+- Advanced prompt engineering techniques
+
