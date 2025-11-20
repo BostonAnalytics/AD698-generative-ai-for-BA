@@ -57,8 +57,8 @@ $button-text: #000000; // Button text color
   align-items: flex-start;
   position: absolute;
   text-align: left !important;
-  margin-left: -36pt; // ✅ EFFECTIVE LEFT SHIFT
-  padding-left: -36pt;
+  margin-left: -12pt; // ✅ EFFECTIVE LEFT SHIFT
+  padding-left: -12pt;
 
 
   // Top content: authors, affiliation, date
@@ -96,7 +96,7 @@ $button-text: #000000; // Button text color
     font-size: 12pt;
     font-weight: 400;
     margin-top: 4px;
-    padding-left: -36pt;
+    padding-left: -12pt;
   }
 
   .date-label {

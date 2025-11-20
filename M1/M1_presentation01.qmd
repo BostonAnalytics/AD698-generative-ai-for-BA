@@ -28,9 +28,9 @@ self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
-    data-background-image: "../theme/figures/blank_red.webp"
+    data-background-image: "../theme/blank_red.png"
     data-background-size: 103% auto
-    data-background-opacity: "0.65"
+    data-background-opacity: "0.95"
 execute: 
   echo: false
   warning: false
