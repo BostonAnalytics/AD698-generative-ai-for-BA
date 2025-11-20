@@ -42,172 +42,242 @@
     "text": "On Campus (A1) Spring\n\n\n\n\n\n#\nA1\nLab (Due)\nAssignments\nProject Milestones\nParticipation\n\n\n\n\nL1\n26-Jan (Mon)\n\n\n\n\n\n\nL2\n02-Feb (Mon)\nLab 1\n\n\n\n\n\nL3\n09-Feb (Mon)\nLab 2\nA1 (Due: Feb 10)\nUngraded Milestone 1\n\n\n\nL4\n17-Feb (Tue)\nLab 3\n\n\n\n\n\nL5\n23-Feb (Mon)\n\nA2 (Due: Feb 24)\nUngraded Milestone 2\n\n\n\nL6\n02-Mar (Mon)\nLab 5\n\n\n\n\n\nL7\n16-Mar (Mon)\nLab 6\nA3 (Due: Mar 17)\nUngraded Milestone 3\n\n\n\nL8\n23-Mar (Mon)\nLab 7\n\n\n\n\n\nL9\n30-Mar (Mon)\nLab 8\nA4 (Due: Mar 31)\nUngraded Milestone 4\n\n\n\nL10\n06-Apr (Mon)\nLab 9\n\n\n\n\n\nL11\n13-Apr (Mon)\n\nA5 (Due: Apr 14)\nUngraded Milestone 5\n\n\n\nL12\n20-Apr (Mon)\n\n\nPresentation\nParticipation 1 + Participation 2\n\n\nL13\n27-Apr (Mon)\n\n\nFinal Project Report + Presentation"
   },
   {
-    "objectID": "M06/M06_A.html",
-    "href": "M06/M06_A.html",
-    "title": "M06 Assignment",
+    "objectID": "M07/M07_Wrapup.html",
+    "href": "M07/M07_Wrapup.html",
+    "title": "M07 Wrapup",
     "section": "",
-    "text": "1 M06 Assignment"
+    "text": "1 M07 Wrapup"
   },
   {
-    "objectID": "M05/M05_A.html",
-    "href": "M05/M05_A.html",
-    "title": "M05 Assignment",
+    "objectID": "M07/M07_Lab02.html",
+    "href": "M07/M07_Lab02.html",
+    "title": "M07 Lab02",
     "section": "",
-    "text": "1 M05 Assignment"
+    "text": "1 M07 Lab02"
   },
   {
-    "objectID": "M03/M03_A.html",
-    "href": "M03/M03_A.html",
-    "title": "M03 Assignment",
+    "objectID": "M07/M07_LN02.html",
+    "href": "M07/M07_LN02.html",
+    "title": "M07 Lecture Note 02",
     "section": "",
-    "text": "1 M03 Assignment"
+    "text": "1 M07 Lecture Note 02"
   },
   {
-    "objectID": "M02/M02_A.html",
-    "href": "M02/M02_A.html",
-    "title": "M02 Assignment",
+    "objectID": "M07/M07_Highlights.html",
+    "href": "M07/M07_Highlights.html",
+    "title": "M07 Highlights",
     "section": "",
-    "text": "1 M02 Assignment"
+    "text": "1 M07 Highlights"
   },
   {
-    "objectID": "M01/M01_P01.html#course-welcome",
-    "href": "M01/M01_P01.html#course-welcome",
-    "title": "AD698 - Applied Generative AI",
-    "section": "1 Course Welcome",
-    "text": "1 Course Welcome\n\nUnderstand the breadth of generative AI technologies\nExplore core generative model architectures\nGain insights into practical applications"
+    "objectID": "M06/M06_Wrapup.html",
+    "href": "M06/M06_Wrapup.html",
+    "title": "M06 Wrapup",
+    "section": "",
+    "text": "1 M06 Wrapup"
   },
   {
-    "objectID": "M01/M01_P01.html#what-is-generative-ai",
-    "href": "M01/M01_P01.html#what-is-generative-ai",
-    "title": "AD698 - Applied Generative AI",
-    "section": "2 What is Generative AI?",
-    "text": "2 What is Generative AI?\n\nAI systems that can create new content\n\nGenerative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on [1]."
+    "objectID": "M06/M06_Lab02.html",
+    "href": "M06/M06_Lab02.html",
+    "title": "M06 Lab02",
+    "section": "",
+    "text": "1 M06 Lab02"
   },
   {
-    "objectID": "M01/M01_P01.html#what-is-generative-ai-1",
-    "href": "M01/M01_P01.html#what-is-generative-ai-1",
-    "title": "AD698 - Applied Generative AI",
-    "section": "3 What is Generative AI?",
-    "text": "3 What is Generative AI?\n\nCore Characteristics:\n\nLearning from existing data\nGenerating novel, contextually relevant outputs\nSpanning multiple modalities (text, image, code, audio)"
+    "objectID": "M06/M06_LN02.html",
+    "href": "M06/M06_LN02.html",
+    "title": "M06 Lecture Note 02",
+    "section": "",
+    "text": "1 M06 Lecture Note 02"
   },
   {
-    "objectID": "M01/M01_P01.html#generative-model-landscape-key-generative-model-architectures",
-    "href": "M01/M01_P01.html#generative-model-landscape-key-generative-model-architectures",
-    "title": "AD698 - Applied Generative AI",
-    "section": "4 Generative Model Landscape: Key Generative Model Architectures",
-    "text": "4 Generative Model Landscape: Key Generative Model Architectures\n\nFoundation Models and Algorithms\n\nConvolutional Neural Networks (CNNs)\nRecurrent Neural Networks (RNNs)\nTransformer Architecture\nGenerative Adversarial Networks (GANs)\n\nLanguage Models\n\nGPT (Generative Pre-trained Transformer)\nBERT (Bidirectional Encoder Representations)\n\nImage Generation Models\n\nDALL-E\nStable Diffusion\nMidjourney\n\nMultimodal Models\n\nAmazon Nova\nMeta Llama\nGemini\nGPT"
+    "objectID": "M06/M06_Highlights.html",
+    "href": "M06/M06_Highlights.html",
+    "title": "M06 Highlights",
+    "section": "",
+    "text": "1 M06 Highlights"
   },
   {
-    "objectID": "M01/M01_P01.html#nlp-prior-to-embeddings-and-transformers",
-    "href": "M01/M01_P01.html#nlp-prior-to-embeddings-and-transformers",
-    "title": "AD698 - Applied Generative AI",
-    "section": "5 NLP prior to embeddings and transformers",
-    "text": "5 NLP prior to embeddings and transformers\n\nPre-Embedding NLP Representations: Bag of Words\nDiscrete, non-contextual representation of text\nTreats documents as unordered collections of words\nLoses semantic meaning and word order\nHigh dimensionality with sparse vectors\nNo understanding of word relationships"
+    "objectID": "M05/M05_Wrapup.html",
+    "href": "M05/M05_Wrapup.html",
+    "title": "M05 Wrapup",
+    "section": "",
+    "text": "1 M05 Wrapup"
   },
   {
-    "objectID": "M01/M01_P01.html#origins-of-modern-embeddings",
-    "href": "M01/M01_P01.html#origins-of-modern-embeddings",
-    "title": "AD698 - Applied Generative AI",
-    "section": "6 Origins of Modern Embeddings",
-    "text": "6 Origins of Modern Embeddings\n\nWord2Vec paper Paper, Explainer video for word embeddings\nBreakthrough in sequence-to-sequence learning\nReplaced previous RNN and LSTM architectures\nEnabled dense, contextual word representations\nCaptured semantic relationships between words"
+    "objectID": "M05/M05_Lab02.html",
+    "href": "M05/M05_Lab02.html",
+    "title": "M05 Lab02",
+    "section": "",
+    "text": "1 M05 Lab02"
   },
   {
-    "objectID": "M01/M01_P01.html#core-components-of-transformer-architecture",
-    "href": "M01/M01_P01.html#core-components-of-transformer-architecture",
-    "title": "AD698 - Applied Generative AI",
-    "section": "7 Core Components of Transformer Architecture",
-    "text": "7 Core Components of Transformer Architecture\n\nIntroduced in “Attention Is All You Need” (Google, 2017). Paper, Explainer video and also this video\nMUST READ: The Illustrated Transformer\nKey Building Blocks\nSelf-Attention Mechanism\n\n\nAllows model to weigh importance of different parts of input\nCaptures contextual relationships dynamically\nEnables parallel processing of entire sequences\n\n\nPositional Encoding\n\n\nAdds location information to input embeddings\nCrucial for understanding sequence order\nEnables models to understand context beyond word positioning"
+    "objectID": "M05/M05_LN02.html",
+    "href": "M05/M05_LN02.html",
+    "title": "M05 Lecture Note 02",
+    "section": "",
+    "text": "1 M05 Lecture Note 02"
   },
   {
-    "objectID": "M01/M01_P01.html#detailed-self-attention-mechanism",
-    "href": "M01/M01_P01.html#detailed-self-attention-mechanism",
-    "title": "AD698 - Applied Generative AI",
-    "section": "8 Detailed Self-Attention Mechanism",
-    "text": "8 Detailed Self-Attention Mechanism"
+    "objectID": "M05/M05_Highlights.html",
+    "href": "M05/M05_Highlights.html",
+    "title": "M05 Highlights",
+    "section": "",
+    "text": "1 M05 Highlights"
   },
   {
-    "objectID": "M01/M01_P01.html#how-self-airieniion-works",
-    "href": "M01/M01_P01.html#how-self-airieniion-works",
-    "title": "AD698 - Applied Generative AI",
-    "section": "9 How Self-Airieniion Works",
-    "text": "9 How Self-Airieniion Works\n\nKey Components:\nQuery (Q)\nKey (K)\nValue (V)\nAttention Calculation:\n\n\nGenerate Q, K, V matrices\nCompute attention scores\nApply softmax\nCreate weighted representation"
+    "objectID": "M04/M04_Wrapup.html",
+    "href": "M04/M04_Wrapup.html",
+    "title": "M04 Wrapup",
+    "section": "",
+    "text": "1 M04 Wrapup"
   },
   {
-    "objectID": "M01/M01_P01.html#transformer-architecture-visualization",
-    "href": "M01/M01_P01.html#transformer-architecture-visualization",
-    "title": "AD698 - Applied Generative AI",
-    "section": "10 Transformer Architecture Visualization",
-    "text": "10 Transformer Architecture Visualization"
+    "objectID": "M04/M04_Lab02.html",
+    "href": "M04/M04_Lab02.html",
+    "title": "M04 Lab02",
+    "section": "",
+    "text": "1 M04 Lab02"
   },
   {
-    "objectID": "M01/M01_P01.html#encoder-decoder-siruciure",
-    "href": "M01/M01_P01.html#encoder-decoder-siruciure",
-    "title": "AD698 - Applied Generative AI",
-    "section": "11 Encoder-Decoder Siruciure",
-    "text": "11 Encoder-Decoder Siruciure\n\nEncoder\nProcesses input sequence\nGenerates contextual representations\nDecoder\nGenerates output sequence\nUses encoder representations\nMulti-Head Attention\nMultiple attention mechanisms in parallel\nCaptures different types of dependencies"
+    "objectID": "M04/M04_LN02.html",
+    "href": "M04/M04_LN02.html",
+    "title": "M04 Lecture Note 02",
+    "section": "",
+    "text": "1 M04 Lecture Note 02"
   },
   {
-    "objectID": "M01/M01_P01.html#transformer-advantages",
-    "href": "M01/M01_P01.html#transformer-advantages",
-    "title": "AD698 - Applied Generative AI",
-    "section": "12 Transformer Advantages",
-    "text": "12 Transformer Advantages"
+    "objectID": "M04/M04_Highlights.html",
+    "href": "M04/M04_Highlights.html",
+    "title": "M04 Highlights",
+    "section": "",
+    "text": "1 M04 Highlights"
   },
   {
-    "objectID": "M01/M01_P01.html#why-transformers-changed-everything",
-    "href": "M01/M01_P01.html#why-transformers-changed-everything",
-    "title": "AD698 - Applied Generative AI",
-    "section": "13 Why Transformers Changed Everything",
-    "text": "13 Why Transformers Changed Everything\n\nParallel Processing\nUnlike RNNs, can process entire sequences simultaneously\nLong-Range Dependencies\nEffectively capture distant contextual relationships\nScalability\nEasily parallelizable\nSupports massive model architectures"
+    "objectID": "M03/M03_Wrapup.html",
+    "href": "M03/M03_Wrapup.html",
+    "title": "M03 Wrapup",
+    "section": "",
+    "text": "1 M03 Wrapup"
   },
   {
-    "objectID": "M01/M01_P01.html#limitations-and-challenges",
-    "href": "M01/M01_P01.html#limitations-and-challenges",
-    "title": "AD698 - Applied Generative AI",
-    "section": "14 Limitations and Challenges",
-    "text": "14 Limitations and Challenges"
+    "objectID": "M03/M03_Lab02.html",
+    "href": "M03/M03_Lab02.html",
+    "title": "M03 Lab02",
+    "section": "",
+    "text": "1 M03 Lab02"
   },
   {
-    "objectID": "M01/M01_P01.html#transformer-architecture-considerations",
-    "href": "M01/M01_P01.html#transformer-architecture-considerations",
-    "title": "AD698 - Applied Generative AI",
-    "section": "15 Transformer Architecture Considerations",
-    "text": "15 Transformer Architecture Considerations\n\nComputational Complexity\nQuadratic complexity with sequence length\nMemory Requirements\nLarge models need significant computational resources\nPotential Mitigation Strategies\nSparse Attention\nEfficient Transformer variants\nModel distillation techniques"
+    "objectID": "M03/M03_LN02.html",
+    "href": "M03/M03_LN02.html",
+    "title": "M03 Lecture Note 02",
+    "section": "",
+    "text": "1 M03 Lecture Note 02"
   },
   {
-    "objectID": "M01/M01_P01.html#practical-implications",
-    "href": "M01/M01_P01.html#practical-implications",
-    "title": "AD698 - Applied Generative AI",
-    "section": "16 Practical Implications",
-    "text": "16 Practical Implications"
+    "objectID": "M03/M03_Highlights.html",
+    "href": "M03/M03_Highlights.html",
+    "title": "M03 Highlights",
+    "section": "",
+    "text": "1 M03 Highlights"
   },
   {
-    "objectID": "M01/M01_P01.html#transformers-in-real-world-applications",
-    "href": "M01/M01_P01.html#transformers-in-real-world-applications",
-    "title": "AD698 - Applied Generative AI",
-    "section": "17 Transformers in Real-World Applications",
-    "text": "17 Transformers in Real-World Applications\n\nNatural Language Processing\nMachine Translation\nCode Generation\nMultimodal AI Systems\nConversational AI"
+    "objectID": "M02/M02_Wrapup.html",
+    "href": "M02/M02_Wrapup.html",
+    "title": "M02 Wrapup",
+    "section": "",
+    "text": "1 M02 Wrapup"
   },
   {
-    "objectID": "M01/M01_P01.html#references-and-deep-dive-resources",
-    "href": "M01/M01_P01.html#references-and-deep-dive-resources",
-    "title": "AD698 - Applied Generative AI",
-    "section": "18 References and Deep Dive Resources",
-    "text": "18 References and Deep Dive Resources\nRecommended Learning Materials\n\nFoundational Papers\n\n\n“Efficient Estimation of Word Representations in Vector Space” (Mikolov et al., 2013)\nWord2Vec: Pioneering word embedding techniques\n“Attention Is All You Need” (Vaswani et al., 2017)\nOriginal Transformer architecture paper\n\n\nPractical Implementation Resources\n\n\nKarpathy’s nanoGPT\nGitHub: https://github.com/karpathy/nanoGPT\nMinimalist GPT implementation\nEducational reference for transformer internals\n\n\nVideo Explanations\n\n\nAndrej Karpathy’s “LLMs in a Hurry”\nvideo: Comprehensive overview of LLM internals\n3Blue1Brown Transformer Visualization\nvideo: Intuitive mathematical explanation\n\n\nOnline Resources\n\n\nHugging Face Transformer Documentation\nJay Alammar’s “Illustrated Transformer”"
+    "objectID": "M02/M02_Lab02.html",
+    "href": "M02/M02_Lab02.html",
+    "title": "M02 Lab02",
+    "section": "",
+    "text": "1 M02 Lab02"
   },
   {
-    "objectID": "M01/M01_P01.html#next-week-preview",
-    "href": "M01/M01_P01.html#next-week-preview",
-    "title": "AD698 - Applied Generative AI",
-    "section": "19 Next Week Preview",
-    "text": "19 Next Week Preview"
+    "objectID": "M02/M02_LN02.html",
+    "href": "M02/M02_LN02.html",
+    "title": "M02 Lecture Note 02",
+    "section": "",
+    "text": "1 M02 Lecture Note 02"
   },
   {
-    "objectID": "M01/M01_P01.html#week-2-focus-in-context-learning-icl",
-    "href": "M01/M01_P01.html#week-2-focus-in-context-learning-icl",
-    "title": "AD698 - Applied Generative AI",
-    "section": "20 Week 2 Focus: In-Context’ Learning (ICL)",
-    "text": "20 Week 2 Focus: In-Context’ Learning (ICL)\n\nFew-shot learning mechanisms\nPractical ICL implementation\nAdvanced prompt engineering techniques\n\n\n\n\n\n[1] A. Zewe, “Explained: Generative AI,” MIT News, Nov. 2023, Available: https://news.mit.edu/2023/explained-generative-ai-1109"
+    "objectID": "M02/M02_Highlights.html",
+    "href": "M02/M02_Highlights.html",
+    "title": "M02 Highlights",
+    "section": "",
+    "text": "1 M02 Highlights"
+  },
+  {
+    "objectID": "M01/M01_Wrapup.html",
+    "href": "M01/M01_Wrapup.html",
+    "title": "M01 Wrapup",
+    "section": "",
+    "text": "1 M01 Wrapup"
+  },
+  {
+    "objectID": "M01/M01_Lab02.html",
+    "href": "M01/M01_Lab02.html",
+    "title": "M01 Lab02",
+    "section": "",
+    "text": "1 M01 Lab02"
+  },
+  {
+    "objectID": "M01/M01_LN02.html",
+    "href": "M01/M01_LN02.html",
+    "title": "M01 Lecture Note 02",
+    "section": "",
+    "text": "1 M01 Lecture Note 02"
+  },
+  {
+    "objectID": "M01/M01_Highlights.html",
+    "href": "M01/M01_Highlights.html",
+    "title": "M01 Highlights",
+    "section": "",
+    "text": "1 M01 Highlights"
+  },
+  {
+    "objectID": "M00/M00_Wrapup.html",
+    "href": "M00/M00_Wrapup.html",
+    "title": "M00 Wrapup",
+    "section": "",
+    "text": "1 M00 Wrapup"
+  },
+  {
+    "objectID": "M00/M00_Lab02.html",
+    "href": "M00/M00_Lab02.html",
+    "title": "M00 Lab02",
+    "section": "",
+    "text": "1 M00 Lab02"
+  },
+  {
+    "objectID": "M00/M00_LN02.html",
+    "href": "M00/M00_LN02.html",
+    "title": "M00 Lecture Note 02",
+    "section": "",
+    "text": "1 M00 Lecture Note 02"
+  },
+  {
+    "objectID": "M00/M00_Highlights.html",
+    "href": "M00/M00_Highlights.html",
+    "title": "M00 Highlights",
+    "section": "",
+    "text": "1 M00 Highlights"
+  },
+  {
+    "objectID": "M00/M00_Proj.html",
+    "href": "M00/M00_Proj.html",
+    "title": "M00 Project",
+    "section": "",
+    "text": "1 M00 Project"
+  },
+  {
+    "objectID": "M01/M01_A.html",
+    "href": "M01/M01_A.html",
+    "title": "M01 Assignment",
+    "section": "",
+    "text": "1 M01 Assignment"
   },
   {
     "objectID": "M01/M01_LN01.html#modules-07",
@@ -329,298 +399,319 @@
     "text": "9.12 Learning Pathways for Generative AI\nBeginners benefit from understanding:\n\nmachine learning foundations\nneural networks and attention mechanisms\nPython and model experimentation\nprompt engineering and evaluation\nembedding systems and vector search\nethics, governance, and responsible use\n\nThis foundation supports deeper study in model tuning, RAG systems, and applied generative workflows."
   },
   {
-    "objectID": "M01/M01_A.html",
-    "href": "M01/M01_A.html",
-    "title": "M01 Assignment",
-    "section": "",
-    "text": "1 M01 Assignment"
+    "objectID": "M01/M01_P01.html#course-welcome",
+    "href": "M01/M01_P01.html#course-welcome",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Course Welcome",
+    "text": "Course Welcome\n\nUnderstand the breadth of generative AI technologies\nExplore core generative model architectures\nGain insights into practical applications"
   },
   {
-    "objectID": "M00/M00_Proj.html",
-    "href": "M00/M00_Proj.html",
-    "title": "M00 Project",
-    "section": "",
-    "text": "1 M00 Project"
+    "objectID": "M01/M01_P01.html#what-is-generative-ai",
+    "href": "M01/M01_P01.html#what-is-generative-ai",
+    "title": "AD698 - Applied Generative AI",
+    "section": "What is Generative AI?",
+    "text": "What is Generative AI?\n\nAI systems that can create new content\n\nGenerative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on (Zewe 2023)."
   },
   {
-    "objectID": "M00/M00_Highlights.html",
-    "href": "M00/M00_Highlights.html",
-    "title": "M00 Highlights",
-    "section": "",
-    "text": "1 M00 Highlights"
+    "objectID": "M01/M01_P01.html#what-is-generative-ai-1",
+    "href": "M01/M01_P01.html#what-is-generative-ai-1",
+    "title": "AD698 - Applied Generative AI",
+    "section": "What is Generative AI?",
+    "text": "What is Generative AI?\n\nCore Characteristics:\n\nLearning from existing data\nGenerating novel, contextually relevant outputs\nSpanning multiple modalities (text, image, code, audio)"
   },
   {
-    "objectID": "M00/M00_LN02.html",
-    "href": "M00/M00_LN02.html",
-    "title": "M00 Lecture Note 02",
-    "section": "",
-    "text": "1 M00 Lecture Note 02"
+    "objectID": "M01/M01_P01.html#generative-model-landscape-key-generative-model-architectures",
+    "href": "M01/M01_P01.html#generative-model-landscape-key-generative-model-architectures",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Generative Model Landscape: Key Generative Model Architectures",
+    "text": "Generative Model Landscape: Key Generative Model Architectures\n\nFoundation Models and Algorithms\n\nConvolutional Neural Networks (CNNs)\nRecurrent Neural Networks (RNNs)\nTransformer Architecture\nGenerative Adversarial Networks (GANs)\n\nLanguage Models\n\nGPT (Generative Pre-trained Transformer)\nBERT (Bidirectional Encoder Representations)\n\nImage Generation Models\n\nDALL-E\nStable Diffusion\nMidjourney\n\nMultimodal Models\n\nAmazon Nova\nMeta Llama\nGemini\nGPT"
   },
   {
-    "objectID": "M00/M00_Lab02.html",
-    "href": "M00/M00_Lab02.html",
-    "title": "M00 Lab02",
-    "section": "",
-    "text": "1 M00 Lab02"
+    "objectID": "M01/M01_P01.html#nlp-prior-to-embeddings-and-transformers",
+    "href": "M01/M01_P01.html#nlp-prior-to-embeddings-and-transformers",
+    "title": "AD698 - Applied Generative AI",
+    "section": "NLP prior to embeddings and transformers",
+    "text": "NLP prior to embeddings and transformers\n\nPre-Embedding NLP Representations: Bag of Words\nDiscrete, non-contextual representation of text\nTreats documents as unordered collections of words\nLoses semantic meaning and word order\nHigh dimensionality with sparse vectors\nNo understanding of word relationships"
   },
   {
-    "objectID": "M00/M00_P02.html",
-    "href": "M00/M00_P02.html",
-    "title": "M00 Presentation 02",
-    "section": "",
-    "text": "1 M00 Presentation 02"
+    "objectID": "M01/M01_P01.html#origins-of-modern-embeddings",
+    "href": "M01/M01_P01.html#origins-of-modern-embeddings",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Origins of Modern Embeddings",
+    "text": "Origins of Modern Embeddings\n\nWord2Vec paper Paper, Explainer video for word embeddings\nBreakthrough in sequence-to-sequence learning\nReplaced previous RNN and LSTM architectures\nEnabled dense, contextual word representations\nCaptured semantic relationships between words"
   },
   {
-    "objectID": "M00/M00_Wrapup.html",
-    "href": "M00/M00_Wrapup.html",
-    "title": "M00 Wrapup",
-    "section": "",
-    "text": "1 M00 Wrapup"
+    "objectID": "M01/M01_P01.html#core-components-of-transformer-architecture",
+    "href": "M01/M01_P01.html#core-components-of-transformer-architecture",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Core Components of Transformer Architecture",
+    "text": "Core Components of Transformer Architecture\n\nIntroduced in “Attention Is All You Need” (Google, 2017). Paper, Explainer video and also this video\nMUST READ: The Illustrated Transformer\nKey Building Blocks\nSelf-Attention Mechanism\n\n\nAllows model to weigh importance of different parts of input\nCaptures contextual relationships dynamically\nEnables parallel processing of entire sequences\n\n\nPositional Encoding\n\n\nAdds location information to input embeddings\nCrucial for understanding sequence order\nEnables models to understand context beyond word positioning"
   },
   {
-    "objectID": "M01/M01_Highlights.html",
-    "href": "M01/M01_Highlights.html",
-    "title": "M01 Highlights",
-    "section": "",
-    "text": "1 M01 Highlights"
+    "objectID": "M01/M01_P01.html#detailed-self-attention-mechanism",
+    "href": "M01/M01_P01.html#detailed-self-attention-mechanism",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Detailed Self-Attention Mechanism",
+    "text": "Detailed Self-Attention Mechanism"
   },
   {
-    "objectID": "M01/M01_LN02.html",
-    "href": "M01/M01_LN02.html",
-    "title": "M01 Lecture Note 02",
-    "section": "",
-    "text": "1 M01 Lecture Note 02"
+    "objectID": "M01/M01_P01.html#how-self-airieniion-works",
+    "href": "M01/M01_P01.html#how-self-airieniion-works",
+    "title": "AD698 - Applied Generative AI",
+    "section": "How Self-Airieniion Works",
+    "text": "How Self-Airieniion Works\n\nKey Components:\nQuery (Q)\nKey (K)\nValue (V)\nAttention Calculation:\n\n\nGenerate Q, K, V matrices\nCompute attention scores\nApply softmax\nCreate weighted representation"
   },
   {
-    "objectID": "M01/M01_Lab02.html",
-    "href": "M01/M01_Lab02.html",
-    "title": "M01 Lab02",
-    "section": "",
-    "text": "1 M01 Lab02"
+    "objectID": "M01/M01_P01.html#transformer-architecture-visualization",
+    "href": "M01/M01_P01.html#transformer-architecture-visualization",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Transformer Architecture Visualization",
+    "text": "Transformer Architecture Visualization"
   },
   {
-    "objectID": "M01/M01_P02.html",
-    "href": "M01/M01_P02.html",
-    "title": "M01 Presentation 02",
-    "section": "",
-    "text": "1 M01 Presentation 02"
+    "objectID": "M01/M01_P01.html#encoder-decoder-siruciure",
+    "href": "M01/M01_P01.html#encoder-decoder-siruciure",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Encoder-Decoder Siruciure",
+    "text": "Encoder-Decoder Siruciure\n\nEncoder\nProcesses input sequence\nGenerates contextual representations\nDecoder\nGenerates output sequence\nUses encoder representations\nMulti-Head Attention\nMultiple attention mechanisms in parallel\nCaptures different types of dependencies"
   },
   {
-    "objectID": "M01/M01_Wrapup.html",
-    "href": "M01/M01_Wrapup.html",
-    "title": "M01 Wrapup",
-    "section": "",
-    "text": "1 M01 Wrapup"
+    "objectID": "M01/M01_P01.html#transformer-advantages",
+    "href": "M01/M01_P01.html#transformer-advantages",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Transformer Advantages",
+    "text": "Transformer Advantages"
   },
   {
-    "objectID": "M02/M02_Highlights.html",
-    "href": "M02/M02_Highlights.html",
-    "title": "M02 Highlights",
-    "section": "",
-    "text": "1 M02 Highlights"
+    "objectID": "M01/M01_P01.html#why-transformers-changed-everything",
+    "href": "M01/M01_P01.html#why-transformers-changed-everything",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Why Transformers Changed Everything",
+    "text": "Why Transformers Changed Everything\n\nParallel Processing\nUnlike RNNs, can process entire sequences simultaneously\nLong-Range Dependencies\nEffectively capture distant contextual relationships\nScalability\nEasily parallelizable\nSupports massive model architectures"
   },
   {
-    "objectID": "M02/M02_LN02.html",
-    "href": "M02/M02_LN02.html",
-    "title": "M02 Lecture Note 02",
-    "section": "",
-    "text": "1 M02 Lecture Note 02"
+    "objectID": "M01/M01_P01.html#limitations-and-challenges",
+    "href": "M01/M01_P01.html#limitations-and-challenges",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Limitations and Challenges",
+    "text": "Limitations and Challenges"
   },
   {
-    "objectID": "M02/M02_Lab02.html",
-    "href": "M02/M02_Lab02.html",
-    "title": "M02 Lab02",
-    "section": "",
-    "text": "1 M02 Lab02"
+    "objectID": "M01/M01_P01.html#transformer-architecture-considerations",
+    "href": "M01/M01_P01.html#transformer-architecture-considerations",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Transformer Architecture Considerations",
+    "text": "Transformer Architecture Considerations\n\nComputational Complexity\nQuadratic complexity with sequence length\nMemory Requirements\nLarge models need significant computational resources\nPotential Mitigation Strategies\nSparse Attention\nEfficient Transformer variants\nModel distillation techniques"
   },
   {
-    "objectID": "M02/M02_P02.html",
-    "href": "M02/M02_P02.html",
-    "title": "M02 Presentation 02",
-    "section": "",
-    "text": "1 M02 Presentation 02"
+    "objectID": "M01/M01_P01.html#practical-implications",
+    "href": "M01/M01_P01.html#practical-implications",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Practical Implications",
+    "text": "Practical Implications"
   },
   {
-    "objectID": "M02/M02_Wrapup.html",
-    "href": "M02/M02_Wrapup.html",
-    "title": "M02 Wrapup",
-    "section": "",
-    "text": "1 M02 Wrapup"
+    "objectID": "M01/M01_P01.html#transformers-in-real-world-applications",
+    "href": "M01/M01_P01.html#transformers-in-real-world-applications",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Transformers in Real-World Applications",
+    "text": "Transformers in Real-World Applications\n\nNatural Language Processing\nMachine Translation\nCode Generation\nMultimodal AI Systems\nConversational AI"
   },
   {
-    "objectID": "M03/M03_Highlights.html",
-    "href": "M03/M03_Highlights.html",
-    "title": "M03 Highlights",
-    "section": "",
-    "text": "1 M03 Highlights"
+    "objectID": "M01/M01_P01.html#references-and-deep-dive-resources",
+    "href": "M01/M01_P01.html#references-and-deep-dive-resources",
+    "title": "AD698 - Applied Generative AI",
+    "section": "References and Deep Dive Resources",
+    "text": "References and Deep Dive Resources\nRecommended Learning Materials\n\nFoundational Papers\n\n\n“Efficient Estimation of Word Representations in Vector Space” (Mikolov et al., 2013)\nWord2Vec: Pioneering word embedding techniques\n“Attention Is All You Need” (Vaswani et al., 2017)\nOriginal Transformer architecture paper\n\n\nPractical Implementation Resources\n\n\nKarpathy’s nanoGPT\nGitHub: https://github.com/karpathy/nanoGPT\nMinimalist GPT implementation\nEducational reference for transformer internals\n\n\nVideo Explanations\n\n\nAndrej Karpathy’s “LLMs in a Hurry”\nvideo: Comprehensive overview of LLM internals\n3Blue1Brown Transformer Visualization\nvideo: Intuitive mathematical explanation\n\n\nOnline Resources\n\n\nHugging Face Transformer Documentation\nJay Alammar’s “Illustrated Transformer”"
   },
   {
-    "objectID": "M03/M03_LN02.html",
-    "href": "M03/M03_LN02.html",
-    "title": "M03 Lecture Note 02",
-    "section": "",
-    "text": "1 M03 Lecture Note 02"
+    "objectID": "M01/M01_P01.html#next-week-preview",
+    "href": "M01/M01_P01.html#next-week-preview",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Next Week Preview",
+    "text": "Next Week Preview"
   },
   {
-    "objectID": "M03/M03_Lab02.html",
-    "href": "M03/M03_Lab02.html",
-    "title": "M03 Lab02",
-    "section": "",
-    "text": "1 M03 Lab02"
+    "objectID": "M01/M01_P01.html#week-2-focus-in-context-learning-icl",
+    "href": "M01/M01_P01.html#week-2-focus-in-context-learning-icl",
+    "title": "AD698 - Applied Generative AI",
+    "section": "Week 2 Focus: In-Context’ Learning (ICL)",
+    "text": "Week 2 Focus: In-Context’ Learning (ICL)\n\nFew-shot learning mechanisms\nPractical ICL implementation\nAdvanced prompt engineering techniques\n\n\n\n\n\nZewe, A. 2023. “Explained: Generative AI,” MIT News. (https://news.mit.edu/2023/explained-generative-ai-1109)."
   },
   {
-    "objectID": "M03/M03_P02.html",
-    "href": "M03/M03_P02.html",
-    "title": "M03 Presentation 02",
+    "objectID": "M02/M02_A.html",
+    "href": "M02/M02_A.html",
+    "title": "M02 Assignment",
     "section": "",
-    "text": "1 M03 Presentation 02"
+    "text": "1 M02 Assignment"
   },
   {
-    "objectID": "M03/M03_Wrapup.html",
-    "href": "M03/M03_Wrapup.html",
-    "title": "M03 Wrapup",
+    "objectID": "M03/M03_A.html",
+    "href": "M03/M03_A.html",
+    "title": "M03 Assignment",
     "section": "",
-    "text": "1 M03 Wrapup"
+    "text": "1 M03 Assignment"
   },
   {
-    "objectID": "M04/M04_Highlights.html",
-    "href": "M04/M04_Highlights.html",
-    "title": "M04 Highlights",
+    "objectID": "M05/M05_A.html",
+    "href": "M05/M05_A.html",
+    "title": "M05 Assignment",
     "section": "",
-    "text": "1 M04 Highlights"
+    "text": "1 M05 Assignment"
   },
   {
-    "objectID": "M04/M04_LN02.html",
-    "href": "M04/M04_LN02.html",
-    "title": "M04 Lecture Note 02",
+    "objectID": "M06/M06_A.html",
+    "href": "M06/M06_A.html",
+    "title": "M06 Assignment",
     "section": "",
-    "text": "1 M04 Lecture Note 02"
+    "text": "1 M06 Assignment"
   },
   {
-    "objectID": "M04/M04_Lab02.html",
-    "href": "M04/M04_Lab02.html",
-    "title": "M04 Lab02",
-    "section": "",
-    "text": "1 M04 Lab02"
+    "objectID": "M1/M1_presentation01.html#course-welcome",
+    "href": "M1/M1_presentation01.html#course-welcome",
+    "title": "Name of the Course",
+    "section": "Course Welcome",
+    "text": "Course Welcome\n\nKey Objectives:\n\nUnderstand the breadth of generative AI technologies\nExplore core generative model architectures\nGain insights into practical applications"
   },
   {
-    "objectID": "M04/M04_P02.html",
-    "href": "M04/M04_P02.html",
-    "title": "M04 Presentation 02",
-    "section": "",
-    "text": "1 M04 Presentation 02"
+    "objectID": "M1/M1_presentation01.html#what-is-generative-ai",
+    "href": "M1/M1_presentation01.html#what-is-generative-ai",
+    "title": "Name of the Course",
+    "section": "What is Generative AI?",
+    "text": "What is Generative AI?\n\nDefinition: AI systems that can create new content\n\nGenerative Al can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on.\nSource: https://news.mit.edu/2023/explained-generative-ai-7109"
   },
   {
-    "objectID": "M04/M04_Wrapup.html",
-    "href": "M04/M04_Wrapup.html",
-    "title": "M04 Wrapup",
-    "section": "",
-    "text": "1 M04 Wrapup"
+    "objectID": "M1/M1_presentation01.html#what-is-generative-al-contd.",
+    "href": "M1/M1_presentation01.html#what-is-generative-al-contd.",
+    "title": "Name of the Course",
+    "section": "What is Generative Al (contd.)?",
+    "text": "What is Generative Al (contd.)?\n\nCore Characteristics:\nLearning from existing data\nGenerating novel, contextually relevant outputs\nSpanning multiple modalities (text, image, code, audio)"
   },
   {
-    "objectID": "M05/M05_Highlights.html",
-    "href": "M05/M05_Highlights.html",
-    "title": "M05 Highlights",
-    "section": "",
-    "text": "1 M05 Highlights"
+    "objectID": "M1/M1_presentation01.html#generative-model-landscape-key-generative-model-architectures",
+    "href": "M1/M1_presentation01.html#generative-model-landscape-key-generative-model-architectures",
+    "title": "Name of the Course",
+    "section": "Generative Model Landscape: Key Generative Model Architectures",
+    "text": "Generative Model Landscape: Key Generative Model Architectures\n\nLanguage Models\n\n\nGPT (Generative Pre-trained Transformer)\nBERT (Bidirectional Encoder Representations)\n\n\nImage Generation Models\n\n\nDALL-E\nStable Diffusion\nMidjourney\n\n\nMultimodal Models\n\n\nAmazon Nova\nMeta Llama 3.2 and 3.3\nGemini\nGPT-4\n\nTransformer Architecture - Fundamental Concepts"
   },
   {
-    "objectID": "M05/M05_LN02.html",
-    "href": "M05/M05_LN02.html",
-    "title": "M05 Lecture Note 02",
-    "section": "",
-    "text": "1 M05 Lecture Note 02"
+    "objectID": "M1/M1_presentation01.html#nlp-prior-to-embeddings-and-transformers",
+    "href": "M1/M1_presentation01.html#nlp-prior-to-embeddings-and-transformers",
+    "title": "Name of the Course",
+    "section": "NLP prior to embeddings and transformers",
+    "text": "NLP prior to embeddings and transformers\n\nPre-Embedding NLP Representations: Bag of Words\nDiscrete, non-contextual representation of text\nTreats documents as unordered collections of words\nLoses semantic meaning and word order\nHigh dimensionality with sparse vectors\nNo understanding of word relationships"
   },
   {
-    "objectID": "M05/M05_Lab02.html",
-    "href": "M05/M05_Lab02.html",
-    "title": "M05 Lab02",
-    "section": "",
-    "text": "1 M05 Lab02"
+    "objectID": "M1/M1_presentation01.html#origins-of-modern-embeddings",
+    "href": "M1/M1_presentation01.html#origins-of-modern-embeddings",
+    "title": "Name of the Course",
+    "section": "Origins of Modern Embeddings",
+    "text": "Origins of Modern Embeddings\n\nWord2Vec paper Paper, Explainer video for word embeddings\nBreakthrough in sequence-to-sequence learning\nReplaced previous RNN and LSTM architectures\nEnabled dense, contextual word representations\nCaptured semantic relationships between words"
   },
   {
-    "objectID": "M05/M05_P02.html",
-    "href": "M05/M05_P02.html",
-    "title": "M05 Presentation 02",
-    "section": "",
-    "text": "1 M05 Presentation 02"
+    "objectID": "M1/M1_presentation01.html#core-components-of-transformer-architecture",
+    "href": "M1/M1_presentation01.html#core-components-of-transformer-architecture",
+    "title": "Name of the Course",
+    "section": "Core Components of Transformer Architecture",
+    "text": "Core Components of Transformer Architecture\n\nIntroduced in “Attention Is All You Need” (Google, 2017). Paper, Explainer video and also this video\nMUST READ: The Illustrated Transformer\nKey Building Blocks\nSelf-Attention Mechanism\n\n\nAllows model to weigh importance of different parts of input\nCaptures contextual relationships dynamically\nEnables parallel processing of entire sequences\n\n\nPositional Encoding\n\n\nAdds location information to input embeddings\nCrucial for understanding sequence order\nEnables models to understand context beyond word positioning"
   },
   {
-    "objectID": "M05/M05_Wrapup.html",
-    "href": "M05/M05_Wrapup.html",
-    "title": "M05 Wrapup",
-    "section": "",
-    "text": "1 M05 Wrapup"
+    "objectID": "M1/M1_presentation01.html#detailed-self-attention-mechanism",
+    "href": "M1/M1_presentation01.html#detailed-self-attention-mechanism",
+    "title": "Name of the Course",
+    "section": "Detailed Self-Attention Mechanism",
+    "text": "Detailed Self-Attention Mechanism"
   },
   {
-    "objectID": "M06/M06_Highlights.html",
-    "href": "M06/M06_Highlights.html",
-    "title": "M06 Highlights",
-    "section": "",
-    "text": "1 M06 Highlights"
+    "objectID": "M1/M1_presentation01.html#how-self-aitenion-works",
+    "href": "M1/M1_presentation01.html#how-self-aitenion-works",
+    "title": "Name of the Course",
+    "section": "How Self-Aitenion Works",
+    "text": "How Self-Aitenion Works\n\nKey Components:\nQuery (Q)\nKey (K)\nValue (V)\nAttention Calculation:\n\n\nGenerate Q, K, V matrices\nCompute attention scores\nApply softmax\nCreate weighted representation"
   },
   {
-    "objectID": "M06/M06_LN02.html",
-    "href": "M06/M06_LN02.html",
-    "title": "M06 Lecture Note 02",
-    "section": "",
-    "text": "1 M06 Lecture Note 02"
+    "objectID": "M1/M1_presentation01.html#transformer-architecture-visualization",
+    "href": "M1/M1_presentation01.html#transformer-architecture-visualization",
+    "title": "Name of the Course",
+    "section": "Transformer Architecture Visualization",
+    "text": "Transformer Architecture Visualization"
   },
   {
-    "objectID": "M06/M06_Lab02.html",
-    "href": "M06/M06_Lab02.html",
-    "title": "M06 Lab02",
-    "section": "",
-    "text": "1 M06 Lab02"
+    "objectID": "M1/M1_presentation01.html#encoder-decoder-siruciure",
+    "href": "M1/M1_presentation01.html#encoder-decoder-siruciure",
+    "title": "Name of the Course",
+    "section": "Encoder-Decoder Siruciure",
+    "text": "Encoder-Decoder Siruciure\n\nEncoder\nProcesses input sequence\nGenerates contextual representations\nDecoder\nGenerates output sequence\nUses encoder representations\nMulti-Head Attention\nMultiple attention mechanisms in parallel\nCaptures different types of dependencies"
   },
   {
-    "objectID": "M06/M06_P02.html",
-    "href": "M06/M06_P02.html",
-    "title": "M06 Presentation 02",
-    "section": "",
-    "text": "1 M06 Presentation 02"
+    "objectID": "M1/M1_presentation01.html#transformer-advantages",
+    "href": "M1/M1_presentation01.html#transformer-advantages",
+    "title": "Name of the Course",
+    "section": "Transformer Advantages",
+    "text": "Transformer Advantages"
   },
   {
-    "objectID": "M06/M06_Wrapup.html",
-    "href": "M06/M06_Wrapup.html",
-    "title": "M06 Wrapup",
-    "section": "",
-    "text": "1 M06 Wrapup"
+    "objectID": "M1/M1_presentation01.html#why-transformers-changed-everything",
+    "href": "M1/M1_presentation01.html#why-transformers-changed-everything",
+    "title": "Name of the Course",
+    "section": "Why Transformers Changed Everything",
+    "text": "Why Transformers Changed Everything\n\nParallel Processing\nUnlike RNNs, can process entire sequences simultaneously\nLong-Range Dependencies\nEffectively capture distant contextual relationships\nScalability\nEasily parallelizable\nSupports massive model architectures"
   },
   {
-    "objectID": "M07/M07_Highlights.html",
-    "href": "M07/M07_Highlights.html",
-    "title": "M07 Highlights",
-    "section": "",
-    "text": "1 M07 Highlights"
+    "objectID": "M1/M1_presentation01.html#limitations-and-challenges",
+    "href": "M1/M1_presentation01.html#limitations-and-challenges",
+    "title": "Name of the Course",
+    "section": "Limitations and Challenges",
+    "text": "Limitations and Challenges"
   },
   {
-    "objectID": "M07/M07_LN02.html",
-    "href": "M07/M07_LN02.html",
-    "title": "M07 Lecture Note 02",
-    "section": "",
-    "text": "1 M07 Lecture Note 02"
+    "objectID": "M1/M1_presentation01.html#transformer-architecture-considerations",
+    "href": "M1/M1_presentation01.html#transformer-architecture-considerations",
+    "title": "Name of the Course",
+    "section": "Transformer Architecture Considerations",
+    "text": "Transformer Architecture Considerations\n\nComputational Complexity\nQuadratic complexity with sequence length\nMemory Requirements\nLarge models need significant computational resources\nPotential Mitigation Strategies\nSparse Attention\nEfficient Transformer variants\nModel distillation techniques"
   },
   {
-    "objectID": "M07/M07_Lab02.html",
-    "href": "M07/M07_Lab02.html",
-    "title": "M07 Lab02",
-    "section": "",
-    "text": "1 M07 Lab02"
+    "objectID": "M1/M1_presentation01.html#practical-implications",
+    "href": "M1/M1_presentation01.html#practical-implications",
+    "title": "Name of the Course",
+    "section": "Practical Implications",
+    "text": "Practical Implications"
   },
   {
-    "objectID": "M07/M07_P02.html",
-    "href": "M07/M07_P02.html",
-    "title": "M07 Presentation 02",
-    "section": "",
-    "text": "1 M07 Presentation 02"
+    "objectID": "M1/M1_presentation01.html#transformers-in-real-world-applications",
+    "href": "M1/M1_presentation01.html#transformers-in-real-world-applications",
+    "title": "Name of the Course",
+    "section": "Transformers in Real-World Applications",
+    "text": "Transformers in Real-World Applications\n\nNatural Language Processing\nMachine Translation\nCode Generation\nMultimodal Al Systems\nConversational Al"
   },
   {
-    "objectID": "M07/M07_Wrapup.html",
-    "href": "M07/M07_Wrapup.html",
-    "title": "M07 Wrapup",
-    "section": "",
-    "text": "1 M07 Wrapup"
+    "objectID": "M1/M1_presentation01.html#references-and-deep-dive-resources",
+    "href": "M1/M1_presentation01.html#references-and-deep-dive-resources",
+    "title": "Name of the Course",
+    "section": "References and Deep Dive Resources",
+    "text": "References and Deep Dive Resources"
+  },
+  {
+    "objectID": "M1/M1_presentation01.html#recommended-learning-materials",
+    "href": "M1/M1_presentation01.html#recommended-learning-materials",
+    "title": "Name of the Course",
+    "section": "Recommended Learning Materials",
+    "text": "Recommended Learning Materials\n\nFoundational Papers\n\n\n“Efficient Estimation of Word Representations in Vector Space” (Mikolov et al., 2013)\nWord2Vec: Pioneering word embedding techniques\n“Attention Is All You Need” (Vaswani et al., 2017)\nOriginal Transformer architecture paper\n\n\nPractical Implementation Resources\n\n\nKarpathy’s nanoGPT\nGitHub: https://github.com/karpathy/nanoGPT\nMinimalist GPT implementation\nEducational reference for transformer internals\n\n\nVideo Explanations\n\n\nAndrej Karpathy’s “LLMs in a Hurry”\nvideo: Comprehensive overview of LLM internals\n3BluelBrown Transformer Visualization\nvideo: Intuitive mathematical explanation\n\n\nOnline Resources\n\n\nHugging Face Transformer Documentation\nJay Alammar’s “Illustrated Transformer”"
+  },
+  {
+    "objectID": "M1/M1_presentation01.html#next-week-preview",
+    "href": "M1/M1_presentation01.html#next-week-preview",
+    "title": "Name of the Course",
+    "section": "Next Week Preview",
+    "text": "Next Week Preview"
+  },
+  {
+    "objectID": "M1/M1_presentation01.html#week-2-focus-in-coniexi-learning-icl",
+    "href": "M1/M1_presentation01.html#week-2-focus-in-coniexi-learning-icl",
+    "title": "Name of the Course",
+    "section": "Week 2 Focus: In-Coniexi Learning (ICL)",
+    "text": "Week 2 Focus: In-Coniexi Learning (ICL)\n\nFew-shot learning mechanisms\nPractical ICL implementation\nAdvanced prompt engineering techniques"
   },
   {
     "objectID": "index.html",

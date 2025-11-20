@@ -10,7 +10,8 @@
   <meta name="generator" content="quarto-1.8.26">
 
   <meta name="author" content="Nakul R. Padalkar">
-  <meta name="dcterms.date" content="2024-11-21">
+  <meta name="author" content="Author Two">
+  <meta name="dcterms.date" content="2024-03-12">
   <title>AD 698 Applied Generative AI Business Analytics – AD698 - Applied Generative AI</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,7 +34,7 @@
     div.csl-bib-body { }
     div.csl-entry {
       clear: both;
-      margin-bottom: 0em;
+      margin-bottom: 1em;
     }
     .hanging-indent div.csl-entry {
       margin-left:2em;
@@ -50,7 +51,7 @@
     div.csl-indent {
       margin-left: 2em;
     }  </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-e6c323ae05f1bc03f48c858997d93a8a.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-9cceb6fed4ef6d3ba9b271a4afae00bd.css">
   <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -147,7 +148,7 @@
   <div class="reveal">
     <div class="slides">
 
-<section id="title-slide" data-background-image="../theme/qbtIZvmk8jQ-unsplash.jpg" data-background-opacity="0.95" data-background-size="103% auto" class="quarto-title-block center">
+<section id="title-slide" data-background-image="../theme/blank_red.png" data-background-opacity="0.95" data-background-size="103% auto" class="quarto-title-block center">
   <h1 class="title">AD698 - Applied Generative AI</h1>
   <p class="subtitle">Introduction to Generative AI &amp; Business Applications</p>
 
@@ -160,27 +161,35 @@ Nakul R. Padalkar
             Boston University
           </p>
     </div>
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Author Two 
+</div>
+        <p class="quarto-title-affiliation">
+            Boston University
+          </p>
+    </div>
 </div>
 
-  <p class="date">November 21, 2024</p>
+  <p class="date">March 12, 2024</p>
 </section>
-<section id="course-welcome" class="slide level2" data-number="1">
-<h2><span class="header-section-number">1</span> Course Welcome</h2>
+<section id="course-welcome" class="slide level2">
+<h2>Course Welcome</h2>
 <ul>
 <li>Understand the breadth of generative AI technologies</li>
 <li>Explore core generative model architectures</li>
 <li>Gain insights into practical applications</li>
 </ul>
 </section>
-<section id="what-is-generative-ai" class="slide level2" data-number="2">
-<h2><span class="header-section-number">2</span> What is Generative AI?</h2>
+<section id="what-is-generative-ai" class="slide level2">
+<h2>What is Generative AI?</h2>
 <blockquote>
 <p>AI systems that can create new content</p>
 </blockquote>
-<p>Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on <span class="citation" data-cites="Zewe2023"><a href="#/week-2-focus-in-context-learning-icl" role="doc-biblioref" onclick="">[1]</a></span>.</p>
+<p>Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on <span class="citation" data-cites="Zewe2023">(<a href="#/week-2-focus-in-context-learning-icl" role="doc-biblioref" onclick="">Zewe 2023</a>)</span>.</p>
 </section>
-<section id="what-is-generative-ai-1" class="slide level2" data-number="3">
-<h2><span class="header-section-number">3</span> What is Generative AI?</h2>
+<section id="what-is-generative-ai-1" class="slide level2">
+<h2>What is Generative AI?</h2>
 <ul>
 <li>Core Characteristics:
 <ul>
@@ -190,8 +199,8 @@ Nakul R. Padalkar
 </ul></li>
 </ul>
 </section>
-<section id="generative-model-landscape-key-generative-model-architectures" class="slide level2" data-number="4">
-<h2><span class="header-section-number">4</span> Generative Model Landscape: Key Generative Model Architectures</h2>
+<section id="generative-model-landscape-key-generative-model-architectures" class="slide level2">
+<h2>Generative Model Landscape: Key Generative Model Architectures</h2>
 <ul>
 <li>Foundation Models and Algorithms
 <ul>
@@ -220,8 +229,8 @@ Nakul R. Padalkar
 </ul></li>
 </ul>
 </section>
-<section id="nlp-prior-to-embeddings-and-transformers" class="slide level2" data-number="5">
-<h2><span class="header-section-number">5</span> NLP prior to embeddings and transformers</h2>
+<section id="nlp-prior-to-embeddings-and-transformers" class="slide level2">
+<h2>NLP prior to embeddings and transformers</h2>
 <ul>
 <li>Pre-Embedding NLP Representations: Bag of Words</li>
 <li>Discrete, non-contextual representation of text</li>
@@ -231,8 +240,8 @@ Nakul R. Padalkar
 <li>No understanding of word relationships</li>
 </ul>
 </section>
-<section id="origins-of-modern-embeddings" class="slide level2" data-number="6">
-<h2><span class="header-section-number">6</span> Origins of Modern Embeddings</h2>
+<section id="origins-of-modern-embeddings" class="slide level2">
+<h2>Origins of Modern Embeddings</h2>
 <ul>
 <li>Word2Vec paper Paper, Explainer video for word embeddings</li>
 <li>Breakthrough in sequence-to-sequence learning</li>
@@ -241,8 +250,8 @@ Nakul R. Padalkar
 <li>Captured semantic relationships between words</li>
 </ul>
 </section>
-<section id="core-components-of-transformer-architecture" class="slide level2" data-number="7">
-<h2><span class="header-section-number">7</span> Core Components of Transformer Architecture</h2>
+<section id="core-components-of-transformer-architecture" class="slide level2">
+<h2>Core Components of Transformer Architecture</h2>
 <ol type="1">
 <li>Introduced in “Attention Is All You Need” (Google, 2017). Paper, Explainer video and also this video</li>
 <li>MUST READ: The Illustrated Transformer</li>
@@ -263,11 +272,11 @@ Nakul R. Padalkar
 <li>Enables models to understand context beyond word positioning</li>
 </ul>
 </section>
-<section id="detailed-self-attention-mechanism" class="slide level2" data-number="8">
-<h2><span class="header-section-number">8</span> Detailed Self-Attention Mechanism</h2>
+<section id="detailed-self-attention-mechanism" class="slide level2">
+<h2>Detailed Self-Attention Mechanism</h2>
 </section>
-<section id="how-self-airieniion-works" class="slide level2" data-number="9">
-<h2><span class="header-section-number">9</span> How Self-Airieniion Works</h2>
+<section id="how-self-airieniion-works" class="slide level2">
+<h2>How Self-Airieniion Works</h2>
 <ul>
 <li>Key Components:</li>
 <li>Query (Q)</li>
@@ -282,11 +291,11 @@ Nakul R. Padalkar
 <li>Create weighted representation</li>
 </ol>
 </section>
-<section id="transformer-architecture-visualization" class="slide level2" data-number="10">
-<h2><span class="header-section-number">10</span> Transformer Architecture Visualization</h2>
+<section id="transformer-architecture-visualization" class="slide level2">
+<h2>Transformer Architecture Visualization</h2>
 </section>
-<section id="encoder-decoder-siruciure" class="slide level2" data-number="11">
-<h2><span class="header-section-number">11</span> Encoder-Decoder Siruciure</h2>
+<section id="encoder-decoder-siruciure" class="slide level2">
+<h2>Encoder-Decoder Siruciure</h2>
 <ul>
 <li>Encoder</li>
 <li>Processes input sequence</li>
@@ -299,11 +308,11 @@ Nakul R. Padalkar
 <li>Captures different types of dependencies</li>
 </ul>
 </section>
-<section id="transformer-advantages" class="slide level2" data-number="12">
-<h2><span class="header-section-number">12</span> Transformer Advantages</h2>
+<section id="transformer-advantages" class="slide level2">
+<h2>Transformer Advantages</h2>
 </section>
-<section id="why-transformers-changed-everything" class="slide level2" data-number="13">
-<h2><span class="header-section-number">13</span> Why Transformers Changed Everything</h2>
+<section id="why-transformers-changed-everything" class="slide level2">
+<h2>Why Transformers Changed Everything</h2>
 <ul>
 <li>Parallel Processing</li>
 <li>Unlike RNNs, can process entire sequences simultaneously</li>
@@ -314,11 +323,11 @@ Nakul R. Padalkar
 <li>Supports massive model architectures</li>
 </ul>
 </section>
-<section id="limitations-and-challenges" class="slide level2" data-number="14">
-<h2><span class="header-section-number">14</span> Limitations and Challenges</h2>
+<section id="limitations-and-challenges" class="slide level2">
+<h2>Limitations and Challenges</h2>
 </section>
-<section id="transformer-architecture-considerations" class="slide level2" data-number="15">
-<h2><span class="header-section-number">15</span> Transformer Architecture Considerations</h2>
+<section id="transformer-architecture-considerations" class="slide level2">
+<h2>Transformer Architecture Considerations</h2>
 <ul>
 <li>Computational Complexity</li>
 <li>Quadratic complexity with sequence length</li>
@@ -330,11 +339,11 @@ Nakul R. Padalkar
 <li>Model distillation techniques</li>
 </ul>
 </section>
-<section id="practical-implications" class="slide level2" data-number="16">
-<h2><span class="header-section-number">16</span> Practical Implications</h2>
+<section id="practical-implications" class="slide level2">
+<h2>Practical Implications</h2>
 </section>
-<section id="transformers-in-real-world-applications" class="slide level2" data-number="17">
-<h2><span class="header-section-number">17</span> Transformers in Real-World Applications</h2>
+<section id="transformers-in-real-world-applications" class="slide level2">
+<h2>Transformers in Real-World Applications</h2>
 <ul>
 <li>Natural Language Processing</li>
 <li>Machine Translation</li>
@@ -343,8 +352,8 @@ Nakul R. Padalkar
 <li>Conversational AI</li>
 </ul>
 </section>
-<section id="references-and-deep-dive-resources" class="slide level2" data-number="18">
-<h2><span class="header-section-number">18</span> References and Deep Dive Resources</h2>
+<section id="references-and-deep-dive-resources" class="slide level2">
+<h2>References and Deep Dive Resources</h2>
 <p>Recommended Learning Materials</p>
 <ol type="1">
 <li>Foundational Papers</li>
@@ -381,11 +390,11 @@ Nakul R. Padalkar
 <li>Jay Alammar’s “Illustrated Transformer”</li>
 </ul>
 </section>
-<section id="next-week-preview" class="slide level2" data-number="19">
-<h2><span class="header-section-number">19</span> Next Week Preview</h2>
+<section id="next-week-preview" class="slide level2">
+<h2>Next Week Preview</h2>
 </section>
-<section id="week-2-focus-in-context-learning-icl" class="slide level2 smaller scrollable" data-number="20">
-<h2><span class="header-section-number">20</span> Week 2 Focus: In-Context’ Learning (ICL)</h2>
+<section id="week-2-focus-in-context-learning-icl" class="slide level2 smaller scrollable">
+<h2>Week 2 Focus: In-Context’ Learning (ICL)</h2>
 <ul>
 <li>Few-shot learning mechanisms</li>
 <li>Practical ICL implementation</li>
@@ -393,15 +402,15 @@ Nakul R. Padalkar
 </ul>
 
 
-<div id="refs" class="references csl-bib-body" data-entry-spacing="0" role="list">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="1" role="list">
 <div id="ref-Zewe2023" class="csl-entry" role="listitem">
-<div class="csl-left-margin">[1] </div><div class="csl-right-inline">A. Zewe, <span>“Explained: Generative AI,”</span> <em>MIT News</em>, Nov. 2023, Available: <a href="https://news.mit.edu/2023/explained-generative-ai-1109">https://news.mit.edu/2023/explained-generative-ai-1109</a></div>
+Zewe, A. 2023. <span>“Explained: Generative AI,”</span> <em>MIT News</em>. (<a href="https://news.mit.edu/2023/explained-generative-ai-1109">https://news.mit.edu/2023/explained-generative-ai-1109</a>).
 </div>
 </div>
 </section>
     </div>
   <div class="quarto-auto-generated-content" style="display: none;">
-<p><img src="../theme/met_signature_toptier_rgb.png" class="slide-logo"></p>
+<p><img src="../theme/figures/met_signature_toptier_rgb.png" class="slide-logo"></p>
 <div class="footer footer-default">
 
 </div>
