@@ -5,7 +5,6 @@ number-sections: true
 format:
     html:
       toc: false
-
 html-table-processing: none
 ---
 

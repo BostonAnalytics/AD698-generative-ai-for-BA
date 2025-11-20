@@ -89,6 +89,9 @@ format:
     highlight-style: github
     code-overflow: wrap
     html-math-method: katex
+    comments:
+      utterances:
+        repo: BostonAnalytics/AD698-generative-ai-for-BA
 
 crossref:
   fig-title: '**Figure**'
