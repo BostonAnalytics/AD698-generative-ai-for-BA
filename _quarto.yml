@@ -14,7 +14,6 @@ editor:
   preview: true
 
 execute:
-  cache: true
   freeze: false
   keep-ipynb: false
   fig-align: center
@@ -55,6 +54,8 @@ website:
             href: M01/M01_Wrapup.qmd
       - text: "Module 02"
         menu:
+          - text: "Module Highlights"
+            href: M02/M02_Highlights.qmd
           - text: "Lecture Notes 2.1"
             href: M02/M02_LN01.qmd
           - text: "Presentation 2.1"
@@ -63,6 +64,16 @@ website:
             href: M02/M02_LN02.qmd
           - text: "Presentation 2.2"
             href: M02/M02_P02.qmd
+          - text: "Lab 2.1"
+            href: M02/M02_Lab01.qmd
+          - text: "Lab 2.2" 
+            href: M02/M02_Lab02.qmd
+          - text: "Module 2 Assignment" 
+            href: M02/M02_A.qmd
+          - text: "Module 2 Project"  
+            href: M02/M02_Proj.qmd
+          - text: "Module Wrap-Up"
+            href: M02/M02_Wrapup.qmd
 
 format:
   html:
