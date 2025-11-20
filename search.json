@@ -210,18 +210,123 @@
     "text": "20 Week 2 Focus: In-Context’ Learning (ICL)\n\nFew-shot learning mechanisms\nPractical ICL implementation\nAdvanced prompt engineering techniques\n\n\n\n\n\n[1] A. Zewe, “Explained: Generative AI,” MIT News, Nov. 2023, Available: https://news.mit.edu/2023/explained-generative-ai-1109"
   },
   {
-    "objectID": "M01/M01_LN01.html#llm-lab-practice",
-    "href": "M01/M01_LN01.html#llm-lab-practice",
+    "objectID": "M01/M01_LN01.html#modules-07",
+    "href": "M01/M01_LN01.html#modules-07",
     "title": "M01: Lecture Notes",
-    "section": "7.1 LLM Lab Practice",
-    "text": "7.1 LLM Lab Practice\n\nWeekly hands-on exercises using LLMs\nFocus on prompting, automation, and applied business tasks"
+    "section": "5.1 Modules 0–7",
+    "text": "5.1 Modules 0–7\nEach module has two lectures, two labs, and one assignment. Topics include:\n\nModule 0 - AI Foundations & Developer Setup\nModule 1 - Natural Language and Generative AI Landscape\nModule 2 - Prompt Engineering & Vector Representations\nModule 3 - LLM Architecture & Fine-Tuning\nModule 4 - Retrieval-Augmented Generation (RAG) Systems\nModule 5 - Efficient Tuning & Similarity Search\nModule 6 - LLM Memory and Multimodal Intelligence\nModule 7 - Evaluation, Bias, and Responsible AI\nModule 8 - Autonomous Agents and Multi-Agent Systems"
   },
   {
-    "objectID": "M01/M01_LN01.html#tooling-github-python-apis",
-    "href": "M01/M01_LN01.html#tooling-github-python-apis",
+    "objectID": "M01/M01_LN01.html#participation-components",
+    "href": "M01/M01_LN01.html#participation-components",
     "title": "M01: Lecture Notes",
-    "section": "7.2 Tooling: GitHub, Python, APIs",
-    "text": "7.2 Tooling: GitHub, Python, APIs\n\nYou will maintain a public portfolio repository\nEvery assignment and project will be submitted via GitHub"
+    "section": "6.1 Participation Components",
+    "text": "6.1 Participation Components\n\n6.1.1 LLM Lab Practice\n\nWeekly hands-on exercises using LLMs\nFocus on prompting, automation, and applied business tasks\n\n\n\n6.1.2 Tooling: GitHub, Python, APIs\n\nYou will maintain a public portfolio repository\nEvery assignment and project will be submitted via GitHub"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#in-class-labs",
+    "href": "M01/M01_LN01.html#in-class-labs",
+    "title": "M01: Lecture Notes",
+    "section": "6.2 In-Class Labs",
+    "text": "6.2 In-Class Labs\nLabs are short, guided activities where you:\n\nWork directly with LLM models\nExplore generative workflows\nBuild first-draft AI tools that feed into assignments\nAnalyze data, automate tasks, and generate outputs\nWrite practical reports and visualizations\n\nOn-campus: must submit weekly Online: optional but recommended for practice"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#individual-assignments",
+    "href": "M01/M01_LN01.html#individual-assignments",
+    "title": "M01: Lecture Notes",
+    "section": "6.3 Individual Assignments",
+    "text": "6.3 Individual Assignments\nFour structured assignments that build core competencies:\n\nPrompt Engineering & Automated Analytics\nRAG and Vector Search\nAI Pipeline for Business Intelligence\nAutomated Workflow + API Integration"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#group-project",
+    "href": "M01/M01_LN01.html#group-project",
+    "title": "M01: Lecture Notes",
+    "section": "6.4 Group Project",
+    "text": "6.4 Group Project\nA semester-long generative-AI solution to a business problem.\n\n6.4.1 Components\n\n\n\n\n\n\n\n\nComponent\nPoints\nDescription\n\n\n\n\nMilestones via GitHub\n80\nRepo setup, design docs, data prep, RAG prototype, LLM workflow, final output\n\n\nPresentation\n40\nDemonstrates model workflow and business impact\n\n\nPeer Evaluation\n40\nCollaboration, clarity, and contributions\n\n\n\nTotal: 160 points"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#introduction",
+    "href": "M01/M01_LN01.html#introduction",
+    "title": "M01: Lecture Notes",
+    "section": "9.1 Introduction",
+    "text": "9.1 Introduction\nGenerative artificial intelligence represents one of the most significant paradigm shifts in the history of computing. For decades, computers have been designed to follow instructions - perform calculations, retrieve information, classify inputs, and obey predefined rules. Generative AI introduces something profoundly new: the ability for machines to produce original content, synthesize knowledge, reason through language, and interact conversationally in a way that resembles human creativity and communication.\nThese systems do not simply automate tasks; they reshape how people think, work, and engage with information. While their roots lie in classical machine learning, generative models extend far beyond traditional predictive analytics. They do not merely recognize patterns - they generate new ones."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#what-is-generative-ai",
+    "href": "M01/M01_LN01.html#what-is-generative-ai",
+    "title": "M01: Lecture Notes",
+    "section": "9.2 What Is Generative AI?",
+    "text": "9.2 What Is Generative AI?\nGenerative AI refers to models capable of creating new artifacts that did not previously exist in the training data. These artifacts may include:\n\nEssays, summaries, stories, and explanations\nImages, sketches, animations, or design concepts\nScientific hypotheses or molecular structures\nCode, scripts, and executable workflows\nSynthetic data for simulation or experimentation\nAudio, music, or environmental soundscapes\nVideo sequences and motion dynamics\n\nWhat distinguishes generative AI from earlier forms of artificial intelligence is its ability to create content that is coherent, context-aware, adaptive, and semantically meaningful.\nA generative model learns the underlying structure of the data it is trained on - the grammar of language, the geometry of images, the relationships in chemistry, the cadence of music - and uses this learned representation to create new outputs consistent with these structures."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#generative-ai-vs.-traditional-artificial-intelligence",
+    "href": "M01/M01_LN01.html#generative-ai-vs.-traditional-artificial-intelligence",
+    "title": "M01: Lecture Notes",
+    "section": "9.3 Generative AI vs. Traditional Artificial Intelligence",
+    "text": "9.3 Generative AI vs. Traditional Artificial Intelligence\nArtificial intelligence is a broad umbrella that includes:\n\ncomputer vision\nspeech recognition\nclassical natural language processing\nreinforcement learning\nrobotics\npredictive modeling\noptimization algorithms\n\nThese systems primarily classify, detect, optimize, or recommend based on the data they receive.\nGenerative AI is a subset of AI that explicitly focuses on creation. It does not simply categorize (“This is a dog”), nor does it merely predict a numeric outcome (“This house should be priced at $820,000”). Instead, it asks:\n\n“Given what I’ve learned about the world, what can I produce that fits the patterns, rules, and structures I’ve internalized?”\n\nThis ability places generative AI closer to tasks traditionally seen as the domain of human cognition - drafting, designing, summarizing, reasoning, theorizing, and imagining."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#the-emergence-of-generative-ai",
+    "href": "M01/M01_LN01.html#the-emergence-of-generative-ai",
+    "title": "M01: Lecture Notes",
+    "section": "9.4 The Emergence of Generative AI",
+    "text": "9.4 The Emergence of Generative AI\nAlthough the idea of generative modeling has existed for decades, several breakthroughs in the 2010s transformed it into a practical, powerful technology.\n\n9.4.1 Variational Autoencoders (2013)\nVAEs introduced the idea of compressing data into a hidden “latent space” that captures essential features. By sampling from this latent space, the model could reconstruct or vary the input, generating new samples that resemble the originals. This was the first demonstration that deep networks could create.\n\n\n9.4.2 Generative Adversarial Networks (2014)\nGANs marked a dramatic leap. Two networks - a generator and a discriminator - compete:\n\nthe generator synthesizes new data\nthe discriminator evaluates authenticity\n\nThrough this adversarial training, the generator becomes increasingly skilled at creating highly realistic output. GANs powered early deepfakes, artistic style-transfer, and synthetic photography.\n\n\n9.4.3 Transformer Models (2017)\nThe most transformative innovation came with the transformer architecture. Transformers introduced self-attention, a mechanism that allows models to consider relationships between all elements of a sequence simultaneously. This made it possible to train models on much larger corpora of text and to capture subtle patterns in:\n\nmeaning\nsyntax\ncontext\ndiscourse structure\nworld knowledge\n\nTransformers reshaped natural language processing and enabled the development of large-scale generative models.\n\n\n9.4.4 The Foundational Model Era\nThe last several years have given rise to large generative models capable of:\n\nfollowing instructions\ncarrying conversation\nintegrating reasoning with generation\nexplaining data\nproducing creative or analytical artifacts\n\nThese models are now central to applications in business, science, healthcare, and government."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#foundation-models",
+    "href": "M01/M01_LN01.html#foundation-models",
+    "title": "M01: Lecture Notes",
+    "section": "9.5 foundation Models",
+    "text": "9.5 foundation Models\nFoundation models are large neural networks trained on diverse, broad datasets so they can serve as general-purpose systems that perform many tasks. They are not built to solve a single narrowly defined problem. Instead, they learn representations of the world that can be adapted to countless tasks, including ones they have never seen before.\nKey characteristics of foundation models include:\n\nMassive scale in parameters\nMulti-domain learning (technical, literary, conversational, scientific text)\nGeneralization across tasks, languages, and writing styles\nEmergent abilities that arise as models grow in size\nFlexibility through prompting, tuning, and retrieval\n\nFoundation models represent a new computational abstraction: systems that understand and generate knowledge in natural language."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#how-generative-models-work",
+    "href": "M01/M01_LN01.html#how-generative-models-work",
+    "title": "M01: Lecture Notes",
+    "section": "9.6 How Generative Models Work",
+    "text": "9.6 How Generative Models Work\nAlthough generative AI appears magical, its mechanisms are grounded in mathematical principles.\n\n9.6.1 Representing Data as Distributions\nTraditional machine learning estimates the probability of a label given some features (p(y|x)). Generative models instead estimate the joint distribution of inputs and outputs - the probability of both occurring together (p(x, y)). This allows the model to generate new x-values (new examples) that are consistent with the learned distribution.\n\n\n9.6.2 Latent Space and Meaning\nMany generative models map inputs into a “latent space,” a compressed representation that captures the essence of the data. For language models, latent vectors represent:\n\nmeaning\ntone\nrelationships\ncontext\nintent\n\nFor images, latent vectors represent:\n\nshapes\ntextures\nlighting\ngeometry\n\nThe model navigates this latent space to synthesize new outputs.\n\n\n9.6.3 6.3 Self-Attention and Contextual Understanding\nTransformers use self-attention to determine how each token (word or subword) relates to every other token. This process allows the model to maintain coherence, resolve references, and follow long, complex instructions.\n\n\n9.6.4 6.4 Next-Token Prediction\nAt its core, a generative language model predicts the most likely next token given all previous tokens. Despite its simplicity, the depth of training enables it to produce:\n\nessays\ncode\nanalysis\nrecommended actions\nexplanations\nsummaries\n\nComplex reasoning emerges because next-token prediction is stacked across billions of parameters and trillions of training tokens."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#types-of-generative-models-expanded",
+    "href": "M01/M01_LN01.html#types-of-generative-models-expanded",
+    "title": "M01: Lecture Notes",
+    "section": "9.7 Types of Generative Models (Expanded)",
+    "text": "9.7 Types of Generative Models (Expanded)\n\n9.7.1 Diffusion Models\nDiffusion models generate data by simulating the process of gradually adding noise to an image and then learning to reverse the process. They produce highly detailed and coherent images and are widely used for AI art and simulation.\n\n\n9.7.2 Generative Adversarial Networks (GANs)\nGANs remain influential for producing realistic imagery, enhancing video, and generating synthetic datasets.\n\n\n9.7.3 Variational Autoencoders (VAEs)\nVAEs are prized in scientific domains where interpretability and structured latent representations are crucial.\n\n\n9.7.4 Transformer-Based Generative Models\nTransformers have become the dominant architecture for:\n\ntext generation\nmultimodal generation\ncode synthesis\ndocument understanding\ndata reasoning\n\nThey are the backbone of today’s most powerful generative AI systems."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#applications-of-generative-ai-across-domains",
+    "href": "M01/M01_LN01.html#applications-of-generative-ai-across-domains",
+    "title": "M01: Lecture Notes",
+    "section": "9.8 Applications of Generative AI Across Domains",
+    "text": "9.8 Applications of Generative AI Across Domains\n\n9.8.1 Scientific Research and Discovery\nGenerative models accelerate:\n\nmolecular design\nprotein engineering\nscientific hypothesis generation\nliterature summarization\ncomplex simulations\n\n\n\n9.8.2 Healthcare and Life Sciences\nApplications include:\n\ngenerating synthetic patient data\nassisting clinical documentation\nanalyzing biological sequences\nsupporting drug discovery workflows\n\n\n\n9.8.3 Engineering, Automotive, and Manufacturing\nGenerative AI supports:\n\ncreating optimized part geometries\nsimulating rare scenarios\npredicting outcomes of design changes\ngenerating synthetic training data for vision models\n\n\n\n9.8.4 Media, Arts, and Entertainment\nGenerative tools:\n\naccelerate scriptwriting and storyboarding\nassist with animation, music, and sound design\nenable personalized storytelling and world-building\n\n\n\n9.8.5 Business Operations and Customer Experience\nGenerative AI enhances:\n\ncustomer support\ndocument summarization\ninternal knowledge search\ntraining, onboarding, and reporting\nstatistical analysis and planning\n\n\n\n9.8.6 Energy and Infrastructure\nModels support:\n\npredictive insights\nanomaly detection\ndocumentation generation\nsystem modeling and optimization"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#benefits-of-generative-ai",
+    "href": "M01/M01_LN01.html#benefits-of-generative-ai",
+    "title": "M01: Lecture Notes",
+    "section": "9.9 Benefits of Generative AI",
+    "text": "9.9 Benefits of Generative AI\n\n9.9.1 Acceleration of Knowledge Work\nGenerative AI reduces cognitive load by:\n\nreorganizing information\nsummarizing long documents\ndrafting initial analyses\ntransforming data into narrative insights\n\n\n\n9.9.2 Enhanced Creativity\nBy generating diverse alternatives and variations, models expand the creative space available to humans.\n\n\n9.9.3 Operational Efficiency\nGenerative AI automates repetitive writing, documentation, reporting, and analysis tasks.\n\n\n9.9.4 Personalization\nModels can refine content for specific audiences, goals, tones, or domains.\n\n\n9.9.5 Synthetic Data Generation\nGenerative models provide high-quality synthetic datasets that support training, testing, and experimentation without risking privacy.\n\n\n9.9.6 Scalability\nGenerative workflows allow organizations to respond faster and operate at greater scale with fewer manual bottlenecks."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#limitations-and-challenges",
+    "href": "M01/M01_LN01.html#limitations-and-challenges",
+    "title": "M01: Lecture Notes",
+    "section": "9.10 Limitations and Challenges",
+    "text": "9.10 Limitations and Challenges\nDespite their capabilities, generative AI systems face important constraints:\n\n9.10.1 Hallucinations\nModels occasionally fabricate details or inconsistencies when they lack reliable context.\n\n\n9.10.2 Bias\nBiases in training data can appear in model outputs.\n\n\n9.10.3 Lack of True Understanding\nGenerative models manipulate patterns statistically; they do not possess consciousness, intent, or genuine comprehension.\n\n\n9.10.4 Explainability\nThe reasoning behind model outputs may be difficult to trace.\n\n\n9.10.5 Resource Demands\nTraining and deploying generative models require substantial computational infrastructure."
+  },
+  {
+    "objectID": "M01/M01_LN01.html#best-practices-for-using-generative-ai",
+    "href": "M01/M01_LN01.html#best-practices-for-using-generative-ai",
+    "title": "M01: Lecture Notes",
+    "section": "9.11 Best Practices for Using Generative AI",
+    "text": "9.11 Best Practices for Using Generative AI\n\nBegin with internal workflows before deploying externally\nCommunicate clearly when AI-generated content is used\nEmploy guardrails to prevent leakage of sensitive information\nTest models extensively using a range of input scenarios\nEducate users about limitations, biases, and failure modes\nEnsure that generative outputs undergo human review in critical contexts"
+  },
+  {
+    "objectID": "M01/M01_LN01.html#learning-pathways-for-generative-ai",
+    "href": "M01/M01_LN01.html#learning-pathways-for-generative-ai",
+    "title": "M01: Lecture Notes",
+    "section": "9.12 Learning Pathways for Generative AI",
+    "text": "9.12 Learning Pathways for Generative AI\nBeginners benefit from understanding:\n\nmachine learning foundations\nneural networks and attention mechanisms\nPython and model experimentation\nprompt engineering and evaluation\nembedding systems and vector search\nethics, governance, and responsible use\n\nThis foundation supports deeper study in model tuning, RAG systems, and applied generative workflows."
   },
   {
     "objectID": "M01/M01_A.html",
