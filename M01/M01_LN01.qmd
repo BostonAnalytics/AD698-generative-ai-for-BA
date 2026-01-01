@@ -570,12 +570,12 @@ For images, latent vectors represent:
 
 The model navigates this latent space to synthesize new outputs.
 
-### 6.3 Self-Attention and Contextual Understanding
+### Self-Attention and Contextual Understanding
 
 Transformers use self-attention to determine how each token (word or subword) relates to every other token.
 This process allows the model to maintain coherence, resolve references, and follow long, complex instructions.
 
-### 6.4 Next-Token Prediction
+### Next-Token Prediction
 
 At its core, a generative language model predicts the most likely next token given all previous tokens.
 Despite its simplicity, the depth of training enables it to produce:

@@ -8,13 +8,9 @@ date-format: long
 author:
   - name: Nakul R. Padalkar
     affiliations:
-      - id: BU
-        name: Boston University
+      - name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -52,16 +48,17 @@ csl: ../mis-quarterly.csl
 
 Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on [@Zewe2023].
 
-## What is Generative AI?
+## GenAI Core Characteristics
 
-- Core Characteristics:
-  - Learning from existing data
-  - Generating novel, contextually relevant outputs
-  - Spanning multiple modalities (text, image, code, audio)
+- Learning from existing data
+- Generating novel, contextually relevant outputs
+- Spanning multiple modalities (text, image, code, audio)
 
 
-## Generative Model Landscape: Key Generative Model Architectures
+## Key Generative Model Architectures
 
+::: {.columns}
+::: {.column}
 - Foundation Models and Algorithms
   -  Convolutional Neural Networks (CNNs)
   -  Recurrent Neural Networks (RNNs)
@@ -70,6 +67,8 @@ Generative AI can be thought of as a machine-learning model that is trained to c
 - Language Models
   - GPT (Generative Pre-trained Transformer)
   - BERT (Bidirectional Encoder Representations)
+:::
+::: {.column}
 - Image Generation Models
   - DALL-E
   - Stable Diffusion
@@ -80,8 +79,12 @@ Generative AI can be thought of as a machine-learning model that is trained to c
   - Gemini
   - GPT
 
-## NLP prior to embeddings and transformers
-  
+:::
+:::
+
+
+## Natural Language Processing - History
+
 - Pre-Embedding NLP Representations: Bag of Words
 - Discrete, non-contextual representation of text
 - Treats documents as unordered collections of words
@@ -92,7 +95,7 @@ Generative AI can be thought of as a machine-learning model that is trained to c
 
 ## Origins of Modern Embeddings
 
-- Word2Vec paper Paper, Explainer video for word embeddings
+- Word2Vec Paper, Explainer video for word embeddings
 - Breakthrough in sequence-to-sequence learning
 - Replaced previous RNN and LSTM architectures
 - Enabled dense, contextual word representations
@@ -218,7 +221,7 @@ Recommended Learning Materials
 
 ## Next Week Preview
 
-## Week 2 Focus: In-Context' Learning (ICL)
+## Week 2 Focus: In-Context Learning (ICL)
 
 - Few-shot learning mechanisms
 - Practical ICL implementation
