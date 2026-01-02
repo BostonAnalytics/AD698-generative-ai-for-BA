@@ -119,10 +119,13 @@ course_schedule.drop([14, 15, 16, 17], axis=0, inplace=True)
 date_cols = course_schedule.columns[-2:]
 
 # On-campus (BU-aware, break-aware)
-oncampus_df, oncampus_lecture_dates = build(return_dates=True)
+oncampus_df, oncampus_dates = build(
+    return_dates=True,
+    class_days=[0]   # Monday
+)
 
 
-semester_start = oncampus_lecture_dates[0]
+semester_start = oncampus_dates[0]
 
 self_learn_date = semester_start - timedelta(days=7)
 
@@ -156,10 +159,10 @@ course_schedule["On-Campus"] = pd.NaT
 course_schedule.loc[0:1, ["Online", "On-Campus"]] = self_learn_date
 
 # On-campus lectures (rows 2–15 → 14 lectures)
-course_schedule.loc[2:15, "On-Campus"] = pd.Series(oncampus_lecture_dates)
+course_schedule.loc[2:15, "On-Campus"] = pd.Series(oncampus_dates)
 
 # Online paired lectures (rows 2–15 → 14 lectures)
-course_schedule.loc[2:15, "Online"] = pd.Series(online_lecture_dates)
+course_schedule.loc[2:15, "Online"] = pd.Series(online_dates)
 
 # Apply styles to restrict the width of the 4th column (index 3 since it's 0-based)
 styled_table = (
