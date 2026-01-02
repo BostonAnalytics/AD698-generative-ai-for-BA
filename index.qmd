@@ -1,5 +1,5 @@
 ---
-title: "AD 698 Applied Generative AI Business Analytics" 
+title: "AD 698 Generative AI Business Analytics" 
 subtitle: "Syllabus"
 number-sections: true
 bibliography: references.bib
@@ -55,8 +55,6 @@ The course will emphasize **practical development** over theoretical model inter
 * Evaluation and benchmarking of model performance
 * Responsible and explainable GenAI usage in enterprise settings
 
-Students will complete **five applied assignments** and a **capstone project**, culminating in the **deployment of a custom GenAI-powered analytics application**.
-
 This course bridges the gap between **business analytics fluency** and **technical AI development**, equipping students to build **domain-specific LLM applications** that solve real-world problems.
 
 
@@ -93,7 +91,7 @@ There is **no required textbook** for this course. All core readings, technical 
 * Vector DBs: FAISS, ChromaDB
 * Evaluation tools: GPT-Eval, Trulens, PromptLayer
 
-**All resources are available through GitHub Education and GitHub Classrooms. Students are required to create a GitHub account using their Boston University email address in the first week.**
+All resources are available through [GitHub Education]{.uublue-bold} and [GitHub Classrooms]{.uublue-bold}. Students are [required]{.bloodred-bold} to create a [GitHub account]{.uublue-bold} using their Boston University email address in the first week.
 
 ## Course Schedule
 
@@ -106,16 +104,39 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 #| output: html
 
 import pandas as pd
+from datetime import timedelta
 from IPython.display import display, Markdown, HTML
+from schedules.build_schedule import build, generate_online_dates
 
-course_schedule = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Course Details")
-course_schedule = course_schedule.drop('Modules', axis=1)
+course_schedule = pd.read_excel(
+    "data/AD698-Schedule.xlsx",
+    sheet_name="Course Details"
+).drop("Modules", axis=1)
+
+course_schedule.drop([14, 15, 16, 17], axis=0, inplace=True)
 
 # Identify the last two columns (assumed to be dates)
 date_cols = course_schedule.columns[-2:]
 
-# Convert to datetime safely
-course_schedule[date_cols] = course_schedule[date_cols].apply(pd.to_datetime, errors="coerce")
+# On-campus (BU-aware, break-aware)
+oncampus_df, oncampus_lecture_dates = build(return_dates=True)
+
+
+semester_start = oncampus_lecture_dates[0]
+
+self_learn_date = semester_start - timedelta(days=7)
+
+# Online (calendar-agnostic, 7 consecutive weeks)
+online_start = "2026-03-12"
+online_dates = [
+    pd.to_datetime(online_start) + pd.Timedelta(weeks=i)
+    for i in range(7)
+]
+
+# Expand to 14 lectures by pairing
+online_lecture_dates = []
+for d in online_dates:
+    online_lecture_dates.extend([d, d])
 
 # Formatter for date columns: show DD-MMM or "-" if blank
 def date_formatter(x):
@@ -126,6 +147,19 @@ def date_formatter(x):
 # Define custom CSS for the 4th column
 def restrict_width(column):
     return [("max-width", "275px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
+
+course_schedule["Online"] = pd.NaT
+course_schedule["On-Campus"] = pd.NaT
+
+# Ensure length alignment
+# Self-learn (rows 0 and 1)
+course_schedule.loc[0:1, ["Online", "On-Campus"]] = self_learn_date
+
+# On-campus lectures (rows 2–15 → 14 lectures)
+course_schedule.loc[2:15, "On-Campus"] = pd.Series(oncampus_lecture_dates)
+
+# Online paired lectures (rows 2–15 → 14 lectures)
+course_schedule.loc[2:15, "Online"] = pd.Series(online_lecture_dates)
 
 # Apply styles to restrict the width of the 4th column (index 3 since it's 0-based)
 styled_table = (
@@ -186,7 +220,6 @@ On the course homepage, all of the material is presented by modules and each mod
 ### Certification Points:
 
    1.	AWS Academy Generative AI Foundations
-   2.	Github + githubpages ePortfolio Creation
 
 AWS Academy Generative AI Foundations is a self-paced course that will be completed in the first 10 weeks of the course. The final deliverable is completion badge from the AWS Academy. [Points are based on the AWS cloud module check grades translated to 100 points]{.bloodred-bold}.
 
@@ -194,11 +227,9 @@ AWS Academy Generative AI Foundations is a self-paced course that will be comple
 
 The labs consist of Weekly Quizzes and Problem Solving Exercises. Each week, students will take part in a set of focused weekly in class exercise that concern the material covered during that week’s content. Participation requirements include the jupyter or quarto notebook. These assignments will be done individually. The exercises are due by Day 6 at 11:59 PM.
 
-
 ### Individual Assignments:
 
 Assignments are associated with the modules and will be submitted in the "Assignments" section accessible from the left-hand course menu. All assignment dates are given in the course Study Guide.
-
 
 ### Group Project:
 
@@ -283,4 +314,3 @@ This should not be understood as a discouragement for discussing the material or
 ### Request for Accommodations
 
 If you have a disability and will be requesting accommodations for this course, please inform the instructor early in the semester. Advance notice and appropriate documentation are required for accommodations.
-
