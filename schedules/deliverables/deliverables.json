@@ -1,0 +1,54 @@
+{
+  "online": {
+    "assignments": {
+      "enabled": true,
+      "count": 4,
+      "release_offset": 1,
+      "interval": 1,
+      "due_delta_days": 7,
+      "label": "A{n}"
+    },
+    "labs": {
+      "enabled": false
+    },
+    "projects": {
+      "milestones": 4,
+      "label": "Ungraded Milestone {n}",
+      "final_label": "Final Project Report + Presentation",
+      "enabled": true
+    },
+    "participation": {
+      "lecture_offset_from_end": 2,
+      "label": "Participation 1 + Participation 2",
+      "enabled": true
+    }
+  },
+
+  "oncampus": {
+    "assignments": {
+      "enabled": true,
+      "count": 5,
+      "release_offset": 1,
+      "interval": 2,
+      "due_delta_days": 7,
+      "label": "A{n}"
+    },
+    "labs": {
+      "enabled": false,
+      "count": 8,
+      "release_offset": 0,
+      "interval": 1,
+      "due_delta_days": 7,
+      "label": "Lab {n}"
+    },
+    "projects": {
+      "milestones": 4,
+      "label": "Project Milestone {n}",
+      "final_label": "Final Project Presentation"
+    },
+    "participation": {
+      "lecture_offset_from_end": 2,
+      "label": "Participation"
+    }
+  }
+}

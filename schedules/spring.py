@@ -3,7 +3,7 @@ from schedules.engine import generate_schedule
 from bu_calendar.bu_calendar_utils import parse_range
 
 
-def _first_meeting_on_or_after(start, class_days):
+def first_class_meeting_on_or_after(start, class_days):
     cur = start
     while cur.weekday() not in class_days:
         cur += timedelta(days=1)
@@ -14,31 +14,33 @@ def generate(
     calendar_df,
     output_path=None,
     return_dates=False,
-    class_days=None,   # 👈 NEW
+    class_days=None,
 ):
     if class_days is None:
-        raise ValueError("class_days must be provided (e.g., [1] for Tuesday)")
+        raise ValueError("class_days must be provided")
 
     year = int(calendar_df.iloc[0]["term"].split()[-1])
 
-    # Classes Begin (university-wide)
+    # University-wide Classes Begin
     start_row = calendar_df[
-        calendar_df["event"].str.contains(
-            "Classes Begin", case=False, na=False)
+        calendar_df["event"].str.contains("Classes Begin", case=False, na=False)
     ]
     classes_begin = datetime.strptime(
         start_row.iloc[0]["date_raw"], "%B %d"
     ).replace(year=year)
 
-    # First actual class meeting for THIS course
-    start_date = _first_meeting_on_or_after(classes_begin, class_days)
+    # 🔑 FIRST ACTUAL MEETING FOR THIS COURSE
+    start_date = first_class_meeting_on_or_after(
+        classes_begin, class_days
+    )
 
     # Only real multi-day breaks
     breaks = [
         parse_range(r["date_raw"], year)
         for _, r in calendar_df[
             calendar_df["event"].str.contains(
-                "Spring Recess", case=False, na=False)
+                "Spring Recess", case=False, na=False
+            )
         ].iterrows()
     ]
 
@@ -46,9 +48,9 @@ def generate(
         start_date=start_date,
         class_days=class_days,
         breaks=breaks,
-        lecture_count=13,
+        lecture_count=14,
         output_path=output_path,
-        return_dates=return_dates,
+        return_dates=return_dates
     )
 
     if return_dates:
