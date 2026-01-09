@@ -44,7 +44,8 @@
     "projects": {
       "milestones": 4,
       "label": "Project Milestone {n}",
-      "final_label": "Final Project Presentation"
+      "final_label": "Final Project Presentation",
+      "enabled": true
     },
     "participation": {
       "lecture_offset_from_end": 2,
