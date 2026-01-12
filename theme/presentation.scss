@@ -40,6 +40,48 @@ $button-text: #000000; // Button text color
   color: #343434;
 }
 
+
+.reveal .slide-logo {
+  bottom: 36px;
+  left: 72px;
+  top: unset !important;
+  right: auto;
+  transform: scale(0.65);
+  /* scale to 60% */
+  transform-origin: bottom left;
+  /* ensures scaling stays anchored */
+}
+
+// Slide numbers to the bottom-left
+.reveal .slide-number,
+.reveal.has-logo .slide-number {
+  position: fixed !important; // ✅ must use fixed to override Reveal defaults
+  bottom: 16px !important; // ✅ bottom-right corner
+  right: 50px !important;
+  top: auto !important; // cancel out Reveal's top
+  left: auto !important;
+
+  width: 48px;
+  height: 48px;
+  background-color: #f1f1f1;
+  color: #a51c30;
+  font-size: 11pt;
+  font-weight: 700 !important;
+  font-family: "Source Sans 3", sans-serif;
+  text-align: center;
+  align-items: center;
+  line-height: 48px;
+  border-radius: 3px 0 0 3px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+
+  border-right: 8px solid #a51c30;
+}
+
+
+
+
 // Background image (optional)
 .reveal .slide-background.quarto-title-block {
   background-image: url(""); // Replace with path to your image
@@ -49,7 +91,8 @@ $button-text: #000000; // Button text color
   background-repeat: no-repeat, no-repeat;
 }
 
-// Title Slide Styles
+
+// Title SlideStyles
 #title-slide {
   display: flex;
   flex-direction: column;
@@ -214,7 +257,7 @@ $button-text: #000000; // Button text color
 }
 
 // Level 1 list items
-.reveal ul > li {
+.reveal ul>li {
   font-size: 18pt;
   margin-bottom: 0.4em;
   font-family: "Source Sans 3", sans-serif;
@@ -222,7 +265,7 @@ $button-text: #000000; // Button text color
 }
 
 // Level 2 (nested ul inside li)
-.reveal ul li > ul > li {
+.reveal ul li>ul>li {
   font-size: 16pt;
   margin-bottom: 0.3em;
   font-family: "Source Sans 3", sans-serif;
@@ -230,12 +273,42 @@ $button-text: #000000; // Button text color
 }
 
 // Level 3
-.reveal ul li ul li > ul > li {
+.reveal ul li ul li>ul>li {
   font-size: 16pt;
   margin-bottom: 0.2em;
   font-style: italic;
   font-family: "Source Sans 3", sans-serif;
   color: $dark-gray;
+}
+
+
+
+/* custom-styles.scss */
+table {
+  font-size: 10pt;
+  border-collapse: collapse;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+
+  th {
+    font-weight: bold;
+    background-color: #06A2CB;
+    color: #ffffff;
+    border-bottom: 0.5px solid #999;
+    border-left: none;
+    border-right: none;
+  }
+
+  td,
+  th {
+    border-bottom: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  tr:last-child td {
+    border-bottom: 0.5px solid #999;
+  }
 }
 
 

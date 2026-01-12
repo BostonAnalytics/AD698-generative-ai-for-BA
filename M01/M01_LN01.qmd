@@ -11,16 +11,6 @@ categories: ['M01:', 'Notes', 'Lecture']
 description: "Lecture covering Introduction to Generative AI & Business Applications."
 ---
 
-
-# Your Instructor {.section-title}
-
-## Nakul R. Padalkar
-
-![](https://nakulpadalkar.com/wp-content/uploads/2023/07/na_c-600x1024.jpg){width="90%"}
-
-
-
-
 ## AD698 – Learning Path
 
 ![](./lecture01_figures/ad698path.png){width="95%"}
@@ -49,233 +39,18 @@ This course explores how modern generative AI systems reshape analytical workflo
   - How to integrate AI into dashboards, apps, and analytical workflows
   - Responsible use, privacy, transparency, and governance principles
 - This course trains you in supporting interviews, project pitches, and job applications while responding to the [AI Augmented Analyst]{.uured-bold} roles.
-
-- AI Foundations & Developer Setup
-- Natural Language and Generative AI Landscape
-- Prompt Engineering & Vector Representations
-- LLM Architecture & Fine-Tuning
-- Retrieval-Augmented Generation (RAG) Systems
-- Efficient Tuning & Similarity Search
-- LLM Memory and Multimodal Intelligence
-- Evaluation, Bias, and Responsible AI
-- Autonomous Agents and Multi-Agent Systems
+  - AI Foundations & Developer Setup
+  - Natural Language and Generative AI Landscape
+  - Prompt Engineering & Vector Representations
+  - LLM Architecture & Fine-Tuning
+  - Retrieval-Augmented Generation (RAG) Systems
+  - Efficient Tuning & Similarity Search
+  - LLM Memory and Multimodal Intelligence
+  - Evaluation, Bias, and Responsible AI
+  - Autonomous Agents and Multi-Agent Systems
 
 # Course Overview
 
-```{dot}
-// eval: false
-
-digraph Modules { style=filled bgcolor="#FAFAFA" fontname="Montserrat" fontsize=10.0 rankdir=TD color="#FAFAFA";
-newrank=true;compound=true;
-
-    
-    graph [bgcolor="white", splines=ortho, fontname="Montserrat"];
-
-
-    node [nojustify=false, shape=plaintext, fontsize=8, width=0.5, height=0.5,fontname="Montserrat"];
-
-    // Lab 01 Card
-    Lab01 [label=< 
-        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-            <TR>
-                <TD BGCOLOR="limegreen" ALIGN="CENTER" COLSPAN="2">
-                    <FONT COLOR="black" COLSPAN="1"><B>LAB 01</B></FONT>
-                </TD>
-            </TR>
-            <TR>
-                <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-                    <FONT COLOR="black" COLSPAN="1"><B>Introduction to GitHub</B></FONT>
-                </TD>
-            </TR>
-            <TR>
-                <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-                    <FONT COLOR="black" COLSPAN="1"><B>Due&nbsp;</B>&nbsp;:&nbsp; Week 1 Day 6</FONT>
-                </TD>
-            </TR>
-                              <TR>
-                <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-                    <FONT COLOR="black" COLSPAN="1">Submit Github link on Blackboard</FONT>
-                </TD>
-                            </TR>
-        </TABLE>
-    >];
-
-    // Lab 02 Card
-    // Lab02 [style = invis , label=< 
-    //     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-    //         <TR>
-    //             <TD BGCOLOR="limegreen" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>LAB 02</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Quarto GitHub Pages</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Due&nbsp;</B>&nbsp;:&nbsp; Week 2 Day 6</FONT>
-    //             </TD>
-    //         </TR>
-    //                           <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1">Submit Github link on Blackboard</FONT>
-    //             </TD>
-    //                         </TR>
-    //     </TABLE>
-    // >];
-
-    // PortfolioCard [label=< 
-    //     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2">
-    //         <TR>
-    //             <TD BGCOLOR="plum1" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Portfolio Website</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Follows directly from Lab 02</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Due&nbsp;</B>&nbsp;:&nbsp; Week 2 Day 6</FONT>
-    //             </TD>
-    //         </TR>
-    //               <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1">Submit Github link on Blackboard</FONT>
-    //             </TD>
-    //         </TR>
-    //     </TABLE>
-    // >];
-
-    // Layout
-    // Lab01 -> Lab02 [color=invis]; // Align the cards
-    // Lab01 -> PortfolioCard [style=dashed, weight=1, arrowsize=.5, weight=2.,color="#339966"]; // Align the cards
-
-
-// subgraph clusterB{
-
-//     node [nojustify=false, shape=plaintext, fontsize=10, width=2.0, height=1.5,fontname="Montserrat"];
-
-//     // Lab 01 Card
-//     AWS01 [label=< 
-//         <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-//             <TR>
-//                 <TD BGCOLOR="orange" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1"><B>AWS Cloud Lab</B></FONT>
-//                 </TD>
-//             </TR>
-//             <TR>
-//                 <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1"><B>Module 01</B></FONT>
-//                 </TD>
-//             </TR>
-//             <TR>
-//                 <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1">Complete Module 01 on AWS Academy</FONT>
-//                 </TD>
-//             </TR>
-//         </TABLE>
-//     >];
-
-    // Lab 02 Card
-    // AWS02 [label=< 
-    //     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-    //         <TR>
-    //             <TD BGCOLOR="orange" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>AWS Cloud Lab</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Module 02</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1">Complete Module 02 on AWS Academy</FONT>
-    //             </TD>
-    //         </TR>
-    //     </TABLE>
-    // >];
-
-    // AssignmentCard [label=< 
-    //     <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2">
-    //         <TR>
-    //             <TD BGCOLOR="skyblue" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Assignment 01</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Follows directly AWS Cloud Labs</B></FONT>
-    //             </TD>
-    //         </TR>
-    //         <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1"><B>Due&nbsp;</B>&nbsp;:&nbsp; Week 3 Day 6</FONT>
-    //             </TD>
-    //         </TR>
-    //               <TR>
-    //             <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-    //                 <FONT COLOR="black" COLSPAN="1">Submit Github link on Blackboard</FONT>
-    //             </TD>
-    //         </TR>
-    //     </TABLE>
-    // >];
-
-    // Layout
-    // AWS01 -> AWS02 [weight=1,arrowsize=.5, weight=2.,color="orange"]; // Align the cards
-    // AWS01 -> AssignmentCard [style=dashed, weight=1,arrowsize=.5, weight=2.,color="orange"]; // Align the cards
-    // AWS01 -> AssignmentCard [weight=1,arrowsize=.5, weight=2.,color="#339966"]; // Align the cards
-
-}
-// subgraph clusterC {
-
-//     node [nojustify=false, shape=plaintext, fontsize=10, width=2.0, height=1.5,fontname="Montserrat"];
-
-//     ProjectCard [style="dashed", label=< 
-//         <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="2">
-//             <TR>
-//                 <TD BGCOLOR="#336699" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="white" COLSPAN="1"><B>Project 01</B></FONT>
-//                 </TD>
-//             </TR>
-//             <TR>
-//                 <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1"><B>Follows directly from Lab 02</B></FONT>
-//                 </TD>
-//             </TR>
-//             <TR>
-//                 <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1"><B>Due&nbsp;</B>&nbsp;:&nbsp; Week 2 Day 6</FONT>
-//                 </TD>
-//             </TR>
-//                   <TR>
-//                 <TD BGCOLOR="#f2f2f2" ALIGN="CENTER" COLSPAN="2">
-//                     <FONT COLOR="black" COLSPAN="1">Submit Github link on Blackboard</FONT>
-//                 </TD>
-//             </TR>
-//         </TABLE>
-//     >];
-// }
-    // Lab01 -> ProjectCard [style=dashed, weight=1, arrowsize=.5, weight=2.,color="#339966"]; // Align the cards
-    // Lab02 -> ProjectCard [weight=1,arrowsize=.5, weight=2.,color="#003366"]; // Align the cards
-    // Lab01 -> AssignmentCard [weight=1,arrowsize=.5, weight=2.,color="#339966"]; // Align the cards
-    // Lab02 -> AssignmentCard [weight=1,arrowsize=.5, weight=2.,color="#339966"]; // Align the cards
-
-    // AssignmentCard -> ProjectCard [style=dashed, weight=1, arrowsize=.5, weight=2.,color=skyblue]; // Align the cards
-
-    // AWS01 -> ProjectCard [style=dashed, weight=1, arrowsize=.5, weight=2.,color=orange]; // Align the cards
-    // AssignmentCard -> ProjectCard [ltail=clusterB,lhead=clusterC];
-    // clusterB -> clusterC [style=invis]; // Align the cards
-}
-
- 
-```
 
 # Course Structure
 
@@ -283,15 +58,15 @@ newrank=true;compound=true;
 
 Each module has two lectures, two labs, and one assignment. Topics include:
 
-- Module 0 - AI Foundations & Developer Setup
-- Module 1 - Natural Language and Generative AI Landscape
-- Module 2 - Prompt Engineering & Vector Representations
-- Module 3 - LLM Architecture & Fine-Tuning
-- Module 4 - Retrieval-Augmented Generation (RAG) Systems
-- Module 5 - Efficient Tuning & Similarity Search
-- Module 6 - LLM Memory and Multimodal Intelligence
-- Module 7 - Evaluation, Bias, and Responsible AI
-- Module 8 - Autonomous Agents and Multi-Agent Systems
+- M0 - AI Foundations & Developer Setup
+- M1 - Natural Language and Generative AI Landscape
+- M2 - Prompt Engineering & Vector Representations
+- M3 - LLM Architecture & Fine-Tuning
+- M4 - Retrieval-Augmented Generation (RAG) Systems
+- M5 - Efficient Tuning & Similarity Search
+- M6 - LLM Memory and Multimodal Intelligence
+- M7 - Evaluation, Bias, and Responsible AI
+- M8 - Autonomous Agents and Multi-Agent Systems
 
 
 # Course Grading

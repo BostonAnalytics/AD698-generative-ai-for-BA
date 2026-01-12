@@ -53,41 +53,142 @@ display(combined_table.style.hide(axis="index"))
 ### Course Schedule
 
 ```{python}
-#| echo: false
-#| output: html
+# | echo: false
+# | output: html
 
 import pandas as pd
-from IPython.display import display, Markdown, HTML
+from IPython.display import display, HTML
+from schedules.build_schedule import build
+from schedules.precourse import apply_precourse_modules
+import sys
 
-course_schedule = pd.read_excel("./data/AD698-Schedule.xlsx")
-course_schedule = course_schedule.drop('Modules', axis=1)
+# -------------------------------------------------
+# Clear module cache (important for Quarto)
+# -------------------------------------------------
+for m in list(sys.modules):
+    if m.startswith(("schedules", "bu_calendar")):
+        del sys.modules[m]
 
-# Group rows based on the first column
-# grouped_schedule = course_schedule.groupby(course_schedule.columns[0])
+# -------------------------------------------------
+# Load course table
+# -------------------------------------------------
+course_schedule = (
+    pd.read_excel(
+        "data/AD698-Schedule.xlsx",
+        sheet_name="Course Details"
+    )
+    .drop("Modules", axis=1)
+)
+# remove last two rows
+course_schedule.drop(course_schedule.index[-2:], inplace=True)
 
-# Create a grouped DataFrame by adding a grouping level
-# grouped_table = (
-#     course_schedule.sort_values(by=course_schedule.columns[0])  # Sort by the first column for grouping
-#     .assign(GroupedBy=lambda x: x.iloc[:, 0])  # Add a "GroupedBy" column
-# )
+n_rows = len(course_schedule)
 
-# Define custom CSS for the 4th column
-def restrict_width(column):
-    return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
+# L0.x rows are always first two
+precourse_rows = 2
+lecture_rows = n_rows - precourse_rows
 
-# Apply styles to restrict the width of the 4th column (index 3 since it's 0-based)
+# -------------------------------------------------
+# Generate ON-CAMPUS dates (L1–L13 only)
+# -------------------------------------------------
+oncampus_df, oncampus_dates = build(
+    return_dates=True,
+    class_days=[3]   # Thursday
+)
+
+# 🔒 Engine contract
+assert len(oncampus_dates) == 14, (
+    f"Engine returned {len(oncampus_dates)} dates; expected 14 (L1-L14)."
+)
+
+# 🔒 Table contract
+assert lecture_rows == 14, (
+    f"Expected 14 lecture rows (L1.1-L7.2), found {lecture_rows}."
+)
+
+semester_start = oncampus_dates[0]
+
+# -------------------------------------------------
+# Online schedule (7 weeks → paired into 14 lectures)
+# -------------------------------------------------
+online_start = pd.to_datetime("2026-03-12")
+
+online_weekly = [
+    online_start + pd.Timedelta(weeks=i)
+    for i in range(7)
+]
+
+online_lecture_dates = []
+for d in online_weekly:
+    online_lecture_dates.extend([d, d])
+
+assert len(online_lecture_dates) == lecture_rows
+
+# -------------------------------------------------
+# Reset date columns FIRST
+# -------------------------------------------------
+course_schedule["Online"] = pd.NaT
+course_schedule["On-Campus"] = pd.NaT
+
+# -------------------------------------------------
+# Apply precourse modules (L0.1, L0.2 ONLY)
+# -------------------------------------------------
+course_schedule = apply_precourse_modules(
+    course_schedule,
+    semester_start=semester_start
+)
+
+# -------------------------------------------------
+# Assign lecture dates (positional, safe)
+# -------------------------------------------------
+
+# On-campus: 14 dates → first 14 lecture rows
+course_schedule.iloc[
+    precourse_rows: precourse_rows + len(oncampus_dates),
+    course_schedule.columns.get_loc("On-Campus")
+] = oncampus_dates
+
+# Online: 14 paired dates → all lecture rows
+course_schedule.iloc[
+    precourse_rows: precourse_rows + lecture_rows,
+    course_schedule.columns.get_loc("Online")
+] = online_lecture_dates
+
+# -------------------------------------------------
+# Formatting & display
+# -------------------------------------------------
+date_cols = ["Online", "On-Campus"]
+
+
+def date_formatter(x):
+    return "-" if pd.isna(x) else x.strftime("%d-%b")
+
+
+def restrict_width(_):
+    return [
+        ("max-width", "275px"),
+        ("overflow", "hidden"),
+        ("text-overflow", "ellipsis")
+    ]
+
+# drop online and On-campus columns
+
+
+# course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
+
+
 styled_table = (
-    course_schedule.style
-    .hide(axis="index")  # Hide the index
+    course_schedule
+    .style
+    .hide(axis="index")
+    .format({col: date_formatter for col in date_cols})
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
         {"selector": "td", "props": [("text-align", "left")]},
-        {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
-        {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}  # nth-child(4) targets the 4th column
+        # {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
+        # {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}
     ])
 )
-
-# Render and display the styled table inline in Quarto
 
 display(HTML(styled_table.to_html()))
 

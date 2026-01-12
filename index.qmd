@@ -11,18 +11,20 @@ format:
 ## Course Sections
 
 ```{python}
-#| echo: false
-#| output: html
-#| 
+# | echo: false
+# | output: html
+# |
 
 import pandas as pd
 from IPython.display import display, Markdown, HTML
 
 sections = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Sections")
 
+
 def restrict_width(column):
     return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
-    
+
+
 styled_table = (
     sections.style
     .hide(axis="index")  # Hide the index
@@ -30,7 +32,8 @@ styled_table = (
         {"selector": "th", "props": [("text-align", "left")]},
         {"selector": "td", "props": [("text-align", "left")]},
         {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
-        {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}  # nth-child(4) targets the 4th column
+        # nth-child(4) targets the 4th column
+        {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}
     ])
 )
 
@@ -74,7 +77,15 @@ By the end of this course, students will be able to:
 
 ## Course Resources
 
-There is **no required textbook** for this course. All core readings, technical documentation, and video tutorials will be provided on the course site (Canvas or Quarto site).
+There is **one required textbook** for this course. All core readings, technical documentation, and video tutorials will be provided on the course site.
+
+**Required Readings:**
+
+- Lecture notes per module are available on Blackboard. You can click on them to view and use `Crtl+p` to print them in pdf format.
+- Each Module has two lecture notes.
+  - For Online class you will need to use both lecture notes from Module
+  - For In Person class you will need to use one lecture notes per lecture from Module.
+
 
 **Recommended (not required):**
 
@@ -100,84 +111,142 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 ### Class Schedule 
 
 ```{python}
-#| echo: false
-#| output: html
+# | echo: false
+# | output: html
 
 import pandas as pd
-from datetime import timedelta
-from IPython.display import display, Markdown, HTML
-from schedules.build_schedule import build, generate_online_dates
+from IPython.display import display, HTML
+from . schedules.build_schedule import build
+from . schedules.precourse import apply_precourse_modules
+import sys
 
-course_schedule = pd.read_excel(
-    "data/AD698-Schedule.xlsx",
-    sheet_name="Course Details"
-).drop("Modules", axis=1)
+# -------------------------------------------------
+# Clear module cache (important for Quarto)
+# -------------------------------------------------
+for m in list(sys.modules):
+    if m.startswith(("schedules", "bu_calendar")):
+        del sys.modules[m]
 
-course_schedule.drop([14, 15, 16, 17], axis=0, inplace=True)
+# -------------------------------------------------
+# Load course table
+# -------------------------------------------------
+course_schedule = (
+    pd.read_excel(
+        "data/AD698-Schedule.xlsx",
+        sheet_name="Course Details"
+    )
+    .drop("Modules", axis=1)
+)
+# remove last two rows
+course_schedule.drop(course_schedule.index[-2:], inplace=True)
 
-# Identify the last two columns (assumed to be dates)
-date_cols = course_schedule.columns[-2:]
+n_rows = len(course_schedule)
 
-# On-campus (BU-aware, break-aware)
+# L0.x rows are always first two
+precourse_rows = 2
+lecture_rows = n_rows - precourse_rows
+
+# -------------------------------------------------
+# Generate ON-CAMPUS dates (L1–L13 only)
+# -------------------------------------------------
 oncampus_df, oncampus_dates = build(
     return_dates=True,
-    class_days=[0]   # Monday
+    class_days=[3]   # Thursday
 )
 
+# 🔒 Engine contract
+assert len(oncampus_dates) == 14, (
+    f"Engine returned {len(oncampus_dates)} dates; expected 14 (L1-L14)."
+)
+
+# 🔒 Table contract
+assert lecture_rows == 14, (
+    f"Expected 14 lecture rows (L1.1-L7.2), found {lecture_rows}."
+)
 
 semester_start = oncampus_dates[0]
 
-self_learn_date = semester_start - timedelta(days=7)
+# -------------------------------------------------
+# Online schedule (7 weeks → paired into 14 lectures)
+# -------------------------------------------------
+online_start = pd.to_datetime("2026-03-12")
 
-# Online (calendar-agnostic, 7 consecutive weeks)
-online_start = "2026-03-12"
-online_dates = [
-    pd.to_datetime(online_start) + pd.Timedelta(weeks=i)
+online_weekly = [
+    online_start + pd.Timedelta(weeks=i)
     for i in range(7)
 ]
 
-# Expand to 14 lectures by pairing
 online_lecture_dates = []
-for d in online_dates:
+for d in online_weekly:
     online_lecture_dates.extend([d, d])
 
-# Formatter for date columns: show DD-MMM or "-" if blank
-def date_formatter(x):
-    if pd.isna(x):
-        return "-"   # or "" if you want empty instead
-    return x.strftime("%d-%b")
+assert len(online_lecture_dates) == lecture_rows
 
-# Define custom CSS for the 4th column
-def restrict_width(column):
-    return [("max-width", "275px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
-
+# -------------------------------------------------
+# Reset date columns FIRST
+# -------------------------------------------------
 course_schedule["Online"] = pd.NaT
 course_schedule["On-Campus"] = pd.NaT
 
-# Ensure length alignment
-# Self-learn (rows 0 and 1)
-course_schedule.loc[0:1, ["Online", "On-Campus"]] = self_learn_date
+# -------------------------------------------------
+# Apply precourse modules (L0.1, L0.2 ONLY)
+# -------------------------------------------------
+course_schedule = apply_precourse_modules(
+    course_schedule,
+    semester_start=semester_start
+)
 
-# On-campus lectures (rows 2–15 → 14 lectures)
-course_schedule.loc[2:15, "On-Campus"] = pd.Series(oncampus_dates)
+# -------------------------------------------------
+# Assign lecture dates (positional, safe)
+# -------------------------------------------------
 
-# Online paired lectures (rows 2–15 → 14 lectures)
-course_schedule.loc[2:15, "Online"] = pd.Series(online_dates)
+# On-campus: 14 dates → first 14 lecture rows
+course_schedule.iloc[
+    precourse_rows: precourse_rows + len(oncampus_dates),
+    course_schedule.columns.get_loc("On-Campus")
+] = oncampus_dates
 
-# Apply styles to restrict the width of the 4th column (index 3 since it's 0-based)
+# Online: 14 paired dates → all lecture rows
+course_schedule.iloc[
+    precourse_rows: precourse_rows + lecture_rows,
+    course_schedule.columns.get_loc("Online")
+] = online_lecture_dates
+
+# -------------------------------------------------
+# Formatting & display
+# -------------------------------------------------
+date_cols = ["Online", "On-Campus"]
+
+
+def date_formatter(x):
+    return "-" if pd.isna(x) else x.strftime("%d-%b")
+
+
+def restrict_width(_):
+    return [
+        ("max-width", "275px"),
+        ("overflow", "hidden"),
+        ("text-overflow", "ellipsis")
+    ]
+
+# drop online and On-campus columns
+
+
+course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
+
+
 styled_table = (
-    course_schedule.style
-    .hide(axis="index")  # Hide the index
+    course_schedule
+    .style
+    .hide(axis="index")
     .format({col: date_formatter for col in date_cols})
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
         {"selector": "td", "props": [("text-align", "left")]},
-        {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
-        {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}  # nth-child(4) targets the 4th column
+        # {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
+        # {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}
     ])
 )
-
-# Render and display the styled table inline in Quarto
 
 display(HTML(styled_table.to_html()))
 
@@ -220,47 +289,122 @@ On the course homepage, all of the material is presented by modules and each mod
 
 ## Grading Breakdown
 
-### Certification Points:
+### Course Structure and Learning Format
 
-   1.	AWS Academy Generative AI Foundations
+All course materials are organized by **modules**, with each module covering **two lectures**. In the on-campus version of this course, we will meet weekly for a live classroom session that covers one lecture. In addition to in-class instruction, students will work in **teams** on a semester-long project and participate in structured discussions and applied activities.
 
-AWS Academy Generative AI Foundations is a self-paced course that will be completed in the first 10 weeks of the course. The final deliverable is completion badge from the AWS Academy. [Points are based on the AWS cloud module check grades translated to 100 points]{.bloodred-bold}.
+Please refer to the **Course Calendar & Outline** for detailed scheduling of lectures, assignments, milestones, and presentations.
 
-### Weekly Labs (On Campus Class Only):
+## Grading Breakdown
 
-The labs consist of Weekly Quizzes and Problem Solving Exercises. Each week, students will take part in a set of focused weekly in class exercise that concern the material covered during that week’s content. Participation requirements include the jupyter or quarto notebook. These assignments will be done individually. The exercises are due by Day 6 at 11:59 PM.
+Your final grade is based on the following components:
 
-### Individual Assignments:
+### AWS Academy Generative AI Foundations
 
-Assignments are associated with the modules and will be submitted in the "Assignments" section accessible from the left-hand course menu. All assignment dates are given in the course Study Guide.
+All students are required to complete the **AWS Academy Generative AI Foundations** course during the first **10 weeks** of the semester.
 
-### Group Project:
+- This is a **self-paced, external certification**
+- The final deliverable is the **AWS Academy completion badge**
+- Points are awarded based on **AWS module check completion**, translated to a 100-point scale
 
-The Term Project consists of one midterm check-in, a managerial report and a final presentation. These assignments strengthen your understanding of the core concepts introduced in this course and build on their knowledge acquired in the foundations of a business analytics course. The Term Project and some of the assignments require students to work with a conceptual website that you will build over the assignments.
+This requirement ensures all students develop a shared baseline in industry-standard generative AI concepts and practices. The assignment is scheduled to be submitted in the 10th week of the semester. Later submission after that week will result in a deduction of 2% per day.
 
-1.	Project Milestones through GitHub
-    1.	GitHub setup, team charter, repo planning
-    2.	Data + Corpus Engineering
-    3.	GenAI Pipeline + Insights Prototype
-    4.	Model Evaluation + Deployment Readiness
-2.	Managerial report - In the form of a GitHub Website
-3.	Presentation
-4.	Group Feedback
+### Group Paper Presentation (Once per Group)
+Each student group will deliver **one research paper presentation** during the semester.
+
+- Presentation length: approximately **15 minutes**
+- Each presentation will be followed by **guided class discussion**
+- All students are expected to read the assigned paper(s), regardless of whether they are presenting
+
+Presentations focus on:
+
+- The problem the paper addresses
+- The technical or conceptual contribution
+- Limitations and assumptions
+- Implications for building generative AI systems
+
+This component develops skills in **critical reading, synthesis, and technical communication**.
+
+### Individual Assignments
+
+There are **four individual assignments**, each aligned with a stage of the generative AI pipeline using SEC 10-K filings. These assignments are submitted individually, even though students work within project teams.
+
+The assignments correspond to the following themes:
+
+1. **Corpus Familiarization & Chatbot Scope**
+   Understanding the provided 10-K data and defining the scope of a domain-specific GenAI chatbot.
+
+2. **Text Structuring & Retrieval Units**
+   Cleaning, structuring, and chunking SEC filings for retrieval-based systems.
+
+3. **Embeddings & Retrieval Baseline**
+   Creating semantic representations and validating retrieval quality.
+
+4. **Grounded Generation & Guardrails**
+   Designing prompts and retrieval-augmented generation with explicit grounding and constraints.
+
+### Managerial Report with Application Demo
+
+The **managerial report** is the primary written deliverable for the course.
+
+- Submitted as a **GitHub-hosted website**
+- Synthesizes the full GenAI chatbot system built throughout the semester
+- Written for a **managerial or executive audience**, not a purely technical one
+
+The report must clearly explain:
+
+* The problem addressed
+* The data used
+* The generative AI pipeline
+* Key insights and limitations
+* Appropriate and inappropriate use cases
+
+This component evaluates your ability to **translate technical systems into decision-relevant narratives**.
+
+### Group Project Presentation
+
+At the end of the semester, each group will deliver a **final project presentation**.
+
+* Focuses on the chatbot system, insights, and managerial implications
+* Emphasizes clarity, evidence, and responsible design
+* Not a code walkthrough
+
+This presentation assesses your ability to **communicate complex GenAI systems clearly and professionally**.
+
+### Group Feedback
+
+Students are required to provide **structured feedback** on other group presentations.
+
+* Feedback will be guided by prompts provided by the instructor
+* Evaluates engagement, critical thinking, and comparative analysis
+
+This component ensures active participation and shared responsibility for the learning environment.
+
+### Use of Generative AI
+
+Generative AI tools are **allowed and expected** in this course. However, all students must:
+
+* Document AI usage
+* Validate outputs
+* Take responsibility for final submissions
+
+Failure to appropriately disclose or validate AI-assisted work may result in penalties.
+
 
 ### Grade Points
 
-
 ```{python}
-#| echo: false
-#| output: html
-#| 
+# | echo: false
+# | output: html
+# | eval: true
 
 import pandas as pd
 from IPython.display import display, Markdown, HTML
 
 deliverables = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Grade")
 
-deliverables = deliverables[["Class Activity", "Count", "Points", "Max Points"]]
+deliverables = deliverables[[
+    "Class Activity", "Count", "Points", "Max Points"]]
 
 numeric_cols = ["Count", "Points", "Max Points"]
 
@@ -280,8 +424,10 @@ styled = (
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
         {"selector": "td", "props": [("text-align", "left")]},
-        {"selector": "tbody td:nth-child(2)", "props": [("max-width","200px"),("overflow","hidden"),("text-overflow","ellipsis")]},
-        {"selector": "tbody td:nth-child(3)", "props": [("max-width","200px"),("overflow","hidden"),("text-overflow","ellipsis")]}
+        {"selector": "tbody td:nth-child(2)", "props": [(
+            "max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]},
+        {"selector": "tbody td:nth-child(3)", "props": [(
+            "max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]}
     ])
 )
 

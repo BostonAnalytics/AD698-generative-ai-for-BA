@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 import pandas as pd
 
 from schedules.engine import generate_schedule
@@ -9,7 +9,7 @@ def generate(
     *,
     start_date: str,
     lecture_count: int = 6,
-    class_days: List[int] | None = None,
+    class_days: Optional[List[int]] = None,
 ) -> Tuple[pd.DataFrame, List[datetime]]:
     """
     Online schedule generator.
