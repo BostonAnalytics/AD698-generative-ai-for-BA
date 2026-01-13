@@ -723,22 +723,16 @@ Knowledge production becomes faster, cheaper, and more widely accessible—but l
 
 
 ## Societal Impacts from GenAI
-### Automation of Routine Tasks:
-- Al is automating repetitive jobs like data entry and manufacturing, leading to job reductions in some areas.
-
-### Impact on Skilled Jobs:
-
-- AI is increasingly capable of handling complex task, potentially automating niche-skill/high-memory roles.
-- GenAI has been used to lower early career demand due to perceived upper-level role empowerment.
-
-### New Job Opportunities:
-
-- While some jobs are lost, AI can also create new roles in areas like AI development and data science.
-- Workers need reskilling to adapt, but some careers / demographics will have disproportionate impact.
-
-### Impact on Psychology:
-
-- Much like the internet (rise of ubiquitous connectivity), psychological impacts of ubiquitous Al is inconclusive.
+- Automation of Routine Tasks:
+  - Al is automating repetitive jobs like data entry and manufacturing, leading to job reductions in some areas.
+- Impact on Skilled Jobs:
+  - AI is increasingly capable of handling complex task, potentially automating niche-skill/high-memory roles.
+  - GenAI has been used to lower early career demand due to perceived upper-level role empowerment.
+- New Job Opportunities:
+  - While some jobs are lost, AI can also create new roles in areas like AI development and data science.
+  - Workers need reskilling to adapt, but some careers / demographics will have disproportionate impact.
+- Impact on Psychology:
+  - Much like the internet (rise of ubiquitous connectivity), psychological impacts of ubiquitous Al is inconclusive.
 
 ---
 
@@ -748,14 +742,14 @@ AI safety and risk mitigation have become **strategic priorities** across govern
 These efforts reflect competing—but overlapping—interests in **national security, economic competitiveness, and public trust**.
 
 - Key characteristics of the current landscape
-  * Fragmented but rapidly expanding standards ecosystem
-  * Mix of voluntary, industry-led initiatives and state-backed institutions
-  * Emphasis on *risk anticipation*, not just post-hoc compliance
+  - Fragmented but rapidly expanding standards ecosystem
+  - Mix of voluntary, industry-led initiatives and state-backed institutions
+  - Emphasis on *risk anticipation*, not just post-hoc compliance
 
 - Global coordination trend
-  * Early leadership by a small number of states
-  * Rapid international replication and diversification
-  * Increasing public–private collaboration
+  - Early leadership by a small number of states
+  - Rapid international replication and diversification
+  - Increasing public–private collaboration
 
 ---
 
@@ -779,3 +773,13 @@ It integrates technical controls, organizational governance, and ethical commitm
 - [Transparency & Accountability]{.uured-bold}: Enable explainability, document design decisions, assign responsibility, and maintain oversight
 - [Fairness & Human Dignity]{.uured-bold}: Identify and mitigate bias; support nondiscrimination and equitable outcomes
 - [Reliability & Certification]{.uured-bold}: Ensure consistent performance, fitness for purpose, and ongoing validation in production
+
+# From Analytics to AI
+
+## Evolution of Decision Support Systems
+
+![](./M01_lecture01_figures/enterpriseai.png){width="80%" fig-align="center"}
+
+## Types of Decision Support
+
+![](./M01_lecture01_figures/typesofanalytics.png){width="80%" fig-align="center"}
