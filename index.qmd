@@ -111,140 +111,58 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 ### Class Schedule 
 
 ```{python}
+# | label: build-course-schedule
 # | echo: false
+# | warning: false
+# | message: false
 # | output: html
+
+# | label: course-description
+# | echo: false
+# | warning: false
+# | message: false
 
 import pandas as pd
 from IPython.display import display, HTML
-from . schedules.build_schedule import build
-from . schedules.precourse import apply_precourse_modules
-import sys
 
 # -------------------------------------------------
-# Clear module cache (important for Quarto)
+# Load COURSE DESCRIPTION table (content only)
 # -------------------------------------------------
-for m in list(sys.modules):
-    if m.startswith(("schedules", "bu_calendar")):
-        del sys.modules[m]
-
-# -------------------------------------------------
-# Load course table
-# -------------------------------------------------
-course_schedule = (
+course_description = (
     pd.read_excel(
         "data/AD698-Schedule.xlsx",
         sheet_name="Course Details"
     )
-    .drop("Modules", axis=1)
-)
-# remove last two rows
-course_schedule.drop(course_schedule.index[-2:], inplace=True)
-
-n_rows = len(course_schedule)
-
-# L0.x rows are always first two
-precourse_rows = 2
-lecture_rows = n_rows - precourse_rows
-
-# -------------------------------------------------
-# Generate ON-CAMPUS dates (L1–L13 only)
-# -------------------------------------------------
-oncampus_df, oncampus_dates = build(
-    return_dates=True,
-    class_days=[3]   # Thursday
-)
-
-# 🔒 Engine contract
-assert len(oncampus_dates) == 14, (
-    f"Engine returned {len(oncampus_dates)} dates; expected 14 (L1-L14)."
-)
-
-# 🔒 Table contract
-assert lecture_rows == 14, (
-    f"Expected 14 lecture rows (L1.1-L7.2), found {lecture_rows}."
-)
-
-semester_start = oncampus_dates[0]
-
-# -------------------------------------------------
-# Online schedule (7 weeks → paired into 14 lectures)
-# -------------------------------------------------
-online_start = pd.to_datetime("2026-03-12")
-
-online_weekly = [
-    online_start + pd.Timedelta(weeks=i)
-    for i in range(7)
-]
-
-online_lecture_dates = []
-for d in online_weekly:
-    online_lecture_dates.extend([d, d])
-
-assert len(online_lecture_dates) == lecture_rows
-
-# -------------------------------------------------
-# Reset date columns FIRST
-# -------------------------------------------------
-course_schedule["Online"] = pd.NaT
-course_schedule["On-Campus"] = pd.NaT
-
-# -------------------------------------------------
-# Apply precourse modules (L0.1, L0.2 ONLY)
-# -------------------------------------------------
-course_schedule = apply_precourse_modules(
-    course_schedule,
-    semester_start=semester_start
+    .drop(columns=["Modules"], errors="ignore")
 )
 
 # -------------------------------------------------
-# Assign lecture dates (positional, safe)
+# Keep only description-related columns
 # -------------------------------------------------
-
-# On-campus: 14 dates → first 14 lecture rows
-course_schedule.iloc[
-    precourse_rows: precourse_rows + len(oncampus_dates),
-    course_schedule.columns.get_loc("On-Campus")
-] = oncampus_dates
-
-# Online: 14 paired dates → all lecture rows
-course_schedule.iloc[
-    precourse_rows: precourse_rows + lecture_rows,
-    course_schedule.columns.get_loc("Online")
-] = online_lecture_dates
+expected_cols = ["Lecture", "Title", "Description"]
+course_description = course_description[expected_cols]
 
 # -------------------------------------------------
-# Formatting & display
+# Drop trailing admin / notes rows if present
+# (assumes last 4 rows are non-lecture content)
 # -------------------------------------------------
-date_cols = ["Online", "On-Campus"]
+course_description = course_description.iloc[:-4].reset_index(drop=True)
 
-
-def date_formatter(x):
-    return "-" if pd.isna(x) else x.strftime("%d-%b")
-
-
-def restrict_width(_):
-    return [
-        ("max-width", "275px"),
-        ("overflow", "hidden"),
-        ("text-overflow", "ellipsis")
-    ]
-
-# drop online and On-campus columns
-
-
-course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
-
-
+# -------------------------------------------------
+# Presentation
+# -------------------------------------------------
 styled_table = (
-    course_schedule
+    course_description
     .style
     .hide(axis="index")
-    .format({col: date_formatter for col in date_cols})
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
-        {"selector": "td", "props": [("text-align", "left")]},
-        # {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
-        # {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("max-width", "550px"),
+            ("white-space", "normal")
+        ]},
     ])
 )
 

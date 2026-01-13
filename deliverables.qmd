@@ -1,5 +1,5 @@
 ---
-title: "AD 6698 Generative AI for Business Analytics"
+title: "AD 698 Generative AI for Business Analytics"
 subtitle: "Deliverables"
 number-sections: false
 bibliography: references.bib
@@ -10,8 +10,8 @@ csl: chicago-syllabus.csl
 ## Course Schedule 
 
 ```{python}
-#| echo: false
-#| output: markdown
+# | echo: false
+# | output: markdown
 
 from datetime import datetime, timedelta
 import pandas as pd
@@ -20,11 +20,15 @@ from IPython.display import display, Markdown
 semester = "Spring"
 
 # Function to generate the Day 1 - Day 7 list based on a start date
+
+
 def generate_days(start_date):
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    days = ["Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday", "Sunday"]
     start_day_index = days.index(start_date)
     days_shifted = days[start_day_index:] + days[:start_day_index]
     return days_shifted
+
 
 # Start dates for each section
 start_dates = {
@@ -58,14 +62,13 @@ combined_table.style.hide(axis="index")
 
 ```
 
+- **Section `{python} first_section`**
+  - The first day of the week (Day 1) for section **`{python} first_section`** is [`{python} first_day`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
+  - The last day of the week (Day 7) for section **`{python} first_section`** is [`{python} last_day_first_section`]{.uured-bold}.
 
-- **Section `{{ first_section }}`**
-  - The first day of the week (Day 1) for section `{{ first_section }}` is [`{{ first_day }}`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section `{{ first_section }}` is [`{{ last_day_first_section }}`]{.uured-bold}.
-
-- **Section `{{ second_section }}`**
-  - The first day of the week (Day 1) for section `{{ second_section }}` is [`{{ second_day }}`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section `{{ second_section }}` is [`{{ last_day_second_section }}`]{.uured-bold}.
+- **Section `{python} second_section`**
+  - The first day of the week (Day 1) for section **`{python} second_section`** is [`{python} second_day`]{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
+  - The last day of the week (Day 7) for section **`{python} second_section`** is [`{python} last_day_second_section`]{.uured-bold}.
 
 Please adhere to the due dates posted on the course website. [Late work is not accepted]{.bloodred-bold}.
 
@@ -238,129 +241,70 @@ HTML(schedule_df.to_html(index=False))
 ## On Campus (A1) Spring
 
 ```{python}
-#| echo: false
-#| tbl-colwidths: [10,10,15,15]
+# | echo: false
+# | tbl-colwidths: [10,10,15,15]
 
-from datetime import datetime, timedelta
-import pandas as pd
+from schedules.build_schedule import build
+from schedules.deliverables.oncampus_deliverables import apply_oncampus_deliverables
+from schedules.presentation import format_deliverables_view
+from schedules.term_resolver import resolve_term
 from IPython.display import HTML
+import sys
 
+# -------------------------------------------------
+# Clear module cache (important for Quarto re-runs)
+# -------------------------------------------------
+for m in list(sys.modules):
+    if m.startswith(("schedules", "bu_calendar", "schedules.deliverables")):
+        del sys.modules[m]
 
-# Define Spring section A1, starting on Monday Jan 27, 2026
-sections = {
-    "A1": "2026-01-20",  # Monday start after MLK holiday
-}
+# ==================================================
+# USER INPUT
+# ==================================================
+class_days = [0]           # Monday (Mon=0)
+class_day_index = 0        # Anchor for cadence (Monday)
 
-# Number of lectures
-required_lectures = 13
+# ==================================================
+# SEMESTER CONTEXT
+# ==================================================
+season, year = resolve_term()
+semester = f"{season}{str(year)[-2:]}"
 
-# Class is on Mondays
-class_days = [0]  # Monday = 0
+# ==================================================
+# BUILD LECTURE SCHEDULE (LECTURES ONLY)
+# ==================================================
+schedule_df, lecture_dates = build(
+    return_dates=True,
+    class_days=class_days
+)
 
-# Define relevant breaks
-breaks = {
-    "PresidentsDay": ("2026-02-16", "2026-02-16"),  # Monday off
-}
+# 🔒 Deliverables invariant
+lecture_count = len(lecture_dates)
 
-# Manual substitution for Presidents Day (make-up class on Wednesday, Feb 18)
-holiday_substitutions = {
-    datetime(2026, 2, 16): datetime(2026, 2, 17)
-}
+# ==================================================
+# APPLY ON-CAMPUS DELIVERABLES (LECTURES ONLY)
+# ==================================================
+schedule_df = apply_oncampus_deliverables(
+    schedule_df,
+    lecture_dates,
+    class_day_index=class_day_index
+)
 
-# Define breaks
-breaks = {
-    "Spring Break": ("2026-03-07", "2026-03-15"),
-}
+# ==================================================
+# PRESENTATION FORMAT (NO COURSE CONTENT)
+# ==================================================
+schedule_df = format_deliverables_view(schedule_df)
 
+# Remove internal index column if present
+schedule_df.drop(columns=["#"], inplace=True, errors="ignore")
 
-# Parse break ranges
-break_ranges = [
-    (datetime.strptime(start, "%Y-%m-%d"), datetime.strptime(end, "%Y-%m-%d"))
-    for start, end in breaks.values()
-]
-
-# Set course end date
-end_date = datetime(2026, 4, 30)
-
-# Initialize schedule dictionary
-schedule = {section: [] for section in sections}
-
-# Generate schedule
-for section, start_str in sections.items():
-    start_date = datetime.strptime(start_str, "%Y-%m-%d")
-    lecture_dates = []
-    current_date = start_date
-
-    while len(lecture_dates) < required_lectures:
-        # Handle substitutions
-        if current_date in holiday_substitutions:
-            lecture_dates.append(holiday_substitutions[current_date])
-        elif current_date.weekday() in class_days:
-            # Skip if within break
-            if any(start <= current_date <= end for start, end in break_ranges):
-                current_date += timedelta(days=1)
-                continue
-            lecture_dates.append(current_date)
-        current_date += timedelta(days=1)
-        if current_date > end_date:
-            break
-
-    # Format dates
-    schedule[section] = [d.strftime("%d-%b (%a)") for d in sorted(lecture_dates)]
-
-# Create DataFrame
-# Sort and create lecture schedule
-# lecture_dates = sorted(lecture_dates)
-schedule_df = pd.DataFrame({
-    "#": [f"L{i+1}" for i in range(len(lecture_dates))],
-    section: [d.strftime("%d-%b (%a)") for d in lecture_dates]
-})
-
-# Lab schedule: assign to first 6 lectures for this example
-lab_entries = [""] * len(lecture_dates)
-for i in [1, 2, 3, 5, 6, 7, 8, 9]:  # sample positions
-    lab_entries[i] = f"Lab {i}"
-
-# Assignments every other Monday starting from L2 (index 1)
-assignments = []
-assignment_labels = []
-for i in range(2, len(lecture_dates), 2):
-    if len(assignments) >= 5:
-        break
-    due_date = lecture_dates[i] + timedelta(days=1)
-    # Skip if due falls in spring break
-    if any(start <= due_date <= end for start, end in break_ranges):
-        continue
-    assignments.append((i, due_date))
-    assignment_labels.append(f"A{len(assignments)} (Due: {due_date.strftime('%b %d')})")
-
-assignment_column = [""] * len(lecture_dates)
-project_column = [""] * len(lecture_dates)
-
-# Add assignment and project milestone +1 week after each assignment
-for idx, (lecture_idx, due_date) in enumerate(assignments):
-    assignment_column[lecture_idx] = assignment_labels[idx]
-    proj_idx = lecture_idx + 0
-    if proj_idx < len(project_column):
-        project_column[proj_idx] = f"Ungraded Milestone {idx+1}"
-
-# Final presentations: last two lectures
-project_column[-2] = "Presentation"
-project_column[-1] = "Final Project Report + Presentation"
-
-# Participation on second to last class
-participation_column = [""] * len(lecture_dates)
-participation_column[-2] = "Participation 1 + Participation 2"
-
-# Add to schedule DataFrame
-schedule_df["Lab (Due)"] = lab_entries
-schedule_df["Assignments"] = assignment_column
-schedule_df["Project Milestones"] = project_column
-schedule_df["Participation"] = participation_column
-
-# Export
-output_file = f"./data/{semester}_schedule_oncampus.xlsx"
+# ==================================================
+# EXPORT
+# ==================================================
+output_file = f"./data/{semester}_deliverables_oncampus.xlsx"
 schedule_df.to_excel(output_file, index=False)
-# Display HTML
+
 HTML(schedule_df.to_html(index=False))
+
+
 ```
