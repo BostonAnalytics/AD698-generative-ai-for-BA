@@ -1,0 +1,38 @@
+---
+embed-resources: true
+format:
+  revealjs: 
+    toc: false
+    transition: fade
+    theme: [../analytics_themes/instructor.scss]  # Custom styles for sidebar and layout
+---
+
+
+## Nakul R. Padalkar
+::: {.columns}
+::: {.column width="60%"}
+Hi, I’m Nakul Padalkar, Associate Professor of Practice in Applied Business Analytics at Boston University. With a Ph.D. in Management Information Systems from Texas Tech University and over a decade of experience across industry and academia, my career has explored how technology shapes how we live, work, and understand the world. I am particularly passionate about the intersection of technology, economics, and society—how innovations like blockchain, machine learning, and AI can drive positive change in our communities.
+
+I’ve been fortunate to work on academically rigorous and practically impactful projects throughout my career. My research often tackles real-world challenges, from improving supply chain transparency using blockchain technology to exploring the societal implications of artificial intelligence. In my work, I aim to blend theoretical insights with actionable strategies, whether through publishing papers on topics like AI in financial markets or designing courses that equip students to thrive in data-driven fields.
+
+My work has been a combination of my professional and personal interests, which often overlap in surprising ways. For example, I’m a photography enthusiast and love incorporating my photos into my computer vision classes. Capturing a moment in a single frame or exploring the nuances of a new landscape offers me fresh perspectives that I can bring back to the classroom.
+
+Beyond teaching and research, I’m a lifelong learner and traveler. Exploring new places, cultures, and cuisines broadens my outlook and brings depth to my work. Travel and technology share something in common: they allow us to cross boundaries, connect with diverse perspectives, and learn continuously.
+
+:::
+
+::: {.column width="40%"}
+![](./instructor_images/NKN_5029.png){width="85%"}
+:::
+:::
+
+## Sree Kumar Valath Bhuan Das
+::: {.columns}
+::: {.column width="60%"}
+Sree Kumar Valath Bhuan Das is an education technologist at Boston University and a lecturer with BU Metropolitan College’s Department of Administrative Sciences. He earned his master’s in applied data analytics, during which time he served as a graduate assistant and a graduate research assistant focusing on generative AI technologies to help detect plagiarism and support faculty and coursework. He developed cloud applications to aid in course delivery, including a business simulation for classroom use and a tool for students to explore the employability landscape. He also created the Data Visualization Unit for the graduate analytics lab.
+:::
+
+::: {.column width="40%"}
+![](./instructor_images/25-1135-0202-Das-600x600-1.jpg){width="85%"}
+:::
+:::

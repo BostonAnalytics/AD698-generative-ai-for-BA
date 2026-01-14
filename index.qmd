@@ -117,11 +117,6 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 # | message: false
 # | output: html
 
-# | label: course-description
-# | echo: false
-# | warning: false
-# | message: false
-
 import pandas as pd
 from IPython.display import display, HTML
 

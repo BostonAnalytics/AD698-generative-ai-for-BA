@@ -53,143 +53,129 @@ display(combined_table.style.hide(axis="index"))
 ### Course Schedule
 
 ```{python}
+# | label: build-course-schedule
 # | echo: false
+# | warning: false
+# | message: false
 # | output: html
 
 import pandas as pd
 from IPython.display import display, HTML
 from schedules.build_schedule import build
-from schedules.precourse import apply_precourse_modules
+from schedules.online_schedule import generate as generate_online
 import sys
 
 # -------------------------------------------------
-# Clear module cache (important for Quarto)
+# Clear module cache (important for Quarto reruns)
 # -------------------------------------------------
 for m in list(sys.modules):
     if m.startswith(("schedules", "bu_calendar")):
         del sys.modules[m]
 
 # -------------------------------------------------
-# Load course table
+# SECTION CONFIGURATION (single source of truth)
 # -------------------------------------------------
-course_schedule = (
+sections = {
+    "A1": {
+        "mode": "oncampus",
+        "class_days": [0],   # Mon
+    },
+    "O": {
+        "mode": "online",
+        "start_date": "2026-03-12",
+        "class_days": [3],      # Thu
+    }
+}
+
+# -------------------------------------------------
+# Load COURSE DESCRIPTION (content only)
+# -------------------------------------------------
+course_table = (
     pd.read_excel(
         "data/AD698-Schedule.xlsx",
         sheet_name="Course Details"
     )
-    .drop("Modules", axis=1)
-)
-# remove last two rows
-course_schedule.drop(course_schedule.index[-2:], inplace=True)
-
-n_rows = len(course_schedule)
-
-# L0.x rows are always first two
-precourse_rows = 2
-lecture_rows = n_rows - precourse_rows
-
-# -------------------------------------------------
-# Generate ON-CAMPUS dates (L1–L13 only)
-# -------------------------------------------------
-oncampus_df, oncampus_dates = build(
-    return_dates=True,
-    class_days=[3]   # Thursday
+    .drop(columns=["Modules"], errors="ignore")
 )
 
-# 🔒 Engine contract
-assert len(oncampus_dates) == 14, (
-    f"Engine returned {len(oncampus_dates)} dates; expected 14 (L1-L14)."
-)
+# Keep lecture rows only (drop footer/admin rows)
+course_table = course_table.iloc[:-4].reset_index(drop=True)
 
-# 🔒 Table contract
-assert lecture_rows == 14, (
-    f"Expected 14 lecture rows (L1.1-L7.2), found {lecture_rows}."
-)
-
-semester_start = oncampus_dates[0]
+course_table = course_table[["Lecture", "Title"]]
+n_lectures = len(course_table)
 
 # -------------------------------------------------
-# Online schedule (7 weeks → paired into 14 lectures)
+# Generate schedules PER SECTION
 # -------------------------------------------------
-online_start = pd.to_datetime("2026-03-12")
+section_dates = {}
 
-online_weekly = [
-    online_start + pd.Timedelta(weeks=i)
-    for i in range(7)
+for section, meta in sections.items():
+    if meta["mode"] == "oncampus":
+        _, dates = build(
+            return_dates=True,
+            class_days=meta["class_days"]
+        )
+    else:  # online
+        _, dates = generate_online(
+            start_date=meta["start_date"],
+            lecture_count=n_lectures,
+            class_days=meta["class_days"]
+        )
+
+    # Safety check
+    assert len(dates) == n_lectures, (
+        f"{section}: expected {n_lectures} dates, got {len(dates)}"
+    )
+
+    section_dates[section] = dates
+
+# -------------------------------------------------
+# Attach section columns (ONLINE LAST)
+# -------------------------------------------------
+oncampus_sections = [
+    s for s in sections if sections[s]["mode"] == "oncampus"
+]
+online_sections = [
+    s for s in sections if sections[s]["mode"] == "online"
 ]
 
-online_lecture_dates = []
-for d in online_weekly:
-    online_lecture_dates.extend([d, d])
+# On-campus first
+for s in oncampus_sections:
+    course_table[s] = section_dates[s]
 
-assert len(online_lecture_dates) == lecture_rows
-
-# -------------------------------------------------
-# Reset date columns FIRST
-# -------------------------------------------------
-course_schedule["Online"] = pd.NaT
-course_schedule["On-Campus"] = pd.NaT
+# Online last (single column O)
+for s in online_sections:
+    course_table[s] = section_dates[s]
 
 # -------------------------------------------------
-# Apply precourse modules (L0.1, L0.2 ONLY)
-# -------------------------------------------------
-course_schedule = apply_precourse_modules(
-    course_schedule,
-    semester_start=semester_start
-)
-
-# -------------------------------------------------
-# Assign lecture dates (positional, safe)
+# Date formatting
 # -------------------------------------------------
 
-# On-campus: 14 dates → first 14 lecture rows
-course_schedule.iloc[
-    precourse_rows: precourse_rows + len(oncampus_dates),
-    course_schedule.columns.get_loc("On-Campus")
-] = oncampus_dates
 
-# Online: 14 paired dates → all lecture rows
-course_schedule.iloc[
-    precourse_rows: precourse_rows + lecture_rows,
-    course_schedule.columns.get_loc("Online")
-] = online_lecture_dates
+def fmt(d):
+    return "-" if pd.isna(d) else d.strftime("%d-%b")
+
+
+for col in course_table.columns[2:]:
+    course_table[col] = course_table[col].map(fmt)
 
 # -------------------------------------------------
-# Formatting & display
+# Presentation
 # -------------------------------------------------
-date_cols = ["Online", "On-Campus"]
-
-
-def date_formatter(x):
-    return "-" if pd.isna(x) else x.strftime("%d-%b")
-
-
-def restrict_width(_):
-    return [
-        ("max-width", "275px"),
-        ("overflow", "hidden"),
-        ("text-overflow", "ellipsis")
-    ]
-
-# drop online and On-campus columns
-
-
-# course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
-
-
-styled_table = (
-    course_schedule
+styled = (
+    course_table
     .style
     .hide(axis="index")
-    .format({col: date_formatter for col in date_cols})
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
-        {"selector": "td", "props": [("text-align", "left")]},
-        # {"selector": "tbody td:nth-child(2)", "props": restrict_width(None)},
-        # {"selector": "tbody td:nth-child(3)", "props": restrict_width(None)}
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "nowrap")
+        ]},
     ])
 )
 
-display(HTML(styled_table.to_html()))
+display(HTML(styled.to_html()))
 
 ```

@@ -1,0 +1,787 @@
+---
+title: "AD698 - Applied Generative AI"
+subtitle: "Introduction to Generative AI & Business Applications"
+logo: "../theme/figures/met_logotype_black.png"
+date: 03/12/2024
+date-modified: today
+date-format: long
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - name: Boston University
+        city: Boston
+        state: MA
+format: 
+    revealjs:
+        theme: [../theme/presentation.scss]
+        html-math-method: katex
+        slide-number: c/t
+        toc: true
+        toc-depth: 1
+        auto-stretch: false
+        from: markdown+emoji
+
+    pptx:
+        reference-doc: ../theme/presentation_template.pptx
+self-contained-math: true
+fig-align: center
+monofont: Roboto
+title-slide-attributes:
+    data-background-image: "../theme/blank_red.png"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
+execute: 
+  echo: false
+  warning: false
+  message: false
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+---
+
+## Course Welcome
+
+- Understand the breadth of generative AI technologies
+- Explore core generative model architectures
+- Gain insights into practical applications
+
+##  Course Schedule (tentative)
+
+```{python}
+# | echo: false
+# | output: html
+
+import pandas as pd
+from IPython.display import display, HTML
+import sys
+
+# -------------------------------------------------
+# Load course table
+# -------------------------------------------------
+course_schedule = (
+    pd.read_excel(
+        "../data/AD698-Schedule.xlsx",
+        sheet_name="Course Details"
+    )
+    .drop("Modules", axis=1)
+)
+# remove last two rows
+course_schedule.drop(course_schedule.index[-2:], inplace=True)
+
+
+def restrict_width(_):
+    return [
+        ("max-width", "275px"),
+        ("overflow", "hidden"),
+        ("text-overflow", "ellipsis")
+    ]
+
+
+# drop online and On-campus columns
+course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
+course_schedule.drop(course_schedule.index[-8:], inplace=True)
+
+
+styled_table = (
+    course_schedule
+    .style
+    .hide(axis="index")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [("text-align", "left")]}
+    ])
+)
+
+display(HTML(styled_table.to_html()))
+
+```
+
+---
+
+##  Course Schedule (tentative)
+
+```{python}
+# | echo: false
+# | output: html
+
+import pandas as pd
+from IPython.display import display, HTML
+import sys
+
+# -------------------------------------------------
+# Load course table
+# -------------------------------------------------
+course_schedule = (
+    pd.read_excel(
+        "../data/AD698-Schedule.xlsx",
+        sheet_name="Course Details"
+    )
+    .drop("Modules", axis=1)
+)
+# remove last two rows
+course_schedule.drop(course_schedule.index[-2:], inplace=True)
+
+
+def restrict_width(_):
+    return [
+        ("max-width", "275px"),
+        ("overflow", "hidden"),
+        ("text-overflow", "ellipsis")
+    ]
+
+
+# drop online and On-campus columns
+course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
+course_schedule.drop(course_schedule.index[:8], inplace=True)
+
+
+styled_table = (
+    course_schedule
+    .style
+    .hide(axis="index")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [("text-align", "left")]}
+    ])
+)
+
+display(HTML(styled_table.to_html()))
+
+```
+
+## Course Grading
+
+::: {.columns}
+::: {.column width="60%"}
+
+```{python}
+# | echo: false
+# | eval: true
+# | auto-stretch: false
+
+from pywaffle import Waffle
+import pandas as pd
+import matplotlib.pyplot as plt
+
+deliverables = pd.read_excel("../data/AD698-Schedule.xlsx", sheet_name="Grade")
+
+deliverables = deliverables[[
+    "Class Activity", "Count", "Points", "Max Points"]]
+# Drop NaN points
+
+points_data = deliverables.dropna(subset=["Points"])
+
+# plt.figure(figsize=(8, 4.0), dpi=100)
+plt.pie(
+    points_data["Points"],
+    labels=points_data["Class Activity"],
+    autopct='%1.1f%%',
+    startangle=140
+)
+# plt.title("Distribution of Points by Class Activity")
+plt.show()
+
+```
+
+:::
+::: {.column width="40%"}
+```{python}
+# | echo: false
+# | output: html
+# |
+
+import pandas as pd
+from IPython.display import display, Markdown, HTML
+
+deliverables = pd.read_excel(
+    "../data/AD698-Schedule.xlsx", sheet_name="Grade")
+
+deliverables = deliverables[[
+    "Class Activity", "Count", "Points", "Max Points"]]
+
+numeric_cols = ["Count", "Points", "Max Points"]
+
+# 1) Coerce strings/objects to numbers, invalids → NaN
+deliverables[numeric_cols] = deliverables[numeric_cols].apply(
+    pd.to_numeric, errors="coerce"
+)
+
+# 2) Use pandas' nullable integer dtype (allows NaN)
+deliverables[numeric_cols] = deliverables[numeric_cols].astype("Int64")
+
+# 3) Style: show "-" for NaN without changing the data
+styled = (
+    deliverables.style
+    .hide(axis="index")
+    .format(na_rep="-")  # <- this prints "-" wherever value is NA
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [("text-align", "left")]},
+        {"selector": "tbody td:nth-child(2)", "props": [(
+            "max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]},
+        {"selector": "tbody td:nth-child(3)", "props": [(
+            "max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]}
+    ])
+)
+
+display(HTML(styled.to_html()))
+```
+
+:::
+:::
+
+---
+
+## Participation Points
+
+- You are added to an AWS Academy Generative AI Foundations course in AWS Academy.
+- There are self-paced 10 modules in the course.
+- If you complete all modules, you will receive participation points for AWS academy.
+- You are also added to AWS Learner Lab for hands-on practice.
+
+![](./M01_lecture01_figures/AWS-Certification-Current-Roadmap.jpg){width="50%" fig-align="center"}
+
+---
+
+## GitHub Repository and Portfolio
+
+- [Lecture 0.1]{.uured-bold}, [Lecture 0.2]{.uured-bold}, [Lecture 0.3]{.uured-bold} videos cover basic portfolio creation using GitHub.
+- Follow the video and submit the repository link in the assignment.
+- This will be also used for submitting
+  - Assignments
+  - Projects
+  - Weekly Quizzes, Presentations, and Problems solving exercises AKA Labs
+
+![](./M01_lecture01_figures/brian-marion-aaron-project.png){width="55%" fig-align="center"}
+
+---
+
+## In class Presentations
+
+- Look for the Labs page in each lecture folder (M0X/Lecture) for the list of papers and suggestions for the presentation.
+- Each student group will deliver **one research paper presentation** during the semester.
+  - Presentation length: approximately **15 minutes**
+  - Each presentation will be followed by **guided class discussion**
+  - All students are expected to read the assigned paper(s), regardless of whether they are presenting
+- Presentations focus on:
+  - The problem the paper addresses
+  - The technical or conceptual contribution
+  - Limitations and assumptions
+  - Implications for building generative AI systems
+- This component develops skills in [critical reading]{.uublue-bold}, [synthesis]{.uublue-bold}, and [technical communication]{.uublue-bold}.
+
+
+---
+
+## Individual Assignments
+
+- Four individual assignments.
+  - Report (word or pdf) and code (jupyter notebook). 
+- These are more detailed and require more time to complete.
+
+---
+
+## Group Project
+
+- [Lecture 0.1]{.uured-bold} and [Lecture 0.2]{.uured-bold} videos cover basic portfolio creation using GitHub.
+- Focuses on equipping students with the knowledge to explore a dataset and extract meaningful insights. Throughout this assignment, you’ll complete the following:
+
+| **Component**                     | **Points** | **Description**                                                                                                                                    |
+|-----------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| Project Milestones through GitHub | 70         | This includes Corpus Familiarization & Chatbot Scope, Text Structuring & Retrieval Units, Embeddings & Retrieval Baseline, Grounded Generation & Guardrails |   
+| Presentation                      | 40         | Effectively communicates the project findings and technical work.                                                                                  |
+| Group Feedback                    | 40         | Includes peer feedback and team collaboration evaluation.                                                                                          |
+| **Total**                         | **150**    |                                                                                                                                                    |
+
+
+---
+
+##  Course Site
+
+- [Design and content is subjected to change]{.uured-bold}.
+- All the assignments, quizzes, and projects will be posted on the course site.
+- The course site is the main source of information for the course.
+
+![](./M01_lecture01_figures/blackboard-ultra-ad698.png){width="80%" fig-align="center"}
+
+---
+
+## Office Hours & Consultation Sessions
+- Look for [office hours]{.uugreen-bold} page on blackboard.
+- Look for [Consultation Sessions]{.uugreen-bold} page on blackboard.
+- [Consultation Sessions]{.uugreen-bold}: For detailed help on assignments and projects.
+  - Held separately on Saturday, time needs to be discussed.
+  - These will be review of labs and assignments.
+  - These will be held on Zoom.
+  - [Recorded only if there is an audience]{.uured-bold}.
+
+## Tools used in the course
+
+- [Python]{.uured-bold}: dominant AI/ML language with simple, fast prototyping.  
+- [PyTorch / TensorFlow]{.uured-bold}: core deep‑learning frameworks for GenAI.  
+- [Hugging Face Transformers]{.uured-bold}: key library for LLMs, text generation, and RAG.  
+- [OpenCV & PIL]{.uured-bold}: essential for image/video processing in GenAI.
+
+
+## What is Generative AI?
+
+![](./M01_lecture01_figures/generative-ai.png){width="80%" fig-align="center"}
+
+## Enterprise AI Landscape
+
+![](./M01_lecture01_figures/Enterprise-generative-AI-application-landscape-vw.png){width="90%" fig-align="center"}
+
+## GenAI Core Characteristics
+
+- Learning from existing data
+- Generating novel, contextually relevant outputs
+- Spanning multiple modalities (text, image, code, audio)
+
+
+## Key Generative Model Architectures
+
+::: {.columns}
+::: {.column}
+- Foundation Models and Algorithms
+  -  Convolutional Neural Networks (CNNs)
+  -  Recurrent Neural Networks (RNNs)
+  -  Transformer Architecture
+  -  Generative Adversarial Networks (GANs)
+- Language Models
+  - GPT (Generative Pre-trained Transformer)
+  - BERT (Bidirectional Encoder Representations)
+:::
+::: {.column}
+- Image Generation Models
+  - DALL-E
+  - Stable Diffusion
+  - Midjourney
+- Multimodal Models
+  - Amazon Nova
+  - Meta Llama
+  - Gemini
+  - GPT
+
+:::
+:::
+
+
+
+## Simulation, Emulation, and AI
+
+- Given a function/process that exists with complex logical pathways, can it be mimicked by computers?
+  - Economical transactions of a small city?
+  - Social interactions between a household?
+  - Weather patterns over a region?
+  - Train of thought of researcher doing their job?
+- [Simulation]{.uured-bold}: The imitation of a process, function, or environment that could exist or at least makes sense.
+- [Artificial Intelligence]{.uured-bold}: The implementation of systems that perform tasks that seemingly require human skills.
+- [Machine Learning]{.uured-bold}: The use of algorithms and statistics to identify, act on, and/or mimic patterns.
+- [Deep Learning]{.uured-bold}: The use of neural networks to create function approximators with machine learning patterns.
+
+## Deep Learning - History
+
+![](./M01_lecture01_figures/nn_timeline.webp){width="90%" fig-align="center"}
+
+## Artificial Intelligence - History
+
+![](./M01_lecture01_figures/Intelligent-Machines-AI-timeline.jpg){width="75%" fig-align="center"}
+
+## 1956 - Dartmouth Conference: The Birth of Artificial Intelligence
+### Significance
+- The term "[Artificial Intelligence]{.uublue-bold}" was first coined at the Dartmouth Conference, with credit to John McCarthy, one of the event organizers.
+- [Foundational Moment for AI]{.uublue-bold}: This event is often considered the founding moment of AI as a field of study. It was the first time researchers from various disciplines came together to explore the concept of machine intelligence.
+
+![](./M01_lecture01_figures/dartmouth_Fathers_AI.png){width="75%" fig-align="center"}
+
+## 1958 - Perceptron by Rosenblatt at Cornell
+
+::: {.columns}
+::: {.column}
+
+- [The perceptron]{.uured-bold}, introduced by Frank Rosenblatt in 1958, was an early artificial neuron model inspired by the brain and helped launch modern neural networks.  
+- Despite its impact, it couldn't handle non–linearly separable problems like **XOR**, a limitation that shaped future AI research.
+:::
+::: {.column}
+![](./M01_lecture01_figures/0925_rosenblatt4.jpg){width="75%" fig-align="center"}
+:::
+:::
+
+
+
+## 1969 - Analysis of Perceptrons Minsky \& Papert
+
+::: {.columns}
+::: {.column}
+
+- [Minsky and Papert’s book *Perceptrons*]{.uured-bold} analyzed the strengths and limits of Rosenblatt’s perceptron, emphasizing its inability to solve non‑linearly separable problems like [XOR]{.uured-bold}.  
+- Their critique slowed neural‑network research and contributed to the [AI Winter]{.uured-bold}.  
+- The work also paved the way for later breakthroughs, including [backpropagation]{.uured-bold} in the 1980s, which enabled training multilayer networks and revived interest in neural nets.
+:::
+::: {.column}
+```{python}
+import matplotlib.pyplot as plt
+import numpy as np
+
+# All possible binary inputs
+X = np.array([[0, 0],
+              [0, 1],
+              [1, 0],
+              [1, 1]])
+
+# Logic gate outputs
+def AND(x):   return np.array([a & b for a, b in x])
+def NAND(x):  return np.array([1 - (a & b) for a, b in x])
+def OR(x):    return np.array([a | b for a, b in x])
+def XOR(x):   return np.array([a ^ b for a, b in x])
+
+gates = {
+    "AND": AND(X),
+    "NAND": NAND(X),
+    "OR": OR(X),
+    "XOR": XOR(X),
+}
+
+fig, axes = plt.subplots(2, 2, figsize=(6, 6))
+axes = axes.ravel()
+
+for ax, (name, y) in zip(axes, gates.items()):
+    # Plot points: 0 = blue circle, 1 = red diamond
+    for (x1, x2), label in zip(X, y):
+        if label == 0:
+            ax.scatter(x1, x2, c="blue", marker="o", s=80)
+        else:
+            ax.scatter(x1, x2, c="red", marker="D", s=80)
+
+    # Add (optional) linear boundary for linearly separable ones
+    if name in ["AND", "NAND", "OR"]:
+        xs = np.linspace(-0.2, 1.2, 100)
+        if name == "AND":
+            # Example separating line: x1 + x2 = 1.5
+            ax.plot(xs, 1.5 - xs, color="blue")
+        elif name == "NAND":
+            # Example: x1 + x2 = 0.5
+            ax.plot(xs, 0.5 - xs, color="blue")
+        elif name == "OR":
+            # Example: x1 + x2 = 0.5
+            ax.plot(xs, 0.5 - xs, color="blue")
+
+    ax.set_title(name)
+    ax.set_xlim(-0.2, 1.2)
+    ax.set_ylim(-0.2, 1.2)
+    ax.set_xticks([0, 1])
+    ax.set_yticks([0, 1])
+    ax.set_xlabel("x1")
+    ax.set_ylabel("x2")
+
+plt.tight_layout()
+plt.show()
+
+```
+
+:::
+:::
+
+
+## 1974-1980 - $1^{\text {st }}$ AI Winter
+
+### 1974–1980 — First AI Winter
+
+* Period of reduced funding, interest, and institutional support for AI research
+* Triggered by unmet promises of early symbolic AI systems
+* Government and industry funding declined sharply
+* Many AI labs were closed, downsized, or repurposed
+
+### Key Impacts
+
+* Researchers shifted to adjacent fields (statistics, control systems, cognitive science)
+* Machine learning and statistical methods progressed quietly
+* Emphasized the gap between theoretical breakthroughs and practical deployment
+* Established lasting lessons on expectation management in AI research
+
+---
+
+## 1980s — Backpropagation Popularized
+
+[Backpropagation]{.uured-bold} is a general algorithm for training neural networks by computing gradients of a loss function with respect to model parameters efficiently.
+
+:::{.columns}
+::: {.column width="50%"}
+- Core ideas
+  - Uses the **chain rule** to propagate error signals backward through layers
+  - Computes partial derivatives for each weight in the network
+  - Enables optimization via **gradient-based learning** (e.g., gradient descent)
+- Why it was transformative
+  - Solved the *credit assignment problem* in multi-layer networks
+  - Made it computationally feasible to train deep (for the time) architectures
+  - Shifted neural networks from theoretical constructs to trainable systems
+  - Backpropagation unified learning across arbitrary network depth
+
+:::
+::: {.column width="50%"}
+
+![](./M01_lecture01_figures/backprop.png){width="75%" fig-align="center"}
+
+:::
+:::
+
+---
+
+## 1986 - Multi-Layer Perceptron (MLP)
+
+The 1986 backpropagation work demonstrated that [multi-layer perceptrons (MLPs)]{.uured-bold} could be trained effectively and reliably.
+
+- What changed
+  - **Hidden layers learned internal representations**, not hand-engineered features
+  - Networks captured **hierarchical structure** in data
+  - Non-linear activations enabled expressive decision boundaries
+- Key advances
+  - Demonstrated solutions to problems like **XOR**, impossible for linear models
+  - Showed learning was **distributed across layers**, not localized
+  - Provided empirical evidence that neural networks could generalize
+- Why this mattered
+  - Shifted AI from rule-based reasoning toward **representation learning**
+  - Established the conceptual foundation for modern deep learning
+
+---
+
+## 1989 - Universal Function Approximation Theory
+
+The [Universal Approximation Theorem]{.uured-bold} provided a formal theoretical justification for neural networks.
+
+- Core result
+  - A feedforward network with:
+    - One hidden layer
+    - Finite neurons
+    - A non-linear activation function
+  - Can approximate **any continuous function** on a compact domain
+- What the theorem does (and does not) say
+  - ✔ Networks are *expressive enough in principle*
+  - ✘ Does not guarantee efficient training
+  - ✘ Does not imply good generalization or data efficiency
+- Why it mattered
+  - Countered claims that neural networks were inherently limited
+  - Legitimated neural networks as universal function learners
+  - Encouraged continued research despite computational constraints
+
+
+--- 
+
+## Why Didn’t Neural Networks Take Over Immediately?
+
+:::{.columns}
+::: {.column width="60%"}
+
+Despite strong theoretical foundations, neural networks did **not** dominate AI in the late 1980s and 1990s.
+
+- **Key constraints**
+  - **Limited data:** Large labeled datasets were rare
+  - **Insufficient compute:** CPUs were slow; GPUs were not yet available
+  - **Optimization challenges:** Training was unstable and slow
+  - **Tooling gaps:** No mature frameworks for large-scale experimentation
+- **Practical consequence**
+  - Neural networks were expressive *in theory*
+  - But **difficult to train, scale, and deploy** in practice
+
+:::
+::: {.column width="40%"}
+
+### Theory vs Reality
+
+- Capacity ✔
+- Learnability ✔
+- Scalability ✘
+- Reliability ✘
+
+:::
+:::
+
+
+## 1980s-1990s - The $2^{\text {nd}}$ AI Winter
+
+- [Unmet Expectations]{.uured-bold}: Expert systems, initially promising, failed to generalize beyond narrow domains, leading to disillusionment.
+- [Economic Recession]{.uured-bold}: The late 1980s recession led to budget cuts in AI research, shifting focus to more immediate technologies.
+- [Technological Limits]{.uured-bold}: Insufficient computational power and algorithmic challenges hindered AI development.
+- [Reduced Interest]{.uured-bold}: Funding and interest in AI dropped, leading to a slowdown in research and fewer innovations.
+- [Legacy and Recovery]{.uured-bold}: Lessons from this period set the stage for the AI resurgence in the late 1990s, paving the way for modern AI advancements
+
+
+## 2012 — AlexNet and the Deep Learning Breakthrough
+
+**AlexNet** marked a decisive turning point in modern AI by demonstrating that **deep neural networks scale effectively** when paired with sufficient data and computation.
+
+- **What AlexNet showed**
+  - Deep convolutional networks could vastly outperform classical vision pipelines
+  - End-to-end learning outperformed hand-crafted feature engineering
+  - Performance gains came from **scale**, not new theory alone
+
+- **Why ImageNet mattered**
+  - 1.2M labeled images across 1,000 classes
+  - AlexNet reduced top-5 error by ~10 percentage points
+  - Established benchmarks as a driver of progress
+- **Infrastructure innovation**
+  - Training split across **two GPUs** due to memory limits
+  - GPU acceleration enabled faster iteration and deeper architectures
+  - Marked the beginning of **hardware–model co-design** in AI
+
+---
+
+## 2017+ — *Attention Is All You Need* and the Transformer Era
+
+The [Transformer architecture]{.uured-bold} revolutionized modern AI by replacing recurrence and convolution with **attention**, fundamentally changing how models process language and sequences.
+
+- **Core innovation**
+  - Self-attention enables global context modeling
+  - Parallelizable training replaces sequential recurrence
+  - Scales efficiently with data and compute
+- **Why this mattered**
+  - Dramatically improved performance on NLP tasks
+  - Enabled large-scale pretraining on unlabeled text
+  - Decoupled sequence modeling from strict ordering constraints
+- **From models to platforms**
+  - Transformers became the backbone of:
+    - Language understanding (e.g., BERT-style models)
+    - Language generation (e.g., GPT-style models)
+  - Established the foundation for **Large Language Models (LLMs)**
+
+
+## Innovations in Modeling
+
+### Research aims to identify:
+
+- Key architectural drivers of model performance
+- Scaling laws and emergent capabilities
+- New use-cases enabled by model behavior
+
+### Common research directions:
+
+- Model analysis via interpretability and controlled experiments
+- New architectural components with useful properties
+- Domain-aware training paired with scalable architectures
+- Improved data and modality-specific learning strategies
+
+
+## Risks of GenAI
+
+**Despite its transformative potential, Generative AI introduces systemic risks to core societal foundations:**
+
+- **Trust & information integrity**
+- **Authenticity of digital records and identity**
+- **Work, skills, and human purpose**
+
+These risks are amplified by today’s software environment:
+
+- Ubiquitous data availability
+- Always-on connectivity
+- Cheap, scalable compute
+
+## Risk Mitigation
+
+**Mitigation is complex and often costly, requiring deliberate trade-offs in favor of long-term societal value:**
+
+- **Privacy & security by design**
+- **Transparency & accountability mechanisms**
+- **Fairness, inclusion, and human dignity**
+- **Reliability, validation, and certification**
+
+> Addressing these challenges frequently requires prioritizing legal, ethical, and social safeguards over short-term efficiency or profit.
+
+---
+
+## Generative AI and Knowledge Creation
+
+Generative AI automates problems that were traditionally **hard, skill-intensive, and expensive**, producing outputs that are often *good enough*, scalable, and easily replicated.
+
+This fundamentally lowers the cost of creating content that once required:
+
+- Deep expertise
+- Long training and experience
+- Significant institutional or financial investment
+
+**Result:**
+Knowledge production becomes faster, cheaper, and more widely accessible—but less tightly coupled to expertise.
+
+---
+
+## Enablement vs. Erosion of Knowledge Signals
+
+### Enablement and Scale *(Pros)*
+
+- Rapid synthesis across large and complex datasets
+- Broad access to advanced analytical and creative capabilities
+- Accelerated experimentation, learning, and innovation
+* Empowerment of individuals and small teams at scale
+
+### Slop and Misinformation *(Cons)*
+
+- Convincing text, images, audio, and video can be fabricated at scale
+- Expertise can be mimicked without understanding or accountability
+- Automated pipelines bypass editorial review and due process
+- Long-term effects of widespread synthetic content remain uncertain
+
+> **Key tension:** Generative AI expands knowledge creation
+> while weakening traditional signals of credibility, expertise, and trust.
+
+
+## Societal Impacts from GenAI
+- Automation of Routine Tasks:
+  - Al is automating repetitive jobs like data entry and manufacturing, leading to job reductions in some areas.
+- Impact on Skilled Jobs:
+  - AI is increasingly capable of handling complex task, potentially automating niche-skill/high-memory roles.
+  - GenAI has been used to lower early career demand due to perceived upper-level role empowerment.
+- New Job Opportunities:
+  - While some jobs are lost, AI can also create new roles in areas like AI development and data science.
+  - Workers need reskilling to adapt, but some careers / demographics will have disproportionate impact.
+- Impact on Psychology:
+  - Much like the internet (rise of ubiquitous connectivity), psychological impacts of ubiquitous Al is inconclusive.
+
+---
+
+## Broad Risk Mitigation Efforts in AI
+
+AI safety and risk mitigation have become **strategic priorities** across governments, industry, and civil society.
+These efforts reflect competing—but overlapping—interests in **national security, economic competitiveness, and public trust**.
+
+- Key characteristics of the current landscape
+  - Fragmented but rapidly expanding standards ecosystem
+  - Mix of voluntary, industry-led initiatives and state-backed institutions
+  - Emphasis on *risk anticipation*, not just post-hoc compliance
+
+- Global coordination trend
+  - Early leadership by a small number of states
+  - Rapid international replication and diversification
+  - Increasing public–private collaboration
+
+---
+
+## Examples of Major Mitigation Initiatives
+
+- [AI Safety Institute (AISI)]{.uured-bold}: Nation-backed institutes focused on systemic AI risks, with early emphasis on national security and frontier models
+- [AISI Consortium (AISIC)]{.uured-bold} *(US)*: Formal public–private collaboration with industry to support safety research, evaluations, and standards
+- [Adobe Content Authenticity Initiative (CAI)]{.uured-bold}: Founded in 2019 to promote content provenance and authenticity tracking
+- [Coalition for Content Provenance and Authenticity (C2PA)]{.uured-bold}: Open technical standard for cryptographically signed content credentials and metadata
+- [NVIDIA Model Card++ / Trustworthy AI Efforts]{.uured-bold}: Expanded model documentation covering intended use, testing scope, risks, and deployment guidance
+- [Open & Sovereign AI Safety Advocacy]{.uured-bold}: Emphasis on secure self-hosting, open models, and safety practices for sensitive or regulated data contexts
+
+---
+
+## Responsible AI: Core Principles
+
+Responsible AI requires **continuous evaluation**, not one-time compliance.
+It integrates technical controls, organizational governance, and ethical commitments.
+
+- [Privacy & Security]{.uured-bold}: Protect data rights, secure sensitive information, and resist misuse or unauthorized access
+- [Transparency & Accountability]{.uured-bold}: Enable explainability, document design decisions, assign responsibility, and maintain oversight
+- [Fairness & Human Dignity]{.uured-bold}: Identify and mitigate bias; support nondiscrimination and equitable outcomes
+- [Reliability & Certification]{.uured-bold}: Ensure consistent performance, fitness for purpose, and ongoing validation in production
+
+# From Analytics to AI
+
+## Evolution of Decision Support Systems
+
+![](./M01_lecture01_figures/enterpriseai.png){width="80%" fig-align="center"}
+
+## Types of Decision Support
+
+
+![](./M01_lecture01_figures/typesofanalytics.png){width="80%" fig-align="center"}
+

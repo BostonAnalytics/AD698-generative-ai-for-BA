@@ -1,0 +1,19 @@
+semester: Spring26
+
+sections:
+  A1:
+    mode: online
+    start_date: 2026-03-12
+    class_days: [3]   # Thursday
+  A2:
+    mode: online
+    start_date: 2026-03-13
+    class_days: [4]   # Friday
+  A3:
+    mode: online
+    start_date: 2026-03-15
+    class_days: [6]   # Sunday
+
+  OC1:
+    mode: oncampus
+    class_days: [1, 3]  # Tue / Thu
