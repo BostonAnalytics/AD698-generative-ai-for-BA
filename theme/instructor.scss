@@ -1,0 +1,65 @@
+/*-- scss:defaults --*/
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+$presentation-body-font: "Libre Baskerville", serif;
+
+/*-- scss:defaults --*/
+
+/*-- scss:defaults --*/
+// Theme variables
+$body-bg: #fbf9f7 !default;
+$title-color: #090e44 !default;
+$subtitle-color: #ffac00 !default;
+$code-color: #e64f1e !default;
+$accent: #CC5B23 !default;
+$accent2: #06A2CB !default;
+$accent3: #993366 !default;
+$dark-gray: #565656 !default;
+$light-blue: #f0f8ff !default; // Light blue background
+$darker-gray: #131516 !default; // Text color
+$button-bg: #dbe9f1 !default; // Button background color
+$button-text: #000000 !default; // Button text color
+
+/*-- scss:rules --*/
+// Reveal.js general styling
+.reveal {
+  font-family: $presentation-body-font;
+  background-color: $body-bg;
+  color: $darker-gray;
+}
+
+/*-- scss:rules --*/
+// Headings
+.reveal h1, .reveal h2, .reveal h3 {
+  color: $title-color;
+  font-size: 36pt;
+  font-family: $presentation-body-font;
+  font-weight: 700;
+}
+
+/*-- scss:rules --*/
+// Paragraph styling
+.reveal p {
+  font-size: 11pt !important;
+  color: $darker-gray;
+}
+
+/*-- scss:rules --*/
+// Column layout
+.reveal .columns {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/*-- scss:rules --*/
+// Column content
+.reveal .column {
+  padding: 1rem;
+}
+
+/*-- scss:rules --*/
+// Image styling
+.reveal .column img {
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}

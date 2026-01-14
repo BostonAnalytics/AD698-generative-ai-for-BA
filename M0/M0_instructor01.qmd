@@ -4,7 +4,7 @@ format:
   revealjs: 
     toc: false
     transition: fade
-    theme: [../analytics_themes/instructor.scss]  # Custom styles for sidebar and layout
+    theme: [../theme/instructor.scss]  # Custom styles for sidebar and layout
 ---
 
 
