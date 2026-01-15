@@ -1,0 +1,227 @@
+---
+title: "Participation 1: AWS Cloud Foundations Certification"
+subtitle: "10-Week Recommended Plan"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+engine: jupyter
+toc: true
+toc-depth: 3
+---
+
+
+## FAQs (Read these first!) {.unnumbered}
+
+- If you have trouble signing up AWS Academy due to the term item not showing up, it's because of the browser compatibility issue. Try updating your Firefox and then try logging in using Firefox, Chrome, or Edge. [Safari will not work]{.uured-bold}.
+- If you work with WSL, make sure to store your SSH key file under your Ubuntu home directory. Windows File System (FS) does not work well with `chmod 400` command. To locate your `/home/user` directory by typing `cd` and pressing *Enter* which will automatically bring you to your home dir.
+- [Do not Store your ssh keys on cloud drives, or on public github]{.uured-bold}.
+- Move `vockey.pem` to a local directory under your class folder.
+- For Windows user, we recommend installing WSL (the Windows Subsystem for Linux). You can find the [installation documentation](https://learn.microsoft.com/en-us/windows/wsl/install). With WSL, you can use the familiar Linux commands for SSH, file operations, and all other kinds of [shell-related](https://linuxcommand.org/lc3_lts0010.php) tasks.
+- To copy your submission file from remote EC2 to local, you can use `scp` (SSH copy). To do so:
+
+  ```sh
+  scp -i vockey.pem ubuntu@YOUR_ADDRESS:PATH_TO_YOUR_FILE .
+  ```
+- Note that calling scp from EC2 to copy file out will not work as your computer is behind NAT so it is almost not possible to be directly addressable. You need to run scp from your computer to copy file in from a remote EC2, which is addressable.
+
+
+## Learning Outcomes {.unnumbered}
+
+After completing this assignment, you should be able to:
+
+- Register and access AWS Academy.
+- Create and configure EC2 instances.
+- Use Linux shell commands for basic operations.
+- Connect to EC2 instances via SSH and VS Code.
+- Create and SSH into an EC2 virtual machine (EC2) instance.
+- Create a remote Jupyter Notebook server running on AWS EC2.
+- Get familiar with basic Linux shell commands (browsing file system, installing packages, etc.).
+
+## Questions {.unnumbered}
+
+- Each section of this assignment contains questions that you should either answer or perform in the lab. These are marked with a **Question**.
+- Most questions request you to perform some action or read some documentation.
+- These steps are necessary for your success in the course.
+
+
+## Submission Details {.unnumbered}
+
+- Submit all deliverables and assignments on AWS Academy Canvas.
+- Include a comment on blackboard submission indicating that the AWS Academy course was completed on the **completion date**.
+- Ensure all required files are uploaded before the deadline.
+- Due on Week 10 Day 6 for All sections, Please check with your instructor.
+
+## Recommended Lesson Schedule
+
+This schedule helps you adhere to a consistent learning pace over the 10-week course.
+
+### Week 0: Introduction
+
+:::{.columns}
+::: {.column width="60%"}
+
+- [Tasks]{.uublue-bold}:
+  - Complete Pre-Course Survey.
+  - Watch "Trends in Cloud Computing" and "Course Introduction Video."
+  - Read the Student Guide.
+  - Learn "How to Complete Lab Exercises."
+  - Explore Course Support and General Discussion resources.
+- [Deliverables]{.uublue-bold}: Complete Pre-Course Survey.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-00.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 1: Cloud Concepts Overview
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 1: Cloud Concepts Overview.
+  - Watch video lectures on cloud computing basics.
+  - Perform knowledge check for Module 1.
+- [Deliverables]{.uublue-bold}: Quiz on cloud computing models and AWS basics.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-01.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 2: AWS Cloud Economics and Billing
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 2: Cloud Economics and Billing.
+  - Explore AWS Pricing Calculator and Billing Dashboard.
+  - Perform lab: Simple Monthly Calculator.
+- [Deliverables]{.uublue-bold}: Short report on optimizing costs using AWS services.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-02.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 3: AWS Global Infrastructure Overview
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 3: AWS Global Infrastructure Overview.
+  - Learn about AWS Regions, Availability Zones, and Edge Locations.
+  - Perform lab: AWS Management Console Clickthrough.
+- [Deliverables]{.uublue-bold}: Quiz on AWS global infrastructure.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-03.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 4: Cloud Security
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 4: Cloud Security.
+  - Perform lab: Introduction to AWS IAM.
+  - Watch demos on IAM and compliance tools.
+- [Deliverables]{.uublue-bold}: Quiz on AWS security principles and IAM configurations.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-04.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 5: Networking and Content Delivery
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 5: Networking and Content Delivery.
+  - Perform lab: Build a VPC and Launch a Web Server.
+  - Participate in an activity to design a secure VPC.
+- [Deliverables]{.uublue-bold}: Diagram and explanation of a sample VPC architecture.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-05.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 6: Compute
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 6: Compute.
+  - Perform lab: Introduction to Amazon EC2.
+  - Watch demos on AWS Lambda and Elastic Beanstalk.
+- [Deliverables]{.uublue-bold}: Quiz on compute services and their use cases.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-06.png){width="90%" fig-align="center"}
+:::
+:::
+
+
+### Week 7: Storage
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 7: Storage.
+  - Perform lab: Working with EBS and S3.
+  - Participate in a group discussion on storage optimization.
+- [Deliverables]{.uublue-bold}: Use case analysis comparing AWS storage solutions.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-07.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 8: Databases
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 8: Databases.
+  - Perform lab: Build a Database Server.
+  - Watch demos on Amazon RDS and DynamoDB.
+- [Deliverables]{.uublue-bold}: Quiz on database types and their applications in AWS.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-08.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 9: Monitoring and Optimization
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 9: Monitoring and Optimization.
+  - Explore CloudWatch dashboards and alerts.
+  - Perform lab: Using Trusted Advisor for Optimization.
+- [Deliverables]{.uublue-bold}: Quiz on monitoring and optimization techniques.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-09.png){width="90%" fig-align="center"}
+:::
+:::
+
+### Week 10: Cloud Architecture
+
+:::{.columns}
+::: {.column width="60%"}
+- [Tasks]{.uublue-bold}:
+  - Complete Module 10: Cloud Architecture.
+  - Participate in a case study on designing a fault-tolerant architecture.
+  - Perform lab: Architecture Design Recommendations.
+- [Deliverables]{.uublue-bold}: Design plan for a highly available architecture.
+:::
+::: {.column width="40%"}
+![](participation01_figures/aws-academy-module-10.png){width="90%" fig-align="center"}
+:::
+:::
+
