@@ -332,3 +332,74 @@ table {
   color: #06A2CB; // This sets the text color to the specified hexadecimal value
   font-weight: bold; // This makes the text bold
 }
+
+// Centering figure
+
+// Target floated figures correctly
+figure.quarto-float {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+// Center the image wrapper
+figure.quarto-float>div {
+  display: flex;
+  justify-content: center;
+}
+
+// Ensure image respects centering
+figure.quarto-float img {
+  display: block;
+  margin: 0 auto;
+}
+
+// Fix images wrapped in <p> (no-caption figures)
+.quarto-figure p {
+  display: flex;
+  justify-content: center;
+}
+
+// Target Quarto figures
+.quarto-figure {
+  display: flex; // use flexbox
+  flex-direction: column; // stack image and caption vertically
+  align-items: center; // center horizontally
+  justify-content: center; // center vertically if needed
+  margin: 2rem auto; // auto margins center the block itself
+  text-align: center; // ensure caption text is centered
+  max-width: 100%; // prevent overflow
+}
+
+// Style the image
+.quarto-figure img.figure-img {
+  display: block;
+  margin: 0 auto !important; // center image
+  max-width: 80%; // keep responsive sizing
+}
+
+// Style the caption
+.quarto-float-caption {
+  text-align: center; // center caption text
+  font-size: 0.9rem;
+  color: #369;
+  margin-top: 0.5rem;
+  font-style: normal; // removes italic
+  font-weight: bold; // makes text bold
+  font-size: 14pt !important;
+}
+
+
+/* Preserve your existing code font settings */
+.reveal code {
+  font-family: $code-font;
+  font-size: 11pt !important;
+  text-align: left;
+}
+
+.references {
+  font-size: 11pt;
+  // color: #369;
+  // font-style: italic;
+  margin-top: 0.5em;
+}

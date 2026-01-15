@@ -14,7 +14,6 @@ editor:
   preview: true
 
 execute:
-  freeze: false
   fig-align: center
 
 website:
