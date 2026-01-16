@@ -1,5 +1,301 @@
 ---
-title: "M01 Assignment"
+title: "Module 1 Assignment: Corporate Risk Narratives in Form 10-K"
+subtitle: "Building a Classical and Neural NLP Pipeline for Industry Analysis"
+number-sections: true
+date: "2026-02-01"
+date-modified: today
+date-format: long
+engine: jupyter
+execute:
+  eval: false
+  echo: false
 ---
 
-# M01 Assignment
+# Important Reminder {.unnumbered}
+
+- This assignment may be completed using [Google Colab]{.uublue-bold} or [AWS Academy]{.uublue-bold}.
+- Your goal is to [understand and implement the NLP pipeline]{.uugreen-bold} not to scale it.
+- It will be [impossible to run anything on your local machine (mac or PC)]{.uured-bold}. Please use Google Colab or request AWS Academy labs.
+- [The assignment takes significant time to complete. Start early!]{.uublue-bold}
+
+
+# Submission Instructions {.unnumbered}
+
+You must submit two files on blackboard:
+
+1. Word Document (`.docx`)
+   - Answers to all questions (Q1–Q4)
+   - Business interpretation
+   - Tables and figures
+   - No more than 5 pages (excluding cover page and references)
+   - No code in this document.
+2. Jupyter Notebook (`.ipynb`)
+   - Fully executable
+   - Clearly organized by Question (Q1–Q4)
+   - Well-commented code
+3. You can follow following structur for your solution notebook, feel free to adjust as needed:
+    1. config and paths
+    2. load and parse 10k
+    3. clean and chunk text
+    4. feature engineering
+    5. predictive models
+    6. error analysis
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+This assignment introduces the [end-to-end NLP lifecycle]{.uured-bold} using real corporate disclosures.
+You may use any generative AI tool, but you must still [build and explain the pipeline yourself]{.uugreen-bold}.
+:::
+
+You will analyze 2024 Form 10-K filings to answer the following business question:
+
+:::{.callout-important}
+Can corporate risk language be used to understand and predict industry-level risk exposure?
+:::
+
+This assignment establishes the [cleaned corpus, labels, and baselines]{.uugreen-bold} that will be reused in [Assignments 2–5]{.uugreen-bold}, where you will build [LLM-based and RAG pipelines]{.uugreen-bold}.
+
+
+# Business Context {.unnumbered}
+
+An investment firm is reassessing sector exposure amid increasing uncertainty related to:
+
+-  regulation
+-  technological disruption
+-  operational risk
+-  macroeconomic volatility
+
+Rather than relying only on numerical indicators, the firm wants to understand how companies describe risk in their own words.
+
+Each Form 10-K filing includes a Standard Industrial Classification (SIC) code, which will be used as a high-level industry label for analysis and prediction.
+
+
+# Data Source {.unnumbered}
+
+You will use SEC-provided TXT versions of 2024 Form 10-K filings, available here:
+
+## SEC 2024 Form 10-K TXT Files {.unnumbered}
+
+- You will use all SEC-provided TXT versions of 2024 Form 10-K filings contained in the shared Google Drive folder.
+- All files in the folder must be processed programmatically.
+- You may later filter, subset, or group the data for analysis, but your NLP pipeline must be capable of ingesting the entire corpus.
+
+[2024 SEC 10-K Filings](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=sharing)
+
+
+## Accessing the Files in Google Colab {.unnumbered}
+
+### Add Folder to Your Drive {.unnumbered}
+
+1. Open the link above.
+2. Right-click the folder → Add shortcut to Drive
+3. Save it in My Drive
+
+### Mount Drive in Colab {.unnumbered}
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+### Verify Files {.unnumbered}
+
+```python
+import os
+os.listdir("/content/drive/MyDrive")
+```
+
+Adjust paths as needed.
+
+# How should the 10-K corpus be constructed for industry-level analysis? {#sec-q1}
+
+## Business Goal
+
+- Loa
+- Create a clean, reproducible corpus that supports comparison across industries.
+- You can choose 7 different industries from the [SEC filings](https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list).
+- Justify why your selection is rational and what are you gaining from it.
+
+## Technical Instructions
+
+1. Load and process all Form 10-K TXT files in the shared folder:
+   1. Do not manually select files
+   2. Your code must iterate over the directory programmatically
+2. For each filing:
+   1. Load the full TXT file
+   2. Extract:
+     1. Item 1A – Risk Factors
+     2. Item 7 – MD&A
+   3. Extract and store:
+     1. company identifier
+     2. SIC code
+3. Build a structured corpus where each record contains:
+   1. company
+   2. SIC code
+   3. section name
+   4. cleaned text
+   5. sentence-level chunks
+4. Save intermediate artifacts:
+   1. cleaned section text
+   2. sentence-level files
+   3. metadata tables
+5. For analysis and reporting only, select:
+   1. at least 10 industries
+
+## Expected Outputs
+
+ - Table: company → SIC → industry group → section length
+ - Folder structure showing saved artifacts
+ - Brief explanation of cleaning decisions
+
+:::{.callout-important}
+All Form 10-K files in the shared folder must be processed as part of the NLP pipeline.
+
+For Questions 2–4, you may subset the processed corpus for analysis, visualization, and modeling.
+:::
+
+# How should corporate risk language be represented for NLP analysis? {#sec-q2}
+
+> All text representations must be generated for the entire corpus, even if only a subset is used for downstream modeling.
+
+## Business Goal
+
+Determine how narrative risk disclosures should be numerically represented for analysis and prediction.
+
+## Technical Instructions
+
+1. Build a classical NLP representation:
+   * TF-IDF on Item 1A text
+   * Explain tokenization and stopword choices
+2. Build a neural representation:
+   * Sentence embeddings using a Hugging Face model
+   * Aggregate to document-level embeddings
+3. Ensure all representations retain:
+   * company identifier
+   * SIC code
+   * section source (Item 1A or Item 7)
+4. Compare representations:
+   * dimensionality
+   * sparsity
+   * semantic coverage
+
+## Expected Outputs
+
+* Comparison table of representations
+* Short explanation of trade-offs
+
+
+# Can risk language predict industry membership? {#sec-q3}
+
+> For modeling and evaluation, you may restrict the dataset to a subset of SIC groups with sufficient sample size.
+
+## Business Goal
+
+Evaluate whether how firms describe risk contains enough signal to predict industry classification.
+
+## Technical Instructions
+
+### Prediction Task
+
+* Input: Item 1A risk text
+* Target: SIC-based industry group (coarse-grained)
+
+### Model A: Classical NLP
+
+* TF-IDF features
+* Logistic Regression or Linear SVM
+* Report:
+
+  * accuracy
+  * confusion matrix
+
+### Model B: Basic Neural NLP
+
+* Sentence/document embeddings
+* Feedforward neural network (MLP)
+* Report:
+
+  * accuracy
+  * comparison vs classical model
+
+### Analysis
+
+* Compare model performance
+* Identify industries that are frequently misclassified
+* Discuss interpretability vs performance
+
+## Expected Outputs
+
+* Model performance table
+* Confusion matrices
+* Short technical discussion
+
+# How reliable are NLP-based risk assessments for business decision-making? {#sec-q4}
+
+## Business Goal
+
+Assess whether these models are decision-ready for real investment use.
+
+## Technical Instructions
+
+1. Identify at least three failure cases, such as:
+   * boilerplate language
+   * ambiguous phrasing
+   * sentiment mismatch
+2. Perform manual validation:
+   * inspect representative sentences
+   * explain why models failed
+3. Compare:
+   * classical vs neural models
+   * strengths and weaknesses
+4. Write an executive summary ($\leq 1 $ page):
+   * key findings
+   * limitations
+   * recommendations
+
+## Expected Outputs
+
+* Failure case table
+* Executive-style memo
+
+
+# Use of Generative AI {.unnumbered}
+
+:::{.callout-important}
+Generative AI tools may be used for:
+
+* code assistance
+* explanation
+* summarization
+
+They may not replace required pipeline steps.
+:::
+
+You must briefly document:
+
+* where AI tools were used
+* how outputs were validated or modified
+
+
+# Looking Ahead {.unnumbered}
+
+:::{.callout-note}
+In Assignments 2–5, you will:
+
+* replace classical models with large language models
+* build retrieval-augmented generation (RAG) pipelines
+* use vector search and neural retrieval
+
+The cleaned corpus, SIC labels, sentence chunks, and embeddings created here will be reused directly.
+:::
+
+---
+
+# Resources {.unnumbered}
+
+* SEC EDGAR Filings Guide
+* Hugging Face Transformers Documentation
+* scikit-learn NLP Documentation
+* PyTorch Documentation
+

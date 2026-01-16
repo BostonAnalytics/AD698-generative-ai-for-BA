@@ -7,7 +7,6 @@ project:
     browser: false
   render:
     - "*.qmd"
-    - "!deliverables-solutions/"
 
 editor:  
   render-on-save: true

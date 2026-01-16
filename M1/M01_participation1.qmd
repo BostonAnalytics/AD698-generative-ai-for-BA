@@ -5,7 +5,9 @@ number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-engine: jupyter
+format: 
+  html:
+    from: markdown+emoji
 toc: true
 toc-depth: 3
 ---
@@ -14,16 +16,15 @@ toc-depth: 3
 ## FAQs (Read these first!) {.unnumbered}
 
 - If you have trouble signing up AWS Academy due to the term item not showing up, it's because of the browser compatibility issue. Try updating your Firefox and then try logging in using Firefox, Chrome, or Edge. [Safari will not work]{.uured-bold}.
-- If you work with WSL, make sure to store your SSH key file under your Ubuntu home directory. Windows File System (FS) does not work well with `chmod 400` command. To locate your `/home/user` directory by typing `cd` and pressing *Enter* which will automatically bring you to your home dir.
-- [Do not Store your ssh keys on cloud drives, or on public github]{.uured-bold}.
-- Move `vockey.pem` to a local directory under your class folder.
-- For Windows user, we recommend installing WSL (the Windows Subsystem for Linux). You can find the [installation documentation](https://learn.microsoft.com/en-us/windows/wsl/install). With WSL, you can use the familiar Linux commands for SSH, file operations, and all other kinds of [shell-related](https://linuxcommand.org/lc3_lts0010.php) tasks.
-- To copy your submission file from remote EC2 to local, you can use `scp` (SSH copy). To do so:
+- Once you have access to AWS Academy, you will need to activate the account
+  - Click on the Account button in the top left corner.
+  - The Click on Settings.
+  - On the right side panel you will see E-mail addresses and your BU email address below it with an :warning: icon.
+  - Click on the :warning: icon to send a verification email to your BU email address.
+  - Go to your BU email inbox, open the email from AWS Academy, and click on the verification link.
+  - After verifying your email, return to the AWS Academy settings page and refresh it. The :warning: icon should now be replaced with a green check mark, indicating that your email has been successfully verified.
 
-  ```sh
-  scp -i vockey.pem ubuntu@YOUR_ADDRESS:PATH_TO_YOUR_FILE .
-  ```
-- Note that calling scp from EC2 to copy file out will not work as your computer is behind NAT so it is almost not possible to be directly addressable. You need to run scp from your computer to copy file in from a remote EC2, which is addressable.
+![Activating Email address](../M0/M0_lecture01_figures/awsacademy.settings.emails.png){width="90%" fig-align="center"}
 
 
 ## Learning Outcomes {.unnumbered}
