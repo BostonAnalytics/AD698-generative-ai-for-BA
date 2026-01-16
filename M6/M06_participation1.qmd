@@ -1,5 +1,5 @@
 ---
-title: "Participation 1: AWS Cloud Foundations Certification"
+title: "Participation 1: AWS Generative AI Foundations Certification"
 subtitle: "10-Week Recommended Plan"
 number-sections: true
 date: "2024-11-21"
@@ -31,19 +31,20 @@ toc-depth: 3
 
 After completing this assignment, you should be able to:
 
-- Register and access AWS Academy.
-- Create and configure EC2 instances.
-- Use Linux shell commands for basic operations.
-- Connect to EC2 instances via SSH and VS Code.
-- Create and SSH into an EC2 virtual machine (EC2) instance.
-- Create a remote Jupyter Notebook server running on AWS EC2.
-- Get familiar with basic Linux shell commands (browsing file system, installing packages, etc.).
+- Summarize generative AI concepts, methods, and strategies.
+- Discuss the potential business value and use cases of generative AI.
+- Match AWS AI/ML services and features to generative AI use cases.
+- Explain how to use foundation models.
+- Discuss techniques to refine results of foundation models.
+- Recognize the key elements for practicing responsible AI.
+- Discuss the security, privacy, and governance considerations for AI systems.
+- Describe the workflow and key considerations when developing a generative AI application.
 
 ## Questions {.unnumbered}
 
-- Each section of this assignment contains questions that you should either answer or perform in the lab. These are marked with a **Question**.
-- Most questions request you to perform some action or read some documentation.
-- These steps are necessary for your success in the course.
+- Each section of this assignment contains questions that you should either answer or perform in the lab. These are marked with a **Knowledge Check**.
+- These Knowledge checks are part of the certificate requirements.
+- Completing these will earn you points towards your success in the getting the certificate.
 
 
 ## Submission Details {.unnumbered}
@@ -55,174 +56,249 @@ After completing this assignment, you should be able to:
 
 ## Recommended Lesson Schedule
 
-This schedule helps you adhere to a consistent learning pace over the 10-week course.
+This schedule follows the AWS Academy **Generative AI Foundations** Canvas structure and is designed to support steady progress toward certificate completion over 10 weeks.
 
-### Week 0: Introduction
+
+### Week 0: Course Orientation and Setup
+
+:::{.columns}
+::: {.column width="60%"}
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Pre-Course Survey**.
+  * Review **Course Welcome and Overview**.
+  * Explore **Course Support** and **General Discussions**.
+  * Review **Trends in Cloud Computing** and **Content Resources**.
+  * Read the **AWS Academy Generative AI Student Guide**.
+* [Deliverables]{.uublue-bold}: Pre-Course Survey completed.
+
+:::
+::: {.column width="40%"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.01.jpeg){width="90%" fig-align="center"}
+:::
+:::
+
+
+
+### Week 1: Module 1 — Welcome to AWS Academy Generative AI Foundations
 
 :::{.columns}
 ::: {.column width="60%"}
 
-- [Tasks]{.uublue-bold}:
-  - Complete Pre-Course Survey.
-  - Watch "Trends in Cloud Computing" and "Course Introduction Video."
-  - Read the Student Guide.
-  - Learn "How to Complete Lab Exercises."
-  - Explore Course Support and General Discussion resources.
-- [Deliverables]{.uublue-bold}: Complete Pre-Course Survey.
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 1**.
+  * Review program structure, expectations, and learning flow.
+  * Read **Module 1 Student Guide**.
+* [Deliverables]{.uublue-bold}: Module 1 completion recorded in Canvas.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-00.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.02.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 1: Cloud Concepts Overview
+
+
+### Week 2: Module 2 — Introducing AI
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 1: Cloud Concepts Overview.
-  - Watch video lectures on cloud computing basics.
-  - Perform knowledge check for Module 1.
-- [Deliverables]{.uublue-bold}: Quiz on cloud computing models and AWS basics.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 2**:
+
+    * AI overview
+    * Machine Learning, Deep Learning, and Generative AI
+    * AWS AI services overview
+  * Watch demos using AWS AI services.
+  * Complete **Module 2 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 2 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-01.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.03.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 2: AWS Cloud Economics and Billing
+
+
+### Week 3: Module 3 — Introducing Generative AI
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 2: Cloud Economics and Billing.
-  - Explore AWS Pricing Calculator and Billing Dashboard.
-  - Perform lab: Simple Monthly Calculator.
-- [Deliverables]{.uublue-bold}: Short report on optimizing costs using AWS services.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 3**:
+
+    * Foundation models
+    * How foundation models work
+    * Generative AI use cases
+  * Explore **Amazon Bedrock Playground** and **PartyRock**.
+  * Complete **Module 3 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 3 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-02.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.04.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 3: AWS Global Infrastructure Overview
+
+
+### Week 4: Module 4 — Using Prompts and Prompt Engineering
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 3: AWS Global Infrastructure Overview.
-  - Learn about AWS Regions, Availability Zones, and Edge Locations.
-  - Perform lab: AWS Management Console Clickthrough.
-- [Deliverables]{.uublue-bold}: Quiz on AWS global infrastructure.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 4**:
+
+    * Value of prompt engineering
+    * Prompt structure and organization
+    * Prompting techniques
+  * Complete hands-on prompt structuring activities.
+  * Complete **Module 4 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 4 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-03.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.05.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 4: Cloud Security
+
+
+### Week 5: Module 5 — Working with Foundation Models (FM)
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 4: Cloud Security.
-  - Perform lab: Introduction to AWS IAM.
-  - Watch demos on IAM and compliance tools.
-- [Deliverables]{.uublue-bold}: Quiz on AWS security principles and IAM configurations.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 5**:
+
+    * Choosing and adapting foundation models
+    * Inference parameters
+    * Retrieval-Augmented Generation (RAG)
+  * Practice inference tuning activities.
+  * Complete **Module 5 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 5 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-04.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.06.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 5: Networking and Content Delivery
+
+### Week 6: Module 6 — Practicing Generative AI Responsibly
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 5: Networking and Content Delivery.
-  - Perform lab: Build a VPC and Launch a Web Server.
-  - Participate in an activity to design a secure VPC.
-- [Deliverables]{.uublue-bold}: Diagram and explanation of a sample VPC architecture.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 6**:
+
+    * Responsible AI principles
+    * Safeguards and risk mitigation
+    * Amazon Bedrock Guardrails
+  * Review AWS responsible AI practices.
+  * Complete **Module 6 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 6 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-05.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.07.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 6: Compute
+
+
+### Week 7: Module 7 — Security, Governance, and Compliance
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 6: Compute.
-  - Perform lab: Introduction to Amazon EC2.
-  - Watch demos on AWS Lambda and Elastic Beanstalk.
-- [Deliverables]{.uublue-bold}: Quiz on compute services and their use cases.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 7**:
+
+    * AI security concepts
+    * Governance frameworks
+    * Compliance considerations
+  * Review AWS audit and compliance tools.
+  * Complete **Module 7 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 7 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-06.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.08.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
 
-### Week 7: Storage
+### Week 8: Module 8 — Implementing Generative AI Applications
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 7: Storage.
-  - Perform lab: Working with EBS and S3.
-  - Participate in a group discussion on storage optimization.
-- [Deliverables]{.uublue-bold}: Use case analysis comparing AWS storage solutions.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Module 8**:
+
+    * Generative AI application lifecycle
+    * Matching AWS services to use cases
+    * Implementing applications using Amazon Bedrock
+  * Complete **Module 8 Knowledge Check**.
+* [Deliverables]{.uublue-bold}: Module 8 Knowledge Check.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-07.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.09.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 8: Databases
+
+### Week 9: Module 9 — Bridging to Certification
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 8: Databases.
-  - Perform lab: Build a Database Server.
-  - Watch demos on Amazon RDS and DynamoDB.
-- [Deliverables]{.uublue-bold}: Quiz on database types and their applications in AWS.
+
+* [Tasks]{.uublue-bold}:
+
+  * Review all prior modules.
+  * Revisit weak areas using Student Guides.
+  * Prepare for final assessment.
+* [Deliverables]{.uublue-bold}: Readiness for final assessment.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-08.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.10.jpeg){width="90%" fig-align="center"}
 :::
 :::
 
-### Week 9: Monitoring and Optimization
+
+### Week 10: Course Completion and Certification
 
 :::{.columns}
 ::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 9: Monitoring and Optimization.
-  - Explore CloudWatch dashboards and alerts.
-  - Perform lab: Using Trusted Advisor for Optimization.
-- [Deliverables]{.uublue-bold}: Quiz on monitoring and optimization techniques.
+
+* [Tasks]{.uublue-bold}:
+
+  * Complete **Final Course Assessment**.
+  * Submit **End of Course Feedback Survey**.
+  * Claim **AWS Academy Generative AI Foundations Badge**.
+* [Deliverables]{.uublue-bold}: Badge claimed and visible in AWS Academy.
+
 :::
 ::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-09.png){width="90%" fig-align="center"}
-:::
-:::
-
-### Week 10: Cloud Architecture
-
-:::{.columns}
-::: {.column width="60%"}
-- [Tasks]{.uublue-bold}:
-  - Complete Module 10: Cloud Architecture.
-  - Participate in a case study on designing a fault-tolerant architecture.
-  - Perform lab: Architecture Design Recommendations.
-- [Deliverables]{.uublue-bold}: Design plan for a highly available architecture.
-:::
-::: {.column width="40%"}
-![](participation01_figures/aws-academy-module-10.png){width="90%" fig-align="center"}
+![](../M0/M0_lecture01_figures/awsacademy.genai.11.jpeg){width="90%" fig-align="center"}
 :::
 :::
 

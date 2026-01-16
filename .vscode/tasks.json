@@ -4,7 +4,7 @@
         {
             "label": "Quarto Render & Zip",
             "type": "shell",
-            "command": "powershell -ExecutionPolicy Bypass -Command \".venv\\Scripts\\Activate.ps1; quarto render --execute; Compress-Archive -Force -Path _site -DestinationPath _site.zip\"",
+            "command": "powershell -ExecutionPolicy Bypass -Command \"uv run quarto render --execute; Compress-Archive -Force -Path _site -DestinationPath _site.zip\"",
             "problemMatcher": [],
             "presentation": {
                 "echo": true,
