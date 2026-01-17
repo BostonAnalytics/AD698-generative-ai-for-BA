@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Quarto Render & Zip",
+            "label": "Render and Zip Quarto Site",
             "type": "shell",
             "command": "powershell -ExecutionPolicy Bypass -Command \"uv run quarto render --execute; Compress-Archive -Force -Path _site -DestinationPath _site.zip\"",
             "problemMatcher": [],
