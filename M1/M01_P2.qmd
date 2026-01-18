@@ -1,19 +1,16 @@
 ---
-title: "M01 Presentation 02"
-logo: "../theme/figures/met_signature_toptier_rgb.png"
+title: "AD698 - Applied Generative AI"
+subtitle: "Language, Probability, and Generative Systems"
+logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
 date-modified: today
 date-format: long
 author:
   - name: Nakul R. Padalkar
     affiliations:
-      - id: BU
-        name: Boston University
+      - name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -21,6 +18,9 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
+        auto-stretch: false
+        from: markdown+emoji
+
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
@@ -38,4 +38,18 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-# M01 Presentation 02
+# Text Analytics and Mining
+
+## Text Analytics
+
+![Text Analytics [@talib2016text]](./M01_lecture02_figures/text_mining_overview.jpg){width=80% fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+
+## Text Mining Process
+
+![Text Mining Process](./M01_lecture02_figures/text_mining_operations_workflow.png){width=80% fig-align="center" #fig-text-mining-process fig-alt="Text Mining Process"}
+ 
+# References
+
+:::{.refs}
+
+:::

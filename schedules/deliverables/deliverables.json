@@ -34,8 +34,8 @@
       "label": "A{n}"
     },
     "labs": {
-      "enabled": false,
-      "count": 8,
+      "enabled": true,
+      "count": 10,
       "release_offset": 0,
       "interval": 1,
       "due_delta_days": 7,

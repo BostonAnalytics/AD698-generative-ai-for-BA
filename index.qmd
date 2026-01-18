@@ -20,7 +20,6 @@ from IPython.display import display, Markdown, HTML
 
 sections = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Sections")
 
-
 def restrict_width(column):
     return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
 
@@ -128,7 +127,7 @@ course_description = (
         "data/AD698-Schedule.xlsx",
         sheet_name="Course Details"
     )
-    .drop(columns=["Modules"], errors="ignore")
+    .drop(columns=["Modules", "Module Name"], errors="ignore")
 )
 
 # -------------------------------------------------

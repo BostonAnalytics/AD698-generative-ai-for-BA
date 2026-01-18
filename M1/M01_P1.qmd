@@ -1322,7 +1322,76 @@ print("File size (KB):", round(OUTPUT_FILE.stat().st_size / 1024, 2))
 
 ```
 
-## References
+## What We Did in This Lecture
+
+- Defined **Generative AI** and its scope
+- Positioned GenAI within the **history of AI and NLP**
+- Shifted from model-first to **data-first thinking**
+- Introduced **web datasets and APIs** as primary text sources
+
+> This lecture focused on **where text comes from**, not how models work.
+
+## Key Takeaway
+
+:::{.columns}
+:::{.column width="55%"}
+
+- Generative AI begins with **data**
+- Most NLP failures start **before modeling**
+- APIs and datasets define:
+  - Scale
+  - Bias
+  - Coverage
+  - Limits of downstream models
+:::
+
+:::{.column width="45%"}
+
+:::{.callout-important}
+If you cannot explain your data source, you cannot explain your model.
+:::
+
+:::
+:::
+
+---
+
+## Where We Go Next
+
+:::{.columns}
+:::{.column width="55%"}
+
+**Lecture 2: Natural Language Processing with Neural Networks**
+
+- Why classical text features fail
+- How text becomes vectors
+- Embeddings as the bridge to neural models
+- Setting the stage for transformers
+
+:::
+
+:::{.column width="45%"}
+
+:::{.callout-important} 
+From **text as documents** $\to$ **text as representations**
+:::
+:::
+:::
+
+
+## Between Now and Next Lecture
+
+* Explore one public text dataset or API
+* Download a small corpus
+* Inspect:
+
+  * Raw text
+  * Metadata
+  * Structure
+
+> You don’t need to model anything yet — just *look at the data*.
+
+# References 
 
 ::: {.refs}
 

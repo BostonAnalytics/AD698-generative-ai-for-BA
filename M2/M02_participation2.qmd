@@ -1,6 +1,6 @@
 ---
-title: "Participation 2 GitHub Pages Portfolio"
-subtitle: "Building Your Personal Website with Quarto"
+title: "Participation 2: Group Paper Presentation"
+subtitle: "Foundations, Architectures, and Responsible Practice in Generative AI"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -9,148 +9,196 @@ date-format: long
 
 ## Overview
 
-In this participation assignment, you will create a personal website to showcase your academic portfolio and achievements. This website will act as a professional representation of your skills, projects, and technical expertise, suitable for sharing with potential employers.
+In this participation assignment, you will work in **groups** to study, synthesize, and present a **foundational or state-of-the-art research paper** in Generative AI, Large Language Models (LLMs), or reproducible computational practice.
 
-The website will be built using Quarto, a powerful open-source tool for creating professional-quality documents and websites. By the end of this assignment, you will have a polished personal website that highlights your technical abilities and personal accomplishments.
+The goal is **not** to reproduce the paper technically, but to:
 
-The website extends from the Lab 02 assignment, where you created a static version of your personal website and hosted it on GitHub Pages. In this participation, you will enhance your website by adding more content, refining the design, and customizing the layout to create a professional portfolio.
+* Understand *why* the paper mattered
+* Explain *what problem* it solved
+* Situate it within the **modern GenAI stack**
+* Critically assess its **assumptions, limitations, and downstream implications**
 
-[Codecademy](https://www.codecademy.com) covers excellent material and articles for such development. [Machine Learning Engineer Portfolio](https://www.codecademy.com/resources/blog/machine-learning-engineer-portfolio/) covers what you’ll want to include in a Machine Learning Engineer portfolio and how to build projects that’ll help you land a job.
+Each group will deliver a **short academic-style presentation** aimed at a technically literate but non-specialist audience (e.g., analytics managers, graduate students, applied researchers).
+
+This assignment emphasizes:
+
+* Conceptual clarity
+* Systems thinking
+* Research literacy
+* Responsible AI awareness
+
 
 ## Goals
 
-- Learn to create a personal website using Quarto.
-- Demonstrate your academic and professional achievements in an easily navigable format.
-- Create an online presence that can act as a portfolio for employers.
-- Here are some of the examples
-  - [https://aksh-ai.com/](https://aksh-ai.com/)
-  - [https://www.taniarascia.com/](https://www.taniarascia.com/)
-  - [https://eduardoboucas.com/](https://eduardoboucas.com/)
-  - [https://www.jareddillard.com/](https://www.jareddillard.com/)
-  - [https://www.mitchellsparrow.com/](https://www.mitchellsparrow.com/)
-  - [https://darpanjain.com/](https://darpanjain.com/)
+By completing this assignment, you will:
 
-[You can use AI to your heart's content]{.uugreen-bold}, Here is an article describing how do build a website using [AI.](https://medium.com/@msadiq074/how-i-used-ai-to-make-my-portfolio-website-part-1-7be312b2f0e7)
-
-## Required Tabs
-
-Your personal website must include the following tabs (pages):
-
-- [About You]{.uured-bold}: A professional introduction to yourself, your interests, and your career goals.
-- [Projects]{.uured-bold}: A showcase of your major academic and personal projects. Include descriptions and relevant visuals (e.g., images, charts, links).
-- [CV]{.uured-bold}: Upload your curriculum vitae (CV) as a downloadable PDF, along with a brief summary of your professional background.
-- [Contact]{.uured-bold}: Provide contact details or a contact form for networking purposes.
-
-[Important Note]{.bloodred-bold}: Do NOT include data analysis tabs such as "Data Cleaning" or "Data Exploration." Focus solely on the sections that showcase your portfolio for employers.
+* Develop the ability to **read and interpret AI research papers**
+* Learn how modern GenAI systems evolved from earlier computational ideas
+* Practice explaining complex ideas clearly and precisely
+* Engage critically with **reproducibility, scale, alignment, and responsibility**
+* Strengthen academic and professional presentation skills
 
 
-## Expectations
+## Paper Selection (One Paper per Group)
 
-### Website Features
+- Everyone must read through the curated list below.
+- Papers are organized by **theme**. 
+- Each group will need to present a consolidated presentation on papers listed under numbered list.
+- Search these papers on scholar.google.com. 
 
-Your website must:
 
-1. [Be Clear and Navigable]{.uured-bold}: Ensure a smooth flow between sections and an intuitive user interface.
-2. [Load Quickly]{.uured-bold}: Optimize images and code to minimize loading times.
-3. [Be Visual]{.uured-bold}: Include visuals such as photos, charts, or icons where appropriate.
-4. [Reflect Professionalism]{.uured-bold}: Ensure the design and content of your website align with professional standards.
+### Open science & reproducibility (classic but still essential) {.unnumbered}
 
-### Creativity and Personalization
+Do not use these for the first presentation. 
 
-While there are required sections, you are encouraged to personalize your website’s look and feel. Choose a theme, color scheme, and structure that best represents your personal brand.
+- Wilson et al. (2014) *Best Practices for Scientific Computing*
+- Peng (2011) *Reproducible Research in Computational Science*
+- Stodden et al. (2014) *The Practice of Reproducible Research*
+- Stodden et al. (2016) *Computational Reproducibility*
+- Knuth (1984) *Literate Programming
 
+### Foundations of language representations
+
+- Bengio et al. (2003) *A Neural Probabilistic Language Model*
+- Turney & Pantel (2010) *Vector Space Models of Semantics*
+- Mikolov et al. (2013) *Word2Vec / Distributed Representations*
+
+### Transformers + scaling
+
+- Vaswani et al. (2017) *Attention Is All You Need*
+- Alammar *The Illustrated Transformer*
+- Kaplan et al. (2020) *Scaling Laws for Neural Language Models*
+- Zhao et al. (2024) *Survey of Large Language Models*
+
+### Text-as-data & business NLP
+
+- Collobert et al. (2011) *NLP (Almost) from Scratch*
+- Kogan et al. (2019) *Information Extraction from Business Text*
+
+### Prompting & orchestration
+
+- Schulhoff et al. (2025) *The Prompt Report*
+- Wei et al. (2022) *Chain-of-Thought Prompting*
+- Khattab et al. (2023) *DSPy framework paper*
+
+### Alignment & instruction following
+
+- Ouyang et al. (2022) *Training Language Models with Human Feedback*
+- Peng et al. (2023) *Instruction tuning with GPT-4*
+- Pratap et al. (2025) *The fine art of fine-tuning: A structured review of advanced LLM fine-tuning techniques*
+
+### RAG & reliability engineering
+
+- Lewis et al. (2020) *Retrieval-Augmented Generation*
+- Barnett et al. (2024) *Seven Failure Points When Engineering a RAG System*
+- Asai et al. (2023) *Self-RAG*
+
+### RAG & reliability engineering
+
+- Yan et al. (2024) *Corrective RAG (CRAG)*
+- Sarmah et al. (2024) *HybridRAG*
+
+### Efficient finetuning + small models
+
+- Hu et al. (2021) *LoRA*
+- Dettmers et al. (2023) *QLoRA*
+- Nguyen et al. (2024) Survey on small language models 
+
+### Topic models, semantic change, clustering
+
+- Blei & Lafferty (2006) *Dynamic Topic Models*
+- Embedding-based document clustering survey
+- Semantic change detection in text
+
+### Long context & multimodality
+
+- Liu et al. (2023) *Context window evaluation*
+- LongNet
+- LazyLLM
+
+### Long context & multimodality
+
+- GPT-4V technical report (OpenAI)
+- Segment Anything (Meta)
+- Multimodal chain-of-thought reasoning
+
+### Evaluation
+
+- Evaluating LLMs survey
+- LLM-as-a-judge survey (e.g., Gu et al., 2024)
+- Dhuliawala et al. (2023/2024) *Chain-of-Verification*
+
+### Hallucinations
+
+- Huang et al. (2023) *Survey on Hallucination in LLMs*
+- Bender et al. (2021) *Hallucination: Stochastic Parrots*
+
+## Presentation Expectations
+
+### Presentation Length
+
+* **10–12 minutes total**
+* **5–7 slides**
+* All group members must participate
+
+### Suggested Slide Structure
+
+Your presentation **must include**:
+
+1. **Problem Framing**
+
+   * What problem did this paper address?
+   * Why was it important *at the time*?
+
+2. **Core Contribution**
+
+   * Key idea, model, framework, or insight
+   * What changed because of this paper?
+
+3. **Technical Intuition (Not Math-Heavy)**
+
+   * Diagrams encouraged
+   * Focus on system logic, not equations
+
+4. **Impact and Legacy**
+
+   * How does this paper influence modern GenAI systems?
+   * Where do we see it today?
+
+5. **Limitations and Critique**
+
+   * What does the paper *not* address?
+   * What assumptions may no longer hold?
+
+6. **Relevance to This Course**
+
+   * How does this connect to:
+
+     * Prompting
+     * RAG
+     * Fine-tuning
+     * Reproducibility
+     * Responsible AI
 
 
 ## Submission Requirements
 
-### What to Submit
-
-1. [Website Link]{.uured-bold}: Provide the URL of your hosted website.
-2. [GitHub Repository]{.uured-bold}: Submit the URL to your GitHub repository containing the source code for your website.
-3. [Compressed Files]{.uured-bold}: Upload a compressed folder containing:
-   - A static version of your website (HTML files and assets).
-   - A zipped directory of your source code (exclude data files).
-
-### Submission Process
-
-- Submit all required files and links on the course’s Blackboard page.
-- Ensure your submission is completed by the due date (see Blackboard for specific deadlines).
-
-
-
-## Instructions
-
-### Step 1: Install Quarto
-
-Follow the instructions on the [Quarto website](https://quarto.org/docs/get-started/) to install Quarto on your computer. Ensure you also have a text editor like VS Code installed for creating and editing `.qmd` files.
-
-### Step 2: Set Up Your Project
-
-1. Create a new Quarto website project in a directory on your computer.
-   ```bash
-   quarto create-project my-website --type website
-   ```
-2. Navigate to the project folder and open it in your text editor.
-
-### Step 3: Customize Your Website
-
-1. [Modify the `_quarto.yml` File]{.uured-bold}: Configure the navigation bar and other global settings.
-   ```yaml
-   website:
-     navbar:
-       left:
-         - text: About You
-           href: about.qmd
-         - text: Projects
-           href: projects.qmd
-         - text: CV
-           href: cv.qmd
-         - text: Contact
-           href: contact.qmd
-   ```
-2. [Add Content]{.uured-bold}: Create and edit `.qmd` files for each tab. Use markdown and embedded code to format the content.
-3. [Style Your Website]{.uured-bold}: Customize your website's appearance using themes or CSS. Refer to [Quarto themes](https://quarto.org/docs/output-formats/html-themes.html) for inspiration.
-
-### Step 4: Host Your Website
-
-1. [Deploy on GitHub Pages]{.uured-bold}:
-   - Push your repository to GitHub.
-   - Enable GitHub Pages in the repository settings.
-2. [Test Your Website]{.uured-bold}: Ensure all links work correctly and the website displays as expected.
-
-
-
-## Additional Resources
-
-### Quarto Documentation
-- [Getting Started with Quarto](https://quarto.org/docs/get-started/)
-- [Quarto Website Guide](https://quarto.org/docs/websites/)
-
-### Examples
-- [Quarto Gallery](https://quarto.org/docs/gallery/): Explore examples of Quarto projects for inspiration.
-
-
-## Grading Criteria
-
-| **Component**            | **Description**                                                                 |
-|--------------------------|---------------------------------------------------------------------------------|
-| Website Functionality    | All tabs work as intended and the site is navigable and loads correctly.        |
-| Content Quality          | The content on each tab is detailed, professional, and free from errors.        |
-| Visual Design            | The website is visually appealing and uses appropriate visuals effectively.     |
-| Creativity and Branding  | The site reflects the student’s personal brand and demonstrates creativity.     |
-|                          |                                                                                 |
-
-
+1. **Presentation Slides (PDF)**
+2. **One-page Paper Brief (PDF)** including:
+   - Paper citation
+   - Key contribution (≤150 words)
+   - One critique
+   - One open research question
 
 
 ## Hints and Best Practices
 
-- [Start Early]{.uured-bold}: Building a website takes time. Begin as soon as possible to avoid last-minute issues.
-- [Use Examples]{.uured-bold}: Refer to the Quarto documentation and gallery for inspiration and guidance.
-- [Test Thoroughly]{.uured-bold}: Regularly preview your website and test all links to ensure everything works.
-- [Back Up Your Work]{.uured-bold}: Commit your changes frequently to GitHub to avoid data loss.
-- [Ask for Help]{.uured-bold}: If you encounter issues, seek assistance from the instructional team.
+* Focus on **ideas**, not implementation details
+* Assume your audience understands Python and ML basics
+* Use diagrams over equations
+* Avoid reading slides verbatim
+* Practice explaining the paper *without jargon*
 
 
-This assignment is your opportunity to build a professional portfolio that you can use beyond this course. Take pride in your work and create something you’ll be excited to share!
-
+This assignment is designed to help you **think like a researcher and systems designer**, not just a tool user.
+Choose wisely, read deeply, and present with clarity.
