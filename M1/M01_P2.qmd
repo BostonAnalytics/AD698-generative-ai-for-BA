@@ -20,10 +20,12 @@ format:
         toc-depth: 1
         auto-stretch: false
         from: markdown+emoji
+        code-line-numbers: true
 
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
+code-annotations: below
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
@@ -34,6 +36,8 @@ execute:
   echo: false
   warning: false
   message: false
+  freeze: auto
+  keep-ipynb: true
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
@@ -48,6 +52,668 @@ csl: ../mis-quarterly.csl
 
 ![Text Mining Process](./M01_lecture02_figures/text_mining_operations_workflow.png){width=80% fig-align="center" #fig-text-mining-process fig-alt="Text Mining Process"}
  
+## What is Natural Language Processing (NLP)?
+
+- Technology that enables computers to process, generate, and interact with language (e.g., text). Some key aspects:
+- [Learn useful representations]{.uublue-bold}: capture meaning in a structured way that can be used for downstream tasks (e.g., embeddings used to classify a document)
+- [Generate language]{.uublue-bold}: create language (e.g., text, 
+- code) for tasks like dialogue, translation, or question answering.
+- [Bridge language and action]{.uublue-bold}: Use language to perform tasks, solve problems, interact with environments (e.g., a code IDE)
+
+## General NLP Framework 
+
+```{dot}
+
+digraph NLP_Tasks {
+  node [shape=plaintext]
+
+  nlp_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD bgcolor="#137dcb"><B>Input X</B></TD>
+        <TD bgcolor="lightcoral"><B>Output Y</B></TD>
+        <TD bgcolor="#0ccc90"><B>Task</B></TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Continuing Text</TD>
+        <TD>Language Modeling</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Text in Other Language</TD>
+        <TD>Translation</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Label</TD>
+        <TD>Text Classification</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Linguistic Structure</TD>
+        <TD>Language Analysis</TD>
+      </TR>
+      <TR>
+        <TD>Image</TD>
+        <TD>Text</TD>
+        <TD>Image Captioning</TD>
+      </TR>
+    </TABLE>
+  >]
+
+  title [label=<
+    <TABLE BORDER="0" CELLBORDER="0">
+      <TR><TD><B>Create a function to map an input X into an output Y, where X and/or Y involve language.</B></TD></TR>
+    </TABLE>
+  >]
+
+  title -> nlp_table
+}
+
+```
+
+## Building NLP Systems
+
+- Rules: Manual creation of rules
+
+  ```
+  def classify(x: str) -> str:
+      sports_keywords = ["baseball", "soccer", "football", "tennis"]
+      if any(keyword in x for keyword in sports_keywords):
+          return "sports"
+      else:
+          return "other"
+  ```
+
+
+- Prompting: Prompting a language model w/o training
+
+```{dot}
+digraph PromptLogic {
+  rankdir=LR
+  node [shape=plaintext]
+
+  decision_box [label=<
+    <TABLE BORDER="0.50" CELLBORDER="0.5" CELLSPACING="0" CELLPADDING="2" bgcolor="lightyellow">
+      <TR><TD width="400" fixedsize="false"><B>If the following sentence is about 'sports', reply 'sports'. Otherwise reply 'other'.</B></TD></TR>
+    </TABLE>
+  >]
+
+  lm_node [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightblue">
+      <TR><TD width="75" fixedsize="true"><B>LM</B></TD></TR>
+    </TABLE>
+  >]
+
+  decision_box -> lm_node
+}
+
+```
+
+## Building NLP Systems
+
+- Fine-tuning: Machine learning from paired data $\langle X, Y\rangle$
+
+```{dot}
+digraph TextClassificationTraining {
+    rankdir=LR
+
+  node [shape=plaintext]
+
+  samples [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR><TD><B>Sentence</B></TD><TD><B>Label</B></TD></TR>
+      <TR><TD>"I love to play baseball."</TD><TD>sports</TD></TR>
+      <TR><TD>"The stock price is going up."</TD><TD>other</TD></TR>
+      <TR><TD>"He got a hat-trick yesterday."</TD><TD>sports</TD></TR>
+      <TR><TD>"He is wearing tennis shoes."</TD><TD>other</TD></TR>
+    </TABLE>
+  >]
+
+  training [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" bgcolor="lightgray">
+      <TR><TD><B>Training</B></TD></TR>
+    </TABLE>
+  >]
+
+  model [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+      <TR>
+        <TD><IMG SRC="M01_lecture02_figures/reshot-icon-engineering-6XYGVMCJ59.png"/></TD>
+        <TD><B>Model</B></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  samples -> training -> model
+}
+
+```
+
+
+
+## Data Requirements for System Building
+
+-  [Rules/prompting based on intuition]{.uublue-bold}: No data needed, but also no performance guarantees  
+- [Rules/prompting based on spot-checks]{.uublue-bold}: A small amount of data with input $X$ only
+- [Rules/prompting with rigorous evaluation]{.uublue-bold}: Development set with input $X$ and output $Y$ (e.g. 200-2000 examples). Additional held-out test set also preferable.
+- [Fine-tuning]{.uublue-bold}: Additional train set. More is often better - constant accuracy increase when data size doubles.
+
+```{dot}
+digraph DataSplit {
+  rankdir=LR
+  node [shape=plaintext]
+
+  split_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+      <TR>
+        <TD bgcolor="lightgreen" width="378">
+          <B>Train Data</B><BR/><FONT COLOR="red">X_train, y_train</FONT><BR/>60%
+        </TD>
+        <TD bgcolor="lightblue" width="108">
+          <B>Test Data</B><BR/><FONT COLOR="red">X_test, y_test</FONT><BR/>20%
+        </TD>
+        <TD bgcolor="lightyellow" width="54">
+          <B>Validation (Dev)</B><BR/><FONT COLOR="red">X_val, y_val</FONT><BR/>20%
+        </TD>
+      </TR>
+    </TABLE>
+  >]
+}
+
+```
+
+## Rule Based Sentiment
+
+:::{.callout-note}
+ Given a review ($X$) on a movie ratings website, decide whether its label ($y$) is positive (1), negative (-1) or neutral (0).
+:::
+
+```{dot}
+digraph SentimentAnalysis {
+  rankdir=LR
+  node [shape=plaintext, scale=0.60]
+
+  sentence1 [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+      <TR><TD>"I hate this movie"</TD></TR>
+    </TABLE>
+  >]
+
+  sentence2 [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+      <TR><TD>"I love this movie"</TD></TR>
+    </TABLE>
+  >]
+
+  sentence3 [label=<
+    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
+      <TR><TD>"I saw this movie"</TD></TR>
+    </TABLE>
+  >]
+
+  sentiment1 [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><FONT COLOR="red">negative</FONT></TD>
+        <TD><FONT COLOR="green">positive</FONT></TD>
+        <TD><FONT COLOR="black">neutral</FONT></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  sentiment2 [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><FONT COLOR="green">positive</FONT></TD>
+        <TD><FONT COLOR="black">neutral</FONT></TD>
+        <TD><FONT COLOR="red">negative</FONT></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  sentiment3 [label=<
+    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD><FONT COLOR="black">neutral</FONT></TD>
+        <TD><FONT COLOR="green">positive</FONT></TD>
+        <TD><FONT COLOR="red">negative</FONT></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  sentence1 -> sentiment1
+  sentence2 -> sentiment2
+  sentence3 -> sentiment3
+}
+
+```
+
+
+
+# Natural Language Processing Pipeline
+
+## Natural Language Processing Pipeline
+
+![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
+
+# Sentiment Classification 
+
+## Text Information
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+def read_xy_data(filename: str) -> tuple[list[str], list[int]]:
+    x_data = []
+    y_data = []
+    with open(filename, 'r') as f:
+        for line in f:
+            label, text = line.strip().split(' ||| ')
+            x_data.append(text)
+            y_data.append(int(label))
+    return x_data, y_data
+
+
+x_train, y_train = read_xy_data('./data/sentiment-treebank/train.txt')
+x_test, y_test = read_xy_data('./data/sentiment-treebank/dev.txt')
+
+
+print("Document:-", x_train[0])
+print("Label:-", y_train[0])
+```
+
+## Segmentation, Tokenization, and Cleaning
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+def extract_features(x: str) -> dict[str, float]:
+    features = {}
+    x_split = x.split(' ')
+
+    # Count the number of "good words" and "bad words" in the text
+    good_words = ['love', 'good', 'nice', 'great', 'enjoy', 'enjoyed']  # <1>
+    bad_words = ['hate', 'bad', 'terrible',
+                 'disappointing', 'sad', 'lost', 'angry']  # <1>
+    for x_word in x_split:  # <2>
+        if x_word in good_words:  # <2>
+            features['good_word_count'] = features.get(
+                'good_word_count', 0) + 1  # <2>
+        if x_word in bad_words:  # <2>
+            features['bad_word_count'] = features.get(
+                'bad_word_count', 0) + 1  # <2>
+
+    # The "bias" value is always one, to allow us to assign a "default" score to the text
+    features['bias'] = 1  # <3>
+
+    return features
+
+
+feature_weights = {'good_word_count': 1.0, 'bad_word_count': -1.0, 'bias': 0.5}
+```
+
+1. We list the words that represent sentiment,
+2. We count the number of good words and bad words in the text,
+3. We add a bias term to allow us to assign a "default" score to the text.
+   1. Think of $\beta_{0}$ in OLS calculation where we add an array of $[\mathbb{1}]$
+
+## Decision ML Algorithm
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+def run_classifier(x: str) -> int:
+    score = 0
+    for feat_name, feat_value in extract_features(x).items():
+        score = score + feat_value * feature_weights.get(feat_name, 0)
+    if score > 0:
+        return 1
+    elif score < 0:
+        return -1
+    else:
+        return 0
+
+def calculate_accuracy(x_data: list[str], y_data: list[int]) -> float:
+    total_number = 0
+    correct_number = 0
+    for x, y in zip(x_data, y_data):
+        y_pred = run_classifier(x)
+        total_number += 1
+        if y == y_pred:
+            correct_number += 1
+    return correct_number / float(total_number)
+
+
+```
+
+## Results 
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+label_count = {}
+for y in y_test:
+    if y not in label_count:
+        label_count[y] = 0
+    label_count[y] += 1
+print(label_count)
+
+train_accuracy = calculate_accuracy(x_train, y_train)
+test_accuracy = calculate_accuracy(x_test, y_test)
+
+print(f'Train accuracy: {train_accuracy}')
+print(f'Dev/test accuracy: {test_accuracy}')
+
+# Display 4 decimal
+print(f'Train accuracy: {train_accuracy:.4f}')
+print(f'Dev/test accuracy: {test_accuracy:.4f}')
+
+```
+
+## Model Evaluation
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+import random
+
+
+def find_errors(x_data, y_data):
+    error_ids = []
+    y_preds = []
+    for i, (x, y) in enumerate(zip(x_data, y_data)):
+        y_preds.append(run_classifier(x))
+        if y != y_preds[-1]:
+            error_ids.append(i)
+    for _ in range(5):
+        my_id = random.choice(error_ids)
+        x, y, y_pred = x_data[my_id], y_data[my_id], y_preds[my_id]
+        print(f'{x}\ntrue label: {y}\npredicted label: {y_pred}\n')
+
+
+find_errors(x_train, y_train)
+
+```
+
+## Improving the Model
+
+1. What's going wrong with my system?
+2. Modify the system (featurization, scoring function, etc.)
+3. Measure accuracy improvements, accept/reject change
+4. Repeat from 1
+5. Finally, when satisfied with dev accuracy, evaluate on test
+
+# Extreme or Rare Cases
+
+## Linguistic Barriers
+
+- Low-frequency Words
+- Conjugation
+- Negation 
+- Metaphor 
+- Analogy
+- Symbolic Languages
+
+:::{.callout-tip}
+Can we think of solutions for these?
+:::
+
+
+# Probabilistic Topic Modeling 
+
+## Probabilistic Topic Modeling {background-color="#f6e1d7"}
+
+![Probabilistic Topic Modeling](M01_lecture02_figures/Probabilistic-Topic-Modeling.png){width=80% fig-align="center" #fig-topic-modeling fig-alt="screenshot of papers from Science magazine about topic modeling"}
+
+## Machine Learning
+-  We want to [estimate]{.uugreen-bold} a function that will [predict]{.uugreen-bold} the label of a given text relatively well.
+- The function $f(x)$ can be [linear]{.uugreen-bold} or [non-linear]{.uugreen-bold}.
+- It can be [defined by humans]{.uugreen-bold} or [learned from data]{.uugreen-bold}.
+
+![Machine Learning](M01_lecture02_figures/MLsteps.png){width=80% fig-align="center" #fig-machine-learning fig-alt="Machine Learning end to end pipeline"}
+
+# Bag of Words approach
+
+## What is Bag of Words?
+
+- Text is treated as a **collection (bag)** of words
+- Word order is discarded
+- Each document becomes a **vector of word counts**
+
+![Bag of Words](M01_lecture02_figures/bag-of-words.png){width=80% fig-align="center" #fig-bag-of-words fig-alt="Bag of Words"}
+
+## Why We Need Bag of Words
+
+- Machines do not understand text
+- Models require **fixed-length numeric vectors**
+- Bag of Words is the **first workable bridge** between language and math
+
+> “Meaning is ignored; frequency is preserved.”
+
+---
+
+## Text Cleaning
+
+::: {.columns}
+::: {.column width="50%" .fragment}
+:::{.callout-important}
+Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this .
+:::
+
+:::
+::: {.column width="50%" .fragment}
+
+- Lowercasing
+- Removing punctuation
+- Removing numbers
+- Removing stopwords (optional)
+:::
+:::
+
+---
+
+## Stanford Text Corpus Import
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+import random
+
+
+def sample_sentences(x, y, n=4, seed=42):
+    random.seed(seed)
+    idx = random.sample(range(len(x)), n)
+    return [(y[i], x[i]) for i in idx]
+
+
+samples = sample_sentences(x_train, y_train, n=4)
+
+for i, (label, text) in enumerate(samples, 1):
+    print(f"S{i} [label={label}]: {text}")
+
+```
+
+
+## Step 2: Tokenization
+
+**Breaking text into units**
+
+* Split text into tokens (usually words)
+* Simple whitespace tokenization is often enough
+
+---
+
+## Building `CountVectorizer`
+
+```{python}
+# | echo: true
+# | eval: true
+# | output-location: column
+
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+
+docs = [text for _, text in samples]
+
+vectorizer = CountVectorizer(
+    lowercase=True,
+    stop_words=None   # keep everything for teaching clarity
+)
+
+X = vectorizer.fit_transform(docs)
+
+bow_df = pd.DataFrame(
+    X.toarray(),
+    columns=vectorizer.get_feature_names_out(),
+    index=[f"S{i+1}" for i in range(len(docs))]
+)
+
+bow_df.iloc[:, 0:8]
+
+```
+
+## Vocabulary Construction
+
+- Vocabulary = **unique words across all documents**
+- Vocabulary size grows quickly
+- Rare words may be removed
+- Vocabulary ≈ **feature space**
+- Too large → sparse, inefficient models
+
+## Counting Words - Document-Term Matrix (DTM)
+
+- Rows = documents
+- Columns = vocabulary terms
+- Values = word counts
+
+This is the **actual model input**.
+
+## Word Frequencies
+
+```{python}
+#| echo: false
+#| eval: true
+#| 
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Sum word counts across all sampled documents
+term_frequencies = bow_df.sum(axis=0)
+
+# Select top 15 terms
+top_terms = term_frequencies.sort_values(ascending=False).head(15)
+
+# top_terms
+
+plt.figure(figsize=(10, 5))
+top_terms.plot(kind="bar")
+plt.title("Top 15 Terms (Bag of Words)", fontsize=14)
+plt.ylabel("Word Count", fontsize=12)
+plt.xlabel("Term", fontsize=12)
+plt.xticks(rotation=45, ha="right", fontsize=12)
+plt.tight_layout()
+plt.show()
+
+
+```
+
+
+---
+
+## What BoW Gets Right
+
+**Strengths**
+
+* Simple and interpretable
+* Fast to compute
+* Works surprisingly well for:
+
+  * sentiment analysis
+  * topic classification
+  * spam detection
+
+Business angle:
+
+* Strong baseline
+* Easy to debug and explain
+
+---
+
+## What BoW Gets Wrong
+
+**Limitations**
+
+* Ignores word order
+* Ignores meaning
+* Vocabulary explosion
+* Sparse matrices
+
+Classic failure:
+
+```
+"not good" ≈ "good"
+```
+
+📌 This slide sets up TF-IDF and embeddings.
+
+---
+
+## BoW in Practice (KEEP IMAGE)
+
+Use the **sentiment analysis workflow image** from the article.
+
+This visually reinforces:
+
+* raw text → vector → model → prediction
+
+---
+
+## When Should You Use BoW?
+
+**Decision guidance**
+
+Use BoW when:
+
+* Dataset is small to medium
+* Interpretability matters
+* You need a fast baseline
+* Text is short and structured
+
+Avoid BoW when:
+
+* Long documents
+* Semantic nuance matters
+* Context is critical
+
+---
+
+## Conceptual Takeaway
+
+**One sentence slide**
+
+> Bag of Words is not about language—it is about **counting**.
+
+This prepares students mentally for:
+
+* TF-IDF (weighting counts)
+* Embeddings (learning meaning)
+* Transformers (learning context)
+
+
+
 # References
 
 :::{.refs}

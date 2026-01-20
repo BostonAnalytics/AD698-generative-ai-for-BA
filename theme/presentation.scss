@@ -248,7 +248,8 @@ $button-text: #000000; // Button text color
 }
 
 // Base unordered list style
-.reveal ul {
+.reveal ul,
+.reveal ol {
   list-style-type: disc;
   font-weight: 600;
   padding-left: 1.2em;
@@ -257,7 +258,8 @@ $button-text: #000000; // Button text color
 }
 
 // Level 1 list items
-.reveal ul>li {
+.reveal ul>li,
+.reveal ol>li {
   font-size: 18pt;
   margin-bottom: 0.4em;
   font-family: "Source Sans 3", sans-serif;
@@ -265,7 +267,8 @@ $button-text: #000000; // Button text color
 }
 
 // Level 2 (nested ul inside li)
-.reveal ul li>ul>li {
+.reveal ul li>ul>li,
+.reveal ol li>ol>li {
   font-size: 16pt;
   margin-bottom: 0.3em;
   font-family: "Source Sans 3", sans-serif;
@@ -273,7 +276,8 @@ $button-text: #000000; // Button text color
 }
 
 // Level 3
-.reveal ul li ul li>ul>li {
+.reveal ul li ul li>ul>li,
+.reveal ol li ol li>ol>li {
   font-size: 16pt;
   margin-bottom: 0.2em;
   font-style: italic;
@@ -390,11 +394,48 @@ figure.quarto-float img {
 }
 
 
+/* ---------------------------
+   Fix code wrapping + spacing
+   --------------------------- */
+/* Wrap code inside all Quarto/Reveal.js code blocks */
+pre.sourceCode,
+code.sourceCode,
+.reveal pre,
+.reveal code {
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow-x: hidden !important;
+}
+
+/* Remove extra bottom padding/margin under code blocks */
+div.sourceCode,
+pre.sourceCode,
+.reveal pre {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Optional: tighten overall spacing for cleaner slides */
+.reveal pre {
+  margin-top: 0.5rem !important;
+  padding: 0.5rem !important;
+  overflow-x: hidden !important;
+
+}
+
 /* Preserve your existing code font settings */
 .reveal code {
   font-family: $code-font;
   font-size: 11pt !important;
   text-align: left;
+}
+
+
+.cell-annotation span {
+  font-size: 14pt;
+  font-weight: 600;
+  font-family: "Source Sans 3", sans-serif;
+  color: $darker-gray;
 }
 
 .references {
