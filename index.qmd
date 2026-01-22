@@ -6,6 +6,7 @@ bibliography: references.bib
 csl: chicago-syllabus.csl
 format:
   html: default
+  docx: default
 ---
 
 ## Course Sections
