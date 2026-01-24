@@ -491,7 +491,7 @@ Can we think of solutions for these?
 - Word order is discarded
 - Each document becomes a **vector of word counts**
 
-![Bag of Words](M01_lecture02_figures/bag-of-words.png){width=80% fig-align="center" #fig-bag-of-words fig-alt="Bag of Words"}
+![Bag of Words](M01_lecture02_figures/bag-of-words.png){width=60% fig-align="center" #fig-bag-of-words fig-alt="Bag of Words"}
 
 ## Why We Need Bag of Words
 
@@ -499,7 +499,7 @@ Can we think of solutions for these?
 - Models require **fixed-length numeric vectors**
 - Bag of Words is the **first workable bridge** between language and math
 
-> “Meaning is ignored; frequency is preserved.”
+> "Meaning is ignored; frequency is preserved."
 
 ---
 
@@ -507,8 +507,12 @@ Can we think of solutions for these?
 
 ::: {.columns}
 ::: {.column width="50%" .fragment}
-:::{.callout-important}
+:::{.callout}
 Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this .
+:::
+
+:::{.callout}
+despite suffering a sense of humour failure the man who wrote rocky does not deserve to go down with a ship as leaky as this
 :::
 
 :::
@@ -532,12 +536,10 @@ Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not d
 
 import random
 
-
 def sample_sentences(x, y, n=4, seed=42):
     random.seed(seed)
     idx = random.sample(range(len(x)), n)
     return [(y[i], x[i]) for i in idx]
-
 
 samples = sample_sentences(x_train, y_train, n=4)
 
@@ -546,13 +548,17 @@ for i, (label, text) in enumerate(samples, 1):
 
 ```
 
+- Import all documents in the corpus.
+- Make sure they are stored in the right format.
 
-## Step 2: Tokenization
+## Tokenization
 
-**Breaking text into units**
-
-* Split text into tokens (usually words)
-* Simple whitespace tokenization is often enough
+- Breaking text into units
+  - Split text into tokens (usually words)
+  - Simple whitespace tokenization is often enough
+  - More advanced methods exist (e.g., subword tokenization)
+  - Tokens are the **building blocks** for Bag of Words
+  - Example:  "I love NLP!"  $\rightarrow$  ["I", "love", "NLP"]
 
 ---
 
@@ -599,7 +605,7 @@ bow_df.iloc[:, 0:8]
 - Columns = vocabulary terms
 - Values = word counts
 
-This is the **actual model input**.
+This is the [actual model input]{.uublue-bold}.
 
 ## Word Frequencies
 
@@ -607,7 +613,9 @@ This is the **actual model input**.
 #| echo: false
 #| eval: true
 #| 
+
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Sum word counts across all sampled documents
@@ -616,17 +624,78 @@ term_frequencies = bow_df.sum(axis=0)
 # Select top 15 terms
 top_terms = term_frequencies.sort_values(ascending=False).head(15)
 
-# top_terms
+# Drop words below 3 letters for clarity
+top_terms_3 = top_terms[top_terms.index.str.len() >= 3]
 
-plt.figure(figsize=(10, 5))
-top_terms.plot(kind="bar")
-plt.title("Top 15 Terms (Bag of Words)", fontsize=14)
-plt.ylabel("Word Count", fontsize=12)
-plt.xlabel("Term", fontsize=12)
-plt.xticks(rotation=45, ha="right", fontsize=12)
+# ---------------------------------------------------------
+# 1. Prepare data for grouped barplot
+# ---------------------------------------------------------
+
+df_plot = pd.DataFrame({
+    "term": top_terms.index,
+    "count_top15": top_terms.values,
+    "count_top15_3": top_terms_3.reindex(top_terms.index, fill_value=0).values
+})
+
+df_melt = df_plot.melt(
+    id_vars="term",
+    value_vars=["count_top15", "count_top15_3"],
+    var_name="category",
+    value_name="count"
+)
+
+df_melt["category"] = df_melt["category"].map({
+    "count_top15": "Top 15 Terms",
+    "count_top15_3": "Top Terms (≥3 letters)"
+})
+
+# ---------------------------------------------------------
+# 2. Global styling
+# ---------------------------------------------------------
+
+plt.rcParams["font.family"] = "Roboto"
+plt.rcParams["axes.titleweight"] = "bold"
+plt.rcParams["axes.labelweight"] = "bold"
+
+sns.set_theme(style="white")
+
+# ---------------------------------------------------------
+# 3. Plot
+# ---------------------------------------------------------
+plt.figure(figsize=(10, 5.5))
+
+ax = sns.barplot(
+    data=df_melt,
+    x="term",
+    y="count",
+    hue="category",
+    palette=sns.color_palette("dark", n_colors=2),
+    alpha=0.6 #
+)
+
+# Title: bold, left-aligned, 14 pt
+plt.title("Comparison of Top Terms vs. Top Terms (≥3 letters)",
+          fontsize=14, fontweight="bold", loc="left")
+
+# Axis labels bold
+plt.xlabel("Term", fontsize=12, fontweight="bold")
+plt.ylabel("Word Count", fontsize=12, fontweight="bold")
+
+plt.xticks(rotation=45, ha="right", fontsize=11)
+
+# Legend outside top-right
+plt.legend(
+    title="",
+    fontsize=12,
+    loc="upper right",           # anchor to top-right corner
+    bbox_to_anchor=(1, 1),       # position inside plot
+    ncol=2,                      # horizontal layout
+    borderaxespad=0.2,           # slight padding
+    frameon=False                # optional: remove legend box
+)
+
 plt.tight_layout()
 plt.show()
-
 
 ```
 
@@ -635,49 +704,140 @@ plt.show()
 
 ## What BoW Gets Right
 
-**Strengths**
+::: {.columns}
+::: {.column}
+### Strengths
 
-* Simple and interpretable
-* Fast to compute
-* Works surprisingly well for:
+- Simple and interpretable
+- Fast to compute
+- Works surprisingly well for:
+  - sentiment analysis
+  - topic classification
+  - spam detection
 
-  * sentiment analysis
-  * topic classification
-  * spam detection
 
-Business angle:
+:::
+::: {.column}
+### Limitations
 
-* Strong baseline
-* Easy to debug and explain
+- Ignores word order
+- Ignores meaning
+- Vocabulary explosion
+- Sparse matrices
+- Classic failure: "not good" ≈ "good"
 
----
-
-## What BoW Gets Wrong
-
-**Limitations**
-
-* Ignores word order
-* Ignores meaning
-* Vocabulary explosion
-* Sparse matrices
-
-Classic failure:
-
-```
-"not good" ≈ "good"
-```
-
-📌 This slide sets up TF-IDF and embeddings.
+:::
+:::
 
 ---
 
-## BoW in Practice (KEEP IMAGE)
 
-Use the **sentiment analysis workflow image** from the article.
 
-This visually reinforces:
+## BoW in Practice (Sentiment Analysis)
 
-* raw text → vector → model → prediction
+```{dot}
+digraph SentimentPipeline {
+
+    rankdir=LR;
+    splines=ortho;
+    bgcolor="white";
+    nodesep=0.6;
+    ranksep=0.9;
+    fontname="Helvetica";
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="Helvetica",
+        fontsize=10,
+        fillcolor="#F7F7F7",
+        color="#555555"
+    ];
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#555555"
+    ];
+
+    /* ===== Input Layer ===== */
+    Text [
+        label="Textual Data\n(A statement)",
+        fillcolor="#E8F1FA"
+    ];
+
+    /* ===== Lexicons ===== */
+    Lex1 [
+        label="Corpus",
+        shape=folder,
+        fillcolor="#FFF3CD"
+    ];
+
+    Lex2 [
+        label="Lexicon",
+        shape=cylinder,
+        fillcolor="#FFF3CD"
+    ];
+
+    /* ===== Processing Steps ===== */
+    Step1 [
+        label="Step 1:\nCalculate O–S Polarity",
+        fillcolor="#E3F2FD"
+    ];
+
+    Decision [
+        label="Is there a sentiment?",
+        shape=diamond,
+        fillcolor="#FDEDEC"
+    ];
+
+    Step2 [
+        label="Step 2:\nCalculate N–P Polarity\nof the sentiment",
+        fillcolor="#E3F2FD"
+    ];
+
+    Step3 [
+        label="Step 3:\nIdentify the target\nfor the sentiment",
+        fillcolor="#E3F2FD"
+    ];
+
+    /* ===== Output Layer ===== */
+    Record [
+        label="Record Polarity,\nStrength,\nand Target",
+        fillcolor="#E8F8F5"
+    ];
+
+    Step4 [
+        label="Step 4:\nTabulate & aggregate\nsentiment analysis results",
+        fillcolor="#D5F5E3"
+    ];
+
+    /* ===== Layout Control (Two Rows) ===== */
+    { rank=same; Text; Step1; Decision }
+    { rank=same; Step2; Step3; Record; Step4 }
+
+    /* ===== Edges ===== */
+    Text -> Step1;
+    Lex1 -> Step1;
+
+    Step1 -> Decision;
+
+    Decision -> Text   [label="No"];
+    Decision -> Step2  [label="Yes"];
+
+    Lex2 -> Step2;
+
+    Step2 -> Step3;
+
+    Step1 -> Record [label="O–S Polarity"];
+    Step2 -> Record [label="N–P Polarity"];
+    Step3 -> Record [label="Target"];
+
+    Record -> Step4;
+}
+
+```
+
 
 ---
 

@@ -394,21 +394,25 @@ figure.quarto-float img {
   font-size: 14pt !important;
 }
 
+/* ============================================================
+   GLOBAL CODE-BLOCK NORMALIZATION (Quarto + Reveal.js)
+   Removes scrollbars, forces wrapping, tightens spacing
+   ============================================================ */
 
-/* ---------------------------
-   Fix code wrapping + spacing
-   --------------------------- */
-/* Wrap code inside all Quarto/Reveal.js code blocks */
+/* Base: remove scrollbars + allow wrapping */
+.sourceCode,
+.sourceCode pre,
 pre.sourceCode,
 code.sourceCode,
 .reveal pre,
 .reveal code {
-  white-space: pre-wrap !important;
-  word-break: break-word !important;
-  overflow-x: hidden !important;
+  white-space: pre-wrap !important;   /* wrap long lines */
+  word-break: break-word !important;  /* break long tokens */
+  overflow-x: hidden !important;      /* no horizontal scroll */
+  overflow-y: hidden !important;      /* no vertical scroll */
 }
 
-/* Remove extra bottom padding/margin under code blocks */
+/* Remove extra bottom spacing under code blocks */
 div.sourceCode,
 pre.sourceCode,
 .reveal pre {
@@ -416,22 +420,22 @@ pre.sourceCode,
   padding-bottom: 0 !important;
 }
 
-/* Optional: tighten overall spacing for cleaner slides */
+/* Optional: tighten spacing for Reveal.js slides */
 .reveal pre {
   margin-top: 0.5rem !important;
   padding: 0.5rem !important;
-  overflow-x: hidden !important;
-
 }
 
-/* Preserve your existing code font settings */
+/* Preserve your code font settings */
 .reveal code {
   font-family: $code-font;
   font-size: 11pt !important;
   text-align: left;
 }
 
-
+/* ============================================================
+   ANNOTATION STYLING
+   ============================================================ */
 .cell-annotation span {
   font-size: 14pt;
   font-weight: 600;
