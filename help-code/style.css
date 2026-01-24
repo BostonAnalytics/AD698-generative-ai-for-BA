@@ -1,0 +1,257 @@
+@import url("https://fonts.googleapis.com/css?family=Ubuntu");
+
+/* ===============================
+   GLOBAL RESET + TYPOGRAPHY
+   =============================== */
+
+*, *::after, *::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: "Ubuntu", system-ui, sans-serif;
+  font-size: 1.6rem;
+  color: #1a1a1a;
+  background-color: #ffffff;
+  margin: 0;
+}
+
+a {
+  color: #1a1a1a;
+  text-decoration: none;
+}
+
+/* ===============================
+   TIMELINE CONTAINER (FIGURE-LIKE)
+   =============================== */
+
+.cd-horizontal-timeline {
+  opacity: 1;
+  margin: 2.5rem auto 3.5rem;
+  padding: 1.8rem 2.4rem;
+  max-width: 1100px;
+
+  background: #fafafa;
+  border-radius: 14px;
+  border: 1px solid #e6e6e6;
+}
+
+/* ===============================
+   TIMELINE BAR
+   =============================== */
+
+.cd-horizontal-timeline .timeline {
+  position: relative;
+  height: 100px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.cd-horizontal-timeline .events-wrapper {
+  position: relative;
+  height: 100%;
+  margin: 0 48px;
+  overflow: hidden;
+}
+
+.cd-horizontal-timeline .events {
+  position: absolute;
+  left: 0;
+  top: 50px;
+  height: 3px;
+  background: #d0d0d0;
+  transition: transform 0.4s;
+}
+
+.cd-horizontal-timeline .filling-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #FF3D7F;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.3s;
+}
+
+/* ===============================
+   YEAR MARKERS
+   =============================== */
+
+.cd-horizontal-timeline .events a {
+  position: absolute;
+  bottom: 0;
+  width: 100px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #333;
+  padding-bottom: 14px;
+  margin-bottom: 22px;
+
+}
+
+.cd-horizontal-timeline .events a::before {
+  content: "";
+  position: absolute;
+  width: 1px;
+  height: 18px;
+  background: #b0b0b0;
+  bottom: -18px;
+  left: 50%;
+}
+
+.cd-horizontal-timeline .events a::after {
+  content: "";
+  position: absolute;
+  bottom: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #b0b0b0;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.cd-horizontal-timeline .events a.selected::after {
+  background-color: #FF3D7F;
+  border-color: #FF3D7F;
+}
+
+.cd-horizontal-timeline .events a.older-event::after {
+  border-color: #FF3D7F;
+}
+
+/* ===============================
+   NAVIGATION ARROWS
+   =============================== */
+
+.cd-timeline-navigation a {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  border: 2px solid #999;
+  color: transparent;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+
+.cd-timeline-navigation a.prev {
+  left: 0;
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.cd-timeline-navigation a.next {
+  right: 0;
+}
+
+.no-touch .cd-timeline-navigation a:hover {
+  border-color: #FF3D7F;
+}
+
+.cd-timeline-navigation a.inactive {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   CONTENT AREA
+   =============================== */
+
+.cd-horizontal-timeline .events-content {
+  position: relative;
+  width: 100%;
+  margin-top: 3rem;
+  overflow: hidden;
+  transition: height 0.4s;
+}
+
+.cd-horizontal-timeline .events-content li {
+  position: absolute;
+  width: 100%;
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: all 0.4s ease;
+}
+
+.cd-horizontal-timeline .events-content li.selected {
+  position: relative;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ===============================
+   TWO-COLUMN SLIDE LAYOUT
+   =============================== */
+
+.events-content li > .content-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 48px;
+  align-items: center;
+  min-height: 360px;
+}
+
+/* ===============================
+   TEXT STYLING
+   =============================== */
+
+.cd-horizontal-timeline .events-content h2 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 1rem;
+}
+
+.cd-horizontal-timeline .events-content p {
+  font-size: 1.6rem;
+  line-height: 1.65;
+  color: #333;
+}
+
+/* ===============================
+   IMAGE GRID (DOUBLE COLUMN)
+   =============================== */
+
+/* Lock the image container height */
+.event-images {
+  height: 900px;              /* fixed visual box */
+  max-height: 900px !important;  /* enforce max height */
+  overflow: hidden;
+}
+
+/* Force all images to conform */
+.event-images img {
+  max-height: 900px !important;
+  height: auto;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Single-image case still centered */
+.event-images img:only-child {
+  max-height: 900px !important;
+  justify-self: center;
+}
+
+/* ===============================
+   REVEAL / QUARTO SAFETY
+   =============================== */
+
+.reveal section {
+  overflow: visible !important;
+}
+
+.reveal .cd-horizontal-timeline {
+  transform: none !important;
+}

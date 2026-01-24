@@ -228,6 +228,7 @@ $button-text: #000000; // Button text color
   letter-spacing: 0.3pt;
 }
 
+
 // h3
 .reveal .slides section:not(.title-slide) h3 {
   font-size: 16pt;
@@ -443,4 +444,11 @@ pre.sourceCode,
   // color: #369;
   // font-style: italic;
   margin-top: 0.5em;
+}
+
+.timeline-embed {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
 }

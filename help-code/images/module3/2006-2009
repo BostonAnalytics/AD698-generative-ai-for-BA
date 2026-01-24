@@ -1,0 +1,5 @@
+Hugo Larochelle, Yoshua Bengio, Jérôme Louradour, Pascal Lamblin. Exploring Strategies for Training Deep Neural Networks, JMLR, 2009
+Dumitru Erhan, Pierre-Antoine Manzagol, Yoshua Bengio, Samy Bengio, Pascal Vincent. The Difficulty of Training Deep Architectures and the Effect of Unsupervised Pre-Training, AISTATS,  2009
+Bengio Yoshua, Lamblin Pascal, Popovici Dan, Larochelle Hugo. Greedy Layer-Wise Training of Deep Networks, NIPS, 2006
+
+(and some other works dedicated to the cause of understanding why unsupervised pre-training works)
