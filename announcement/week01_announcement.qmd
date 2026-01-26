@@ -1,0 +1,92 @@
+---
+title: "Welcome to Week 1"
+subtitle: "Course Start and AWS Academy Access"
+date: "2026-02-02"
+date-modified: today
+date-format: long
+keywords: [week 1, announcements, aws academy, generative ai, spring 26]
+number-sections: false
+format:
+  html:
+    toc: false
+  docx:
+    toc: false
+    reference-doc: "../theme/announcement.docx"
+
+---
+
+## Welcome to the Course
+
+Welcome to the course. I am **Professor Nakul Padalkar**, and I look forward to working with you this semester.
+
+Due to **severe winter weather conditions**, the start of the course was delayed by one week. This announcement confirms that the course **officially begins today (Week 1)**. All lectures, labs, and assignments are now aligned with the revised schedule.
+
+## AWS Academy – Generative AI Foundations (Important)
+
+All students have been **successfully added** to the **AWS Academy Generative AI Foundations** course on the **AWS Academy platform**.
+
+You should now see this course listed when you log in using your Boston University–associated AWS Academy account. You may receive automated onboarding emails from AWS; these are part of the standard setup process.
+
+Key points to note:
+
+- AWS Academy provides **free access** to learning resources and cloud-based labs
+- No payment or credit card information is required
+- The AWS Academy content is **integrated into the course structure** and supports your long-term career development
+- While instructors do not intervene directly inside AWS Academy, **student progress is visible**
+
+If you do not see the Generative AI Foundations course by the end of today, please notify the instructional team.
+
+## Accounts and Platforms You Will Use
+
+To participate fully in the course, you will need access to the following platforms. These are covered in **Module 0 lab videos** and will also be reviewed during class. 
+
+- [Required for the Class]{.uured-bold}:
+  - [Google Colab]{.uured-bold}: please use the boston university account to open the account and then utilize the student upgrade features to receive 1 year of free google colab pro.
+  - [AWS Academy account]{.uured-bold} (already provisioned)
+  - [Blackboard]{.uured-bold} for course materials and announcements
+
+- [Optional and Advanced]{.uublue-bold}:
+  -  [GitHub account]{.uublue-bold}: please use your boston university email to create the account.
+  - [GitHub Classroom invitation]{.uublue-bold} for the course organization
+
+Please ensure you accept all invitations before attempting labs or assignments.
+
+## Week 1 Content Overview
+
+This week focuses on **onboarding and environment setup**, which is essential for the remainder of the course.
+
+Topics include:
+
+* GitHub Education and student account setup
+* GitHub Classroom workflow
+* Jupyter Notebooks and VS Code overview
+* Introduction to Quarto and portfolio-based submissions
+
+We assume familiarity with basic computer concepts and comfort using standard development tools.
+
+## In-Class Labs and Presentations
+
+- For on-campus sections
+  - **In-class labs are not gradable**. They are used for practice and hands-on experience.
+  - **Presentations are gradable**. Each student will present their work during lab sessions
+- For online sections
+  - The same labs will be used as **demonstrations and guided tutorials**.
+  - **Presentations are gradable**. Each student group will record and submit their presentation videos.
+
+| Section | Lab    | Open Date | Close Date    |
+| ------- | ------ | --------- | ------------- |
+| A1      | Lab 01 | Class Day | Class Day + 7 |
+| A1      | Group 1 Presentation | Class Day | Class Day + 7 |
+| A1      | Group 2 Presentation | Class Day | Class Day + 7 |
+
+## Consultation Session (Saturday)
+
+In addition to weekly classes, a consultation session is available for all sections starting from the 3rd week of the class.
+
+**Zoom Consultation Room**
+
+* **Facilitators**: Course Instructors and TAs
+* **Time**:TBD (Saturdays)
+* **Location**: Online via Zoom
+
+This session is intended for questions, assignment clarification, and general discussion. The Zoom link will be available in the **Course Materials** section.
