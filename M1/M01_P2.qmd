@@ -1013,15 +1013,13 @@ digraph SentimentPipeline {
 
 ## Conceptual Takeaway
 
-**One sentence slide**
 
-> Bag of Words is not about language—it is about **counting**.
+> Bag of Words is not about language—it is about [counting]{.uublue-bold}.
 
-This prepares students mentally for:
-
-* TF-IDF (weighting counts)
-* Embeddings (learning meaning)
-* Transformers (learning context)
+- Bag of words is a stepping stone to more advanced techniques:
+  - TF-IDF (weighting counts)
+  - Embeddings (learning meaning)
+  - Transformers (learning context)
 
 
 
