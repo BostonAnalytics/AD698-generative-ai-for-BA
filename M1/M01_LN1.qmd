@@ -11,12 +11,6 @@ categories: ['M01:', 'Notes', 'Lecture']
 description: "Lecture covering Introduction to Generative AI & Business Applications."
 ---
 
-## AD698 – Learning Path
-
-![](./lecture01_figures/ad698path.png){width="95%"}
-
-
-
 # What This Course Is About
 
 This course explores how modern generative AI systems reshape analytical workflows and business decision-making. You will learn:
@@ -225,7 +219,6 @@ What distinguishes generative AI from earlier forms of artificial intelligence i
 A generative model learns the **underlying structure** of the data it is trained on - the grammar of language, the geometry of images, the relationships in chemistry, the cadence of music - and uses this learned representation to create new outputs consistent with these structures.
 
 
-
 ## Generative AI vs. Traditional Artificial Intelligence
 
 Artificial intelligence is a broad umbrella that includes:
@@ -297,8 +290,7 @@ The last several years have given rise to large generative models capable of:
 These models are now central to applications in business, science, healthcare, and government.
 
 
-
-## foundation Models
+## Foundation Models
 
 Foundation models are large neural networks trained on diverse, broad datasets so they can serve as general-purpose systems that perform many tasks.
 They are not built to solve a single narrowly defined problem. Instead, they learn **representations of the world** that can be adapted to countless tasks, including ones they have never seen before.

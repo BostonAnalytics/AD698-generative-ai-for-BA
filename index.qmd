@@ -45,6 +45,8 @@ display(HTML(styled_table.to_html()))
 
 ## Course Content and Objectives
 
+![](./M01_lecture01_figures/ad698path.png){width="95%"}
+
 ### Course Description
 
 This course is designed for **analytics developers and advanced business students** seeking to build **practical, production-ready applications** using **Generative AI (GenAI)**. Emphasizing hands-on learning, students will explore key techniques such as **prompt engineering, in-context learning (ICL), retrieval-augmented generation (RAG), AI agents, and responsible AI design**.

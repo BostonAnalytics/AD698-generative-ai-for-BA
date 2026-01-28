@@ -1,0 +1,192 @@
+d3 = require("d3@7");
+
+chart = {
+  const width = 980;
+  const height = 420;
+
+  const boxW = 170;
+  const boxH = 46;
+  const arrowGap = 12;
+
+  const row1Y = 120;
+  const row2Y = 240;
+
+  const svg = d3.create("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr("viewBox", [0, 0, width, height]);
+
+  /* =========================
+     Arrow markers (EXPLICIT)
+     ========================= */
+
+  const defs = svg.append("defs");
+
+  // → right arrow
+  defs.append("marker")
+    .attr("id", "arrow-right")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 10)
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M0,-5L10,0L0,5")
+    .attr("fill", "#1f3a8a");
+
+  // ← left arrow
+  defs.append("marker")
+    .attr("id", "arrow-left")
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 0)
+    .attr("refY", 0)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto")
+    .append("path")
+    .attr("d", "M10,-5L0,0L10,5")
+    .attr("fill", "#1f3a8a");
+
+  /* =========================
+     Box drawing
+     ========================= */
+
+  function box(x, y, label) {
+    svg.append("rect")
+      .attr("x", x - boxW / 2)
+      .attr("y", y - boxH / 2)
+      .attr("width", boxW)
+      .attr("height", boxH)
+      .attr("rx", 10)
+      .attr("fill", "#e8f0ff")
+      .attr("stroke", "#1f3a8a")
+      .attr("stroke-width", 1.6);
+
+    svg.append("text")
+      .attr("x", x)
+      .attr("y", y)
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
+      .attr("font-size", 13)
+      .text(label);
+  }
+
+  /* =========================
+     Layout
+     ========================= */
+
+  const row1 = [
+    { label: "Characters", x: 160 },
+    { label: "Tokens", x: 360 },
+    { label: "Tagged tokens", x: 560 }
+  ];
+
+  const row2 = [
+    { label: "Entity relationships", x: 260 },
+    { label: "Knowledge base", x: 460 },
+    { label: "Syntax tree", x: 660 }
+  ];
+
+  row1.forEach(d => box(d.x, row1Y, d.label));
+  row2.forEach(d => box(d.x, row2Y, d.label));
+
+  /* =========================
+     Blue arrow helpers
+     ========================= */
+
+  function blueLR(x1, y1, x2, y2, bend = 100) {
+    svg.append("path")
+      .attr("d",
+        `M ${x1},${y1}
+         C ${x1 + bend},${y1}
+           ${x2 - bend},${y2}
+           ${x2},${y2}`)
+      .attr("fill", "none")
+      .attr("stroke", "#1f3a8a")
+      .attr("stroke-width", 1.9)
+      .attr("marker-end", "url(#arrow-right)");
+  }
+
+  function blueRL(x1, y1, x2, y2, bend = 100) {
+    svg.append("path")
+      .attr("d",
+        `M ${x1},${y1}
+         C ${x1 - bend},${y1}
+           ${x2 + bend},${y2}
+           ${x2},${y2}`)
+      .attr("fill", "none")
+      .attr("stroke", "#1f3a8a")
+      .attr("stroke-width", 1.9)
+      .attr("marker-end", "url(#arrow-left)");
+  }
+
+  /* =========================
+     Straight flows
+     ========================= */
+
+  // Row 1 LR
+  blueLR(row1[0].x + boxW / 2, row1Y, row1[1].x - boxW / 2, row1Y);
+  blueLR(row1[1].x + boxW / 2, row1Y, row1[2].x - boxW / 2, row1Y);
+
+  // Row 2 RL
+  blueRL(row2[2].x - boxW / 2, row2Y, row2[1].x + boxW / 2, row2Y);
+  blueRL(row2[1].x - boxW / 2, row2Y, row2[0].x + boxW / 2, row2Y);
+
+  /* =========================
+     Merge into Syntax tree
+     ========================= */
+
+  const merge = {
+    x: row2[2].x + boxW / 2 + 80,
+    y: row2Y
+  };
+
+  // Tokens → merge
+  blueLR(row1[1].x + boxW / 2, row1Y, merge.x, merge.y - 12, 160);
+
+  // Tagged tokens → merge
+  blueLR(row1[2].x + boxW / 2, row1Y, merge.x, merge.y + 12, 160);
+
+  // Merge → Syntax tree (single inbound arrow)
+  svg.append("line")
+    .attr("x1", merge.x)
+    .attr("y1", merge.y)
+    .attr("x2", row2[2].x + boxW / 2 + arrowGap)
+    .attr("y2", row2Y)
+    .attr("stroke", "#1f3a8a")
+    .attr("stroke-width", 1.9)
+    .attr("marker-end", "url(#arrow-left)");
+
+  /* =========================
+     Green annotation arrows
+     ========================= */
+
+  function greenLean(x1, y1, x2, y2) {
+    svg.append("path")
+      .attr("d",
+        `M ${x1},${y1}
+         C ${x1},${y1 - 28}
+           ${x2},${y2 + 28}
+           ${x2},${y2}`)
+      .attr("fill", "none")
+      .attr("stroke", "#0f766e")
+      .attr("stroke-width", 1.4)
+      .attr("stroke-dasharray", "4,3")
+      .attr("marker-end", "url(#arrow-right)");
+  }
+
+  // Labels
+  svg.append("text").attr("x", 360).attr("y", 70).text("Regular expressions");
+  svg.append("text").attr("x", 560).attr("y", 70).text("POS tagger (FST)");
+  svg.append("text").attr("x", 660).attr("y", 300).text("Information extractor (FST)");
+  svg.append("text").attr("x", 460).attr("y", 300).text("Logic compiler (FST)");
+
+  // Arrows
+  greenLean(row1[1].x, row1Y - boxH / 2, 360, 80);
+  greenLean(row1[2].x, row1Y - boxH / 2, 560, 80);
+  greenLean(row2[2].x, row2Y + boxH / 2, 660, 300);
+  greenLean(row2[1].x, row2Y + boxH / 2, 460, 300);
+
+  return svg.node();
+}

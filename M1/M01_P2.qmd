@@ -50,8 +50,158 @@ csl: ../mis-quarterly.csl
 
 ## Text Mining Process
 
-![Text Mining Process](./M01_lecture02_figures/text_mining_operations_workflow.png){width=80% fig-align="center" #fig-text-mining-process fig-alt="Text Mining Process"}
- 
+```{dot}
+digraph NLP_Pipeline {
+
+    /* =========================
+       Global graph settings
+       ========================= */
+
+    newrank="true";
+    rankdir="TB";
+    splines="spline";
+
+    graph [
+        fontname="Helvetica"
+        fontsize=10
+        bgcolor="white"
+        ranksep="1.25"
+        pad="0.5"
+    ];
+
+    node [
+        shape="box"
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=11
+        color="#1f3a8a"
+        fillcolor="#e8f0ff"
+    ];
+
+    edge [
+        fontname="Helvetica"
+        fontsize=9
+        color="#1f3a8a"
+    ];
+
+    /* =========================
+       TOP ROW — Lexical pipeline
+       ========================= */
+
+    subgraph cluster_lexical {
+        label="Lexical processing";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        Characters;
+        Tokens;
+        TaggedTokens [ label="Tagged tokens" ];
+
+        Characters -> Tokens;
+        Tokens -> TaggedTokens;
+    }
+
+    /* =========================
+       BOTTOM ROW — Structural pipeline
+       ========================= */
+
+    subgraph cluster_structural {
+        label="Structural representation";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        EntityRelations [ label="Entity relationships" ];
+        SyntaxTree      [ label="Syntax tree" ];
+        KnowledgeBase   [ label="Knowledge base" ];
+
+        /* Right-to-left logical flow */
+        SyntaxTree    -> EntityRelations;
+        EntityRelations -> KnowledgeBase;
+
+    }
+    
+    subgraph cluster_algorithm {
+        label="Algorithm";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        fst_regex[color="#99CC99" fillcolor="#D6EBD6" label="Regular expression" ];
+        fst_pos  [color="#99CC99" fillcolor="#D6EBD6" label="Part-of-Speech" ];
+        fst_logic[color="#99CC99" fillcolor="#D6EBD6" label="Logic compiler" ];
+        fst_ie   [color="#99CC99" fillcolor="#D6EBD6" label="Information extractor" ];
+    }
+
+    /* =========================
+       Invisible merge anchors
+       ========================= */
+
+    merge_tokens [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    merge_tagged [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    merge_syntax [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    /* =========================
+       Controlled merges
+       ========================= */
+
+    Tokens        -> SyntaxTree      [ arrowhead="vee"];
+    TaggedTokens -> SyntaxTree       [ arrowhead="vee"];
+
+    /* =========================
+       FST annotations (semantic)
+       ========================= */
+
+    /* Invisible anchors for labels */
+    // fst_regex  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_pos    [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_logic  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_ie     [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+
+    fst_regex -> Tokens       [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    fst_regex -> TaggedTokens [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    SyntaxTree   -> fst_pos [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    KnowledgeBase-> fst_ie    [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    KnowledgeBase-> fst_logic [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+
+    /* Labels */
+    // fst_regex  [ xlabel="Regular expressions" ];
+    // fst_pos    [ xlabel="POS tagger (FST)" ];
+    // fst_logic  [ xlabel="Logic compiler (FST)" ];
+    // fst_ie     [ xlabel="Information extractor (FST)" ];
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank="same"; Characters; Tokens; TaggedTokens; }
+    { rank="same"; EntityRelations; SyntaxTree; KnowledgeBase; }
+    { rank="same"; fst_regex; fst_pos; fst_logic; fst_ie}
+}
+
+```
+
 ## What is Natural Language Processing (NLP)?
 
 - Technology that enables computers to process, generate, and interact with language (e.g., text). Some key aspects:
@@ -843,21 +993,22 @@ digraph SentimentPipeline {
 
 ## When Should You Use BoW?
 
-**Decision guidance**
+::: {.columns}
+::: {.column}
+### When to Use Bag of Words
+-  Dataset is small to medium
+-  Interpretability matters
+-  You need a fast baseline
+-  Text is short and structured
+:::
+::: {.column}
+### When Not to Use Bag of Words
+- Long documents
+- Semantic nuance matters
+- Context is critical
 
-Use BoW when:
-
-* Dataset is small to medium
-* Interpretability matters
-* You need a fast baseline
-* Text is short and structured
-
-Avoid BoW when:
-
-* Long documents
-* Semantic nuance matters
-* Context is critical
-
+:::
+:::
 ---
 
 ## Conceptual Takeaway
