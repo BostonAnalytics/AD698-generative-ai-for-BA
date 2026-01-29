@@ -21,7 +21,6 @@ format:
         auto-stretch: false
         from: markdown+emoji
         code-line-numbers: true
-
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
@@ -341,8 +340,6 @@ digraph TextClassificationTraining {
 
 ```
 
-
-
 ## Data Requirements for System Building
 
 -  [Rules/prompting based on intuition]{.uublue-bold}: No data needed, but also no performance guarantees  
@@ -373,6 +370,731 @@ digraph DataSplit {
 }
 
 ```
+
+
+## Text Analytics
+
+- Knowledge Discovery in Textual Databases
+- Text Mining is a subfield of Text Analytics and Natural Language Processing (NLP)
+- Text Analytics is a broader term that encompasses various techniques for analyzing and extracting insights from text data.
+- Borrows from various fields such as information retrieval, machine learning, statistics, linguistics, and others.
+$$
+\begin{align}
+\text{Text Mining} &= \text{Information Extraction} + \nonumber \\
+      &\quad{}  \text{Data Mining} + \text{Web Mining} \\
+\text{Text Analytics} &= \text{Information Retrieval} + \text{Text Mining}
+\end{align}
+$$
+
+## Application Areas of Text Mining
+
+- Information extraction
+- Topic tracking
+- Summarization
+- Categorization
+- Clustering
+- Concept linking
+- Question answering
+
+# Text Mining and Analytics Process 
+
+![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
+
+## Sentiment Analysis
+
+```{dot}
+digraph Sentiment_Analysis_Map {
+
+    /* =========================
+       Global settings
+       ========================= */
+
+    rankdir=LR;
+    newrank=true;
+    splines=ortho;
+
+    graph [
+        fontname="Helvetica"
+        fontsize=11
+        bgcolor="white"
+        pad="0.0"
+        margin="0"
+        nodesep="0.6"
+        ranksep="1.2"
+    ];
+
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=11
+        color="#555555"
+    ];
+
+    edge [
+        color="#333333"
+        penwidth=1.6
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       Root
+       ========================= */
+
+    SentimentAnalysis [
+        label="Sentiment\nAnalysis"
+        fillcolor="#cde6a3"
+        fontsize=12
+        color="#6b8e23"
+    ];
+
+    /* =========================
+       TASKS CLUSTER
+       ========================= */
+
+    subgraph cluster_tasks {
+        label="Tasks";
+        style="dashed,rounded";
+        color="red";
+        fontcolor="red";
+        fontsize=14;
+
+        Subjectivity [
+            label="Subjectivity\nClassification"
+            fillcolor="#cfe1f7"
+        ];
+
+        SentimentClass [
+            label="Sentiment\nClassification"
+            fillcolor="#ffd37f"
+        ];
+
+        ReviewUse [
+            label="Review\nUsefulness\nMeasurement"
+            fillcolor="#cfe1f7"
+        ];
+
+        SpamDetect [
+            label="Opinion Spam\nDetection"
+            fillcolor="#cfe1f7"
+        ];
+
+        LexiconCreate [
+            label="Lexicon\nCreation"
+            fillcolor="#bfe3ea"
+        ];
+
+        AspectExtract [
+            label="Aspect\nExtraction"
+            fillcolor="#bfe3ea"
+        ];
+
+        Application [
+            label="Application"
+            fillcolor="#eeeeee"
+            style="rounded,dashed,filled"
+        ];
+    }
+
+    /* =========================
+       SUBTASKS (middle column)
+       ========================= */
+
+    subgraph cluster_subtasks {
+        label="";
+        color="invis";
+
+        Polarity [
+            label="Polarity\nDetermination"
+            fillcolor="#ffd37f"
+        ];
+
+        Vagueness [
+            label="Vagueness\nresolution in\nopinionated text"
+            fillcolor="#ffd37f"
+        ];
+
+        MultiLingual [
+            label="Multi- & Cross-\nLingual SC"
+            fillcolor="#ffd37f"
+        ];
+
+        CrossDomain [
+            label="Cross-domain\nSC"
+            fillcolor="#ffd37f"
+        ];
+    }
+
+    /* =========================
+       APPROACHES CLUSTER
+       ========================= */
+
+    subgraph cluster_approaches {
+        label="Approaches";
+        style="dashed,rounded";
+        color="red";
+        fontcolor="red";
+        fontsize=14;
+
+        ML [
+            label="Machine Learning\nbased"
+            fillcolor="#ffb000"
+        ];
+
+        LexiconBased [
+            label="Lexicon based"
+            fillcolor="#ffb000"
+        ];
+
+        Hybrid [
+            label="Hybrid\napproaches"
+            fillcolor="#ffb000"
+        ];
+
+        Ontology [
+            label="Ontology based"
+            fillcolor="#bfe3ea"
+        ];
+
+        NonOntology [
+            label="Non-Ontology\nbased"
+            fillcolor="#bfe3ea"
+        ];
+    }
+
+    /* =========================
+       EDGES — Main tree
+       ========================= */
+
+    SentimentAnalysis -> Subjectivity;
+    SentimentAnalysis -> SentimentClass;
+    SentimentAnalysis -> ReviewUse;
+    SentimentAnalysis -> SpamDetect;
+    SentimentAnalysis -> LexiconCreate;
+    SentimentAnalysis -> AspectExtract;
+    SentimentAnalysis -> Application;
+
+    /* =========================
+       Task → Subtask links
+       ========================= */
+
+    Subjectivity   -> Polarity;
+    SentimentClass -> Vagueness;
+    ReviewUse      -> MultiLingual;
+    SpamDetect     -> CrossDomain;
+
+    /* =========================
+       Subtask → Approaches
+       ========================= */
+
+    Polarity     -> ML;
+    Vagueness    -> LexiconBased;
+    MultiLingual -> Hybrid;
+    CrossDomain  -> Hybrid;
+
+    LexiconCreate -> Ontology;
+    AspectExtract -> NonOntology;
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; Subjectivity; SentimentClass; ReviewUse; SpamDetect; LexiconCreate; AspectExtract; Application; }
+    { rank=same; Polarity; Vagueness; MultiLingual; CrossDomain; }
+    { rank=same; ML; LexiconBased; Hybrid; Ontology; NonOntology; }
+}
+
+```
+
+## Sentiment Classification Algorithms
+
+```{dot}
+digraph Sentiment_Approaches {
+
+    /* =========================
+       Global settings
+       ========================= */
+
+    rankdir=TD;
+    newrank=true;
+    splines=curved;
+
+    graph [
+        fontname="Handlee"
+        fontsize=11
+        bgcolor="white"
+        pad="0.0"
+        margin="0"
+        nodesep="0.6"
+        ranksep="1.2"
+    ];
+
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Handlee"
+        fontsize=11
+        color="#555555"
+    ];
+
+    edge [
+        fontname = "Handlee"
+        color="#333333"
+        penwidth=1.6
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       ROOT NODES
+       ========================= */
+
+    ML_Approach [
+        label="Machine Learning\nApproach"
+        fillcolor="#ffd37f"
+        fontsize=12
+    ];
+
+    Lexicon_Approach [
+        label="Lexicon-based\nApproach"
+        fillcolor="#cde6a3"
+        fontsize=12
+    ];
+
+    /* =========================
+       MACHINE LEARNING BRANCH
+       ========================= */
+
+    Supervised [
+        label="Supervised\nLearning"
+        fillcolor="#ffd37f"
+    ];
+
+    Unsupervised [
+        label="Unsupervised\nLearning"
+        fillcolor="#ffd37f"
+    ];
+
+    ML_Approach -> Supervised;
+    ML_Approach -> Unsupervised;
+
+    /* ---- Classifier families ---- */
+
+    DecisionTree [
+        label="Decision Tree\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    LinearCls [
+        label="Linear\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    RuleBased [
+        label="Rule-based\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    Probabilistic [
+        label="Probabilistic\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    Supervised -> DecisionTree;
+    Supervised -> LinearCls;
+    Supervised -> RuleBased;
+    Unsupervised -> Probabilistic;
+
+    /* ---- Specific algorithms ---- */
+
+    SVM [
+        label="Support Vector\nMachine (SVM)"
+        fillcolor="#ffb000"
+    ];
+
+    NN [
+        label="Neural Network\n(NN)"
+        fillcolor="#ffb000"
+    ];
+
+    DL [
+        label="Deep Learning\n(DL)"
+        fillcolor="#ffb000"
+    ];
+
+    NB [
+        label="Naïve Bayes\n(NB)"
+        fillcolor="#ffb000"
+    ];
+
+    BN [
+        label="Bayesian Network\n(BN)"
+        fillcolor="#ffb000"
+    ];
+
+    ME [
+        label="Maximum\nEntropy (ME)"
+        fillcolor="#ffb000"
+    ];
+
+    DecisionTree -> SVM;
+    LinearCls   -> NN;
+    LinearCls   -> DL;
+
+    Probabilistic -> NB;
+    Probabilistic -> BN;
+    Probabilistic -> ME;
+
+    /* =========================
+       LEXICON-BASED BRANCH
+       ========================= */
+
+    Dictionary [
+        label="Dictionary-based\nApproach"
+        fillcolor="#cde6a3"
+    ];
+
+    Corpus [
+        label="Corpus-based\nApproach"
+        fillcolor="#cde6a3"
+    ];
+
+    Lexicon_Approach -> Dictionary;
+    Lexicon_Approach -> Corpus;
+
+    Statistical [
+        label="Statistical"
+        fillcolor="#bfe3ea"
+    ];
+
+    Semantic [
+        label="Semantic"
+        fillcolor="#bfe3ea"
+    ];
+
+    Corpus -> Statistical;
+    Corpus -> Semantic;
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; ML_Approach; Lexicon_Approach; }
+    { rank=same; Supervised; Unsupervised; Dictionary; Corpus; }
+    { rank=same; DecisionTree; LinearCls; RuleBased; Probabilistic; Statistical; Semantic; }
+    { rank=same; SVM; NN; DL; NB; BN; ME; }
+}
+
+```
+
+## Types of Sentiment Analysis
+
+- Aspects-based
+- Emotion-based
+- Fine-grained
+- Intent-based
+
+:::{.r-stack}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 1.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-out}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 2.png){width=80% fig-align="center"  fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
+:::
+
+# Web Mining, personalization, Social Analytics
+
+## Web Mining 
+
+- Web mining is the application of data mining techniques to discover patterns from the World Wide Web.
+
+::: {.columns}
+::: {.column}
+
+:::
+::: {.column}
+:::
+:::
+
+```{dot}
+digraph Weblog_Mining_Process {
+
+    /* =========================
+       Global settings
+       ========================= */
+
+    rankdir=LR;
+    newrank=true;
+    splines=ortho;
+
+    graph [
+        fontname="Helvetica"
+        fontsize=14
+        bgcolor="white"
+        pad="0"
+        margin="0"
+        nodesep="0.8"
+        ranksep="1.1"
+    ];
+
+    node [
+        shape=box
+        style="rounded"
+        fontname="Helvetica"
+        fontsize=14
+        margin="0.25,0.18"
+        color="black"
+    ];
+
+    edge [
+        color="black"
+        penwidth=1.4
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       Main vertical pipeline
+       ========================= */
+
+    RawData        [ label="Raw Data" ];
+    Collection     [ label="Weblog Data Collection" ];
+    Integration    [ label="Data Integration" ];
+    Preprocessing  [ label="Data Pre-processing" ];
+    Extraction     [ label="Pattern Extraction" ];
+    Analysis       [ label="Pattern Analysis" ];
+    Output         [ label="Pattern Formed" ];
+
+    RawData -> Collection;
+    Collection -> Integration;
+    Integration -> Preprocessing;
+    Preprocessing -> Extraction;
+    Extraction -> Analysis;
+    Analysis -> Output;
+
+    /* =========================
+       Invisible anchors for braces
+       ========================= */
+
+    pre_top  [ shape=point width=0 label="" ];
+    pre_bot  [ shape=point width=0 label="" ];
+
+    disc_top [ shape=point width=0 label="" ];
+    disc_bot [ shape=point width=0 label="" ];
+
+    anal_top [ shape=point width=0 label="" ];
+    anal_bot [ shape=point width=0 label="" ];
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; Integration; pre_top; }
+    { rank=same; Preprocessing; pre_bot; }
+
+    { rank=same; Extraction; disc_top; }
+    { rank=same; Analysis; disc_bot; }
+
+    { rank=same; Analysis; anal_top; }
+    { rank=same; Output; anal_bot; }
+
+}
+
+```
+
+## Web Content Mining (Web Scraping) {background-color="#eff8ff"}
+
+![Web Scraping Process](./M01_lecture02_figures/web-scrapping.png){width=80% fig-align="center" #fig-web-scrapping fig-alt="Web Scraping Process"}
+
+
+## Web Usage Mining (Web Analytics)
+
+- Web usage mining (Web analytics) is the extraction of useful information from data generated through Web page visits and transactions.
+
+![](./M01_lecture02_figures/Web_Usage_Mining.png){width=80% fig-align="center" fig-alt="Web Usage Mining Process"}
+
+## Extraction of Knowledge from Web Usage Data
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-038.jpg?height=934&width=2382&top_left_y=629&top_left_x=64)
+
+## Social Analytics
+
+- Social analytics is defined as monitoring, analyzing, measuring and interpreting digital interactions and relationships of people, topics, ideas and content.
+
+
+## Branches of Social Analytics
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-040.jpg?height=1149&width=2299&top_left_y=496&top_left_x=80)
+
+Text Mining Technologies
+
+Text Mining (TM)
+
+Natural Language Processing (NLP)
+
+## Text Mining Concepts
+
+- 85-90 percent of all corporate data is in some kind of unstructured form (e.g., text)
+- Unstructured corporate data is doubling in size every 18 months
+- Tapping into these information sources is not an option, but a need to stay competitive
+- Answer: text mining
+- A semi-automated process of extracting knowledge from unstructured data sources
+- a.k.a. text data mining or knowledge discovery in textual databases
+
+
+## Text mining
+
+Text Data Mining
+
+## Intelligent Text Analysis
+
+Knowledge-Discovery in Text (KDT)
+
+Text Mining (text data mining)
+the process of deriving high-quality information from text
+http:/len.wikipedia.orq/wiki/rext mining
+
+## Text Mining:
+
+the process of extracting interesting and non-trivial information and knowledge from unstructured text.
+
+## Text Mining:
+
+discovery by computer of new, previously unknown information, by automatically extracting information from different written resources.
+
+## An example of Text Mining
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-048.jpg?height=1468&width=2416&top_left_y=295&top_left_x=36)
+
+## Overview of Information Extraction based Text Mining Framework
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-049.jpg?height=781&width=2400&top_left_y=771&top_left_x=60)
+
+## Natural Language Processing (NLP)
+
+- Natural language processing (NLP) is an important component of text mining and is a subfield of artificial intelligence and computational linguistics.
+
+
+## Natural Language Processing (NLP) and Text Mining
+
+| Raw text | word's stem word's lemma am → am am $\rightarrow$ be having → hav having → have |
+| :--- | :--- |
+| Sentence Segmentation |  |
+| Tokenization |  |
+| Part-of-Speech (POS) |  |
+| Stop word removal |  |
+| Stemming / Lemmatization |  |
+| Dependency Parser |  |
+| String Metrics \& Matching |  |
+
+## Text Sunnnarization
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-052.jpg?height=1455&width=2177&top_left_y=315&top_left_x=73)
+
+Topics
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-053.jpg?height=298&width=341&top_left_y=474&top_left_x=7)
+
+| life | 0.02 |
+| :--- | :--- |
+| evolve | 0.01 |
+| organism | 0.01 |
+| $\cdots$ |  |
+
+
+| brain | 0.04 |
+| :--- | :--- |
+| neuron | 0.02 |
+| nerve | 0.01 |
+| $\cdots$ |  |
+
+
+| data | 0.02 |
+| :--- | :--- |
+| number | 0.02 |
+| computer | 0.01 |
+| . . ' |  |
+
+## Documents
+
+# Topic proportions and assignments 
+
+## Seeking Life's Bare (Genetic) Necessities
+
+Cold Spring Harbor, New York- "are not all that far apart," especially in How many genes does an organism need to comparison to the 75,000 genes in the husurvive? Last week at the genome meeting here,* two genome researchers with radically different approaches presented complementary views of the basic genes needed for life. One research team, using computer analyses to compare known genomes, concluded that today's organisms can be sustained with just 250 genes, and that the earliest life forms required a mere 128 genes. The other researcher mapped genes in a simple parasite and estimated that for this organism, 800 genes are plenty to do the job-but that anything short of 100 wouldn't be enough.
+
+Although the numbers don't match precisely, those predictions
+
+* Genome Mapping and Sequencing, Cold Spring Harbor, New York, May 8 to 12.
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-053.jpg?height=469&width=1389&top_left_y=894&top_left_x=933)
+Stripping down. Computer analysis yields an estimate of the minimum modern and ancient genomes.
+
+[^0]
+## Natural Language Processing (NLP)
+
+- Part-of-speech tagging
+- Text segmentation
+- Word sense disambiguation
+- Syntactic ambiguity
+- Imperfect or irregular input
+- Speech acts
+
+
+## NLP Tasks
+
+- Question answering
+- Automatic summarization
+- Natural language generation
+- Natural language understanding
+- Machine translation
+- Foreign language reading
+- Foreign language writing.
+- Speech recognition
+- Text-to-speech
+- Text proofing
+- Optical character recognition
+
+
+## Classical NLP
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-056.jpg?height=504&width=2020&top_left_y=409&top_left_x=243)
+
+## Deep Learning-based NLP
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-056.jpg?height=643&width=2090&top_left_y=1164&top_left_x=244)
+
+## Modern NLP Pipeline
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=575&width=2356&top_left_y=203&top_left_x=41)
+Task / Output
+
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=396&width=601&top_left_y=1130&top_left_x=48)
+
+Task / Output
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=691&width=1278&top_left_y=1128&top_left_x=626)
+
+## Modern NLP Pipeline
+
+Task / Output
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-058.jpg?height=675&width=2442&top_left_y=753&top_left_x=21)
+
+## Deep Learning NLP
+
+Task / Output
+
+Classification
+
+Sentiment Analysis
+![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-059.jpg?height=446&width=1976&top_left_y=847&top_left_x=23)
+
+Entity Extraction
+
+Topic Modeling
+
+Document Similarity
+
+
 
 ## Rule Based Sentiment
 
