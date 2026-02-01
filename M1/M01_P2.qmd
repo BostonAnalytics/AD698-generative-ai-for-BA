@@ -201,177 +201,6 @@ digraph NLP_Pipeline {
 
 ```
 
-## What is Natural Language Processing (NLP)?
-
-- Technology that enables computers to process, generate, and interact with language (e.g., text). Some key aspects:
-- [Learn useful representations]{.uublue-bold}: capture meaning in a structured way that can be used for downstream tasks (e.g., embeddings used to classify a document)
-- [Generate language]{.uublue-bold}: create language (e.g., text, 
-- code) for tasks like dialogue, translation, or question answering.
-- [Bridge language and action]{.uublue-bold}: Use language to perform tasks, solve problems, interact with environments (e.g., a code IDE)
-
-## General NLP Framework 
-
-```{dot}
-
-digraph NLP_Tasks {
-  node [shape=plaintext]
-
-  nlp_table [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-      <TR>
-        <TD bgcolor="#137dcb"><B>Input X</B></TD>
-        <TD bgcolor="lightcoral"><B>Output Y</B></TD>
-        <TD bgcolor="#0ccc90"><B>Task</B></TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Continuing Text</TD>
-        <TD>Language Modeling</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Text in Other Language</TD>
-        <TD>Translation</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Label</TD>
-        <TD>Text Classification</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Linguistic Structure</TD>
-        <TD>Language Analysis</TD>
-      </TR>
-      <TR>
-        <TD>Image</TD>
-        <TD>Text</TD>
-        <TD>Image Captioning</TD>
-      </TR>
-    </TABLE>
-  >]
-
-  title [label=<
-    <TABLE BORDER="0" CELLBORDER="0">
-      <TR><TD><B>Create a function to map an input X into an output Y, where X and/or Y involve language.</B></TD></TR>
-    </TABLE>
-  >]
-
-  title -> nlp_table
-}
-
-```
-
-## Building NLP Systems
-
-- Rules: Manual creation of rules
-
-  ```
-  def classify(x: str) -> str:
-      sports_keywords = ["baseball", "soccer", "football", "tennis"]
-      if any(keyword in x for keyword in sports_keywords):
-          return "sports"
-      else:
-          return "other"
-  ```
-
-
-- Prompting: Prompting a language model w/o training
-
-```{dot}
-digraph PromptLogic {
-  rankdir=LR
-  node [shape=plaintext]
-
-  decision_box [label=<
-    <TABLE BORDER="0.50" CELLBORDER="0.5" CELLSPACING="0" CELLPADDING="2" bgcolor="lightyellow">
-      <TR><TD width="400" fixedsize="false"><B>If the following sentence is about 'sports', reply 'sports'. Otherwise reply 'other'.</B></TD></TR>
-    </TABLE>
-  >]
-
-  lm_node [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightblue">
-      <TR><TD width="75" fixedsize="true"><B>LM</B></TD></TR>
-    </TABLE>
-  >]
-
-  decision_box -> lm_node
-}
-
-```
-
-## Building NLP Systems
-
-- Fine-tuning: Machine learning from paired data $\langle X, Y\rangle$
-
-```{dot}
-digraph TextClassificationTraining {
-    rankdir=LR
-
-  node [shape=plaintext]
-
-  samples [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-      <TR><TD><B>Sentence</B></TD><TD><B>Label</B></TD></TR>
-      <TR><TD>"I love to play baseball."</TD><TD>sports</TD></TR>
-      <TR><TD>"The stock price is going up."</TD><TD>other</TD></TR>
-      <TR><TD>"He got a hat-trick yesterday."</TD><TD>sports</TD></TR>
-      <TR><TD>"He is wearing tennis shoes."</TD><TD>other</TD></TR>
-    </TABLE>
-  >]
-
-  training [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6" bgcolor="lightgray">
-      <TR><TD><B>Training</B></TD></TR>
-    </TABLE>
-  >]
-
-  model [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
-      <TR>
-        <TD><IMG SRC="M01_lecture02_figures/reshot-icon-engineering-6XYGVMCJ59.png"/></TD>
-        <TD><B>Model</B></TD>
-      </TR>
-    </TABLE>
-  >]
-
-  samples -> training -> model
-}
-
-```
-
-## Data Requirements for System Building
-
--  [Rules/prompting based on intuition]{.uublue-bold}: No data needed, but also no performance guarantees  
-- [Rules/prompting based on spot-checks]{.uublue-bold}: A small amount of data with input $X$ only
-- [Rules/prompting with rigorous evaluation]{.uublue-bold}: Development set with input $X$ and output $Y$ (e.g. 200-2000 examples). Additional held-out test set also preferable.
-- [Fine-tuning]{.uublue-bold}: Additional train set. More is often better - constant accuracy increase when data size doubles.
-
-```{dot}
-digraph DataSplit {
-  rankdir=LR
-  node [shape=plaintext]
-
-  split_table [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
-      <TR>
-        <TD bgcolor="lightgreen" width="378">
-          <B>Train Data</B><BR/><FONT COLOR="red">X_train, y_train</FONT><BR/>60%
-        </TD>
-        <TD bgcolor="lightblue" width="108">
-          <B>Test Data</B><BR/><FONT COLOR="red">X_test, y_test</FONT><BR/>20%
-        </TD>
-        <TD bgcolor="lightyellow" width="54">
-          <B>Validation (Dev)</B><BR/><FONT COLOR="red">X_val, y_val</FONT><BR/>20%
-        </TD>
-      </TR>
-    </TABLE>
-  >]
-}
-
-```
-
-
 ## Text Analytics
 
 - Knowledge Discovery in Textual Databases
@@ -402,211 +231,29 @@ $$
 
 ## Sentiment Analysis
 
-```{dot}
-digraph Sentiment_Analysis_Map {
+::: {.columns}
+::: {.column}
+![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align="center" fig-alt="Sentiment Analysis Process" #fig-sentiment-analysis}
 
-    /* =========================
-       Global settings
-       ========================= */
+:::
+::: {.column}
 
-    rankdir=LR;
-    newrank=true;
-    splines=ortho;
-
-    graph [
-        fontname="Helvetica"
-        fontsize=11
-        bgcolor="white"
-        pad="0.0"
-        margin="0"
-        nodesep="0.6"
-        ranksep="1.2"
-    ];
-
-    node [
-        shape=box
-        style="rounded,filled"
-        fontname="Helvetica"
-        fontsize=11
-        color="#555555"
-    ];
-
-    edge [
-        color="#333333"
-        penwidth=1.6
-        arrowsize=0.8
-    ];
-
-    /* =========================
-       Root
-       ========================= */
-
-    SentimentAnalysis [
-        label="Sentiment\nAnalysis"
-        fillcolor="#cde6a3"
-        fontsize=12
-        color="#6b8e23"
-    ];
-
-    /* =========================
-       TASKS CLUSTER
-       ========================= */
-
-    subgraph cluster_tasks {
-        label="Tasks";
-        style="dashed,rounded";
-        color="red";
-        fontcolor="red";
-        fontsize=14;
-
-        Subjectivity [
-            label="Subjectivity\nClassification"
-            fillcolor="#cfe1f7"
-        ];
-
-        SentimentClass [
-            label="Sentiment\nClassification"
-            fillcolor="#ffd37f"
-        ];
-
-        ReviewUse [
-            label="Review\nUsefulness\nMeasurement"
-            fillcolor="#cfe1f7"
-        ];
-
-        SpamDetect [
-            label="Opinion Spam\nDetection"
-            fillcolor="#cfe1f7"
-        ];
-
-        LexiconCreate [
-            label="Lexicon\nCreation"
-            fillcolor="#bfe3ea"
-        ];
-
-        AspectExtract [
-            label="Aspect\nExtraction"
-            fillcolor="#bfe3ea"
-        ];
-
-        Application [
-            label="Application"
-            fillcolor="#eeeeee"
-            style="rounded,dashed,filled"
-        ];
-    }
-
-    /* =========================
-       SUBTASKS (middle column)
-       ========================= */
-
-    subgraph cluster_subtasks {
-        label="";
-        color="invis";
-
-        Polarity [
-            label="Polarity\nDetermination"
-            fillcolor="#ffd37f"
-        ];
-
-        Vagueness [
-            label="Vagueness\nresolution in\nopinionated text"
-            fillcolor="#ffd37f"
-        ];
-
-        MultiLingual [
-            label="Multi- & Cross-\nLingual SC"
-            fillcolor="#ffd37f"
-        ];
-
-        CrossDomain [
-            label="Cross-domain\nSC"
-            fillcolor="#ffd37f"
-        ];
-    }
-
-    /* =========================
-       APPROACHES CLUSTER
-       ========================= */
-
-    subgraph cluster_approaches {
-        label="Approaches";
-        style="dashed,rounded";
-        color="red";
-        fontcolor="red";
-        fontsize=14;
-
-        ML [
-            label="Machine Learning\nbased"
-            fillcolor="#ffb000"
-        ];
-
-        LexiconBased [
-            label="Lexicon based"
-            fillcolor="#ffb000"
-        ];
-
-        Hybrid [
-            label="Hybrid\napproaches"
-            fillcolor="#ffb000"
-        ];
-
-        Ontology [
-            label="Ontology based"
-            fillcolor="#bfe3ea"
-        ];
-
-        NonOntology [
-            label="Non-Ontology\nbased"
-            fillcolor="#bfe3ea"
-        ];
-    }
-
-    /* =========================
-       EDGES — Main tree
-       ========================= */
-
-    SentimentAnalysis -> Subjectivity;
-    SentimentAnalysis -> SentimentClass;
-    SentimentAnalysis -> ReviewUse;
-    SentimentAnalysis -> SpamDetect;
-    SentimentAnalysis -> LexiconCreate;
-    SentimentAnalysis -> AspectExtract;
-    SentimentAnalysis -> Application;
-
-    /* =========================
-       Task → Subtask links
-       ========================= */
-
-    Subjectivity   -> Polarity;
-    SentimentClass -> Vagueness;
-    ReviewUse      -> MultiLingual;
-    SpamDetect     -> CrossDomain;
-
-    /* =========================
-       Subtask → Approaches
-       ========================= */
-
-    Polarity     -> ML;
-    Vagueness    -> LexiconBased;
-    MultiLingual -> Hybrid;
-    CrossDomain  -> Hybrid;
-
-    LexiconCreate -> Ontology;
-    AspectExtract -> NonOntology;
-
-    /* =========================
-       Rank alignment
-       ========================= */
-
-    { rank=same; Subjectivity; SentimentClass; ReviewUse; SpamDetect; LexiconCreate; AspectExtract; Application; }
-    { rank=same; Polarity; Vagueness; MultiLingual; CrossDomain; }
-    { rank=same; ML; LexiconBased; Hybrid; Ontology; NonOntology; }
-}
-
-```
+- Methods
+    - Lexicon-based
+    - Machine Learning
+    - Deep Learning
+    - Hybrid
+- Applications
+    - Domain Applications
+    - Large Language Models
+- Challenges
+    - Methodological Challenges
+    - Text Context Challenges
+:::
+:::
 
 ## Sentiment Classification Algorithms
+
 
 ```{dot}
 digraph Sentiment_Approaches {
@@ -810,95 +457,103 @@ digraph Sentiment_Approaches {
 
 - Web mining is the application of data mining techniques to discover patterns from the World Wide Web.
 
-::: {.columns}
-::: {.column}
-
-:::
-::: {.column}
-:::
-:::
-
 ```{dot}
 digraph Weblog_Mining_Process {
 
-    /* =========================
-       Global settings
-       ========================= */
+  /* =========================
+     Global styling
+     ========================= */
+  graph [
+    fontname="Helvetica,Arial,sans-serif",
+    fontsize=14,
+    bgcolor="white",
+    pad="0.2",
+    ranksep="1.1",
+    nodesep="0.9",
+    splines=curved
+  ];
 
-    rankdir=LR;
-    newrank=true;
-    splines=ortho;
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica,Arial,sans-serif",
+    fontsize=14,
+    fillcolor="#f7f7f7",
+    color="#333333",
+    margin="0.25,0.18"
+  ];
 
-    graph [
-        fontname="Helvetica"
-        fontsize=14
-        bgcolor="white"
-        pad="0"
-        margin="0"
-        nodesep="0.8"
-        ranksep="1.1"
-    ];
+  edge [
+    color="#333333",
+    penwidth=1.4,
+    arrowsize=0.8
+  ];
 
-    node [
-        shape=box
-        style="rounded"
-        fontname="Helvetica"
-        fontsize=14
-        margin="0.25,0.18"
-        color="black"
-    ];
+  /* =========================
+     Cluster 1 — Data Collection
+     ========================= */
+  subgraph cluster_collection {
+    label="Data Collection";
+    style="filled,rounded";
+    color="#e3f2fd";
 
-    edge [
-        color="black"
-        penwidth=1.4
-        arrowsize=0.8
-    ];
-
-    /* =========================
-       Main vertical pipeline
-       ========================= */
-
-    RawData        [ label="Raw Data" ];
-    Collection     [ label="Weblog Data Collection" ];
-    Integration    [ label="Data Integration" ];
-    Preprocessing  [ label="Data Pre-processing" ];
-    Extraction     [ label="Pattern Extraction" ];
-    Analysis       [ label="Pattern Analysis" ];
-    Output         [ label="Pattern Formed" ];
+    RawData     [ label="Raw Data" ];
+    Collection  [ label="Weblog Data Collection" ];
 
     RawData -> Collection;
-    Collection -> Integration;
+  }
+
+  /* =========================
+     Cluster 2 — Pre-processing
+     ========================= */
+  subgraph cluster_preprocessing {
+    label="Pre-processing";
+    style="filled,rounded";
+    color="#e8f5e9";
+
+    Integration   [ label="Data Integration" ];
+    Preprocessing [ label="Data Pre-processing" ];
+
     Integration -> Preprocessing;
-    Preprocessing -> Extraction;
+  }
+
+  /* =========================
+     Cluster 3 — Pattern Discovery
+     ========================= */
+  subgraph cluster_discovery {
+    label="Pattern Discovery";
+    style="filled,rounded";
+    color="#fff3e0";
+
+    Extraction [ label="Pattern Extraction" ];
+    Analysis   [ label="Pattern Analysis" ];
+
     Extraction -> Analysis;
-    Analysis -> Output;
+  }
 
-    /* =========================
-       Invisible anchors for braces
-       ========================= */
+  /* =========================
+     Cluster 4 — Output
+     ========================= */
+  subgraph cluster_output {
+    label="Output";
+    style="filled,rounded";
+    color="#fce4ec";
 
-    pre_top  [ shape=point width=0 label="" ];
-    pre_bot  [ shape=point width=0 label="" ];
+    Output [ label="Patterns Formed" ];
+  }
 
-    disc_top [ shape=point width=0 label="" ];
-    disc_bot [ shape=point width=0 label="" ];
+  /* =========================
+     Cross-cluster flow
+     ========================= */
+  Collection   -> Integration;
+  Preprocessing -> Extraction;
+  Analysis     -> Output;
 
-    anal_top [ shape=point width=0 label="" ];
-    anal_bot [ shape=point width=0 label="" ];
-
-    /* =========================
-       Rank alignment
-       ========================= */
-
-    { rank=same; Integration; pre_top; }
-    { rank=same; Preprocessing; pre_bot; }
-
-    { rank=same; Extraction; disc_top; }
-    { rank=same; Analysis; disc_bot; }
-
-    { rank=same; Analysis; anal_top; }
-    { rank=same; Output; anal_bot; }
-
+  /* =========================
+     Rank alignment (2 rows)
+     ========================= */
+  { rank=same; RawData; Integration; Extraction; }
+  { rank=same; Collection; Preprocessing; Analysis; Output; }
 }
 
 ```
@@ -914,106 +569,528 @@ digraph Weblog_Mining_Process {
 
 ![](./M01_lecture02_figures/Web_Usage_Mining.png){width=80% fig-align="center" fig-alt="Web Usage Mining Process"}
 
-## Extraction of Knowledge from Web Usage Data
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-038.jpg?height=934&width=2382&top_left_y=629&top_left_x=64)
 
 ## Social Analytics
 
 - Social analytics is defined as monitoring, analyzing, measuring and interpreting digital interactions and relationships of people, topics, ideas and content.
 
+```{dot}
+digraph Social_Analytics {
 
-## Branches of Social Analytics
+    /* =========================
+       Global settings
+       ========================= */
 
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-040.jpg?height=1149&width=2299&top_left_y=496&top_left_x=80)
+    rankdir=LR;
+    newrank=true;
+    splines=curved;
 
-Text Mining Technologies
+    graph [
+        fontname="Helvetica"
+        fontsize=14
+        bgcolor="white"
+        pad="0.2"
+        nodesep="1.0"
+        ranksep="1.4"
+    ];
 
-Text Mining (TM)
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=16
+        color="black"
+        fillcolor="#cfe1f7"
+        margin="0.35,0.25"
+    ];
 
-Natural Language Processing (NLP)
+    edge [
+        color="black"
+        penwidth=2.0
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       Nodes
+       ========================= */
+
+    SocialAnalytics [
+        label="Social Analytics"
+        fontsize=18
+    ];
+
+    SNA [
+        label="Social Network Analysis\n(SNA)"
+    ];
+
+    SMA [
+        label="Social Media Analytics"
+    ];
+
+    /* =========================
+       Structure
+       ========================= */
+
+    SocialAnalytics -> SNA;
+    SocialAnalytics -> SMA;
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; SNA; SMA; }
+}
+
+
+```
+
+
+# Text mining
 
 ## Text Mining Concepts
 
 - 85-90 percent of all corporate data is in some kind of unstructured form (e.g., text)
 - Unstructured corporate data is doubling in size every 18 months
 - Tapping into these information sources is not an option, but a need to stay competitive
-- Answer: text mining
-- A semi-automated process of extracting knowledge from unstructured data sources
-- a.k.a. text data mining or knowledge discovery in textual databases
+
+:::{.callout-note}
+
+Text mining is the process of deriving high-quality information from text. High-quality information is typically derived through the devising of patterns and trends through means such as statistical pattern learning.
+
+:::
+
+## Knowledge Discovery from Web Data
+
+![Example Data exploration workflow for textual data extraction [@Gupta2024]](./M01_lecture02_figures/knowledge_extraction.jpg){width=80% fig-align="center" fig-alt="Knowledge Discovery from Web Data" #fig-knowledge-discovery-web-data}
 
 
-## Text mining
+# Natural Language Processing (NLP)
 
-Text Data Mining
+## What is Natural Language Processing (NLP)?
 
-## Intelligent Text Analysis
+- Technology that enables computers to process, generate, and interact with language (e.g., text). Some key aspects:
+- [Learn useful representations]{.uublue-bold}: capture meaning in a structured way that can be used for downstream tasks (e.g., embeddings used to classify a document)
+- [Generate language]{.uublue-bold}: create language (e.g., text, 
+- code) for tasks like dialogue, translation, or question answering.
+- [Bridge language and action]{.uublue-bold}: Use language to perform tasks, solve problems, interact with environments (e.g., a code IDE)
 
-Knowledge-Discovery in Text (KDT)
+## General NLP Framework 
 
-Text Mining (text data mining)
-the process of deriving high-quality information from text
-http:/len.wikipedia.orq/wiki/rext mining
+```{dot}
 
-## Text Mining:
+digraph NLP_Tasks {
+  node [shape=plaintext]
 
-the process of extracting interesting and non-trivial information and knowledge from unstructured text.
+  nlp_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD bgcolor="#137dcb"><B>Input X</B></TD>
+        <TD bgcolor="lightcoral"><B>Output Y</B></TD>
+        <TD bgcolor="#0ccc90"><B>Task</B></TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Continuing Text</TD>
+        <TD>Language Modeling</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Text in Other Language</TD>
+        <TD>Translation</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Label</TD>
+        <TD>Text Classification</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Linguistic Structure</TD>
+        <TD>Language Analysis</TD>
+      </TR>
+      <TR>
+        <TD>Image</TD>
+        <TD>Text</TD>
+        <TD>Image Captioning</TD>
+      </TR>
+    </TABLE>
+  >]
 
-## Text Mining:
+  title [label=<
+    <TABLE BORDER="0" CELLBORDER="0">
+      <TR><TD><B>Create a function to map an input X into an output Y, where X and/or Y involve language.</B></TD></TR>
+    </TABLE>
+  >]
 
-discovery by computer of new, previously unknown information, by automatically extracting information from different written resources.
+  title -> nlp_table
+}
 
-## An example of Text Mining
+```
 
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-048.jpg?height=1468&width=2416&top_left_y=295&top_left_x=36)
+## Building NLP Systems
 
-## Overview of Information Extraction based Text Mining Framework
+- Rules: Manual creation of rules
 
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-049.jpg?height=781&width=2400&top_left_y=771&top_left_x=60)
-
-## Natural Language Processing (NLP)
-
-- Natural language processing (NLP) is an important component of text mining and is a subfield of artificial intelligence and computational linguistics.
-
-
-## Natural Language Processing (NLP) and Text Mining
-
-| Raw text | word's stem word's lemma am → am am $\rightarrow$ be having → hav having → have |
-| :--- | :--- |
-| Sentence Segmentation |  |
-| Tokenization |  |
-| Part-of-Speech (POS) |  |
-| Stop word removal |  |
-| Stemming / Lemmatization |  |
-| Dependency Parser |  |
-| String Metrics \& Matching |  |
-
-## Text Sunnnarization
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-052.jpg?height=1455&width=2177&top_left_y=315&top_left_x=73)
-
-Topics
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-053.jpg?height=298&width=341&top_left_y=474&top_left_x=7)
-
-| life | 0.02 |
-| :--- | :--- |
-| evolve | 0.01 |
-| organism | 0.01 |
-| $\cdots$ |  |
+  ```
+  def classify(x: str) -> str:
+      sports_keywords = ["baseball", "soccer", "football", "tennis"]
+      if any(keyword in x for keyword in sports_keywords):
+          return "sports"
+      else:
+          return "other"
+  ```
 
 
-| brain | 0.04 |
-| :--- | :--- |
-| neuron | 0.02 |
-| nerve | 0.01 |
-| $\cdots$ |  |
+- Prompting: Prompting a language model w/o training
+
+```{dot}
+digraph PromptLogic {
+  rankdir=LR
+  node [shape=plaintext]
+
+  decision_box [label=<
+    <TABLE BORDER="0.50" CELLBORDER="0.5" CELLSPACING="0" CELLPADDING="2" bgcolor="lightyellow">
+      <TR><TD width="400" fixedsize="false"><B>If the following sentence is about 'sports', reply 'sports'. Otherwise reply 'other'.</B></TD></TR>
+    </TABLE>
+  >]
+
+  lm_node [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightblue">
+      <TR><TD width="75" fixedsize="true"><B>LM</B></TD></TR>
+    </TABLE>
+  >]
+
+  decision_box -> lm_node
+}
+
+```
+
+## Building NLP Systems
+
+- Fine-tuning: Machine learning from paired data $\langle X, Y\rangle$
+
+```{dot}
+digraph TextClassificationTraining {
+    rankdir=LR
+
+  node [shape=plaintext]
+
+  samples [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
+      <TR><TD><B>Sentence</B></TD><TD><B>Label</B></TD></TR>
+      <TR><TD>"I love to play baseball."</TD><TD>sports</TD></TR>
+      <TR><TD>"The stock price is going up."</TD><TD>other</TD></TR>
+      <TR><TD>"He got a hat-trick yesterday."</TD><TD>sports</TD></TR>
+      <TR><TD>"He is wearing tennis shoes."</TD><TD>other</TD></TR>
+    </TABLE>
+  >]
+
+  training [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightgray">
+      <TR><TD><B>Training</B></TD></TR>
+    </TABLE>
+  >]
+
+  model [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
+      <TR>
+        <TD><IMG SRC="M01_lecture02_figures/reshot-icon-engineering-6XYGVMCJ59.png"/></TD>
+        <TD><B>Model</B></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  samples -> training -> model
+}
+
+```
+
+## Data Requirements for System Building
+
+-  [Rules/prompting based on intuition]{.uublue-bold}: No data needed, but also no performance guarantees  
+- [Rules/prompting based on spot-checks]{.uublue-bold}: A small amount of data with input $X$ only
+- [Rules/prompting with rigorous evaluation]{.uublue-bold}: Development set with input $X$ and output $Y$ (e.g. 200-2000 examples). Additional held-out test set also preferable.
+- [Fine-tuning]{.uublue-bold}: Additional train set. More is often better - constant accuracy increase when data size doubles.
+
+```{dot}
+digraph DataSplit {
+  rankdir=LR
+  node [shape=plaintext]
+
+  split_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+      <TR>
+        <TD bgcolor="lightgreen" width="378">
+          <B>Train Data</B><BR/><FONT COLOR="red">X_train, y_train</FONT><BR/>60%
+        </TD>
+        <TD bgcolor="lightblue" width="108">
+          <B>Test Data</B><BR/><FONT COLOR="red">X_test, y_test</FONT><BR/>20%
+        </TD>
+        <TD bgcolor="lightyellow" width="54">
+          <B>Validation (Dev)</B><BR/><FONT COLOR="red">X_val, y_val</FONT><BR/>20%
+        </TD>
+      </TR>
+    </TABLE>
+  >]
+}
+
+```
+
+## Natural Language Processing (NLP) Pipeline 
+
+```{dot}
+digraph Pipeline {
+
+  rankdir=LR;
+  splines=ortho;
+  concentrate=true;
+  nodesep=0.8;
+  ranksep=1.2;
+  fontname="Helvetica";
+
+  node [
+    shape=box,
+    style="filled,rounded",
+    fontname="Helvetica",
+    fillcolor="blanchedalmond"
+  ];
+
+  edge [
+    arrowhead=vee,
+    penwidth=1.2
+  ];
+
+  /* =========================
+     STAGE 1 — DATA SOURCES
+     ========================= */
+  subgraph cluster_data {
+    label="Data Sources";
+    color="#f4cccc";
+    style=filled;
+    rank=same;
+
+    ds1 [label="Survey Data"];
+    ds2 [label="Logs"];
+    ds3 [label="APIs"];
+    ds4 [label="Databases"];
+    ds5 [label="Files"];
+    ds6 [label="External Feeds"];
+  }
+
+  /* =========================
+     STAGE 2 — INGESTION
+     ========================= */
+  subgraph cluster_ingest {
+    label="Ingestion & Parsing";
+    color="#cfe2f3";
+    style=filled;
+    rank=same;
+
+    p1 [label="Load"];
+    p2 [label="Parse"];
+    p3 [label="Validate"];
+    p4 [label="Normalize"];
+    p5 [label="Enrich"];
+  }
+
+  /* =========================
+     STAGE 3 — TRANSFORMATION
+     ========================= */
+  subgraph cluster_transform {
+    label="Transformation";
+    color="#fff2cc";
+    style=filled;
+    rank=same;
+
+    t1 [label="Clean"];
+    t2 [label="Aggregate"];
+    t3 [label="Feature Engineering"];
+  }
+
+  /* =========================
+     STAGE 4 — DATA PRODUCTS
+     ========================= */
+  subgraph cluster_products {
+    label="Data Products";
+    color="#d9ead3";
+    style=filled;
+    rank=same;
+    splines=curved;
 
 
-| data | 0.02 |
-| :--- | :--- |
-| number | 0.02 |
-| computer | 0.01 |
-| . . ' |  |
+    o1 [label="Structured Tables"];
+    o2 [label="Feature Store"];
+    o3 [label="Analytics Dataset"];
+  }
+
+  /* =========================
+     STAGE 5 — CONSUMPTION
+     ========================= */
+  subgraph cluster_consume {
+    label="Consumption";
+    color="#ead1dc";
+    style=filled;
+    rank=same;
+
+    c1 [label="Dashboards"];
+    c2 [label="ML Models"];
+    c3 [label="Reports"];
+  }
+
+  /* =========================
+     FLOWS
+     ========================= */
+  ds1 -> p1;
+  ds2 -> p2;
+  ds3 -> p2;
+  ds4 -> p2;
+  ds5 -> p3;
+  ds6 -> p4;
+
+  p1 -> t1;
+  p2 -> t1;
+  p3 -> t2;
+  p4 -> t2;
+  p5 -> t3;
+
+  t1 -> o1;
+  t2 -> o2;
+  t3 -> o3;
+
+  o1 -> c1;
+  o2 -> c2;
+  o3 -> c3;
+}
+
+```
+
+## Text Summarization
+
+```{dot}
+digraph TextSummarization {
+
+  rankdir=TB;
+  splines=ortho;
+  nodesep=0.5;
+  ranksep=0.7;
+  fontname="Helvetica";
+  
+  width=3.5;
+  height=0.9;
+  margin="0.35,0.25";
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#f5f5f5",
+    color="#333333"
+  ];
+
+  edge [
+    arrowhead=vee,
+    color="#333333",
+    penwidth=1.2
+  ];
+
+  /* =========================
+     INPUTS
+     ========================= */
+
+  TextInput [
+    label="Text Input",
+    shape=parallelogram,
+    fillcolor="#e8f3ff"
+  ];
+
+  Dictionary [
+    label="Dictionary /\nThesaurus",
+    shape=cylinder,
+    fillcolor="#fff2cc"
+  ];
+
+  /* =========================
+     CORE PIPELINE
+     ========================= */
+
+  Preprocess [
+    label="Pre-processing"
+  ];
+
+  StructureAnalysis [
+    label="Text Structure Analysis"
+  ];
+
+  WordSegmentation [
+    label="Word Segmentation"
+  ];
+
+  OccurrenceStats [
+    label="Occurrence Statistics"
+  ];
+
+  POSTagging [
+    label="Chinese POS Tagging"
+  ];
+
+  KeywordExtract [
+    label="Keyword Extracting"
+  ];
+
+  Weighting [
+    label="Weight Words & Sentences"
+  ];
+
+  SentenceSelection [
+    label="Sentence Selection"
+  ];
+
+  RoughSummary [
+    label="Rough Summary Generation"
+  ];
+
+  Smoothing [
+    label="Smoothing"
+  ];
+
+  SummaryOutput [
+    label="Summary Output",
+    shape=parallelogram,
+    fillcolor="#e8f3ff"
+  ];
+
+  /* =========================
+     MAIN FLOW
+     ========================= */
+
+  TextInput -> Preprocess;
+  Preprocess -> StructureAnalysis;
+
+  StructureAnalysis -> WordSegmentation;
+  StructureAnalysis -> OccurrenceStats;
+
+  WordSegmentation -> POSTagging;
+  POSTagging -> KeywordExtract;
+  OccurrenceStats -> KeywordExtract;
+
+  KeywordExtract -> Weighting;
+  Weighting -> SentenceSelection;
+  SentenceSelection -> RoughSummary;
+  RoughSummary -> Smoothing;
+  Smoothing -> SummaryOutput;
+
+  /* =========================
+     KNOWLEDGE BASE LINKS
+     ========================= */
+
+  Dictionary -> WordSegmentation;
+  Dictionary -> POSTagging;
+  Dictionary -> KeywordExtract;
+
+}
+
+```
 
 ## Documents
 

@@ -389,12 +389,18 @@ figure.quarto-float img {
 .quarto-float-caption {
   text-align: center; // center caption text
   font-size: 0.9rem;
-  color: #369;
+  color: #a51c30;
   margin-top: 0.5rem;
-  font-style: normal; // removes italic
-  font-weight: bold; // makes text bold
+  font-style: italic; // keep italic
   font-size: 14pt !important;
 }
+
+/* Keep the label (Figure, number, period) bold */ 
+.quarto-float-caption strong {
+   font-style: normal; /* Remove italic from the label */
+   font-weight: 700; /* Ensure bold */
+  }
+
 
 /* ============================================================
    GLOBAL CODE-BLOCK NORMALIZATION (Quarto + Reveal.js)
@@ -441,7 +447,7 @@ pre.sourceCode,
 .cell-annotation span {
   font-size: 14pt;
   font-weight: 600;
-  font-family: "Source Sans 3", sans-serif;
+  font-family: $code-font;
   color: $darker-gray;
 }
 
