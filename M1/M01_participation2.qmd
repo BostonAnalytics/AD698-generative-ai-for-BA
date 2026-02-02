@@ -9,7 +9,8 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-## Overview
+## Overview {.unnumbered}
+
 
 In this participation assignment, you will work in **groups** to study, synthesize, and present a **foundational or state-of-the-art research paper** in Generative AI, Large Language Models (LLMs), or reproducible computational practice.
 
@@ -30,7 +31,7 @@ This assignment emphasizes:
 * Responsible AI awareness
 
 
-## Goals
+## Goals {.unnumbered}
 
 By completing this assignment, you will:
 
@@ -41,7 +42,7 @@ By completing this assignment, you will:
 * Strengthen academic and professional presentation skills
 
 
-## Paper Selection (One Paper per Group)
+## Paper Selection (One Paper per Group) {.unnumbered}
 
 - Everyone must read through the curated list below.
 - Papers are organized by **theme**. 
@@ -61,112 +62,117 @@ Do not use these for the first presentation.
 
 ## Week 1 - Foundations of Language Representation
 
+[Reading instruction]{.uublue-bold}: Do only read these, no presentation.
+
+
 | **Neural Foundations**             | **Distributional Semantics**  | **Embeddings in Practice**        |
 | ----------------------------------------- | ------------------------------------ | ---------------------------------------- |
 | A Neural Probabilistic Language Model [@Bengio2003NeuralLM] | Vector Space Models of Semantics [@TurneyPantel2010VSM] | Distributed Representations of Words [@Mikolov2013Word2Vec] |
 |Sequence to sequence learning [@Sutskever2014Sequence]|Are LLMs Models of Distributional Semantics? A Case Study on Quantifiers  [@Enyan2024Distributional]|Efficient Estimation of Word Representations in Vector Space [@Mikolov2013Efficient]|
 
-**Student instruction:** Choose **one column only**. Present how meaning is represented, learned, and operationalized.
+
 
 ## Week 2 – Transformers: Architecture and Attention
 
-| **Transformer Core**                                                        | **Interpretability & Attention**                      | **Representational Power**                                              |
-| --------------------------------------------------------------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------- |
-| Attention Is All You Need [@Vaswani2017Attention]                           | The Illustrated Transformer [@Alammar2018Illustrated] | On the Computational Power of Transformers [@Perez2019TransformerPower] |
-| Sequence to Sequence Learning with Neural Networks [@Sutskever2014Sequence] | What Does BERT Look At? [@Clark2019WhatBERT]          | Are Transformers Universal Approximators? [@Yun2020Transformers]        |
+| **Transformer Core**                                      | **Interpretability & Attention**                   | **Representational Power**                                              |
+| --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| Attention Is All You Need [@Vaswani2017Attention]         | What Does BERT Look At? [@Clark2019Bert]       | On the Turing Completeness of Modern Neural Network Architectures [@Perez2019Turing] |
+| Sequence to Sequence Learning [@Sutskever2014Sequence]    | Quantifying attention flow in transformers [@Abnar2020Quantifying] | Are Transformers Universal Approximators? [@Yun2019Transformers]        |
+| Self-Attention with Relative Position [@Shaw2018Selfattention] | Attention Is Not Explanation [@Jain2019Attention]  | Efficient streaming language models[@Xiao2023Efficient]          |
 
-**Student instruction:** Explain *what attention enables* and *what it does not explain*.
 
+## Week 3 – Scaling Laws and Emergence
 
-## Week 3 – Scaling Laws and Foundation Models
-
-| **Scaling Laws**                                             | **Emergent Abilities**                                           | **Foundation Model Surveys**                                                  |
-| ------------------------------------------------------------ | ---------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Scaling Laws for Neural Language Models [@Kaplan2020Scaling] | Sparks of Artificial General Intelligence [@Bubeck2023SparksAGI] | A Survey of Large Language Models [@Zhao2024LLMSurvey]                        |
-| Chinchilla Scaling Laws [@Hoffmann2022Chinchilla]            | Emergent Abilities of LLMs [@Wei2022Emergent]                    | Opportunities and Risks of Foundation Models [@Bommasani2021FoundationModels] |
-
-**Student instruction:** Discuss whether emergence is *real*, *illusory*, or *misinterpreted scaling*.
+| **Scaling Laws**                                       | **Emergent Abilities**                                 | **Foundation Models**                                                                |
+| ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| Scaling Laws for Neural LMs [@Kaplan2020Scaling]       | Emergent Abilities of LLMs [@Wei2022Emergent]          | On the Opportunities and Risks of Foundation Models [@Bommasani2021FoundationModels] |
+| Training Compute-Optimal Large Language Models
+ [@Hoffmann2022Training]      | Sparks of AGI [@Bubeck2023SparksAGI]                   | A Survey of Large Language Models [@Zhao2024LLMSurvey]                               |
+| Training Compute-Optimal LMs [@Hoffmann2022Chinchilla] | Are Emergent Abilities Real? [@Schaeffer2023Emergence] | Scaling Instruction-Following Models [@Chung2022ScalingInstruction]                  |
 
 
 ## Week 4 – Text-as-Data and Business NLP
 
-| **End-to-End NLP Systems**                               | **Enterprise Information Extraction**                                 | **Economic & Policy Text**                             |
-| -------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------ |
-| NLP (Almost) from Scratch [@Collobert2011NLPFromScratch] | Information Extraction from Business Text [@Kogan2019BusinessIE]      | Text as Data [@Gentzkow2019TextAsData]                 |
-| A Unified Architecture for NLP [@Collobert2011Unified]   | Measuring Firm-Level Innovation Using Text [@Kelly2021TextInnovation] | ML for Text-Based Economic Research [@Athey2019MLText] |
-
-**Student instruction:** Focus on **organizational value**, not model novelty.
+| **End-to-End NLP Systems**                               | **Enterprise Information Extraction**                            | **Economic / Policy Text**                             |
+| -------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ |
+| NLP (Almost) from Scratch [@Collobert2011NLPFromScratch] | Information Extraction from Business Text [@Kogan2019BusinessIE] | Text as Data [@Gentzkow2019TextAsDataPaper]            |
+| A Unified Architecture for NLP [@Collobert2011Unified]   | Extracting Corporate Risk Disclosures [@Hassan2019RiskText]      | Measuring Economic Policy Uncertainty [@Baker2016EPU]  |
+| Deep Learning for NLP [@Goldberg2016DLNLP]               | NLP for Financial Forecasting [@Loughran2011Textual]             | ML for Text-Based Economic Research [@Athey2019MLText] |
 
 
 ## Week 5 – Prompting, Reasoning, and Orchestration
 
-| **Prompting Taxonomies**                            | **Reasoning via Prompts**                                | **Programmatic Control**           |
-| --------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- |
-| The Prompt Report [@Schulhoff2025PromptReport]      | Chain-of-Thought Prompting [@Wei2022CoT]                 | DSPy [@Khattab2023DSPy]            |
-| Survey of Prompt Engineering [@Liu2023PromptSurvey] | Self-Consistency Improves CoT [@Wang2023SelfConsistency] | Toolformer [@Schick2023Toolformer] |
-
-**Student instruction:** Contrast *prompting as art* vs *prompting as system design*.
-
+| **Prompting Taxonomies**                              | **Reasoning via Prompts**                                | **Programmatic Control**           |
+| ----------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- |
+| The Prompt Report [@Schulhoff2025PromptReport]        | Chain-of-Thought Prompting [@Wei2022CoT]                 | DSPy [@Khattab2023DSPy]            |
+| A Survey of Prompt Engineering [@Liu2023PromptSurvey] | Self-Consistency Improves CoT [@Wang2023SelfConsistency] | Toolformer [@Schick2023Toolformer] |
+| Automatic Prompt Optimization [@Zhou2023APO]          | Least-to-Most Prompting [@Zhou2022LeastToMost]           | ReAct [@Yao2023ReAct]              |
 
 
 ## Week 6 – Alignment and Instruction Following
 
-| **Human Feedback Alignment**                                     | **Instruction Tuning**                                   | **Fine-Tuning Systems**                                      |
-| ---------------------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
-| Training LMs with Human Feedback [@Ouyang2022RLHF]               | FLAN Instruction Tuning [@Wei2022FLAN]                   | Fine-Tuning from Human Preferences [@Ziegler2019Preferences] |
-| Learning to Summarize from Feedback [@Stiennon2020Summarization] | Instruction Tuning with GPT-4 [@Peng2023InstructionGPT4] | Structured Review of LLM Fine-Tuning [@Pratap2025FineTuning] |
-
-**Student instruction:** Treat alignment as a **socio-technical system**, not a loss function.
-
+| **Human Feedback Alignment**                                     | **Instruction Tuning**                                              | **Fine-Tuning Systems**                                      |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
+| Training LMs with Human Feedback [@Ouyang2022RLHF]               | FLAN Instruction Tuning [@Wei2022FLAN]                              | Fine-Tuning from Human Preferences [@Ziegler2019Preferences] |
+| Learning to Summarize from Feedback [@Stiennon2020Summarization] | Scaling Instruction-Following Models [@Chung2022ScalingInstruction] | A Survey of LLM Fine-Tuning [@Pratap2025FineTuning]          |
+| Constitutional AI [@Bai2022Constitutional]                       | Instruction Tuning with GPT-4 [@Peng2023InstructionGPT4]            | Parameter-Efficient Fine-Tuning Survey [@He2022PEFT]         |
 
 
 ## Week 7 – Retrieval-Augmented Generation (RAG)
 
-| **Classical RAG**                              | **Failure & Self-Correction**                         | **Hybrid RAG Architectures**           |
-| ---------------------------------------------- | ----------------------------------------------------- | -------------------------------------- |
-| Retrieval-Augmented Generation [@Lewis2020RAG] | Seven Failure Points in RAG [@Barnett2024RAGFailures] | HybridRAG [@Sarmah2024HybridRAG]       |
-| REALM [@Guu2020REALM]                          | Self-RAG [@Asai2023SelfRAG]                           | Corrective RAG [@Yan2024CorrectiveRAG] |
+| **Classical RAG**                              | **Failure & Self-Correction**                            | **Hybrid Architectures**                            |
+| ---------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------- |
+| Retrieval-Augmented Generation [@Lewis2020RAG] | Seven Failure Points in RAG [@Barnett2024RAGFailures]    | HybridRAG [@Sarmah2024HybridRAG]                    |
+| REALM [@Guu2020REALM]                          | Self-RAG [@Asai2023SelfRAG]                              | Corrective RAG [@Yan2024CorrectiveRAG]              |
+| Dense Passage Retrieval [@Karpukhin2020DPR]    | Verification-Augmented Generation [@Min2023Verification] | Iterative Retrieval Generation [@Xiong2021ApproxIR] |
 
-**Student instruction:** Frame RAG as a **reliability and auditability problem**.
+
 
 ## Week 8 – Efficient Fine-Tuning and Small Models
 
-| **Low-Rank Adaptation**     | **Quantization-Aware Tuning** | **Small-Model Ecosystems**                               |
-| --------------------------- | ----------------------------- | -------------------------------------------------------- |
-| LoRA [@Hu2021LoRA]          | QLoRA [@Dettmers2023QLoRA]    | Survey of Small Language Models [@Nguyen2024SmallLM]     |
-| AdaLoRA [@Zhang2023AdaLoRA] | GPTQ [@Frantar2022GPTQ]       | Knowledge Distillation for LLMs [@Hsieh2023Distillation] |
+| **Low-Rank Adaptation**       | **Quantization-Aware Tuning**  | **Small-Model Systems**                                |
+| ----------------------------- | ------------------------------ | ------------------------------------------------------ |
+| LoRA [@Hu2021LoRA]            | QLoRA [@Dettmers2023QLoRA]     | A Survey of Small Language Models [@Nguyen2024SmallLM] |
+| AdaLoRA [@Zhang2023AdaLoRA]   | GPTQ [@Frantar2022GPTQ]        | Distilling Step-by-Step [@Hsieh2023Distillation]       |
+| Prefix-Tuning [@Li2021Prefix] | AWQ Quantization [@Lin2023AWQ] | TinyStories [@Eldan2023TinyStories]                    |
 
-**Student instruction:** Discuss efficiency across **cost, latency, and deployment constraints**.
 
 
 ## Week 9 – Topic Models, Semantic Change, and Clustering
 
-| **Probabilistic Topic Models**                | **Semantic Change**                                      | **Embedding-Based Clustering**                              |
-| --------------------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
-| Dynamic Topic Models [@Blei2006DynamicTopics] | Diachronic Word Embeddings [@Hamilton2016SemanticChange] | Embedding-Based Clustering Survey [@Aggarwal2022Clustering] |
-| Topics over Time [@Wang2006Topics]            | Temporal Word Embeddings [@Kutuzov2018Diachronic]        | BERTopic [@Grootendorst2022BERTopic]                        |
+| **Probabilistic Topic Models**                | **Semantic Change**                                      | **Text / Document Clustering**                                                 |
+| --------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Dynamic Topic Models [@Blei2006DynamicTopics] | Diachronic Word Embeddings [@Hamilton2016SemanticChange] | A Survey of Text Clustering Algorithms [@AggarwalZhai2012TextClusteringSurvey] |
+| Topics over Time [@Wang2006Topics]            | Temporal Word Embeddings [@Kutuzov2018Diachronic]        | Clustering Short Texts with Word Embeddings [@Saha2017ShortText]               |
+| Structural Topic Models [@Roberts2014STM]     | Semantic Change Detection Survey [@Tahmasebi2021Survey]  | BERTopic [@Grootendorst2022BERTopicPaper]                                      |
 
-**Student instruction:** Compare **probabilistic vs embedding-based worldviews**.
 
 
 ## Week 10 – Long Context and Multimodality
 
-| **Long Context Limits**                    | **Efficient Context Use**            | **Multimodal Reasoning**              |
-| ------------------------------------------ | ------------------------------------ | ------------------------------------- |
-| Lost in the Middle [@Liu2023ContextWindow] | LazyLLM [@Xu2024LazyLLM]             | GPT-4V System Card [@OpenAI2023GPT4V] |
-| LongNet [@Ding2023LongNet]                 | StreamingLLM [@Xiao2023StreamingLLM] | Segment Anything [@Kirillov2023SAM]   |
-
-**Student instruction:** Explain *why long context fails* and *how models compensate*.
+| **Long Context Limits**                    | **Efficient Context Use**                   | **Multimodal Reasoning**                              |
+| ------------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
+| Lost in the Middle [@Liu2023ContextWindow] | LazyLLM [@Xu2024LazyLLM]                    | GPT-4V System Card [@OpenAI2023GPT4V]                 |
+| LongNet [@Ding2023LongNet]                 | StreamingLLM [@Xiao2023StreamingLLM]        | Segment Anything [@Kirillov2023SAM]                   |
+| Transformer-XL [@Dai2019TransformerXL]     | Memorizing Transformers [@Wu2022Memorizing] | Multimodal Chain-of-Thought [@Zhang2023MultimodalCoT] |
 
 
 ## Week 11 – Evaluation, Hallucination, and Trust
 
-| **Human-Centric Evaluation**                                | **Model-as-Judge**                          | **Hallucination & Risk**                                   |
-| ----------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| Evaluating Large Language Models [@Chang2024EvaluatingLLMs] | LLM-as-a-Judge [@Gu2024LLMJudge]            | Survey on Hallucination in LLMs [@Huang2023Hallucinations] |
-| Beyond Accuracy [@Gehrmann2023BeyondAccuracy]               | Chain-of-Verification [@Dhuliawala2023CoVe] | Stochastic Parrots [@Bender2021StochasticParrots]          |
+| **Human-Centric Evaluation**                  | **Model-as-Judge**                          | **Hallucination & Risk**                                   |
+| --------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
+| Evaluating LLMs [@Chang2024EvaluatingLLMs]    | LLM-as-a-Judge [@Gu2024LLMJudge]            | Survey on Hallucination in LLMs [@Huang2023Hallucinations] |
+| Beyond Accuracy [@Gehrmann2023BeyondAccuracy] | Chain-of-Verification [@Dhuliawala2023CoVe] | Stochastic Parrots [@Bender2021StochasticParrots]          |
+| HELM Benchmark [@Liang2022HELM]               | G-Eval [@Liu2023GEval]                      | Responsible AI for LLMs [@Raji2022ResponsibleAI]           |
 
-**Student instruction:** Debate **whether trust can be automated**.
+
+## Week 12 – Deployment, Governance, and Systemic Risk
+
+| **Enterprise Deployment & Operations**                                      | **Governance & Accountability**                                                      | **Agents, Autonomy, and Control**                                                      |
+| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| On the Dangers of Stochastic Parrots [@Bender2021StochasticParrots]         | On the Opportunities and Risks of Foundation Models [@Bommasani2021FoundationModels] | ReAct: Synergizing Reasoning and Acting [@Yao2023ReAct]                                |
+| Lessons from Deploying LLMs in the Real World [@Amodei2016ConcreteProblems] | Responsible AI for Large Language Models [@Raji2022ResponsibleAI]                    | Toolformer: Language Models Can Teach Themselves to Use Tools [@Schick2023Toolformer]  |
+| Red Teaming Language Models [@Ganguli2022RedTeaming]                        | Auditing Large Language Models [@Weidinger2021EthicalRisks]                          | Generative Agents: Interactive Simulacra of Human Behavior [@Park2023GenerativeAgents] 
 
 
 ## Presentation Expectations
