@@ -19,7 +19,7 @@ monospace !default;
 // colors
 $body-bg: #ffffff !default;
 $title-color: #ffac00;
-$subtitle-color: #06A2CB !default;
+$subtitle-color: #Ffd1b0 !default;
 $h2-color: #a51c30;
 $code-color: #e64f1e;
 $name-color: #CC5B23;
@@ -195,7 +195,7 @@ $button-text: #000000; // Button text color
     display: block;
     width: 95%;
     height: 3px;
-    background-color: #3b71b1;
+    background-color: $subtitle-color;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
   }
