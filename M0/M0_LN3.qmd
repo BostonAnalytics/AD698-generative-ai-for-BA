@@ -1,6 +1,6 @@
 ---
-title: "Module 0: Google Colab Pro Setup"
-subtitle: "Cloud Computing Environment for AD 698"
+title: "Module 0: Lecture Notes 3"
+subtitle: "Tools for Deep Learning"
 author:
   - name: Nakul R. Padalkar
     affiliations:
@@ -8,7 +8,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -16,7 +15,7 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['Lecture', 'M00:', 'Notes']
-description: "Lecture covering Google Colab Pro setup and cloud computing environment for AD 698."
+description: "Lecture covering Cloud resources and cloud computing environment for AD 698."
 ---
 
 ## FAQs (Read These First!) {.unnumbered}
@@ -28,210 +27,14 @@ description: "Lecture covering Google Colab Pro setup and cloud computing enviro
 - Always verify that your runtime is using a **GPU or TPU** before running large models.
 - Do **not** store API keys or credentials directly in notebooks or public repositories.
 
+{{< include ./_M0_lecture03_content/jupyter.md >}}
 
-## Questions {.unnumbered}
+{{< include ./_M0_lecture03_content/colab.md >}}
 
-- Each section contains required setup actions.
-- Sections marked **Required** must be completed for successful assignment execution.
-- These steps are foundational for AD 698.
+{{< include ./_M0_lecture03_content/sagemaker.md >}}
 
+{{< include ./_M0_lecture03_content/aws.md >}}
 
+{{< include ./_M0_lecture03_content/selecting-servers-gpus.md >}}
 
-## Overview {.unnumbered}
 
-All programming work for **AD 698 (Applied Generative AI)** will be executed using **Google Colab Pro** as the remote execution environment.
-
-The course uses a modern **antigravity-style execution model**:
-
-- **Authoring:** Local editor (VS Code, Cursor, Antigravity)
-- **Execution:** Google Colab runtime (GPU / TPU)
-- **Persistence:** Google Drive
-- **Version control:** GitHub (private repositories)
-
-Students do not manage cloud infrastructure such as EC2, SSH, or networking.
-
-
-## Learning Outcomes {.unnumbered}
-
-After completing this module, you should be able to:
-
-* Configure and run notebooks using Google Colab Pro
-* Attach GPU/TPU accelerators correctly
-* Persist data and models using Google Drive
-* Use VS Code or equivalent editors with Colab as a remote kernel
-* Avoid common runtime and persistence failures
-
-
-## Development Environment Choice
-
-You may use **any notebook-capable development environment**, including:
-
-* **Visual Studio Code (VS Code)**
-* **Cursor**
-* **Antigravity-style notebook workflows**
-* Google Colab browser interface (allowed, not recommended)
-
-There is **no grading penalty** based on editor choice.
-
-> **Instructor Default:**
-> All lectures, demos, screenshots, and debugging support will use **VS Code**.
-
-
-## Execution Model
-
-Regardless of editor choice:
-
-* Code executes on **Colab-managed hardware**
-* GPUs/TPUs must be explicitly enabled
-* Google Drive is required for persistence
-* GitHub is required for version control
-
-Your editor choice does **not** affect grading, runtime limits, or submission requirements.
-
-
-## Accessing Google Colab
-
-1. Go to **[https://colab.research.google.com](https://colab.research.google.com)**
-2. Sign in using your **BU Google account**
-3. Confirm that **Colab Pro** is active
-
-Do not use personal Gmail accounts for course work.
-
-
-## Creating or Opening a Notebook
-
-Recommended project structure:
-
-```
-AD698/
- ├── notebooks/
- ├── data/
- ├── models/
- ├── outputs/
- └── README.md
-```
-
-This repository must be a **private GitHub repository**.
-
-
-## Attaching a Colab Runtime (Required)
-
-From your editor or the Colab interface:
-
-* Select **Colab** as the kernel
-* Choose a hardware accelerator:
-
-  * **GPU** (default for AD 698)
-  * **TPU** (TensorFlow/JAX only)
-
-Always verify accelerator selection before execution.
-
-
-## Verifying GPU Availability (Required)
-
-Run immediately after connecting:
-
-```python
-import torch
-print("CUDA available:", torch.cuda.is_available())
-if torch.cuda.is_available():
-    print("GPU:", torch.cuda.get_device_name(0))
-```
-
-Optional diagnostic:
-
-```python
-!nvidia-smi
-```
-
-If no GPU is detected:
-
-* Reopen the kernel selector
-* Explicitly choose GPU
-* Restart the runtime
-
---
-
-## Mounting Google Drive (Required)
-
-Google Drive is the persistence layer for this course.
-
-```python
-from google.colab import drive
-drive.mount('/content/drive')
-```
-
-Set your working directory:
-
-```python
-import os
-os.chdir('/content/drive/MyDrive/AD698')
-print(os.getcwd())
-```
-
-Anything not saved to Drive will be lost when the runtime resets.
-
-
-## Package Management (Stateless Runtime)
-
-Colab runtimes reset frequently. Install dependencies at the top of **every notebook**:
-
-```python
-!pip install -q transformers datasets accelerate peft
-```
-
-Rule:
-
-> If it is not installed in the notebook, it does not exist.
-
-
-## Optional: Built-in LLM Access (No API Key)
-
-Colab Pro provides limited built-in LLM access for experimentation:
-
-```python
-from google.colab import ai
-response = ai.generate_text(
-    "Explain the difference between fine-tuning and prompt engineering."
-)
-print(response)
-```
-
-Use for:
-
-* Prompt engineering labs
-* Rapid experimentation
-* In-class demonstrations
-
-Graded assignments will primarily rely on **open-source models or explicit APIs**.
-
-
-## Common Failure Modes {.unnumbered}
-
-Most execution failures are caused by:
-
-* Forgetting to enable GPU
-* Forgetting to mount Google Drive
-* Assuming packages persist across sessions
-* Treating Colab like a local machine
-
-
-## Conceptual Mapping: EC2 → Colab {.unnumbered}
-
-| EC2 Concept     | Colab Equivalent    |
-| --------------- | ------------------- |
-| VM instance     | Runtime session     |
-| SSH login       | Kernel attach       |
-| EBS storage     | Google Drive        |
-| GPU instance    | Runtime accelerator |
-| Port forwarding | Not required        |
-
-
-
-## Final Instruction {.unnumbered}
-
-> **Your editor is the control plane.
-> Colab is the execution substrate.
-> Google Drive is the disk.**
-
-This is the default workflow for **AD 698**.
