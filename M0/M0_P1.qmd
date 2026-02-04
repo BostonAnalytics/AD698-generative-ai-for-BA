@@ -1,5 +1,5 @@
 ---
-title: "Module 0: Lecture Notes 1"
+title: "AD698 - Applied Generative AI"
 subtitle: "Introduction to Version Control"
 logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
@@ -16,7 +16,7 @@ embed-resources: true
 self-contained: true
 format: 
     revealjs:
-        theme: [../analytics_themes/presentation.scss]
+        theme: [../theme/presentation.scss]
         html-math-method: mathml
         slide-number: c/t
 from: markdown+emoji
@@ -24,7 +24,7 @@ self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
-    data-background-image: "../analytics_themes/title.png"
+    data-background-image: "../theme/blank_red.png"
     data-background-size: 103% auto
     data-background-opacity: "0.95"
 execute: 
