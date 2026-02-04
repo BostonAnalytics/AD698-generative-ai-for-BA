@@ -10,6 +10,19 @@ body {
   color: #343435;
 }
 
+
+/* Reduce TOC font size without affecting page lists */
+#TOC { 
+  font-size: 10pt;
+ }
+ 
+#TOC ul,
+#TOC li,
+#TOC a {
+  font-size: 10pt;
+  line-height: 1.2;
+}
+
 /*-- scss:rules --*/
 /* APA-style heading colors and formatting */
 h1,
@@ -216,6 +229,45 @@ ul.navbar-nav {
       }
     }
   }
+}
+
+
+.panel-tabset {
+  margin: 1rem 0;
+}
+
+.panel-tabset .nav-tabs {
+  border-bottom: 1px solid #003366;
+}
+
+.panel-tabset .nav-tabs .nav-link {
+  background: #ffffff;
+  color: #538cc6;
+  border: 1px solid #003366;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  margin-right: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+}
+
+.panel-tabset .nav-tabs .nav-link.active {
+  background: #003366;
+  color: #ffffff;
+  border: 1px solid #003366;
+  border-bottom: none;
+}
+
+.panel-tabset .nav-tabs .nav-link:hover {
+  background: #e6eef7;
+  color: #003366;
+}
+
+.panel-tabset .tab-content {
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #003366;
+  border-radius: 0 0 6px 6px;
 }
 
 .bloodred-bold {
