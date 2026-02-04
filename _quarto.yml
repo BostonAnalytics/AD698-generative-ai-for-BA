@@ -83,9 +83,15 @@ format:
     theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
+    embed-resources: true
     highlight-style: github
     code-overflow: wrap
-    html-math-method: katex
+    html-math-method: mathml
+    grid:
+      sidebar-width: 100px
+      body-width: 1100px
+      margin-width: 400px
+      gutter-width: 1.5rem
     # comments:
     #   utterances:
     #     repo: BostonAnalytics/AD698-generative-ai-for-BA
