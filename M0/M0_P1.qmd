@@ -1,9 +1,536 @@
 ---
-title: "M00 Lab02"
+title: "Module 0: Lecture Notes 1"
+subtitle: "Introduction to Version Control"
+logo: "../theme/figures/met_logotype_black.png"
+date: 03/12/2024
+date-modified: today
+date-format: long
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: BU
+        name: Boston University
+        city: Boston
+        state: MA
+embed-resources: true
+self-contained: true
+format: 
+    revealjs:
+        theme: [../analytics_themes/presentation.scss]
+        html-math-method: mathml
+        slide-number: c/t
+from: markdown+emoji
+self-contained-math: true
+fig-align: center
+monofont: Roboto
+title-slide-attributes:
+    data-background-image: "../analytics_themes/title.png"
+    data-background-size: 103% auto
+    data-background-opacity: "0.95"
+execute: 
+  echo: false
+  eval: true
+  warning: false
+  message: false
 ---
 
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
+```{r}
+#| label: setup
+#| echo: false
+#| eval: true
+
+library(fontawesome)
+```
+
+---
+
+## Has this happened to you?
+
+:::{.columns}
+
+:::{.column}
+
+- Nakul_Doc_1
+- Nakul_Doc_2_edited
+- Nakul_Doc_3_final
+- Nakul_Doc_4_final_final
+- Nakul_Doc_5_final_final_v1_wednesday
+
+ 
+:::
+
+:::{.column}
+![My Life Story Before Git](./M0_lecture01_figures//final.png){width="80%" fig-align="center"}
+
+:::
+
+:::
+
+---
+
+## Then this tutorial is for you! 
+
+:::{.columns}
+
+:::{.column}
+
+- We will focus on the tools you _actually_ need to start working collaboratively and putting your work under version control.
+- Git is extremely powerful and sophisticated,
+- and you can do fun things with it (as fun as programming gets!).
+- The :notebook: [documentation](https://git-scm.com/book/en/v2) is very thorough,
+- but can often be overwhelming :exploding_head: if you are just starting.
+
+:::
+
+:::{.column}
+
+![](https://octodex.github.com/images/Professortocat_v2.png){width="60%" fig-align="center"}
+
+:::
+
+:::
+
+---
+
+## What is Git? 
+
+- A distributed version control system for code
+- [Version control]{.uured-bold}: every change you make is tracked and versioned, so it's easy to rollback to an older state, or to keep multiple states in parallel without overwriting each other
+- [Distributed]{.uured-bold}: your copy of the code is but one of many possible copies. 
+- Git provides mechanisms for multiple authors to work on the same code at the same time and to merge their changes together
+
+---
+
+## Why you should use Git 
+
+- To be kind to yourself
+- To be kind to your collaborators
+- To ensure your work is reproducible
+
+
+### And because it's fun!
+
+- :man_scientist: :triangular_ruler: It imposes a certain discipline to your programming.
+- :nerd_face::fire: You can be braver when you code: if your new feature breaks, you can revert back to a version that worked!
+- :space_invader: :file_folder: Keeps multiple (older and newer) versions of everything (not just source code)
+
+---
+
+## What it can do for you 
+
+:::{.columns}
+
+:::{.column width="50%"}
+
+- [Version Control]{.uured-bold}: Easily track changes to code, data, & notebooks for efficient management & experimentation.
+- [Collaboration]{.uured-bold}: Enable seamless teamwork, code sharing, & joint analysis with colleagues.
+- [Experiment Tracking]{.uured-bold}: Keep records of model iterations, hyperparameters, & analysis approaches.
+- [Reproducibilit & Code Sharing]{.uured-bold}: Document & reproduce results by capturing code & data changes.
+- [Code Sharing]{.uured-bold}: Share reusable code snippets, preprocessing steps, & models.
+
+:::
+
+
+:::{.column width="50%"}
+
+- [Branching]{.uured-bold}: Experiment with new ideas & analysis directions without disrupting the main workflow.
+- [Integration]{.uured-bold}: Integrate with CI/CD pipelines for automated testing & deployment.
+- [Documentation]{.uured-bold}: Use commits as documentation for analysis steps, aiding reporting.
+- [Career Growth]{.uured-bold}: Mastering Git enhances collaboration, contributing to career advancement.
+
+:::
+
+:::
+
+---
+
+
+## What we will cover
+
+- [Git](https://git-scm.com/downloads)
+  - The software that allows us to do version control. 
+  - Like the "Track Changes" feature from Microsoft Word, but more rigorous, powerful, and scaled up to multiple files.
+- [GitHub](https://github.com/)
+  - Hosting service for git projects — essentially Dropbox for git projects.
+  - You can host [remote]{.uured-bold} repositories on [GitHub](https://github.com/). 
+  - You edit and work on your content in your [local]{.uured-bold} repository on your computer, and then you send your changes to the remote.
+  - Through the [Command Line Interface (CLI)]{.uured-bold} using [Github-CLI](https://cli.github.com/) or [Git Bash](https://git-scm.com/downloads).
+  - You can interact with Git using the [Graphical User Interface (GUI)]{.uured-bold} provided by [GitHub Desktop](https://desktop.github.com/download/)
+  - You can also use third-party GUIs like [Tower Git](https://www.git-tower.com/) or [GitKraken](https://www.gitkraken.com/git-client).
+- I like [Git CLI](https://cli.github.com/) and [GitKraken](https://www.gitkraken.com/git-client), both are available through [Github Education](https://education.github.com/pack)
+
+---
+
+## Stop and execute
+
+[Have you installed the following on your computer?]{.uured-bold}
+
+1. **Set Up Git Locally**:
+   1. Install Git: [Git Installation](https://git-scm.com/)
+   2. Connect GitHub with Git: [Connecting GitHub to Git](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+2. **Download GitHub Desktop** (Optional): If you prefer a graphical interface: [GitHub Desktop](https://desktop.github.com/)
+3. **Learn Git and GitHub Basics**: - GitHub offers excellent beginner tutorials: [GitHub Docs - Getting Started](https://docs.github.com/en/get-started)
+
+
+## Setting up Github Education Account
+
+Step 1: Go to the GitHub website: 
+
+- [GitHub Sign-up](https://github.com/signup?source=login)
+
+![](./M0_lecture01_figures//welcome-sign-up-github-account.png){width="75%" fig-align="center"}
+
+
+--- 
+
+## Signing up
+
+### Step 2: Enter Your Details
+
+- Fill in the following details:
+  - **Email Address** -  Provide a valid email address.
+    - Use your personal email address, not your university email address.
+    - We will add your university email address later.
+  - **Password** -  Create a strong password.
+  - **Username** - Choose a unique username for your account.
+  - Select the **Start Puzzle** button to do so, and then follow the prompts.
+
+![](./M0_lecture01_figures//welcome-github-enter-email.png){width="75%" fig-align="center"}
+
+---
+
+
+## Verifying your account
+
+### Step 3: Verify Your Email Address
+
+  1. GitHub will send a verification email to the address you provided.
+  2. Next, GitHub sends a launch code to your email address. Type that launch code in the **Enter code** dialog, and then press **Enter**.
+  3. After you verify your account, select the **Create account** button.
+
+### Step 4: Choose Your Plan
+
+1. After email verification, GitHub will ask you to choose a plan:
+   - [Free]{.uugreen-bold} - For personal projects and open source contributions.
+   - [Paid]{.uugreen-bold} - For additional features like private repositories for teams.
+   - Most people start with the free plan: [GitHub Pricing](https://github.com/pricing).
+2. Let's Set-up Github Education Benefits: [GitHub Education](https://education.github.com/pack)
+
+---
+
+
+## Github Configuration
+
+![](./M0_lecture01_figures//git-workflow-simple-vers.webp){width="95%"}
+
+## Setting up Git 
+
+- As a first-time set up, you need to tell Git who you are
+- Open Git Bash and type the following commands:
+  - In case of Windows, open windows terminal and type `Git Bash`
+  - In case of Mac, open terminal and type `Git Bash`
+- Enter (type don't copy and paste) these lines one by one (with appropriate changes):
+  - Go to your [GitHub account email page](https://github.com/settings/emails) and copy your name and email address
+  - use the one that looks like `487492+yourusername@users.noreply.github.com` 
+
+```bash
+git config --global user.name "Nakul Padalkar" 
+git config --global user.email "2807210+nakulpadalkar@users.noreply.github.com "
+```
+
+- Make sure that you include here the same email you used for signing up on GitHub.
+- Test if this worked by typing
+- You only need to do this once on each computer you use once.
+
+``bash
+git config --list
+```
+
+---
+
+## Installation (CLI)
+
+### Git for Windows
+- [Git for Windows](https://gitforwindows.org/)
+
+
+### MacOS
+
+- [Download Git for MacOS](https://tinyurl.com/git-mac)
+- Alternate: `brew install git`
+
+---
+
+## SSH key generation & setup
+
+1. Check if your computer is already connected to GitHub
+
+```bash
+ssh -T git@github.com
+```
+
+2. If it gives an error, then you're not connected.
+3. Check what key pairs already exist on your computer.
+  
+```bash
+ls -al ~/.ssh
+```
+
+4. If SSH has been set up on the computer you’re using, the public and private key pairs will be listed. 
+  1. The file names are either `id_ed25519`/`id_ed25519.pub` or `id_rsa`/`id_rsa.pub` depending on how the key pairs were set up.
+  2. If they don’t exist on your computer, use procedure on the next slide to create them.
+
+---
+
+## Generating SSH Keys
+
+5. Use following lines on command line or bash to generate your keys
+
+:::{.panel-tabset}
+
+### Windows
+
+- Run `windows Terminal`, `Powershell`, or `command line`.
+- `ssh-keygen`
+- you will be asked to specify file location. Hit `Enter` on keyboard, this will use default location.
+-  Once the key is generated you will be asked to generate a passphrase. You can skip this by hitting `Enter` on keyboard.
+- Repeat the `passphrase` if you entered one, if not then hit `Enter` again.
+-  This will generate the key for your computer
+
+### MacOS
+
+- Open a Terminal window. in Macintosh operating systems, find Terminal in the Dock or in the Utilities folder.
+- Enter the following command: `ssh-keygen -b 2048 -t rsa -C "your_username"`.
+- Make sure to replace `your_username` with your own value.
+  - Example: `ssh-keygen -b 2048 -t rsa -C "jsmith"`.
+  - Select enter and follow prompts.
+  - A passphrase isn't required. Supply a passphrase or leave blank and select enter to continue.
+- When successfully generated, you see these messages:
+  - `Your identification has been saved in filename`.
+  - `Your public key has been saved in filename.pub`.
+- Search for the public and private key files in Finder.
+- The two key files are named `id_rsa` and `id_rsa.pub`.
+:::
+
+---
+
+## Adding SSH key to GitHub
+
+- Now that we have generated the SSH keys, we will find the SSH files when we check.
+ 
+```bash 
+ls -al ~/.ssh
+```
+
+- Follow the steps at [add the SSH key to GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
+- Copy the public key to GitHub
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+---
+
+## Adding SSH key to GitHub
+
+- Now that we’ve set that up, let’s check our authentication again from the command line.
+
+```bash
+ssh -T git@github.com
+```
+
+It should say, 
+```bash
+Hi <Your Name>! You have successfully authenticated, but GitHub does not provide shell access.
+```
+
+---
+
+# Using GitHub Desktop
+
+## The basic workflow 
+
+### First time
+
+1. [Clone]{.uured-bold} the repository that you want to work on from GitHub onto your local machine
+2. Work on the files/scripts
+3. Next, you will [commit]{.uured-bold} your changes and include an informative message, e.g. "Plot distribution of precipitation"
+4. Then, you will [push]{.uured-bold} your changes to the remote repository
+
+### Subsequent times
+
+1. [Pull]{.uured-bold} any changes from the remote repository that your collaborators might have made
+2. Repeat steps 2-4 above
+
+---
+
+## Working with GitHub
+
+There are two ways to work with GitHub projects.
+
+- Create the repository on GitHub, clone it to your PC, and work on it.[Recommended]{.uured-bold}
+- Work on your project locally then create the repository on GitHub and push it to remote.
+
+---
+
+## Create a repo on GitHub {#sec-new-repo}
+
+A More Descriptive Procedure is available at [Create a New Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)
+
+:::{.columns}
+:::{.column width="50%" .incremental}
+
+1. In the upper-right corner of any page, select `+`, then click New repository.
+2. Optionally, to create a repository with the directory structure and files of an existing repository. See [@sec-template-repo] for more details.
+3. Use the Owner dropdown menu to select the account you want to own the repository.
+4. Choose a repository visibility to be [Public]{.uured-bold}.
+5. Click Create repository.
+6. At the bottom of the resulting Quick Setup page, under "Import code from an old repository".
+7. You can choose to import a project to your new repository. To do so, click Import code.
+
+
+:::
+
+:::{.column width="50%"}
+:::{.r-stack}
+
+![](https://docs.github.com/assets/cb-29762/mw-1440/images/help/repository/repo-create-global-nav-update.webp){.fragment .fade-out width="50%" fig-align="center"}
+
+![](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+
+![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+
+:::
+:::
+:::
+
+---
+
+## Create a template-repo on GitHub {#sec-template-repo}
+
+A More Descriptive Procedure is available at [Template Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+
+:::{.columns}
+:::{.column width="50%" .incremental}
+
+1. On GitHub, navigate to the main page of the repository.
+2. Above the file list, click [Use this template]{.uured-bold}.
+3. Select [Create a new repository]{.uured-bold}.
+4. Use the [Owner]{.uured-bold} dropdown menu to select the account you want to own the repository.
+5. Type a name for your repository, and an optional description.
+6. Choose a repository with visibility [Public]{.uured-bold}.
+7. Click [Create repository from template]{.uured-bold}.
+
+
+:::
+
+:::{.column width="50%"}
+:::{.r-stack}
+
+![](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp){.fragment .fade-out width="50%" fig-align="center"}
+
+![](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+
+![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+
+:::
+:::
+:::
+
+---
+
+## Cloning
+
+A More Descriptive Procedure is available at [Cloning a Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
+
+:::{.columns}
+:::{.column width="50%" .incremental}
+
+1. On GitHub, navigate to the main page of the repository.
+2. Above the list of files, click [**Code**]{.uured-bold}.
+3. Copy the URL for the repository, choosing between HTTPS, SSH, or GitHub CLI.
+4. Open **Git Bash** (for Windows) or **Terminal** (for Mac/Linux).
+5. Change the current working directory to the location where you want the cloned directory.
+6. Type `git clone`, and paste the URL you copied:
+  
+```bash
+git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
+```
+7. Press **Enter** to create your local clone:
+
+:::
+
+:::{.column width="50%"}
+
+:::{.r-stack}
+
+![](https://docs.github.com/assets/cb-13128/images/help/repository/code-button.png){.fragment width="80%" fig-align="center" .fade-out}
+
+![](https://docs.github.com/assets/cb-60499/images/help/repository/https-url-clone-cli.png){.fragment width="80%" fig-align="center" .fade-in}
+
+![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment width="80%" fig-align="center" .fade-in-then-out}
+
+:::
+:::
+:::
+
+---
+
+## Commit your changes
+
+- Use an informative commit message
+  - (Not great) "Analyze data" `r emo::ji("disappointed")`
+  - (Better) "Estimate logistic regression" `r emo::ji("tada")`
+
+- Have a consistent style
+  - Start with an action verb
+  - Capitalize message
+
+- Commits are _cheap_, use them often!
+
+
+---
+
+## Push your changes
+
+![](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
+
+
+# Using the command line (CLI)
+
+## Working on local machine
+
+- Clone the repository
+
+```bash
+git clone URL
+git clone https://github.com/nakulpadalkar/git-tutorial.git
+```
+
+- Stage your files
+```bash
+git add .
+```
+
+- Commit your change
+
+```bash
+git commit -m "Add example code"
+```
+
+- Push your changes
+ 
+```bash
+git push
+```
+
+---
+
+## Adding your files to git repository
+
+![](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
 
