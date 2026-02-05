@@ -29,7 +29,7 @@ After logging into your AWS account,
 go to your [console](http://console.aws.amazon.com/) and search for "Amazon SageMaker" (see :numref:`fig_sagemaker`), 
 then click it to open the SageMaker panel.
 
-![Search for and open the SageMaker panel.](../img/sagemaker.png)
+![Search for and open the SageMaker panel.](./M0_lecture03_figures/sagemaker.png)
 :width:`300px`
 :label:`fig_sagemaker`
 
@@ -37,7 +37,7 @@ then click it to open the SageMaker panel.
 
 Next, let's create a notebook instance as described in :numref:`fig_sagemaker-create`.
 
-![Create a SageMaker instance.](../img/sagemaker-create.png)
+![Create a SageMaker instance.](./M0_lecture03_figures/sagemaker-create.png)
 :width:`400px`
 :label:`fig_sagemaker-create`
 
@@ -46,7 +46,7 @@ When creating a notebook instance,
 we can specify its name and type.
 In :numref:`fig_sagemaker-create-2`, we choose `ml.p3.2xlarge`: with one Tesla V100 GPU and an 8-core CPU, this instance is powerful enough for most of the book.
 
-![Choose the instance type.](../img/sagemaker-create-2.png)
+![Choose the instance type.](./M0_lecture03_figures/sagemaker-create-2.png)
 :width:`400px`
 :label:`fig_sagemaker-create-2`
 
@@ -62,7 +62,7 @@ The entire book in the ipynb format for running with SageMaker is available at h
 The entire book in the ipynb format for running with SageMaker is available at https://github.com/d2l-ai/d2l-tensorflow-sagemaker. We can specify this GitHub repository URL (:numref:`fig_sagemaker-create-3`) to allow SageMaker to clone it when creating the instance.
 :end_tab:
 
-![Specify the GitHub repository.](../img/sagemaker-create-3.png)
+![Specify the GitHub repository.](./M0_lecture03_figures/sagemaker-create-3.png)
 :width:`400px`
 :label:`fig_sagemaker-create-3`
 
@@ -76,7 +76,7 @@ edit and run all the Jupyter notebooks
 of this book on this instance
 (similar to steps in :numref:`sec_jupyter`).
 
-![Open Jupyter on the created SageMaker instance.](../img/sagemaker-open.png)
+![Open Jupyter on the created SageMaker instance.](./M0_lecture03_figures/sagemaker-open.png)
 :width:`400px`
 :label:`fig_sagemaker-open`
 
@@ -85,7 +85,7 @@ After finishing your work,
 do not forget to stop the instance to avoid 
 being charged further (:numref:`fig_sagemaker-stop`).
 
-![Stop a SageMaker instance.](../img/sagemaker-stop.png)
+![Stop a SageMaker instance.](./M0_lecture03_figures/sagemaker-stop.png)
 :width:`300px`
 :label:`fig_sagemaker-stop`
 
@@ -114,7 +114,7 @@ you may open a terminal on the SageMaker instance (:numref:`fig_sagemaker-termin
 :end_tab:
 
 
-![Open a terminal on the SageMaker instance.](../img/sagemaker-terminal.png)
+![Open a terminal on the SageMaker instance.](./M0_lecture03_figures/sagemaker-terminal.png)
 :width:`300px`
 :label:`fig_sagemaker-terminal`
 

@@ -41,7 +41,7 @@ For most users, it is enough to look at compute power. Note that many GPUs offer
 
 :numref:`fig_flopsvsprice` compares the 32-bit floating-point compute power and price of the various GTX 900, GTX 1000 and RTX 2000 series models. The prices suggested are those found on Wikipedia at the time of writing.
 
-![Floating-point compute power and price comparison. ](../img/flopsvsprice.svg)
+![Floating-point compute power and price comparison. ](./M0_lecture03_figures/flopsvsprice.svg)
 :label:`fig_flopsvsprice`
 
 
@@ -51,7 +51,7 @@ We can see a number of things:
 2. The performance-to-cost ratio of the GTX 1000 series is about two times greater than the 900 series.
 3. For the RTX 2000 series the performance (in GFLOPs) is an *affine* function of the price.
 
-![Floating-point compute power and energy consumption. ](../img/wattvsprice.svg)
+![Floating-point compute power and energy consumption. ](./M0_lecture03_figures/wattvsprice.svg)
 :label:`fig_wattvsprice`
 
 

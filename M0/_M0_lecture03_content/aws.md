@@ -14,13 +14,13 @@ This process applies to other instances (and other clouds), too, albeit with som
 
 After logging into your AWS account, click "EC2" (:numref:`fig_aws`) to go to the EC2 panel.
 
-![Open the EC2 console.](../img/aws.png)
+![Open the EC2 console.](./M0_lecture03_figures/aws.png)
 :width:`400px`
 :label:`fig_aws`
 
 :numref:`fig_ec2` shows the EC2 panel.
 
-![The EC2 panel.](../img/ec2.png)
+![The EC2 panel.](./M0_lecture03_figures/ec2.png)
 :width:`700px`
 :label:`fig_ec2`
 
@@ -42,7 +42,7 @@ apply for a higher instance quota.
 Generally, it takes one business day to
 process an application.
 
-![Instance quantity restrictions.](../img/limits.png)
+![Instance quantity restrictions.](./M0_lecture03_figures/limits.png)
 :width:`700px`
 :label:`fig_limits`
 
@@ -54,7 +54,7 @@ Next, click the "Launch Instance" button marked by the red box in :numref:`fig_e
 We begin by selecting a suitable Amazon Machine Image (AMI). Select an Ubuntu instance (:numref:`fig_ubuntu`).
 
 
-![Choose an AMI.](../img/ubuntu-new.png)
+![Choose an AMI.](./M0_lecture03_figures/ubuntu-new.png)
 :width:`700px`
 :label:`fig_ubuntu`
 
@@ -75,7 +75,7 @@ EC2 provides many different instance configurations to choose from. This can som
 
 All these servers come in multiple flavors indicating the number of GPUs used. For example, a p2.xlarge has 1 GPU and a p2.16xlarge has 16 GPUs and more memory. For more details, see the [AWS EC2 documentation](https://aws.amazon.com/ec2/instance-types/) or a [summary page](https://www.ec2instances.info). For the purpose of illustration, a p2.xlarge will suffice (marked in the red box of :numref:`fig_p2x`).
 
-![Choose an instance.](../img/p2x.png)
+![Choose an instance.](./M0_lecture03_figures/p2x.png)
 :width:`700px`
 :label:`fig_p2x`
 
@@ -88,13 +88,13 @@ previously generated key pair.
 Make sure that you download the key pair and store it in a safe location if you
 generated a new one. This is your only way to SSH into the server.
 
-![Select a key pair.](../img/keypair.png)
+![Select a key pair.](./M0_lecture03_figures/keypair.png)
 :width:`500px`
 :label:`fig_keypair`
 
 In this example, we will keep the default configurations for "Network settings" (click the "Edit" button to configure items such as the subnet and security groups). We just increase the default hard disk size to 64 GB (:numref:`fig_disk`). Note that CUDA by itself already takes up 4 GB.
 
-![Modify the hard disk size.](../img/disk.png)
+![Modify the hard disk size.](./M0_lecture03_figures/disk.png)
 :width:`700px`
 :label:`fig_disk`
 
@@ -103,7 +103,7 @@ Click "Launch Instance" to launch the created
 instance. Click the
 instance ID shown in :numref:`fig_launching` to view the status of this instance.
 
-![Click the instance ID.](../img/launching.png)
+![Click the instance ID.](./M0_lecture03_figures/launching.png)
 :width:`700px`
 :label:`fig_launching`
 
@@ -111,7 +111,7 @@ instance ID shown in :numref:`fig_launching` to view the status of this instance
 
 As shown in :numref:`fig_connect`, after the instance state turns green, right-click the instance and select `Connect` to view the instance access method.
 
-![View the instance access method.](../img/connect.png)
+![View the instance access method.](./M0_lecture03_figures/connect.png)
 :width:`700px`
 :label:`fig_connect`
 
@@ -124,7 +124,7 @@ chmod 400 D2L_key.pem
 ```
 
 
-![View instance access and startup method.](../img/chmod.png)
+![View instance access and startup method.](./M0_lecture03_figures/chmod.png)
 :width:`400px`
 :label:`fig_chmod`
 
@@ -152,7 +152,7 @@ sudo apt-get update && sudo apt-get install -y build-essential git libgfortran3
 
 Here we download CUDA 12.1. Visit NVIDIA's [official repository](https://developer.nvidia.com/cuda-toolkit-archive) to find the download link as shown in :numref:`fig_cuda`.
 
-![Find the CUDA 12.1 download address.](../img/cuda121.png)
+![Find the CUDA 12.1 download address.](./M0_lecture03_figures/cuda121.png)
 :width:`500px`
 :label:`fig_cuda`
 
@@ -220,7 +220,7 @@ jupyter notebook
 
 :numref:`fig_jupyter` shows the possible output after you run the Jupyter Notebook. The last row is the URL for port 8888.
 
-![Output after running the Jupyter Notebook. The last row is the URL for port 8888.](../img/jupyter.png)
+![Output after running the Jupyter Notebook. The last row is the URL for port 8888.](./M0_lecture03_figures/jupyter.png)
 :width:`700px`
 :label:`fig_jupyter`
 

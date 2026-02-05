@@ -6,7 +6,7 @@ if you have a Google account.
 
 To run the code of a section on Colab, simply click the `Colab` button as shown in :numref:`fig_colab`. 
 
-![Run the code of a section on Colab.](../img/colab.png)
+![Run the code of a section on Colab.](./M0_lecture03_figures/colab.png)
 :width:`300px`
 :label:`fig_colab`
 
@@ -15,7 +15,7 @@ If it is your first time to run a code cell,
 you will receive a warning message as shown in :numref:`fig_colab2`.
 Just click "RUN ANYWAY" to ignore it.
 
-![Ignore the warning message by clicking "RUN ANYWAY".](../img/colab-2.png)
+![Ignore the warning message by clicking "RUN ANYWAY".](./M0_lecture03_figures/colab-2.png)
 :width:`300px`
 :label:`fig_colab2`
 
