@@ -1816,8 +1816,7 @@ digraph SentimentPipeline {
 :::
 ---
 
-## Conceptual Takeaway
-
+## Key Takeaways
 
 > Bag of Words is not about language—it is about [counting]{.uublue-bold}.
 
@@ -1826,10 +1825,65 @@ digraph SentimentPipeline {
   - Embeddings (learning meaning)
   - Transformers (learning context)
 
+## Language, Probability, and Representation
 
+- Language can be modeled as a **probabilistic system**
+- Text analytics begins with **representation**, not models
+- The same representation can support **multiple NLP tasks**
+- Generative AI **extends** classical NLP rather than replacing it
+
+> Before we can generate language, we must first represent it.
+
+## From Text to Numbers
+
+### Why Representation Comes First
+
+- Machines do not understand text — they operate on numbers
+- Every NLP system starts by converting text into:
+  - counts
+  - weights
+  - probabilities
+  - vectors
+- **Bag of Words** is the simplest bridge between language and mathematics
+
+Representation choices directly affect:
+- interpretability  
+- scalability  
+- evaluation  
+- regulatory transparency
+
+## Generative vs. Discriminative
+
+### Two Ways to Think About Language Models
+
+**Generative modeling**
+- Learns how language is produced
+- Models probability of text
+- Foundation of language models and LLMs
+
+**Discriminative modeling**
+- Learns how to assign labels or decisions
+- Focuses on prediction accuracy
+- Common in business analytics tasks
+
+Modern systems often **combine both approaches**.
+
+## Why Bag of Words Still Matters
+
+- Provides a **transparent baseline**
+- Enables:
+  - fast experimentation
+  - interpretable results
+  - defensible analysis (e.g., SEC filings)
+- Serves as a comparison point for:
+  - TF–IDF
+  - embeddings
+  - transformer-based models
+
+> If you don’t understand Bag of Words, embeddings will feel like magic instead of engineering.
 
 # References
 
 :::{.refs}
 
-:::
+:::  

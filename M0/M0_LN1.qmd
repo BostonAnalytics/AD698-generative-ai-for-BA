@@ -746,8 +746,6 @@ From the GitHub repository dropdown you can filter and pick the repository you w
 
 ![Screenshot showing the GitHub repository Quick Pick filtered on microsoft/vscode.](./M0_lecture01_figures/github/github-repo-dropdown.png){width="80%" fig-align="center"}
 
-Learn more about [cloning repositories and working with remotes](/docs/sourcecontrol/repos-remotes.md#clone-repositories).
-
 ### Authenticating with an existing repository
 
 Enabling authentication through GitHub happens when you run any Git action in VS Code that requires GitHub authentication, such as pushing to a repository that you're a member of or cloning a private repository. You don't need to have any special extensions installed for authentication; it is built into VS Code so that you can efficiently manage your repository.
@@ -761,9 +759,9 @@ Signing in with a personal access token (PAT) is only supported with GitHub Ente
 Note that there are several ways to authenticate to GitHub, including using your username and password with two-factor authentication (2FA), a personal access token, or an SSH key. See [About authentication to GitHub](https://docs.github.com/github/authenticating-to-github/about-authentication-to-github) for more information and details about each option.
 
 > [!NOTE]
-> If you'd like to work on a repository without cloning the contents to your local machine, you can install the [GitHub Repositories](https://marketplace.visualstudio.com/items?itemName=github.remotehub) extension to browse and edit directly on GitHub. Learn more about the [GitHub Repositories extension](/docs/sourcecontrol/github.md#github-repositories-extension).
+> If you'd like to work on a repository without cloning the contents to your local machine, you can install the [GitHub Repositories](https://marketplace.visualstudio.com/items?itemName=github.remotehub) extension to browse and edit directly on GitHub. 
 
-## Editor integration
+## Editor integration (optional)
 
 ### Hovers
 
@@ -891,9 +889,6 @@ The Status Bar also shows the active issue and if you select that item, a list o
 
 You can configure the name of the branch using the **GitHub Issues: Issue Branch Title** (`setting(githubIssues.issueBranchTitle)`) setting. If your workflow doesn't involve creating a branch, or if you want to be prompted to enter a branch name every time, you can skip that step by turning off the **GitHub Issues: Use Branch For Issues** (`setting(githubIssues.useBranchForIssues)`) setting.
 
-:::{.callout-note}
-Learn more about [working with branches](/docs/sourcecontrol/branches-worktrees.md) to understand branch management, switching between branches, and organizing your development work.
-:::
 
 Once you are done working on the issue and want to commit a change, the commit message input box in the **Source Control** view will be populated with a message, which can be configured with **GitHub Issues: Working Issue Format SCM** (`setting(githubIssues.workingIssueFormatScm)`).
 
@@ -965,7 +960,7 @@ To switch development environments, use the **Continue Working On** command, ava
 
 ![Continue Working On command in Remote dropdown](./M0_lecture01_figures/github/continue-working.png){width="80%" fig-align="center"}
 
-If you are using the [browser-based editor](/docs/remote/codespaces.md#browserbased-editor), the **"Continue Working On"** command has the options to open the repository locally or within a cloud-hosted environment in [GitHub Codespaces](https://github.com/features/codespaces).
+If you are using the [browser-based editor](https://code.visualstudio.com/docs/remote/codespaces), the **"Continue Working On"** command has the options to open the repository locally or within a cloud-hosted environment in [GitHub Codespaces](https://github.com/features/codespaces).
 
 ![Continue Working On from web-based editor](./M0_lecture01_figures/github/codespaces-continue.png){width="80%" fig-align="center"}
 

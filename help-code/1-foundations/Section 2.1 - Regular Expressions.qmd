@@ -1,0 +1,507 @@
+---
+jupyter:
+  kernelspec:
+    display_name: cs5246
+    language: python
+    name: cs5246
+---
+
+<img src='data/images/section-notebook-header.png' />
+
+# Regular Expressions
+
+Regular expressions, often abbreviated as RegEx or RegExp, are powerful tools used for pattern matching and text manipulation. They are a sequence of characters that form a search pattern, which is used to match and locate specific patterns within a larger body of text. Regular expressions are widely used in various programming languages, text editors, and command-line tools. They provide a concise and flexible way to search, extract, and manipulate text based on specific criteria. Here are some common use cases for regular expressions:
+
+* **Text search and matching:** Regular expressions can be used to search for specific patterns or sequences of characters within a text document or string. For example, you can search for all occurrences of email addresses, URLs, or phone numbers in a given text.
+
+* **Text validation and data extraction:** Regular expressions are useful for validating input or extracting specific data from a larger text. You can use them to validate if an input matches a specific pattern, such as a valid email address or a date format. They can also be employed to extract parts of a string that match a particular pattern, such as extracting all the hashtags from a social media post.
+
+* **Text substitution and manipulation:** Regular expressions allow you to perform advanced text substitution and manipulation. For instance, you can replace all occurrences of a word or phrase with another word, remove unnecessary whitespace or formatting, or reorder elements in a specific way.
+
+A regular expression is a pattern that the regular expression engine attempts to match in input text. Each pattern is a combination of literal characters and metacharacters. Literal characters represent themselves and match the exact characters in the text. Metacharacters, on the other hand, have special meanings and provide additional functionality. Regular expressions can become quite complex, allowing for alternation, grouping, quantifiers, character classes, and more. In this notebook we will cover the most important concepts of Regular Expressions in more detail.
+
+## Setting up the Notebook
+
+
+### Import all Required Packages
+
+Here, we only need Python's in-built `re` package.
+
+```{python}
+import re
+```
+
+- `search()`: returns match object of the for the first location where the regular expression pattern produces a match, and returns a corresponding match object; returns None if no position in the string matches the pattern.
+
+- `match()`: similar to `search()`, but the match has to occur at the beginning of the string and not anywhere in the string.
+
+- `findall()`: returns all non-overlapping matches of a pattern in a string as a list of strings, or a list of tuples containing strings in case of groups; returns an empty list if no matches are found.
+
+- `finditer()`: returns an iterator that iterates of all match objects (not strings) for a pattern in a string
+
+- `sub()`: returns a string obtained by replacing the leftmost non-overlapping occurrences of pattern in string by the given replacement. returns the same input string if the pattern is not found.
+
+
+The full of functions including the respective input parameters can be found here:
+- https://docs.python.org/3.4/library/re.html#re.search
+
+### Definition of Auxiliary Method
+
+The method `show_matches()` is only there to simplify the following examples. At its core, it simply uses the method `finditer()` to find matches based on a given expression in a given string. The rest of the method only prints the result depending on the form of the matches.
+
+```{python}
+def show_matches(pattern, string, flags=0):
+    matches = re.findall(pattern, string, flags)
+    if len(matches) == 0:
+        print("No match found.", "\n")
+    else:
+        try:
+            print(', '.join(matches), '\n')
+        except:
+            print(matches, '\n')
+```
+
+Let's use the next controversial statement for a series of examples.
+
+```{python}
+sentence = "Having 1 cat is nice, but having 20 cats is crazy!"
+```
+
+---
+
+## Basic Patterns
+
+- `a`, `X`, `9`, `<`: ordinary characters just match themselves exactly. The meta-characters which do not match themselves because they have special meanings are: `.` `^` `$` `*` `+` `?` `{` `[` `]` `\` `|` `(` `)` (details below)
+- `.` (a period): matches any single character except newline `\n`
+- `\w`: (lowercase w) matches a "word" character: a letter or digit or underbar `[a-zA-Z0-9_]`. Note that although "word" is the mnemonic for this, it only matches a single word char, not a whole word. `\W` (upper case W) matches any non-word character.
+- `\b`: boundary between word and non-word
+- `\s`: (lowercase s) matches a single whitespace character -- space, newline, return, tab, form `[ \n\r\t\f]`. `\S` (upper case S) matches any non-whitespace character.
+- `\t`, `\n`, `\r`: tab, newline, return
+- `\d`: decimal digit [0-9] (some older regex utilities do not support but `\d`, but they all support `\w` and `\s`)
+- `^` = start, `$` = end: match the start or end of the string
+- `\`: inhibit the "specialness" of a character. So, for example, use `\`. to match a period or `\\` to match a slash. If you are unsure if a character has special meaning, such as `@`, you can put a slash in front of it, `\@`, to make sure it is treated just as a character. 
+
+```{python}
+show_matches(r'cat', sentence)
+show_matches(r'cats', sentence)
+show_matches(r'cat\s', sentence)
+show_matches(r'\bcat\b', sentence)
+show_matches(r'^cat', sentence)
+show_matches(r'cat$', sentence)
+```
+
+```{python}
+show_matches(r'Cat', sentence)
+show_matches(r'Cat', sentence, flags=re.IGNORECASE)
+```
+
+By default, every part of a pattern has to match for the whole pattern to match. The pipe operator `|` allows to combine two patterns by means of a logical OR:
+
+```{python}
+show_matches(r'cats|cat', sentence)
+show_matches(r'cat|cats', sentence)
+```
+
+Notice that the two expressions do noy yield the same result. In the second expression, the successful match happens already with the first three letters of "cats". If the words would share a common substring, the order wouldn't matter. for, example `cat|dog` and `dog|cat` would indeed yield the same results.
+
+```{python}
+show_matches(r'\d', sentence)        # Same as: show_matches(r'[0-9]', sentence)
+show_matches(r'\d\d', sentence)      # Same as: show_matches(r'[0-9][0-9]', sentence)
+show_matches(r'\d\d\d', sentence)    # Same as: show_matches(r'[0-9][0-9][0-9]', sentence)
+```
+
+```{python}
+show_matches(r'\w', sentence)        # Same as: show_matches(r'[a-zA-Z0-9_]', sentence)
+show_matches(r'\w\w', sentence)      # Same as: show_matches(r'[a-zA-Z0-9_][a-zA-Z0-9_]', sentence)
+show_matches(r'\w\w\w', sentence)    # Same as: show_matches(r'[a-zA-Z0-9_][a-zA-Z0-9_][a-zA-Z0-9_]', sentence)
+```
+
+Notice that matches never overlap. For example, in the last example, one might assume something like: `Hav`, `avi`, `vin`, `ing`, `cat`, `nic`, `ice`, etc. Basic RegEx analyzer do not support overlapping matches, but there are RegEx packages for Python available that do, e.g., `import regex`.
+
+```{python}
+show_matches(r'Having', sentence)
+show_matches(r'^Having', sentence)
+show_matches(r'Having$', sentence)
+```
+
+```{python}
+print(re.sub(r'cat', 'dog', sentence))
+```
+
+**Important:** Always be careful what you're doing when you replace substrings! :)
+
+```{python}
+print(re.sub(r'cat', 'dog', 'The scatter plot shows all the categories'))
+```
+
+---
+
+## Repetition Patterns
+
+- `+`: 1 or more occurrences of the pattern to its left, e.g. 'i+' = one or more i's
+- `*`: 0 or more occurrences of the pattern to its left
+- `?`: match 0 or 1 occurrences of the pattern to its left
+- `{n}`: specification of number of occurrences
+- `{l,u}`: specification of a lower bound `l` and an upper bound `u`. The interval can be unbounded: `{l,}` or `{,u}`
+
+```{python}
+show_matches(r'\d+', sentence)        # Same as: show_matches(r'[0-9]+', sentence)
+show_matches(r'\d*', sentence)        # Same as: show_matches(r'[0-9]*', sentence)
+show_matches(r'\d?', sentence)        # Same as: show_matches(r'[0-9]?', sentence)
+```
+
+```{python}
+show_matches(r'\d{,3}', sentence)
+show_matches(r'\d{1}', sentence)
+show_matches(r'\d{1,1}', sentence)
+show_matches(r'\d{2,3}', sentence)
+show_matches(r'\d{2,2}', sentence)
+show_matches(r'\d{1,}', sentence)
+```
+
+```{python}
+show_matches(r'\w+', sentence)        # Same as: show_matches(r'[a-zA-Z0-9_]+', sentence)
+show_matches(r'\w*', sentence)        # Same as: show_matches(r'[a-zA-Z0-9_]*', sentence)
+show_matches(r'\w?', sentence)        # Same as: show_matches(r'[a-zA-Z0-9_]?', sentence)
+show_matches(r'[a-zA-Z]+', sentence)
+```
+
+```{python}
+show_matches(r'cats+', sentence)
+show_matches(r'cats*', sentence)
+show_matches(r'cats?', sentence)
+```
+
+---
+
+## Groups
+
+In regular expressions, groups are used to define subpatterns within a larger pattern. They allow you to group multiple characters or subexpressions together and apply modifiers or operations to them as a single unit. Groups are denoted by parentheses `(` and `)`. Groups serve several purposes in regular expressions:
+
+* **Capturing groups:** One common use of groups is to capture and extract specific parts of a matched pattern. When a group is defined within parentheses, the text that matches the group will be captured and made available for further processing. Each capturing group is assigned a number, starting from 1 and incrementing for each subsequent group. For example, the regular expression pattern (\d{2})-(\d{2})-(\d{4}) can be used to match a date in the format "dd-mm-yyyy". By using capturing groups, you can extract the day, month, and year separately.
+
+* **Non-capturing groups:** In some cases, you may want to use parentheses for grouping purposes, but you don't need to capture the matched text as a separate group. Non-capturing groups are denoted by (?:...). They function similarly to capturing groups but don't create numbered references for the matched text. For example, the pattern I(?:l|1)o matches either "Il" or "Io" but does not capture the specific matched letter.
+
+* **Grouping for modifiers or quantifiers:** Groups can be used to apply modifiers or quantifiers to a specific sequence of characters. By grouping characters together, you can specify how many times the entire group should be repeated. For example, the pattern (ab)+ matches one or more occurrences of the sequence "ab". Without the parentheses, the pattern ab+ would match a single "a" followed by one or more "b" characters.
+
+* **Alternation:** Groups allow you to specify alternatives using the | (pipe) character, which acts as an OR operator. It allows you to match one of several alternatives. For example, the pattern (apple|banana|orange) matches either "apple", "banana", or "orange".
+
+Let's go through some more example.
+
+The following looks for all number-word pairs (e.g., "20 cats", but also "300km" since the whitespace between number and word is optional).
+
+```{python}
+show_matches(r'(\d+)\s?(\w+)', sentence)
+```
+
+The following examples splits a sentence into different clauses by looking for commas, colons, and semicolons.
+
+```{python}
+show_matches(r'([\w\s]+)[,;:]([\w\s]+)', sentence)
+```
+
+The following examples look for email addresses in a string.
+
+```{python}
+email_sentence = "You can contact me via test@example.org or demo.user.@example.org."
+
+matches = re.findall(r'[\w.-]+@[\w.-]+\w', email_sentence)
+matches = re.findall(r'((\w+[\w.])*@(\w+[.])*\w+)', email_sentence)
+
+for m in matches:
+    print(m)
+```
+
+We can use groups to make it easy to individually get the account name (string for @) and the server name (string after @).
+
+```{python}
+matches = re.findall(r'([\w.-]+)@([\w.-]+\w)', email_sentence)
+
+for m in matches:
+    print(m)
+    print("-- account name: {}".format(m[0]))
+    print("-- server name:  {}".format(m[1]))
+```
+
+Sometimes, we not only want the matching substrings but also the position of each match in the input string. For example, it can be interesting how far apart two matches are in the string. To accomplish this, we can use the method `finditer()` which returns an iterator of match objects which in turn provide functions to get the location of a match in terms of the positions of the first character and the last character.
+
+```{python}
+pattern = re.compile(r'([\w.-]+)@([\w.-]+)')
+
+for m in pattern.finditer(email_sentence):
+    print(m)
+    print(m.group(), m.span())      # Same as print(m.group(0), m.span(0))
+    print(m.group(1), m.span(1))
+    print(m.group(2), m.span(2))
+    print()
+```
+
+Note that `m` is not a string but a match object, since we are using `finditer()` instead of `findall()`.
+
+By default, groups are getting numbered with respect to the order of appearance. Thus to access the first group, we have to write `group(1)` and `span(1)`. `span(0)` or simply `span()` returns the complete match covering all groups and the "rest".
+
+Groups can also be nested -- see the example later below. In case of nesting, the numbering derives from the order in which groups are opened by `(`.
+
+### Named Groups
+
+Named groups, also known as named capturing groups or named subpatterns, are a feature in regular expressions that allow you to assign a name to a group for easier identification and extraction of matched content. Instead of referring to groups by their numerical index, you can use a descriptive name to access the captured text.
+
+Named groups are defined by using the syntax `(?<name>pattern)` or `(?'name'pattern)`, where `name` is the name assigned to the group, and pattern represents the regular expression pattern within the group. This later allows access to the groups using the name, which avoids keeping track of the ordering -- but makes the regular expression a bit more "scary" looking.
+
+The example below again extracts all email addresses and differentiates between the account and server part of the address; see above. However, here, we use named groups to make printing the matches more intuitive.
+
+```{python}
+pattern = re.compile(r'(?P<account>[\w.-]+)@(?P<server>[\w.-]+\w)')
+
+for m in pattern.finditer(email_sentence):
+    print(m)
+    print(m.group(), m.span())
+    print(m.group('account'), m.span('account'))
+    print(m.group('server'), m.span('server'))
+    print()
+```
+
+### Grouping and Capturing
+
+Parentheses serve two different purposes: grouping expressions and capturing the text that matches an expression. That is, by default, each matching group is captured and returned. However, sometimes groups are only used for matching by not capturing. Consider the following example:
+
+```{python}
+gc_sentence = "Aircraft and airplane are synonyms, but a jet is a special kind of airplane."
+```
+
+From this sentence we want to extract all mentions of "aircraft", "airplane", and "jet". Making use of the syntactic similarities between "aircraft" and "airplane", we can accomplish this by using:
+
+```{python}
+pattern = re.compile(r'(air(craft|plane)|jet)', flags=re.IGNORECASE)
+
+for m in pattern.finditer(gc_sentence):
+    print(m.group(1), m.span(1))
+    print(m.group(2), m.span(2))
+```
+
+Since we have two groups, we not only capture "aircraft" and "airplane" but also "craft" and "plane". This is not really what we want. To get rid of it, we can switch off the capturing of the 2nd group with `?:` -- now the 2n group is only used for matching:
+
+```{python}
+pattern = re.compile(r'(air(?:craft|plane)|jet)', flags=re.IGNORECASE)
+
+for m in pattern.finditer(gc_sentence):
+    print(m.group(1), m.span(1))
+    # print(m.group(2), m.span(2)) # Now throws an error since the 2nd group has been "disabled"
+```
+
+Side note: In this easy example, `(aircraft|airplane|jet)` would also work just fine.
+
+---
+
+## Backreferences
+
+Backreferences in regular expressions are a feature that allows you to refer back to previously matched groups within the pattern. They enable you to match the same text that was previously captured by a capturing group. Backreferences are typically represented by the `\` (backslash) character followed by a number or name corresponding to the capturing group. The number represents the position of the capturing group in the regular expression pattern, while the name refers to a named capturing group.
+
+Let's assume the following simple example sentence, which could be a tweet, for example.
+
+```{python}
+br_sentence = "School is the coolest time of the day hahahahahaha."
+```
+
+In the following example, we are looking for words that contain repeated substrings. According to the sentence above, that can be "school" where the repeated substring is "o", or "hahahahahaha" where the repeated substring is "ha".
+
+```{python}
+show_matches(r'\w*(\w)\1\w*', br_sentence)
+show_matches(r'\w*(\w+)\1\w*', br_sentence)
+```
+
+This didn't quite work since `findall()` captures only groups, if groups are used. To capture the full match one can use `finditer()` or keep `findall()` but change the expression a little bit.
+
+```{python}
+pattern = re.compile(r'\w*(\w+)\1\w*')
+
+for m in pattern.finditer(br_sentence):
+    print(m.group(), m.span())
+```
+
+The alternative is to use `findall()` and pack the whole expression into its own group. The only required change is that we need to replace `\1` by `\2` since we now have two groups -- actually nested groups, and the group that checks for doubled characters is the inner group.
+
+```{python}
+show_matches(r'(\w*(\w)\2\w*)', br_sentence)
+show_matches(r'(\w*(\w{2,})\2\w*)', br_sentence)
+show_matches(r'(\b(\w)\w*\2\b)', br_sentence, flags=re.IGNORECASE)
+
+for m in re.findall(r'(\w*(\w+)\2\w*)', br_sentence):
+    print(m[0]) # We know that we are interested in the first group ==> first element in tuple
+```
+
+Just as an additional example, let's use named groups to make the access to the matches more intuitive.
+
+```{python}
+pattern = re.compile(r'(?P<doubledword>\w*(\w+)\2\w*)')
+
+for m in pattern.finditer(br_sentence):
+    print(m.group('doubledword'), m.span('doubledword'))
+    print()
+```
+
+### Replacing Substrings Using Backreferences
+
+The replacement string can also return backreferences. However, the syntax is slightly different to avoid potential ambiguities: to refer to the first group, instead of `\1` use `\g<1>`.
+
+```{python}
+print(re.sub(r'(is)', 'was and \g<1>', br_sentence))
+```
+
+The following substring replacement using `sub()` first finds double words and replaces them with just the first occurrence.
+
+```{python}
+print(re.sub(r'\b(\w+)\s+\1\b', '\g<1>', 'The the length of of a text is often defined by the the number of words.', flags=re.IGNORECASE))
+```
+
+We can also replace doubled words with the second occurrence, but this is likely to cause more problems when the doubled words appear at the beginning of sentence with the first occurrence being capitalized and the second one being lowercase. Notice that we first have to change `\1` to `(\1)` to put the second occurrence into its own group, otherwise we cannot refer to it with `\g<2>`.
+
+```{python}
+print(re.sub(r'\b(\w+)\s+(\1)\b', '\g<2>', 'The the length of of a text is often defined by the the number of words.', flags=re.IGNORECASE))
+```
+
+---
+
+## Lookarounds: Lookaheads & Lookbehinds
+
+Lookarounds in regular expressions are zero-width assertions that allow you to specify conditions for matching without including the actual text in the final match. They are used to define a position in the string that must be preceded or followed by a specific pattern. Lookarounds do not consume any characters during the matching process. They are considered zero-width assertions because they only assert whether a particular position is preceded or followed by a specific pattern, without including the pattern itself in the matched text.
+
+Simply speaking, lookarounds are assertions that look ahead or behind to ensure that a subpattern does or does not occur. Lookarounds match characters just like any other pattern, but then gives up the match, returning only the result: match or no match (hence an assertion).
+
+With the 2 directions (ahead, behind) and the 2 types of assertions (match, no match), there a for types of lookarounds:
+
+- `(?=)`: positive lookahead -- `A(?=B)` finds expression A but only when followed by expression B
+
+- `(?!)`: negative lookahead -- `A(?!B)` finds expression A but only when *not* followed by expression B
+
+- `(?<=)`: positive lookbehind -- `(?<=B)A` finds expression A but only when preceded by expression B
+
+- `(?<!)`: negative lookbehind -- `(?<!B)A` finds expression A but only when *not* preceded by expression B
+
+
+Lookaround expressions are very useful when there are several conditions. Let's look at a couple of examples to get a better intuition of lookarounds and their common uses.
+
+**Important:** The pattern of the lookbehinds need be of fixed length, that is, these patterns cannot have any repetition specifier that allows for various numbers of characters. For example, `(?<!B+)A`, for some expression `B` would throw an error.
+
+### Lookaheads
+
+The following examples shows a simple positive lookahead: We are searching for all first names of people with the last names "Simpson". That means, we are looking for all words that are followed be "Simpsons" (but we do not care about "Simpsons" itself)
+
+```{python}
+lap_sentence = "The team consists of Homer Simpson, Barney Gumble, Monty Burns, Marge Simpson, Ned Flanders, and Lenny Lennard."
+
+pattern = re.compile(r'\w+(?= Simpson)')
+
+for m in pattern.finditer(lap_sentence):
+    print(m.group())
+```
+
+### Lookbehinds
+
+The following examples shows a simple positive lookbehind: We are searching for all amounts of money in SGD.
+
+```{python}
+lbp_sentence = "For 5 years, the funding is $1,000,000.00 which converts to S$1,307,600.00."
+
+# pattern = re.compile(r'[0-9,.]*\d')     # try the pattern without the lookbehind
+pattern = re.compile(r'(?<=S\$)[0-9,.]*\d')
+
+for m in pattern.finditer(lbp_sentence):
+    print(m.group())
+```
+
+Note that we have to escape `$` to `\$` since `$` is a reserved symbol within regular expressions.
+
+---
+
+## More Examples
+
+### Find all Dates in a Text
+
+Extracting date and time information from a text is a very common task. While date and time formats are generally well defined, there exists quite some variety in the exact formatting. In the example, we make the strong assumption that a data consists of 3 numbers separated by either a `/` (slash) or a `.` period.
+
+```{python}
+date_sentence = "the office will be closed from 20/03/2017 to 25.03.2017."
+
+pattern = re.compile(r'\d+[/.]\d+[/.]\d+')
+
+for m in pattern.finditer(date_sentence):
+    print(m.group())
+```
+
+Don't forget that regular expressions only look for the specific pattern. The expression above cannot truly find only real dates. For example, the expression would also match `123.456.789` which might be a phone number. It is usually always possible to make regular expressions more robust against wrong matches, but its complexity can quickly shoot up. In this example, we can use `r'\d{1,2}[/.]\d{1,2}[/.]\d{2,4}'` to ensure that `123.456.789` wouldn't match. However, it would still match `0.0.00`. Again, one can write more precise regular expressions by increasing their complexity as a trade-off.
+
+### Find all IATA Flight Numbers in a Text
+
+According to Wikipedia, IATA flight numbers consist of a 2-letter identifier of the airline and an assigned number -- fun fact: low numbers represent more prestigious flights. Officially, there's no whitespace between the airline code and the number, but many sources place one.
+
+```{python}
+iata_sentence = "Was thinking about taking the SQ 326 but now I'm taking LH9765."
+
+pattern = re.compile(r'\b[a-zA-Z]{2}\s?[\d]{1,4}\b')
+
+for m in pattern.finditer(iata_sentence):
+    print(m.group())
+```
+
+### Change text from American English to British English (a bit)
+
+In the code below, we consider a single aspect that commonly distinguishes American English from British English: the suffixe `-ize` vs `ise` of verbs (incl. `-izes` vs. `ises`, `-izing` vs. `-ising`, `-ized` vs `-ised`). Using a Regular Expression and a backreferences in the `sub()` method we can perform an automated conversion.
+
+```{python}
+ae_sentence = "Let's organize a meeting to list all commercialized products for the citizens."
+```
+
+```{python}
+be_sentence = re.sub(r'\b([\w]+)iz(ing|e[sd]?)?\b', '\g<1>is\g<2>', ae_sentence, flags=re.IGNORECASE) # Check why this fails
+
+print(be_sentence)
+```
+
+Keep in mind that this expression will also convert, e.g. `prize` to `prise`, which would of course not be correct. Solving these issues using only regular expressions would be very impractical. An alternative could be to not consider all words but only verbs. The information whether a word is a verb or not can be extracted using a Part-of-Speech tagger, but which is beyond the scope of this notebook.
+
+This example should serve as a reminder that an automated conversion or editing of a text is often very challenging and can often yield unexpected and typically undesired results. It should therefore only be done if the task is very straightforward and any potential errors very unlikely.
+
+### Password Strength Checker
+
+Regular expression do not necessarily need to return a match. In this example, we use a regular expression to check the strength of passwords, i.e., a password needs to fulfil some requirements to be valid (see list below). A check for several conditions is often a good indicator that lookarounds are they best option.
+
+- `(?=.*[a-z])`: at least 1 lowercase alphabetical character
+
+- `(?=.*[A-Z])`: at least 1 uppercase alphabetical character
+
+- `(?=.*[0-9])`: at least 1 numeric character
+
+- `(?=.*[!@#\$%\^&\*])`: at least one special character (note the escaped reserved RegEx characters)
+
+- `(?=.{8,})`: eight characters or longer
+
+```{python}
+good_password = 'testTEST123#'
+bad_password = 'testtest123#'   # no uppercase character
+```
+
+```{python}
+pattern = re.compile(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})')
+
+print(pattern.match(good_password))
+print(pattern.match(bad_password))
+```
+
+Note that even valid passwords don't return only an empty string. This is because the whole pattern is composed of lookaheads, which are assertions (i.e., patterns that give up the match; see above). If you want to get the password as a matched string you can change the last lookahead `(?=.{8,})` to a normal pattern `.{8,}`.
+
+---
+
+## Summary
+
+Regular expressions (regex) are powerful tools for pattern matching and text manipulation. They provide a concise and flexible way to search, extract, and manipulate text based on specific criteria. Regular expressions consist of a combination of literal characters and metacharacters, allowing for complex pattern definitions. This tutorial covered only a small subset of the capabilities of regular expressions. Here some some things to keep in mind as some additional take-away messages:
+
+- In general, the same task can be solved with different regular expressions, from simple to (overly) complex
+
+- Regular expressions are "easy to learn but hard to master"
+
+- Practically all modern programming languages support regular expressions
+
+- RegEx engines (e.g., Python's `re`) are not all created equal. Not all support all (advanced) features.
+
+

@@ -1,11 +1,284 @@
 ---
-title: "M01: Lab 1"
-subtitle: "Experimenting with AI tools (ChatGPT, Gemini, Claude)"
+title: "Module 1 - Lab 1"
+subtitle: "From Raw Text to NLP Pipelines (SEC 10-K)"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-engine: jupyter
+format: 
+    html:
+        code-overflow: wrap
 categories: ['1', 'M01:', 'Lab']
-description: "Hands-on lab activity: Experimenting with AI tools (ChatGPT, Gemini, Claude)."
+description: "Hands-on lab activity: Interacting with Textual Data in Jupyter and Colab."
 ---
+
+
+## Lab Objective {.unnumbered}
+
+In this lab, you will:
+
+- Connect **Google Colab** to **VS Code**
+- Load real-world corporate text data (SEC 10-K filings)
+- Implement a **classical NLP preprocessing pipeline**
+- Answer **exploratory questions** about corporate disclosures using text analytics
+
+This lab establishes the **computational and conceptual foundation** for later work with embeddings and generative models.
+
+
+## Background Context {.unnumbered}
+
+Public companies file **Form 10-K** annually with the U.S. Securities and Exchange Commission (SEC).  
+These filings contain rich textual information about:
+
+- business operations  
+- risks and uncertainties  
+- management discussion  
+- regulatory disclosures  
+
+In this lab, we treat each 10-K as **raw text data** and apply a standard NLP pipeline to prepare it for analysis.
+
+
+## Connecting Google Colab to VS Code {.unnumbered}
+
+You will use **Google Colab as the execution backend** while working inside **VS Code**.
+
+### Install the Colab Extension {.unnumbered}
+
+Install the **Google Colab extension** in VS Code from one of the following:
+
+- Visual Studio Marketplace  
+- Open VSX Registry  
+
+Search for **“Colab”** and install the official extension.
+
+### Open or Create a Notebook {.unnumbered}
+
+In VS Code:
+
+- Open an existing `.ipynb` file  
+  **or**
+- Create a new Jupyter Notebook
+
+
+### Sign In to Google  {.unnumbered}
+    
+When prompted:
+
+- Sign in using your Google account
+- Authorize Colab access
+
+
+### Select the Colab Kernel {.unnumbered}
+
+In the notebook interface:
+
+- Click **Select Kernel**
+- Choose **Colab**
+- Select **New Colab Server**
+
+Your notebook is now running on Google Colab 
+
+## Dataset Overview  {.unnumbered}
+
+- All data for this lab is located in: [SEC-10K-2024/](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=drive_link)
+- You will need to "copy" the folder to your own Google Drive
+- Right click on the folder, and then click "Add shortcut to Drive". This will allow you to access the folder from your drive!
+- This folder contains **plain-text 10-K filings** for multiple publicly traded firms.
+- Each file represents **one company’s annual report**.
+
+![](./M01_lecture02_figures/gdrive-add-folder.png){width="80%" fig-align="center"}
+
+:::{.callout-note}
+When running notebooks on Google Colab, file paths such as `../data/...` will **not work**.
+Colab runs on a remote virtual machine, so all data must be accessed via mounted storage or downloads.
+:::
+
+
+## Research Framing (Important) {.unnumbered}
+
+You are **not** training a model yet. Instead, think of this lab as **asking structured questions of text**, such as:
+
+- What terms dominate risk disclosures?
+- How consistent is language across companies?
+- Which words survive aggressive cleaning?
+- How does preprocessing change the text representation?
+
+Your answers will be supported by **intermediate outputs**, not final predictions.
+
+## NLP Processing Pipeline {.unnumbered}
+
+You will implement the following pipeline **step by step**:
+
+1. Raw text  
+2. Sentence segmentation  
+3. Tokenization  
+4. Part-of-Speech (POS) tagging  
+5. Stop-word removal  
+6. Stemming / Lemmatization  
+7. Dependency parsing  
+8. String metrics & matching  
+
+```{dot}
+digraph NLP {
+    graph [bb="", margin=0, pad=0];
+    rankdir=LR;
+    splines=ortho;
+    nodesep=0.5;
+    ranksep=0.6;
+
+    node [shape=box, style=rounded, fontsize=12, fontname="Roboto"];
+
+    // Row 1
+    { rank=same;
+        A [label="Raw Text"];
+        B [label="Sentence Segmentation"];
+        C [label="Tokenization"];
+        D [label="Part-of-Speech Tagging"];
+    }
+
+    // Row 2
+    { rank=same;
+        F [label="Stemming / Lemmatization"];
+        E [label="Stop Word Removal"];
+        G [label="Dependency Parsing"];
+        H [label="String Metrics & Matching"];
+    }
+
+    // Edges Row 1
+    A -> B -> C -> D;
+
+    // Wrap to Row 2
+    D -> E;
+
+    // Row 2 edges
+    E -> F -> G -> H;
+}
+
+```
+
+Each stage produces **artifacts** that help you answer analytical questions.
+
+
+## Load and Inspect the Data {.unnumbered}
+
+```python
+from pathlib import Path
+
+DATA_DIR = Path("../data/SEC-10K-2024")
+
+files = list(DATA_DIR.glob("*.txt"))
+print(f"Number of 10-K documents: {len(files)}")
+
+# Read a sample document
+sample_text = files[0].read_text(encoding="utf-8")
+print(sample_text[:1500])
+```
+
+## What sections of the 10-K appear most frequently in the opening text?
+
+This will help you understand the structure of the document and identify key areas for analysis (e.g., risk factors, management discussion). We first start with Sentence Segmentation
+
+```python
+import nltk
+nltk.download("punkt")
+
+from nltk.tokenize import sent_tokenize
+
+sentences = sent_tokenize(sample_text)
+print(f"Number of sentences: {len(sentences)}")
+sentences[:5]
+```
+
+## Are sentences in 10-Ks longer or shorter than typical news or social media text?
+
+
+```python
+from nltk.tokenize import word_tokenize
+
+tokens = word_tokenize(sample_text)
+tokens[:30]
+```
+
+## What kinds of tokens appear that are not “words” (e.g., symbols, numbers, legal references)?
+
+```python
+nltk.download("averaged_perceptron_tagger")
+
+from nltk import pos_tag
+
+pos_tags = pos_tag(tokens[:50])
+pos_tags
+```
+
+## Which POS categories dominate risk-related sections (nouns, verbs, adjectives)?
+
+
+```python
+from nltk.corpus import stopwords
+nltk.download("stopwords")
+
+stop_words = set(stopwords.words("english"))
+
+filtered_tokens = [
+    t.lower() for t in tokens
+    if t.isalpha() and t.lower() not in stop_words
+]
+
+filtered_tokens[:30]
+```
+
+## Which important business terms survive stop-word removal?
+
+```python
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+nltk.download("wordnet")
+
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+stems = [stemmer.stem(t) for t in filtered_tokens[:20]]
+lemmas = [lemmatizer.lemmatize(t) for t in filtered_tokens[:20]]
+
+list(zip(filtered_tokens[:20], stems, lemmas))
+```
+
+## Which transformation preserves interpretability better for financial text?
+
+
+```python
+import spacy
+nlp = spacy.load("en_core_web_sm")
+
+doc = nlp(sentences[0])
+[(token.text, token.dep_, token.head.text) for token in doc]
+```
+
+## How might dependency relationships help identify risk statements or obligations?
+
+```python
+from difflib import SequenceMatcher
+
+def similarity(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+similarity(
+    "risk management strategy",
+    "enterprise risk management"
+)
+```
+
+## Why might approximate string matching be useful for cross-company comparison?
+
+
+
+## Deliverables
+
+Submit word document with answering the questions in addition to the Jupyter notebook with the code and outputs (either `.ipynb` or `.pdf`):
+
+## Key Takeaway
+
+> Before we can generate language,
+> we must first **discipline text into structure**.
+
+This pipeline is the foundation upon which **Bag of Words, TF-IDF, embeddings, and generative models** are built.
+

@@ -1,0 +1,198 @@
+---
+jupyter:
+  kernelspec:
+    display_name: cs5246
+    language: python
+    name: cs5246
+---
+
+<img src='data/images/section-notebook-header.png' />
+
+# Part-of-Speech (POS) Tagging
+
+The process of classifying words into their parts of speech and labeling them accordingly is known as part-of-speech tagging, POS tagging, or simply tagging. Parts of speech are also known as word classes or lexical categories. The collection of tags used for a particular task is known as a tagset. Our emphasis in this chapter is on exploiting tags, and tagging text automatically.
+
+Knowing the POS tags for words in a text is very useful or even crucial for many downstream tasks:
+* Lemmatization (select correct lemma given a word and its POS tag)
+* Word Disambiguation ("I saw a bear." vs "Bear with me!")
+* Named Entity Recognition (typically comprised of nouns and proper nouns)
+* Information Extractions (e.g., verbs indicate relations between entities)
+* Parsing (information of word classes useful before creating parse trees)
+* Speech synthesis/recognition (e.g., noun "DIScount" vs. verb "disCOUNT")
+* Authorship Attribution (e.g., relative frequencies of nouns, verbs, adjectives, etc.)
+* Machine Translation (e.g., reordering of adjectives and nouns)
+
+## Setting up the Notebook
+
+### Import all Required Packages
+
+```{python}
+import pandas as pd
+
+from nltk.tokenize import TweetTokenizer
+from nltk import pos_tag
+from nltk.help import upenn_tagset
+
+import spacy
+nlp = spacy.load('en_core_web_sm')
+
+from tqdm import tqdm
+
+from src.plotutil import show_wordcloud
+```
+
+### Inspecting POS Tag Set
+
+Let's first have a quick look at the set of POS tags support by NLTK. For this, we can simlpy call the method `upenn_tagset()` that not only shows the supported tags but also includes a brief description for each tag.
+
+```{python}
+upenn_tagset()
+```
+
+### Defintion of Toy Dataset
+
+We simply use the examples sentences from the Tokenization notebook.
+
+```{python}
+sentences = ["Text processing with Python is great.", 
+             "It isn't (very) complicated to get started.",
+             "However,careful to...you know....avoid mistakes.",
+             "This is so cooool #nltkrocks :))) :-P <3."]
+```
+
+---
+
+## POS Tagging with NLTK
+
+### Definition of Tokenizer
+
+Since we know that there are a lot of informal tokens in the sentences, we can use the TweetTokenizer. For any kind of more formal text, the default tokenizer will work just fine. Even here, the default tokenizer would suffice since the important token (i.e., the "real" words) are handled correctly.
+
+```{python}
+tweet_tokenizer = TweetTokenizer()
+```
+
+### Tokenization and POS Tagging of Sentences
+
+The processing itself is just two steps: tokenizing and POS tagging, both provided by available methods. Note that the method `pos_tag()` expects as input a list (of tokens/words) and not a string.
+
+```{python}
+print ('\nOutput of NLTK POS tagger:')
+for s in sentences:
+    token_list = tweet_tokenizer.tokenize(s)
+    pos_tag_list = pos_tag(token_list)
+    print ('\n', pos_tag_list)
+```
+
+---
+
+## POS Tagging with spaCy
+
+Similar to lemmatization, spaCy performs POS tagging by default. This means that any time you analyze a document -- and did not explicitly turn off the POS tagger -- spaCy will assign each token its corresponding POS tag. This makes POS tagging very easy and quick in term of the required code. Let's use spaCy to perform POS tagging on our example document below. The code below ensures that the output is similar in structure compared to the one from NLTK to allow for an easy comparison.
+
+```{python}
+print ('\nOutput of spaCy POS tagger:')
+for s in sentences:
+    doc = nlp(s) # doc is an object, not just a simple list
+    # Let's create a list so the output matches the previous ones
+    token_list = []
+    for token in doc:
+        token_list.append((token.text, token.tag_)) # token is also an object, not a string
+    print ('\n', token_list)
+```
+
+You will notice that the results of the NLTK and spaCy POS tagger are not exactly the same. The reason is that the two packages use different tokenizers but also different models to POS tag the tokens; see particularly the emoticons. In most cases, this doesn't matter, since "normal words" are mostly tagged correctly across different POS taggers. Of course, no POS tagger is 100% perfect and there will always be occasional errors. Overall however -- at least for well-formed English text -- POS tagging is generally considered to be a solved task.
+
+---
+
+## Application Use Case: Analysis of Restaurant Reviews
+
+Lastly, let's look at a very simply but still very useful application of POS tagging within a concrete application scenario. In the following example, we want to analyze 1,000 Yelp reviews about the restaurant "Mon Ami Gabi" in Las Vegas (USA) to see which adjectives are most commonly used. The goal is a word cloud showing the most prominent adjectives used across all 1,000 reviews to get a good picture of what the users think about this restaurant.
+
+- Link to restaurant on Yelp: https://www.yelp.com/biz/mon-ami-gabi-las-vegas-2
+
+### Load reviews from CSV file
+
+We use the `pandas` package for easy handling and reading CSV files. `pandas` uses the notion of *data frames* (df) to denote data objects.
+
+```{python}
+df = pd.read_csv('data/corpora/yelp/yelp-reviews-mon-ami-gabi.csv')
+
+df.head()
+```
+
+The CSV file with the reviews and thus the data frame have two columns: the review number and the text of the review. Since we're only interested in the review texts, we can simply extract them into a list of strings.
+
+```{python}
+reviews = df['review'].tolist() # "review" is the name of the column of interest (see above)
+```
+
+### Review analysis
+
+For each review, we perform the following steps:
+- Tokenize review and POS tag all tokens
+- Check each token if it is an adjective
+- If a token is an adjective, increase a counter for this adjective
+
+```{python}
+# This dictionary will keep track of the count for each found adjective
+adjective_frequencies = {}
+
+# Check each review on by one
+for review in tqdm(reviews):
+    # Tokenize the review
+    token_list = tweet_tokenizer.tokenize(review)
+    # POS tag all words/tokens
+    pos_tag_list = pos_tag(token_list)
+    # Count the number of all adjectives
+    for token, tag in pos_tag_list:
+        if tag[0].lower() != 'j':
+            # Ignore token if it is not an adjective (recall that JJ, JJR, JJS indicate adjectives)
+            continue
+        # Convert token to lowercase, otherwise "Good" and "good" are considered differently
+        token = token.lower()
+        if token not in adjective_frequencies:
+            adjective_frequencies[token] = 1.0
+        else:
+            adjective_frequencies[token] = adjective_frequencies[token] + 1.0
+```
+
+With `adjective_frequencies`, we now have a dictionary where the keys are the adjectives and the values represent how often an adjective occured in all reviews. Let's have a look at a couple of examples.
+
+```{python}
+# "Good" adjectives
+print(adjective_frequencies['great'])
+print(adjective_frequencies['amazing'])
+print(adjective_frequencies['excellent'])
+print()
+# "Bad" adjectives
+print(adjective_frequencies['disappointed'])
+print(adjective_frequencies['pricey'])
+print(adjective_frequencies['sad'])
+```
+
+We can see, that adjectives associated with a positive sentiment are much more frequently used than adjectives typically associated with a negative sentiment. We can there make the argument that "Mon Ami Gabi" is considered to be a good restaurant.
+
+**Important:** Keep in mind that our approach of counting the occurences of adjectives is to some extend a bit simplified. Most importantly, we not consider negation here. For example, if a review would state "The food was not great", we would only count the occurence of "great". For getting a high-level insight about the sentiment, such limitation are generally acceptable. However, one could refine the analysis, e.g., by ignoring all negated adjectives (you can think about why it's actually not that easy to check if an adjective is negated or not).
+
+### Visualization of results
+
+While the dictionary `adjective_frequencies` contains all the importan information, it's not a very convenient representation / visualization to show to a users looking for some kind of summary for a restaurant. However, the information about word frequencies (here: adjectives) lends itself to use a word cloud for visualization.
+
+We use a readily available Python package ([`wordcloud`](https://anaconda.org/conda-forge/wordcloud)) for convenience. We also provide an auxiliary method `show_wordcloud()` that generates a word cloud given a dictionary of word frequencies. Feel free to have a look at the method's implementation in `utils.plotutil`.
+
+```{python}
+show_wordcloud(adjective_frequencies)
+```
+
+This word cloud arguably now provides are very easy way to capture the overall sentiment about the restaurant.
+
+---
+
+## Summary
+
+POS tagging, or part-of-speech tagging, is a process in natural language processing (NLP) that involves assigning grammatical tags to words in a text. It helps identify the syntactic category or part of speech (e.g., noun, verb, adjective) of each word. POS tagging is essential for various NLP tasks, including syntax analysis, word sense disambiguation, information retrieval, named entity recognition, parsing, machine translation, sentiment analysis, and text classification. It provides valuable linguistic information and aids in understanding, analyzing, and processing natural language text.
+
+Given its importance, POS tagging is support by basically every text processing package, library or toolkit. Although different implementation might not fully agree on the set of POS tags, most of them do consider the most important ones (nouns, verbs, adjectives, etc.). So in practice, which solution to choose, should not really matter.
+
+

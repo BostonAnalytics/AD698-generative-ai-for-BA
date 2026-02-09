@@ -1,0 +1,322 @@
+---
+jupyter:
+  kernelspec:
+    display_name: cs5246
+    language: python
+    name: cs5246
+---
+
+<img src='data/images/section-notebook-header.png' />
+
+# Stemming & Lemmatization
+
+Consider the following to sentences:
+
+- Dogs make the best friends.
+- A dog makes a good friend.
+
+Semantically, both sentences are essentially conveying the same message, but syntactically they are very different since the vocabulary is different: "dog" vs. "dog", "make" vs. "makes", "friends" vs. "friend". This is a big problem when comparing documents or when searching for documents in a database. For example, when one uses "dog" as a search term, both sentences should be returned and not just the second one.
+
+Stemming and lemmatization are two common techniques used in natural language processing (NLP) for text normalization. Both methods aim to reduce words to their base or root forms, but they differ in their approaches and outcomes.
+
+**Stemming:** Stemming is a process of reducing words to their "stems" by removing prefixes and suffixes, typically through simple heuristic rules. The resulting stems may not always be actual words. The goal of stemming is to normalize words that have the same base meaning but may have different inflections or variations. For example, stemming the words "running," "runs," and "runner" would result in the common stem "run." A popular stemming algorithm is the Porter stemming algorithm.
+
+**Lemmatization:** Lemmatization, on the other hand, is a more advanced technique that aims to transform words to their "lemmas," which are the base or dictionary forms of words. Lemmatization takes into account the morphological analysis of words and considers factors such as part-of-speech (POS) tags to determine the correct lemma. The output of lemmatization is usually a real word that exists in the language. For example, lemmatizing the words "running," "runs," and "runner" would yield the lemma "run." Lemmatization requires more linguistic knowledge and often relies on dictionaries or language-specific resources.
+
+The choice between stemming and lemmatization depends on the specific NLP task and its requirements. Stemming is a simpler and faster technique, often used when the exact word form is not critical, such as in information retrieval or indexing tasks. Lemmatization, being more linguistically sophisticated, is preferred in tasks where the base form and the semantic meaning of words are important, such as in machine translation, sentiment analysis, or question-answering systems.
+
+It's important to note that stemming and lemmatization may not always produce the same results, and the choice between them should consider the trade-offs between accuracy and computational complexity.
+
+Both stemming and lemmatization are the methods to normalize documents on a syntactical level. Often the same words are used in different forms depending on their grammatical use in a sentence.
+
+## Setting up the Notebook
+
+### Import all Required Packages
+
+```{python}
+import string
+import nltk
+
+from nltk.stem.porter import PorterStemmer
+from nltk.stem.snowball import SnowballStemmer
+from nltk.stem.lancaster import LancasterStemmer
+
+from nltk.stem import WordNetLemmatizer
+
+from nltk import word_tokenize
+from nltk import pos_tag
+
+import spacy
+nlp = spacy.load('en_core_web_sm')
+```
+
+Lemmatization requires the information if a word is a noun, verb or adjective. We therefore need a Part-of-Speech tagger to extract this information. The code cell below downloads `averaged_perceptron_tagger`, Part-of-Speech tagger of NLTK (in case it is not already available in the current NLTK installation).
+
+```{python}
+nltk.download('averaged_perceptron_tagger')
+```
+
+---
+
+## Stemming
+
+Stemming is a process in natural language processing (NLP) that reduces words to their base or root forms, called stems. Stemming algorithms apply heuristic rules to remove prefixes and suffixes from words, aiming to normalize variations of words that share a common root. There are several popular stemming algorithms, each with its own approach and characteristics. The main differences between different stemmers include:
+
+* **Porter Stemmer:** The Porter stemming algorithm, developed by Martin Porter, is one of the most widely used stemmers. It applies a series of rules and transformations to remove common English word endings, focusing on the structure of the word rather than its linguistic meaning. The Porter stemmer is known for its simplicity and speed but may produce stems that are not actual words.
+
+* **Snowball Stemmer:** The Snowball stemmer, also known as the Porter2 stemmer, is an extension of the Porter stemmer. It provides stemmers for multiple languages, including English, German, Spanish, French, and more. The Snowball stemmer is an improvement over the original Porter stemmer, addressing some of its limitations and offering better performance and accuracy for different languages.
+
+* **Lancaster Stemmer:** The Lancaster stemming algorithm, developed by Chris D. Paice, is an aggressive stemming algorithm that focuses on removing prefixes and suffixes from words. It applies a set of rules that are more aggressive than those used in the Porter stemmer, often resulting in shorter stems. The Lancaster stemmer is known for its aggressive stemming behavior and can produce stems that are not recognizable as actual words.
+
+* **Lovins Stemmer:** The Lovins stemmer, developed by J. H. Lovins, is an early stemming algorithm that uses a set of rules based on linguistic principles to remove common word endings. It aims to produce stems that are linguistically meaningful and recognizable as real words. The Lovins stemmer is not as widely used as the Porter or Lancaster stemmers but can be useful in certain contexts.
+
+The choice of stemmer depends on the specific NLP task, the language being processed, and the trade-offs between simplicity, speed, accuracy, and the desired level of stemming aggressiveness. It's important to evaluate and compare the performance of different stemmers for a particular application to determine the most suitable one.
+
+### Define Set of Stemmers
+
+We first define a few stemmers provided by NLTK. For more stemmer, see http://www.nltk.org/api/nltk.stem.html
+
+```{python}
+porter_stemmer = PorterStemmer()
+lancaster_stemmer = LancasterStemmer()
+snowball_stemmer = SnowballStemmer('english')
+
+# Put all stemmers into a list to make their use easier
+stemmer_list = [porter_stemmer, snowball_stemmer, lancaster_stemmer]
+```
+
+### Define List of Example Words
+
+To illustrate the effects of stemming, let's consider a list of individual words instead of a complete text document. This makes it easier the point out the difference between different stemmers. The choice of word below cover relevant cases incl.:
+
+* Plural form of nouns
+* Different verb tenses
+* Irregular verbs (e.g., verbs with an irregular forms the past tense)
+* Irregular adjectives (e.g., adjectives with an irregular forms the comparative and superlative)
+
+```{python}
+word_list = ['only', 'accepted', 'studying','study','studied', 'dogs', 'cats', 'running', 'phones', 'viewed', 
+             'presumably', 'crying', 'went', 'packed', 'worse', 'best', 'mice', 'friends', 'makes']
+```
+
+### Perform Stemming
+
+We can now perform stemming of each word using all of our 3 defined stemmers, and print it output in such a way to quickly see the differences.
+
+```{python}
+for word in word_list:
+    print (word + ':')
+    for stemmer in stemmer_list:
+        stemmed_word = stemmer.stem(word)
+        print ('\t', stemmed_word)
+```
+
+In general, different stemmers will yield different outputs depending on their underlying rules -- although for our example words, only the `LancasterStemmer` will yield different outputs. In general, the different outputs do not automatically make one stemmer better or worse than another stemmer.
+
+---
+
+## Lemmatization
+
+A lemmatizer is a tool or algorithm that transforms words into their base or dictionary forms, known as lemmas. Unlike stemming, which simplifies words by removing prefixes and suffixes without considering linguistic context, lemmatization takes into account the morphological analysis of words, part-of-speech (POS) tags, and language-specific rules to produce meaningful and valid lemmas.
+
+Here is a brief summary of how a lemmatizer for NLP typically works:
+
+* **Tokenization:** The text is divided into individual words or tokens using tokenization techniques. This is typically a separate step performed before lemmatization; but the lemmatizer assumes tokenized text as input.
+
+* **POS tagging:** Each word is assigned a part-of-speech tag, such as noun, verb, adjective, etc. POS tagging helps determine the appropriate lemma based on the word's grammatical role.
+
+* **Lemmatization rules:** The lemmatizer applies language-specific rules and patterns to convert words to their lemmas. These rules consider factors like the word's POS tag, its inflections, and other linguistic properties. For example, for English verbs, the lemmatizer would handle verb conjugations to identify the base form.
+
+* **Lookup in dictionary or lexicon:** The lemmatizer may consult a dictionary or lexicon that contains information about word forms and their corresponding lemmas. This can be helpful for irregular words that don't follow regular morphological rules.
+
+* **Lemmatization output:** The lemmatizer generates the lemma for each word, which represents the base or canonical form of the word. The resulting lemmas are typically real words that exist in the language and are recognized by native speakers.
+
+* **Post-processing:** In some cases, additional post-processing steps may be applied to refine or improve the lemmatization results. These steps could include handling special cases, resolving ambiguities, or dealing with out-of-vocabulary terms.
+
+Lemmatization requires linguistic knowledge, language-specific resources (such as dictionaries or lexicons), and morphological analysis to accurately identify and generate the appropriate lemmas. It is a more sophisticated technique compared to stemming and is generally preferred when preserving the semantic meaning and grammatical correctness of words is crucial in NLP tasks like machine translation, information retrieval, or sentiment analysis.
+
+### Lemmatization with NLTK
+
+#### Define Lemmatizer Using NLTK
+
+The `WordNetLemmatizer` is a lemmatization tool provided by the Natural Language Toolkit (NLTK), which is a popular library for NLP in Python. NLTK is widely used for various NLP tasks, including lemmatization, and the WordNetLemmatizer is one of the lemmatization options it offers. It is specifically designed to lemmatize English words based on WordNet, a lexical database for English. WordNet organizes words into synsets (sets of synonyms), and each synset is linked to various lemmas representing different word forms. The `WordNetLemmatizer` in NLTK utilizes WordNet's information and applies lemmatization rules to transform words to their lemmas. It takes into account the part-of-speech (POS) tag of each word and provides options for lemmatizing nouns, verbs, adjectives, and adverbs.
+
+```{python}
+wordnet_lemmatizer = WordNetLemmatizer()
+```
+
+#### Perform Lemmatization w.r.t. all Word Types
+
+The `WordNetLemmatizer` distinguishes between nouns, verbs, adjectives, and adverbs. This Part-of-Speech information must be provided as input. The four choices of input parameters are `n` (noun), `v` (verb), `a` (adjective), and `r` (adverb). In the code cell below, we can lemmatize each of our example words using these for different word types and inspect the output.
+
+```{python}
+pos_list = ['n', 'v', 'a', 'r']
+
+for word in word_list:
+    print (word + ':')
+    for pos in pos_list:
+        lemmatized_word = wordnet_lemmatizer.lemmatize(word, pos=pos) # default is 'n'
+        print ('\t', word, '=[{}]=>'.format(pos), lemmatized_word)
+```
+
+#### Lemmatization in Practice
+
+Usually, we only want to lemmatize each word in a document using its correct word type (i.e., Part-of-Speech). This means that we first need to apply a Part-of-Speech (POS) tagger that tells us the type for each word in a sentence; see the dedicated notebook about POS tagging. In the code cell below, we simply use a POS tagger provided by NLTK.
+
+```{python}
+sentence = "The newest study has shown that cats have mostly a better sense of smell than dogs."
+
+# First, tokenize sentence
+token_list = word_tokenize(sentence)
+
+# Second, calculate POS tags for each token
+pos_tag_list = pos_tag(token_list)
+
+for pos in pos_tag_list:
+    print(pos)
+```
+
+The POS tagger distinguishes several dozens of word types. However, we are only interested in whether a word is a noun, verb, adjective, or adverb. We therefore need to map the output of the POS tagger to the 4 valid options `"n"`, `"v"`, `"a"`, and `"r"`; see above. However, this is relatively easy to do since we only have to look at the first character of the resulting POS tags. All tags for nouns start with an "N", all tags for verbs start with a "V", all tags for adjectives start with a "J", and all tags for adverbs start with an "R".
+
+```{python}
+print ('\nOutput of NLTK lemmatizer:\n')
+for token, tag in pos_tag_list:
+    word_type = 'n' # Default if all fails
+    tag_simple = tag[0].lower() # Converts, e.g., "VBD" to "v"
+    if tag_simple in ['n', 'v', 'r']:
+        # If the POS tag starts with "n","v", or "r", we know it's a noun, verb, or adverb
+        word_type = tag_simple 
+    elif tag_simple in ['j']:
+        # If the POS tag starts with a "j", we know it's an adjective
+        word_type = 'a' 
+    lemmatized_token = wordnet_lemmatizer.lemmatize(token.lower(), pos=word_type)
+    print(token, '=[{}]==[{}]=>'.format(tag, word_type), lemmatized_token)
+```
+
+### Lemmatization with spaCy
+
+spaCy already performs lemmatization by default when processing a document without any additional commands. This makes it much more convenient to use than NLTK.
+
+```{python}
+print ('\nOutput of spaCy lemmatizer:\n')
+doc = nlp(sentence) # doc is an object, not just a simple list
+
+for token in doc:
+    print (token.text, '=[{}]=>'.format(token.pos_), token.lemma_) # token is also an object, not a string
+```
+
+Compare the results from NLTK and spaCy. While most words get lemmatized the same way, the noticeable difference is for the word "better". Arguably, NLTK does a better job here, as "good" seems to be the more appropriate lemmatized form in this sentence.
+
+---
+
+## Application Use Case: Document Similarity
+
+Lastly, let's have a look at a concrete application scenario: the calculation of a similarity score between 2 documents. To this end, we provide you with a auxiliary method `preprocess_text()` that combines tokenization, stemming/lemmatization, and some normalization steps into a single method; you can check out the source code in `utils.nlputil` for more details. The method takes a document as input and returns a set of words (i.e., no duplicates).
+
+```{python}
+from src.nlputil import preprocess_text
+```
+
+Print some example output for both methods.
+
+```{python}
+# Show example output of create_stemmed_word_set() method
+print (preprocess_text(sentence, stemmer=porter_stemmer))
+
+# Show example output of create_lemmatized_word_set() method
+print (preprocess_text(sentence, lemmatizer=wordnet_lemmatizer))
+```
+
+To calculate the similarity between two documents, let's define two sentences that are semantically similar to each other, but not syntactically.
+
+```{python}
+sentence_1 = "The newest study has shown that cats have a better sense of smell than dogs."
+sentence_2 = "Some studies show that a cat can smell better than a dog."
+```
+
+For both sentences, we can calculate all 3 different word sets:
+- naive (only simple tokenizing)
+- stemmed
+- lemmatized
+
+```{python}
+naive_word_set_1 = set(word_tokenize(sentence_1.lower()))
+naive_word_set_2 = set(word_tokenize(sentence_2.lower()))
+
+stemmed_word_set_1 = preprocess_text(sentence_1, stemmer=porter_stemmer, return_type='set')
+stemmed_word_set_2 = preprocess_text(sentence_2, stemmer=porter_stemmer, return_type='set')
+
+lemmatized_word_set_1 = preprocess_text(sentence_1, lemmatizer=wordnet_lemmatizer, return_type='set')
+lemmatized_word_set_2 = preprocess_text(sentence_2, lemmatizer=wordnet_lemmatizer, return_type='set')
+
+print (naive_word_set_1)
+print (stemmed_word_set_1)
+print (lemmatized_word_set_1)
+```
+
+#### Define Similarity Metric
+
+The Jaccard similarity, also known as the Jaccard index, is a measure of similarity between two sets. It is defined as the size of the intersection of the sets divided by the size of their union. The Jaccard similarity is often used in data analysis, information retrieval, and recommendation systems to quantify the similarity or overlap between two sets of items.
+
+For 2 sets A and B, the *Jaccard Similarity* J(A,B) is defined as:
+
+$$J(A,B)=\frac{|A\cap B|}{|A\cup B|}$$
+
+Intuitively, if A and B are completely different, the size intersection $|A\cap B|$ is 0, making the similarity 0. If A and B are identical both the size intersection and the size of the union are the same, making the similarity 1.0.
+
+The Jaccard similarity is particularly useful when dealing with binary or categorical data, where the presence or absence of items in a set is considered without considering their specific values or frequencies. It is commonly used in tasks such as document similarity, recommendation systems, clustering, and evaluating the performance of data mining algorithms.
+
+The method `jaccard_similarity()` below implements this metric.
+
+```{python}
+def jaccard_similarity(word_set_1, word_set_2):
+    union_set = word_set_1.union(word_set_2)
+    intersection_set = word_set_1.intersection(word_set_2)
+    similarity = len(intersection_set) / len(union_set)
+    return similarity
+    
+```
+
+#### Compute Document Similarities
+
+We can now compute the pairwise similarities for our 2 input sentences with respect to the different preprocessing steps applied.
+
+```{python}
+print(jaccard_similarity(naive_word_set_1, naive_word_set_2))
+print(jaccard_similarity(stemmed_word_set_1, stemmed_word_set_2))
+print(jaccard_similarity(lemmatized_word_set_1, lemmatized_word_set_2))
+```
+
+As you can see, without any stemming or lemmatization performed the Jaccard similarity between the sentences is very low. The highest similarity we see here when both sentences have been lemmatized.
+
+---
+
+## Summary
+
+Stemming and lemmatization are essential techniques in natural language processing (NLP) that help normalize and reduce words to their base forms. Here is a brief summary of their uses and importance:
+
+* **Stemming:**
+    * Uses: Stemming is primarily employed in tasks where the exact word form is not crucial, such as information retrieval, indexing, and search engines.
+    * Importance: Stemming allows for the reduction of words to their common base form, which helps in matching variations of words, handling inflections, and improving recall in search queries. It reduces the vocabulary size and can enhance computational efficiency.
+
+<p></p>
+
+* **Lemmatization:**
+    * Uses: Lemmatization is useful in NLP tasks where preserving the semantic meaning and grammatical correctness of words is important, such as machine translation, sentiment analysis, question-answering systems, and language generation.
+    * Importance: Lemmatization provides the base or canonical form of words, capturing their underlying meaning. It helps in resolving word variants, handling different inflections, and maintaining the integrity of the language structure. Lemmatization enables better accuracy and precision in language understanding and generation tasks.
+
+<p></p>
+
+* **Overall Importance:**
+
+    * *Vocabulary Normalization:* Stemming and lemmatization help reduce the dimensionality of text data by grouping words with similar meanings. They assist in avoiding redundancy and noise in the data, leading to better generalization and improved performance in NLP models.
+
+    * *Language Understanding:* By reducing words to their base forms, stemming and lemmatization enhance the ability of NLP systems to understand and process text. They facilitate tasks such as part-of-speech tagging, syntactic parsing, and semantic analysis by providing consistent representations of words.
+
+     * *Information Retrieval:* Stemming and lemmatization contribute to more effective information retrieval by matching user queries with relevant documents. They improve recall by accounting for different word forms and variations, enabling a broader range of matching possibilities.
+
+    * *Text Analysis and Mining:* Stemming and lemmatization aid in analyzing and mining large text corpora by simplifying and standardizing word representations. They assist in extracting meaningful patterns, identifying recurring themes, and gaining insights from textual data.
+
+Choosing the appropriate technique (stemming or lemmatization) depends on the specific NLP task, language, and trade-offs between precision, recall, and computational complexity. It is crucial to evaluate and experiment with both techniques to ensure optimal performance and accurate language processing in various NLP applications.
+
+
