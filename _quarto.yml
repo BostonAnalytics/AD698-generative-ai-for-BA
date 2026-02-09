@@ -5,6 +5,7 @@ project:
   preview:
     port: 4500
     browser: false
+    watch-inputs: true
   render:
     - "*.qmd"
     - "!data/"
@@ -13,6 +14,9 @@ project:
 editor:  
   render-on-save: true
   preview: true
+  markdown:
+    wrap: 72
+
 
 execute:
   fig-align: center

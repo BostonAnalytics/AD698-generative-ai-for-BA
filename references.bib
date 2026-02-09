@@ -1295,7 +1295,7 @@
   year    = {2023}
 }
 
-@article{Hoffmann2022Training,
+@article{Hoffmann2022training,
   title   = {Training compute-optimal large language models},
   author  = {Hoffmann, Jordan and Borgeaud, Sebastian and Mensch, Arthur and Buchatskaya, Elena and Cai, Trevor and Rutherford, Eliza and Casas, Diego de Las and Hendricks, Lisa Anne and Welbl, Johannes and Clark, Aidan and others},
   journal = {arXiv preprint arXiv:2203.15556},
@@ -1527,4 +1527,40 @@
   volume    = {202},
   pages     = {19274--19286},
   year      = {2023}
+}
+
+@article{bommasani2022opportunities,
+   abstract = {AI is undergoing a paradigm shift with the rise of models (e.g., BERT, DALL-E, GPT-3) that are trained on broad data at scale and are adaptable to a wide range of downstream tasks. We call these models foundation models to underscore their critically central yet incomplete character. This report provides a thorough account of the opportunities and risks of foundation models, ranging from their capabilities (e.g., language, vision, robotics, reasoning, human interaction) and technical principles(e.g., model architectures, training procedures, data, systems, security, evaluation, theory) to their applications (e.g., law, healthcare, education) and societal impact (e.g., inequity, misuse, economic and environmental impact, legal and ethical considerations). Though foundation models are based on standard deep learning and transfer learning, their scale results in new emergent capabilities,and their effectiveness across so many tasks incentivizes homogenization. Homogenization provides powerful leverage but demands caution, as the defects of the foundation model are inherited by all the adapted models downstream. Despite the impending widespread deployment of foundation models, we currently lack a clear understanding of how they work, when they fail, and what they are even capable of due to their emergent properties. To tackle these questions, we believe much of the critical research on foundation models will require deep interdisciplinary collaboration commensurate with their fundamentally sociotechnical nature.},
+   author = {Rishi Bommasani and Drew A. Hudson and Ehsan Adeli and Russ Altman and Simran Arora and Sydney von Arx and Michael S. Bernstein and Jeannette Bohg and Antoine Bosselut and Emma Brunskill and Erik Brynjolfsson and Shyamal Buch and Dallas Card and Rodrigo Castellon and Niladri Chatterji and Annie Chen and Kathleen Creel and Jared Quincy Davis and Dora Demszky and Chris Donahue and Moussa Doumbouya and Esin Durmus and Stefano Ermon and John Etchemendy and Kawin Ethayarajh and Li Fei-Fei and Chelsea Finn and Trevor Gale and Lauren Gillespie and Karan Goel and Noah Goodman and Shelby Grossman and Neel Guha and Tatsunori Hashimoto and Peter Henderson and John Hewitt and Daniel E. Ho and Jenny Hong and Kyle Hsu and Jing Huang and Thomas Icard and Saahil Jain and Dan Jurafsky and Pratyusha Kalluri and Siddharth Karamcheti and Geoff Keeling and Fereshte Khani and Omar Khattab and Pang Wei Koh and Mark Krass and Ranjay Krishna and Rohith Kuditipudi and Ananya Kumar and Faisal Ladhak and Mina Lee and Tony Lee and Jure Leskovec and Isabelle Levent and Xiang Lisa Li and Xuechen Li and Tengyu Ma and Ali Malik and Christopher D. Manning and Suvir Mirchandani and Eric Mitchell and Zanele Munyikwa and Suraj Nair and Avanika Narayan and Deepak Narayanan and Ben Newman and Allen Nie and Juan Carlos Niebles and Hamed Nilforoshan and Julian Nyarko and Giray Ogut and Laurel Orr and Isabel Papadimitriou and Joon Sung Park and Chris Piech and Eva Portelance and Christopher Potts and Aditi Raghunathan and Rob Reich and Hongyu Ren and Frieda Rong and Yusuf Roohani and Camilo Ruiz and Jack Ryan and Christopher Ré and Dorsa Sadigh and Shiori Sagawa and Keshav Santhanam and Andy Shih and Krishnan Srinivasan and Alex Tamkin and Rohan Taori and Armin W. Thomas and Florian Tramèr and Rose E. Wang and William Wang and Bohan Wu and Jiajun Wu and Yuhuai Wu and Sang Michael Xie and Michihiro Yasunaga and Jiaxuan You and Matei Zaharia and Michael Zhang and Tianyi Zhang and Xikun Zhang and Yuhui Zhang and Lucia Zheng and Kaitlyn Zhou and Percy Liang},
+   month = {7},
+   title = {On the Opportunities and Risks of Foundation Models},
+   url = {http://arxiv.org/abs/2108.07258},
+   year = {2022}
+}
+
+
+@article{Schaeffer2023emergent,
+   abstract = {Recent work claims that large language models display emergent abilities, abilities not present in smaller-scale models that are present in larger-scale models. What makes emergent abilities intriguing is two-fold: their sharpness, transitioning seemingly instantaneously from not present to present, and their unpredictability, appearing at seemingly unforeseeable model scales. Here, we present an alternative explanation for emergent abilities: that for a particular task and model family, when analyzing fixed model outputs, emergent abilities appear due to the researcher's choice of metric rather than due to fundamental changes in model behavior with scale. Specifically, nonlinear or discontinuous metrics produce apparent emergent abilities, whereas linear or continuous metrics produce smooth, continuous predictable changes in model performance. We present our alternative explanation in a simple mathematical model, then test it in three complementary ways: we (1) make, test and confirm three predictions on the effect of metric choice using the InstructGPT/GPT-3 family on tasks with claimed emergent abilities; (2) make, test and confirm two predictions about metric choices in a meta-analysis of emergent abilities on BIG-Bench; and (3) show to choose metrics to produce never-before-seen seemingly emergent abilities in multiple vision tasks across diverse deep networks. Via all three analyses, we provide evidence that alleged emergent abilities evaporate with different metrics or with better statistics, and may not be a fundamental property of scaling AI models.},
+   author = {Rylan Schaeffer and Brando Miranda and Sanmi Koyejo},
+   journal = {Advances in Neural Information Processing Systems},
+   month = {5},
+   publisher = {Neural information processing systems foundation},
+   title = {Are Emergent Abilities of Large Language Models a Mirage?},
+   volume = {36},
+   url = {http://arxiv.org/abs/2304.15004},
+   year = {2023}
+}
+
+@article{Chung2022scaling,
+   abstract = {Finetuning language models on a collection of datasets phrased as instructions has been shown to improve model performance and generalization to unseen tasks. In this paper we explore instruction finetuning with a particular focus on (1) scaling the number of tasks, (2) scaling the model size, and (3) finetuning on chain-of-thought data. We find that instruction finetuning with the above aspects dramatically improves performance on a variety of model classes (PaLM, T5, U-PaLM), prompting setups (zero-shot, few-shot, CoT), and evaluation benchmarks (MMLU, BBH, TyDiQA, MGSM, open-ended generation). For instance, Flan-PaLM 540B instruction-finetuned on 1.8K tasks outperforms PALM 540B by a large margin (+9.4% on average). Flan-PaLM 540B achieves state-of-the-art performance on several benchmarks, such as 75.2% on five-shot MMLU. We also publicly release Flan-T5 checkpoints, which achieve strong few-shot performance even compared to much larger models, such as PaLM 62B. Overall, instruction finetuning is a general method for improving the performance and usability of pretrained language models.},
+   author = {Hyung Won Chung and Le Hou and Shayne Longpre and Barret Zoph and Yi Tai and William Fedus and Yunxuan Li and Xuezhi Wang and Mostafa Dehghani and Siddhartha Brahma and Albert Webson and Shixiang Shane Gu and Zhuyun Dai and Mirac Suzgun and Xinyun Chen and Aakanksha Chowdhery and Alex Castro-Ros and Marie Pellat and Kevin Robinson and Dasha Valter and Sharan Narang and Gaurav Mishra and Adams Yu and Vincent Zhao and Yanping Huang and Andrew Dai and Hongkun Yu and Slav Petrov and Ed H. Chi and Jeff Dean and Jacob Devlin and Adam Roberts and Denny Zhou and Quoc V. Le and Jason Wei},
+   issn = {15337928},
+   journal = {Journal of Machine Learning Research},
+   keywords = {Bias & Toxicity,Chain-of-Thought Reasoning,Instruction Finetuning,Language Models,Natural Language Processing},
+   month = {10},
+   publisher = {Microtome Publishing},
+   title = {Scaling Instruction-Finetuned Language Models},
+   volume = {25},
+   url = {https://arxiv.org/pdf/2210.11416},
+   year = {2022}
 }

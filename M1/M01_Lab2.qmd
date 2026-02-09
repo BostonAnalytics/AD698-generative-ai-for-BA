@@ -1,5 +1,277 @@
 ---
-title: "M01 Lab02"
+title: "Module 1 - Lab 2"
+subtitle: "Word Embeddings & Neural Representations"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+format: 
+    html:
+        code-overflow: wrap
+categories: ['1', 'M01:', 'Lab']
+description: "Hands-on lab activity: Interacting with Textual Data in Jupyter and Colab."
 ---
 
-# M01 Lab02
+
+## Lab Overview {.unnumbered}
+
+This lab transitions you from **count-based representations** (Bag of Words) to **learned semantic representations** (word embeddings), which form the foundation of **modern neural NLP and generative AI systems**.
+
+* Bag-of-Words treats language as *counts*
+* Embeddings treat language as *geometry*
+* Neural networks learn *representations*, not rules
+
+This lab explains **how and why that shift happens**.
+
+
+## Learning Objectives {.unnumbered}
+
+After completing this lab, you should be able to:
+
+* Explain the **limitations of Bag-of-Words**
+* Describe how **distributional semantics** works
+* Understand **how neural networks learn word meaning**
+* Connect **backpropagation** to representation learning
+* Articulate why embeddings matter for **business analytics**
+
+
+## From Bag-of-Words to Distributed Meaning {.unnumbered}
+
+::: {.columns}
+::: {.column}
+Bag-of-Words assumes:
+
+* Words are independent
+* Order does not matter
+* Meaning ≈ frequency
+
+This creates well-known failures:
+
+* Synonyms look unrelated
+* Negation is ignored
+* Context is lost
+
+
+:::
+::: {.column}
+This violates a core linguistic principle:
+
+> *"You shall know a word by the company it keeps."*
+> — J.R. Firth
+
+Embeddings operationalize this idea mathematically.
+
+:::
+:::
+
+
+## What Is a Word Embedding? {.unnumbered}
+
+::: {.columns}
+::: {.column}
+A **word embedding** is a dense numerical vector where:
+
+* Each dimension encodes latent semantic features
+* Similar words lie close in vector space
+* Relationships emerge geometrically
+:::
+::: {.column}
+Instead of counting words:
+
+* We **predict context**
+* The prediction error updates vectors
+* Vectors move closer/farther based on usage
+
+Meaning is **not labeled**, it is **learned implicitly**.
+
+:::
+:::
+
+
+## Loading SEC 10-K Text Data
+
+- Load raw text documents into memory for tokenization and modeling.
+  - SEC 10-K filings:
+  - Are long, unstructured
+  - Contain domain-specific language
+  - Are ideal for testing semantic models
+
+- Locates all SEC 10-K text files
+- Verifies dataset availability
+- Ensures reproducibility across Colab sessions
+
+```python
+from pathlib import Path
+
+# Colab Specific: Adjust path to your Google Drive location
+# DATA_DIR = Path("/content/drive/MyDrive/SEC-10K-2024")
+# files = sorted(DATA_DIR.glob("*.txt"))
+
+# Local drive only do this if you have the data on your local machine
+DATA_DIR = Path("../../data/SEC-10K-2024")
+files = sorted(DATA_DIR.glob("*.txt"))
+
+len(files)
+```
+
+## Minimal Tokenization
+
+- Tokenization converts raw text into **atomic units** (tokens) that models can process.
+- We intentionally keep this **simple** to:
+  - Avoid hiding complexity
+  - Emphasize representation learning
+  - Focus on meaning, not preprocessing tricks
+- Lowercasing ensures consistency
+- Removing punctuation reduces noise
+- Filtering short tokens removes artifacts
+
+```python
+import re
+
+def tokenize(text):
+    text = re.sub(r"[^a-z\s]", " ", text)
+    return [t for t in text.split() if len(t) > 2]
+```
+
+- Creates clean word sequences
+- Preserves semantic structure
+- Prepares data for neural learning
+
+
+## Training Word Embeddings (Word2Vec)
+
+Word2Vec trains a **shallow neural network** that learns word vectors by:
+
+- Predicting nearby words (Skip-gram), or
+- Predicting a word from its context (CBOW)
+
+```
+One-hot word → Embedding layer → Context prediction → Loss
+```
+
+- The embedding layer **is the model**.
+  - Learns 100-dimensional word vectors
+  - Uses local context (window=5)
+  - Ignores rare/noisy terms
+  - Trains via stochastic gradient descent
+
+
+```python
+from gensim.models import Word2Vec
+
+model = Word2Vec(
+    sentences=tokenized_docs,
+    vector_size=100,
+    window=5,
+    min_count=5,
+    workers=2
+)
+```
+
+## Inspecting Learned Meaning
+
+Once trained:
+    - Distance = similarity
+    - Direction = relationship
+    - Arithmetic ≈ semantics
+- No rules were written.
+- No labels were provided.
+- Yet meaning emerges.
+
+```python
+model.wv.most_similar("risk", topn=5)
+```
+
+- Which concepts the model associates
+- How business language clusters
+- Whether learning aligns with intuition
+
+---
+
+## How Does the Neural Network Learn Meaning?
+
+### Key Idea
+
+The network is **not told what words mean**.
+
+It:
+
+1. Makes a prediction
+2. Measures error
+3. Updates vectors
+
+Meaning is the **byproduct of optimization**.
+
+---
+
+## Backpropagation — Conceptual Explanation
+
+### What Backpropagation Does
+
+Backpropagation computes:
+
+> *How much should each parameter change to reduce error?*
+
+### In Embeddings
+
+* Parameters = word vectors
+* Loss = incorrect context prediction
+* Gradient = direction to move vectors
+
+Each training step nudges vectors into **better semantic positions**.
+
+---
+
+## Why This Matters for Generative AI
+
+### Conceptual Continuity
+
+Large Language Models:
+
+* Still use embeddings
+* Still use backpropagation
+* Still optimize prediction error
+
+What changes is:
+
+* Scale
+* Architecture depth
+* Training data size
+
+The **core idea remains identical**.
+
+---
+
+## Business Relevance
+
+| Representation | Business Value         |
+| -------------- | ---------------------- |
+| Bag-of-Words   | Audits, baselines      |
+| Embeddings     | Similarity, clustering |
+| Neural models  | Prediction, generation |
+
+### SEC 10-K Applications
+
+* Risk similarity detection
+* Peer benchmarking
+* Topic drift analysis
+* Early warning signals
+
+---
+
+## Deliverables
+
+Answer the following (conceptual, not code-heavy):
+
+1. Why do embeddings outperform Bag-of-Words for financial text?
+2. How does backpropagation enable semantic learning?
+3. Name one **business analytics task** improved by embeddings.
+
+---
+
+## Conceptual Takeaway
+
+> **Bag-of-Words counts language.
+> Embeddings *learn* language.**
+
+This lab completes your transition from **classical text analytics** to **neural NLP foundations**.

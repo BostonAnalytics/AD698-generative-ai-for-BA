@@ -86,10 +86,10 @@ Do not use these for the first presentation.
 
 | **Scaling Laws**                                       | **Emergent Abilities**                                 | **Foundation Models**                                                                |
 | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Scaling Laws for Neural LMs [@Kaplan2020Scaling]       | Emergent Abilities of LLMs [@Wei2022Emergent]          | On the Opportunities and Risks of Foundation Models [@Bommasani2021FoundationModels] |
+| Scaling Laws for Neural LMs [@Kaplan2020Scaling]       | Emergent Abilities of LLMs [@Wei2022Emergent]          | On the Opportunities and Risks of Foundation Models [@bommasani2022opportunities] |
 | Training Compute-Optimal Large Language Models
- [@Hoffmann2022Training]      | Sparks of AGI [@Bubeck2023SparksAGI]                   | A Survey of Large Language Models [@Zhao2024LLMSurvey]                               |
-| Training Compute-Optimal LMs [@Hoffmann2022Chinchilla] | Are Emergent Abilities Real? [@Schaeffer2023Emergence] | Scaling Instruction-Following Models [@Chung2022ScalingInstruction]                  |
+ [@Hoffmann2022training]      | Sparks of AGI [@Bubeck2023SparksAGI]                   | A Survey of Large Language Models [@Zhao2024LLMSurvey]                               |
+| | Are Emergent Abilities Real? [@Schaeffer2023emergent] | Scaling Instruction-Following Models [@Chung2022scaling]                  |
 
 
 ## Week 4 – Text-as-Data and Business NLP

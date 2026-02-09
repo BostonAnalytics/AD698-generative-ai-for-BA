@@ -973,17 +973,13 @@ digraph Pipeline {
 ## Text Summarization
 
 ```{dot}
-digraph TextSummarization {
+digraph SummarizationPipeline {
 
-  rankdir=TB;
+  rankdir=LR;
   splines=ortho;
-  nodesep=0.5;
-  ranksep=0.7;
+  nodesep=0.6;
+  ranksep=0.9;
   fontname="Helvetica";
-  
-  width=3.5;
-  height=0.9;
-  margin="0.35,0.25";
 
   node [
     fontname="Helvetica",
@@ -1001,65 +997,78 @@ digraph TextSummarization {
   ];
 
   /* =========================
-     INPUTS
+     INPUT
      ========================= */
-
   TextInput [
     label="Text Input",
     shape=parallelogram,
     fillcolor="#e8f3ff"
   ];
 
-  Dictionary [
-    label="Dictionary /\nThesaurus",
-    shape=cylinder,
-    fillcolor="#fff2cc"
-  ];
+  /* =========================
+     PREPROCESSING
+     ========================= */
+  subgraph cluster_pre {
+    label="1. Pre-processing";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
+
+    Lowercase   [label="Lowercasing"];
+    Punct       [label="Remove punctuation"];
+    Tokenize    [label="Tokenization"];
+    Stopwords   [label="Stopword removal"];
+    SentSeg     [label="Sentence segmentation"];
+  }
 
   /* =========================
-     CORE PIPELINE
+     FEATURES
      ========================= */
+  subgraph cluster_features {
+    label="2. Linguistic & Statistical Features";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
 
-  Preprocess [
-    label="Pre-processing"
-  ];
+    POSTag      [label="POS tagging"];
+    WordSeg     [label="Word segmentation"];
+    OccStats    [label="Occurrence statistics (TF, TF-IDF)"];
+    Keywords    [label="Keyword extraction"];
+    SentFeat    [label="Sentence-level features"];
+  }
 
-  StructureAnalysis [
-    label="Text Structure Analysis"
-  ];
+  /* =========================
+     RANKING
+     ========================= */
+  subgraph cluster_rank {
+    label="3. Sentence Ranking";
+    fontsize=12;
+    style="rounded,filled";
+    fillcolor="#fff2cc";
+    color="#7d6608";
 
-  WordSegmentation [
-    label="Word Segmentation"
-  ];
+    Unsupervised [label="Unsupervised (TextRank, LexRank)"];
+    Supervised   [label="Supervised ML models"];
+    Neural       [label="Neural models (BART, T5, Pegasus)"];
+  }
 
-  OccurrenceStats [
-    label="Occurrence Statistics"
-  ];
+  /* =========================
+     SUMMARY
+     ========================= */
+  subgraph cluster_summary {
+    label="4. Summary Construction";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
 
-  POSTagging [
-    label="Chinese POS Tagging"
-  ];
+    Select      [label="Select top sentences"];
+    OrderSmooth [label="Order and smooth"];
+    Compress    [label="Optional compression/paraphrasing"];
+  }
 
-  KeywordExtract [
-    label="Keyword Extracting"
-  ];
-
-  Weighting [
-    label="Weight Words & Sentences"
-  ];
-
-  SentenceSelection [
-    label="Sentence Selection"
-  ];
-
-  RoughSummary [
-    label="Rough Summary Generation"
-  ];
-
-  Smoothing [
-    label="Smoothing"
-  ];
-
+  /* =========================
+     OUTPUT
+     ========================= */
   SummaryOutput [
     label="Summary Output",
     shape=parallelogram,
@@ -1070,50 +1079,32 @@ digraph TextSummarization {
      MAIN FLOW
      ========================= */
 
-  TextInput -> Preprocess;
-  Preprocess -> StructureAnalysis;
+  TextInput -> Lowercase;
+  Lowercase -> Punct -> Tokenize -> Stopwords -> SentSeg;
 
-  StructureAnalysis -> WordSegmentation;
-  StructureAnalysis -> OccurrenceStats;
+  SentSeg -> POSTag;
+  SentSeg -> WordSeg;
+  SentSeg -> OccStats;
 
-  WordSegmentation -> POSTagging;
-  POSTagging -> KeywordExtract;
-  OccurrenceStats -> KeywordExtract;
+  POSTag -> Keywords;
+  WordSeg -> Keywords;
+  OccStats -> Keywords;
+  Keywords -> SentFeat;
 
-  KeywordExtract -> Weighting;
-  Weighting -> SentenceSelection;
-  SentenceSelection -> RoughSummary;
-  RoughSummary -> Smoothing;
-  Smoothing -> SummaryOutput;
+  SentFeat -> Unsupervised;
+  SentFeat -> Supervised;
+  SentFeat -> Neural;
 
-  /* =========================
-     KNOWLEDGE BASE LINKS
-     ========================= */
+  Unsupervised -> Select;
+  Supervised   -> Select;
+  Neural       -> Select;
 
-  Dictionary -> WordSegmentation;
-  Dictionary -> POSTagging;
-  Dictionary -> KeywordExtract;
-
+  Select -> OrderSmooth -> Compress -> SummaryOutput;
 }
 
 ```
 
-## Documents
 
-# Topic proportions and assignments 
-
-## Seeking Life's Bare (Genetic) Necessities
-
-Cold Spring Harbor, New York- "are not all that far apart," especially in How many genes does an organism need to comparison to the 75,000 genes in the husurvive? Last week at the genome meeting here,* two genome researchers with radically different approaches presented complementary views of the basic genes needed for life. One research team, using computer analyses to compare known genomes, concluded that today's organisms can be sustained with just 250 genes, and that the earliest life forms required a mere 128 genes. The other researcher mapped genes in a simple parasite and estimated that for this organism, 800 genes are plenty to do the job-but that anything short of 100 wouldn't be enough.
-
-Although the numbers don't match precisely, those predictions
-
-* Genome Mapping and Sequencing, Cold Spring Harbor, New York, May 8 to 12.
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-053.jpg?height=469&width=1389&top_left_y=894&top_left_x=933)
-Stripping down. Computer analysis yields an estimate of the minimum modern and ancient genomes.
-
-[^0]
 ## Natural Language Processing (NLP)
 
 - Part-of-speech tagging
@@ -1409,7 +1400,6 @@ find_errors(x_train, y_train)
 4. Repeat from 1
 5. Finally, when satisfied with dev accuracy, evaluate on test
 
-# Extreme or Rare Cases
 
 ## Linguistic Barriers
 
