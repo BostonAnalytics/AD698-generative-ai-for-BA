@@ -938,7 +938,7 @@ If your workflow uses Pull Requests, rather than direct commits to a repository,
 
 ![Create a Pull Request button in the Source Control view](./M0_lecture01_figures/github/github-repositories-create-pull-request.png){width="80%" fig-align="center"}
 
-Once you have created a Pull Request, you can use the [GitHub Pull Request and Issues](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension to review, edit, and merge your PR as described [earlier](/docs/sourcecontrol/github.md#pull-requests) in this topic.
+Once you have created a Pull Request, you can use the [GitHub Pull Request and Issues](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension to review, edit, and merge your PR as described [earlier](https://code.visualstudio.com/docs/sourcecontrol/github) in this topic.
 
 ### Virtual file system
 
