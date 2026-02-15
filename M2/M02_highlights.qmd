@@ -1,5 +1,49 @@
 ---
-title: "M02 Highlights"
+title: "Module 2: Highlights"
+subtitle: "Meaning and Structured Text"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Language Modeling", "Embeddings", "Information Theory", "Text Representation"]
 ---
 
-# M02 Highlights
+# Lecture 2.1: Mathematical Foundations Through Language Modeling
+
+## Highlights
+
+* **Vectors as Meaning** — Distributed representations encode semantics geometrically.
+* Conditional probability and maximum likelihood estimation in language models.
+* Cross-entropy loss and why minimizing it improves predictive accuracy.
+* Entropy and perplexity as measures of uncertainty and model performance.
+* The connection between optimization objectives and behavioral outcomes in generative systems.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Interpret embeddings as high-dimensional semantic representations.
+* Explain the role of conditional likelihood in training language models.
+* Define cross-entropy and perplexity mathematically and conceptually.
+* Connect optimization functions to observable model behavior.
+
+---
+
+# Lecture 2.2: From Words to Structured Text
+
+## Highlights
+
+* Tokenization strategies: word-level, subword, and normalization pipelines.
+* N-grams and early statistical language modeling foundations.
+* Static vs contextual representations of meaning.
+* Document structure awareness: hierarchy, sections, tables, metadata.
+* Why structural signals improve model grounding and retrieval.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Distinguish between symbolic and contextual text representations.
+* Explain how tokenization choices affect downstream performance.
+* Compare n-gram models with contextual embeddings.
+* Recognize structural cues in long-form and enterprise documents.

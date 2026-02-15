@@ -1,5 +1,39 @@
 ---
-title: "M02 Wrapup"
+title: "Module 2: Wrap-Up"
+subtitle: "Meaning and Structured Text"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Embeddings", "Optimization", "Semantic Modeling", "NLP"]
 ---
 
-# M02 Wrapup
+# What We Learned
+
+Module 2 moved from probability to **representation**.
+
+* **Mathematical Structure of Meaning**
+  We formalized how language models encode meaning using vectors and conditional probability.
+
+* **Optimization and Information Theory**
+  You learned how cross-entropy loss, entropy, and perplexity quantify uncertainty and drive model training.
+
+* **Text Representation Evolution**
+  We compared early statistical models (n-grams) with contextual embeddings used in modern systems.
+
+* **Structured Text Awareness**
+  We expanded beyond isolated tokens to understand document-level hierarchy, structure, and metadata.
+
+This module establishes the bridge between statistical learning and semantic behavior.
+
+# Preparing for Module 3
+
+Module 3 introduces **prompting and semantic geometry**, where representation becomes control.
+
+To prepare:
+
+* Review cosine similarity and vector distance metrics.
+* Reflect on how embedding spaces encode semantic neighborhoods.
+* Consider how altering input phrasing might shift probability distributions.
+
+Next, we will treat prompting not as text entry—but as **probability shaping within semantic space**.

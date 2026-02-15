@@ -1,5 +1,50 @@
 ---
-title: "M05 Highlights"
+title: "Module 5: Highlights"
+subtitle: "Retrieval and Grounded Generation"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["RAG", "Retrieval Systems", "Embeddings", "Grounded AI"]
 ---
 
-# M05 Highlights
+
+# Lecture 5.1: Retrieval-Augmented Generation Concepts
+
+## Highlights
+
+* The limitations of static pretrained models in dynamic knowledge environments.
+* Retrieval-Augmented Generation (RAG) as a system-level solution.
+* Chunking strategies and document segmentation tradeoffs.
+* Embedding-based indexing and similarity search.
+* Grounding mechanisms to reduce hallucination risk.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Explain why standalone LLMs hallucinate under knowledge gaps.
+* Describe the components of a basic RAG architecture.
+* Design chunking strategies appropriate for different document types.
+* Interpret embedding similarity as a retrieval signal.
+
+---
+
+# Lecture 5.2: Designing Retrieval-Augmented Pipelines
+
+## Highlights
+
+* End-to-end RAG workflow: ingestion → indexing → retrieval → generation.
+* Query formulation and reformulation strategies.
+* Citation tracing and evidence alignment.
+* System evaluation metrics: retrieval precision vs generation quality.
+* Limitations of RAG: context window constraints and retrieval noise.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Architect a retrieval-augmented workflow.
+* Evaluate trade-offs between chunk size and retrieval accuracy.
+* Implement citation-aware prompting structures.
+* Diagnose failure points in retrieval and grounding systems.

@@ -1,5 +1,39 @@
 ---
-title: "M04 Wrapup"
+title: "Module 4: Wrap-Up"
+subtitle: "Model Architectures"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Transformers", "Training Dynamics", "Model Scaling", "AI Governance"]
 ---
 
-# M04 Wrapup
+# What We Learned
+
+Module 4 examined the structural engine behind modern generative AI.
+
+* **Attention as Contextual Computation**
+  We explored how self-attention enables models to dynamically weigh token relationships across long sequences.
+
+* **Transformer Dominance**
+  You saw why transformers replaced recurrent architectures in large-scale language modeling.
+
+* **Scaling and Capability Growth**
+  Increasing model size and training data changes performance characteristics and emergent behaviors.
+
+* **Training and Governance Risks**
+  We analyzed fine-tuning pipelines and the importance of preventing overfitting, leakage, and evaluation bias.
+
+This module moved from prompting and surface interaction into the internal mechanics that determine model capability.
+
+# Preparing for Module 5
+
+Module 5 introduces **retrieval and grounded generation**, where we extend the model beyond its static training data.
+
+To prepare:
+
+* Review embedding similarity and vector search.
+* Reflect on hallucination as extrapolation beyond training distribution.
+* Consider why static models struggle with real-time knowledge updates.
+
+Next, we will move from pure generation to **grounded system architecture through retrieval augmentation**.

@@ -1,5 +1,50 @@
 ---
-title: "M03 Highlights"
+title: "Module 3: Highlights"
+subtitle: "Prompting and Semantic Geometry"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Prompt Engineering", "Embeddings", "Semantic Geometry", "In-Context Learning"]
 ---
 
-# M03 Highlights
+
+# Lecture 3.1: Prompting as System Design
+
+## Highlights
+
+* Prompting as **probabilistic control**, not instruction following in the human sense.
+* Zero-shot, few-shot, and in-context learning as distribution shaping.
+* Role assignment, formatting constraints, and structured prompting.
+* Failure modes: hallucination, ambiguity amplification, mode collapse.
+* Prompt evaluation as experimental design.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Frame prompts as mechanisms for redistributing probability mass.
+* Design zero-shot and few-shot prompts strategically.
+* Diagnose instability and common failure patterns.
+* Treat prompting as lightweight system steering rather than ad-hoc input crafting.
+
+---
+
+# Lecture 3.2: Tokenization, Embeddings, and Semantic Geometry
+
+## Highlights
+
+* Subword tokenization and its influence on semantic granularity.
+* Embedding spaces as geometric representations of meaning.
+* Cosine similarity and neighborhood structure in high-dimensional space.
+* Semantic drift across contexts and tasks.
+* The relationship between tokenization artifacts and model behavior.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Interpret cosine similarity mathematically and operationally.
+* Analyze semantic neighborhoods within embedding space.
+* Explain how token boundaries influence output generation.
+* Identify causes of semantic drift in iterative prompting workflows.

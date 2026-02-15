@@ -1,5 +1,39 @@
 ---
-title: "M05 Wrapup"
+title: "Module 5: Wrap-Up"
+subtitle: "Retrieval and Grounded Generation"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["RAG", "System Architecture", "Grounding", "Hallucination"]
 ---
 
-# M05 Wrapup
+# What We Learned
+
+Module 5 shifted generative AI from isolated model behavior to **system architecture design**.
+
+* **Hallucination as Distributional Extrapolation**
+  We reframed hallucination as probabilistic inference beyond accessible knowledge.
+
+* **Retrieval as Constraint Mechanism**
+  Embedding-based retrieval narrows the output distribution by injecting relevant external context.
+
+* **End-to-End Workflow Thinking**
+  You learned how ingestion, indexing, querying, and generation form a coherent pipeline.
+
+* **Grounding and Accountability**
+  Citation tracing and structured prompting increase transparency in model outputs.
+
+This module marks the transition from model-centric thinking to infrastructure-centric thinking.
+
+# Preparing for Module 6
+
+Module 6 explores **adaptation and system optimization**.
+
+To prepare:
+
+* Review the distinction between prompting, retrieval, and weight adaptation.
+* Reflect on when modifying model weights is preferable to modifying context.
+* Consider cost-performance tradeoffs in enterprise deployments.
+
+Next, we move from retrieval to **efficient model adaptation and semantic analysis at scale**.

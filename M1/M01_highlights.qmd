@@ -1,0 +1,49 @@
+---
+title: "Module 1: Highlights"
+subtitle: "Language Probability and Representation"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Generative AI", "Language Modeling", "Probability", "NLP Foundations"]
+---
+
+# Lecture 1.1: Course Orientation and Reproducible GenAI Setup
+
+## Highlights
+
+* Framing **Generative AI as a probabilistic system**, not a deterministic reasoning engine.
+* Course structure, deliverables, and reproducible experimentation standards.
+* Establishing a structured GenAI workflow (environment, versioning, logging).
+* Introduction to **AI disclosure files, documentation practices, and accountability**.
+* Understanding GenAI as a socio-technical system requiring governance.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Explain why GenAI systems operate probabilistically.
+* Set up a reproducible environment for GenAI experimentation.
+* Describe the importance of AI disclosure and documentation.
+* Frame generative models as system components within larger workflows.
+
+---
+
+# Lecture 1.2: Language Probability and Generative Systems
+
+## Highlights
+
+* Language as a **probability distribution over token sequences**.
+* Prediction as the fundamental mechanism behind generation.
+* Conditional likelihood and uncertainty in text modeling.
+* The relationship between NLP foundations and modern large language models.
+* Introduction to entropy and uncertainty as behavioral drivers in generative systems.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Interpret generation as next-token probability prediction.
+* Explain conditional probability in language modeling.
+* Connect uncertainty to hallucination and variability in outputs.
+* Understand why NLP theory underpins modern GenAI systems.

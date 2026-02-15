@@ -1,5 +1,39 @@
 ---
-title: "M03 Wrapup"
+title: "Module 3: Wrap-Up"
+subtitle: "Prompting and Semantic Geometry"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Prompting", "Semantic Space", "Vector Search", "System Design"]
 ---
 
-# M03 Wrapup
+# What We Learned
+
+Module 3 shifted the focus from representation to **control within representation**.
+
+* **Prompting as Probability Shaping**
+  We reframed prompts as structured mechanisms that guide model output by altering conditional distributions.
+
+* **In-Context Learning as Implicit Adaptation**
+  Few-shot examples modify local probability landscapes without changing model weights.
+
+* **Semantic Geometry**
+  Meaning exists in high-dimensional embedding space, where similarity corresponds to geometric proximity.
+
+* **Failure and Drift**
+  We examined why outputs degrade, shift semantically, or amplify ambiguity across iterations.
+
+This module transforms prompting from trial-and-error to deliberate probabilistic design.
+
+# Preparing for Module 4
+
+Module 4 moves inside the model—into architecture and training mechanics.
+
+To prepare:
+
+* Review attention mechanisms conceptually.
+* Reflect on why context length matters.
+* Revisit how embeddings are used inside transformer layers.
+
+Next, we examine the structural engine powering modern generative systems: **transformers and large-scale training paradigms**.

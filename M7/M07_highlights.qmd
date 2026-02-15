@@ -1,5 +1,50 @@
 ---
-title: "M07 Highlights"
+title: "Module 7: Highlights"
+subtitle: "Context and Multimodality"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Context Windows", "Memory Systems", "Multimodal AI", "Enterprise AI"]
 ---
 
-# M07 Highlights
+
+# Lecture 7.1: Context Windows, Memory, and Compression
+
+## Highlights
+
+* Context window limitations and token budgeting strategies.
+* Why longer context does not equal better reasoning.
+* Summarization as probabilistic compression.
+* Caching and memory hierarchies in generative workflows.
+* Retrieval vs memory vs adaptation trade-offs.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Explain context window constraints in transformer models.
+* Design workflows that manage long documents efficiently.
+* Implement summarization as structured compression.
+* Distinguish between retrieval, caching, and persistent memory systems.
+
+---
+
+# Lecture 7.2: Multimodal Generative Models and Structured Data
+
+## Highlights
+
+* Vision-language transformer architectures.
+* Multimodal embeddings and shared representation spaces.
+* Structured data (tables, JSON, metadata) in generative workflows.
+* Document understanding across text, figures, and layouts.
+* Enterprise applications of multimodal AI systems.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Describe how multimodal transformers integrate image and text inputs.
+* Explain shared embedding spaces across modalities.
+* Incorporate structured data into generative pipelines.
+* Evaluate multimodal use cases in analytics, compliance, and enterprise automation.

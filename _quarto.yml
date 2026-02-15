@@ -11,6 +11,8 @@ project:
     - "!data/"
     - "!help-code/"
     - "!deliverables-solutions/"
+    - "!*T1*.qmd"
+    - "!*T2*.qmd"
 
 editor:  
   render-on-save: true

@@ -1,5 +1,50 @@
 ---
-title: "M06 Highlights"
+title: "Module 6: Highlights"
+subtitle: "Adaptation and Insight"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Fine-Tuning", "LoRA", "PEFT", "Semantic Search", "Clustering"]
 ---
 
-# M06 Highlights
+
+# Lecture 6.1: Efficient Adaptation — LoRA, QLoRA, and PEFT
+
+## Highlights
+
+* Why full fine-tuning is computationally expensive and operationally risky.
+* Parameter-Efficient Fine-Tuning (PEFT) as a structured alternative.
+* LoRA and QLoRA mechanisms: low-rank updates and quantization strategies.
+* Trade-offs between prompting, retrieval augmentation, and weight adaptation.
+* Cost governance and deployment implications in enterprise settings.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Explain how LoRA modifies transformer weights efficiently.
+* Compare full fine-tuning with PEFT approaches.
+* Evaluate when adaptation is preferable to retrieval or prompting.
+* Assess cost-performance trade-offs in deployment decisions.
+
+---
+
+# Lecture 6.2: Semantic Search, Clustering, and Change Detection
+
+## Highlights
+
+* Embedding-based semantic search in large corpora.
+* Clustering techniques for document grouping in vector space.
+* Similarity metrics and neighborhood analysis.
+* Longitudinal semantic drift detection across time.
+* Monitoring model outputs and corpus evolution.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Implement embedding-based clustering strategies.
+* Interpret cluster structure within high-dimensional semantic space.
+* Detect semantic shifts in evolving document collections.
+* Connect semantic analytics to governance and risk monitoring.

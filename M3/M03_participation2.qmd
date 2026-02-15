@@ -1,6 +1,6 @@
 ---
-title: "Participation 2: Group Paper Presentation"
-subtitle: "Foundations, Architectures, and Responsible Practice in Generative AI"
+title: "Module 1: Participation 2"
+subtitle: "Group Paper Presentation"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -9,7 +9,7 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-## Overview {.unnumbered}
+# Overview {.unnumbered}
 
 
 In this participation assignment, you will work in **groups** to study, synthesize, and present a **foundational or state-of-the-art research paper** in Generative AI, Large Language Models (LLMs), or reproducible computational practice.
@@ -31,7 +31,7 @@ This assignment emphasizes:
 * Responsible AI awareness
 
 
-## Goals {.unnumbered}
+# Goals {.unnumbered}
 
 By completing this assignment, you will:
 
@@ -42,7 +42,7 @@ By completing this assignment, you will:
 * Strengthen academic and professional presentation skills
 
 
-## Paper Selection (One Paper per Group) {.unnumbered}
+# Paper Selection (One Paper per Group)
 
 - Everyone must read through the curated list below.
 - Papers are organized by **theme**. 
@@ -50,139 +50,26 @@ By completing this assignment, you will:
 - Names of the papers are listed in the table and are also available at the end of this document.
 - You can also search these papers on [scholar.google.com](https://scholar.google.com). 
 
+## Group 5 – Alignment & Instruction
 
-### Open science & reproducibility (classic but still essential) {.unnumbered}
+* Training Language Models with Human Feedback [@Ouyang2022RLHF]
+* Constitutional AI [@Bai2022Constitutional]
 
-Do not use these for the first presentation. 
+## Group 6 – Retrieval-Augmented Generation
 
-- Wilson et al. (2014) *Best Practices for Scientific Computing*
-- Peng (2011) *Reproducible Research in Computational Science*
-- Stodden et al. (2014) *The Practice of Reproducible Research*
-- Stodden et al. (2016) *Computational Reproducibility*
-- Knuth (1984) *Literate Programming
-
-## Foundations Readings in Language Representation
-
-[Reading instruction]{.uublue-bold}: Read these, no presentation. 
-
-| **Neural Foundations**             | **Distributional Semantics**  | **Embeddings in Practice**        |
-| ----------------------------------------- | ------------------------------------ | ---------------------------------------- |
-| A Neural Probabilistic Language Model [@Bengio2003NeuralLM] | Vector Space Models of Semantics [@TurneyPantel2010VSM] | Distributed Representations of Words [@Mikolov2013Word2Vec] |
-|Sequence to sequence learning [@Sutskever2014Sequence]|Are LLMs Models of Distributional Semantics? A Case Study on Quantifiers  [@Enyan2024Distributional]|Efficient Estimation of Word Representations in Vector Space [@Mikolov2013Efficient]|
+* Retrieval-Augmented Generation [@Lewis2020RAG]
+* Self-RAG [@Asai2023SelfRAG]
 
 
-## Group 1 – Transformers: Architecture and Attention
+# Presentation Expectations
 
-| **Transformer Core**                                      | **Interpretability & Attention**                   | **Representational Power**                                              |
-| --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
-| Attention Is All You Need [@Vaswani2017Attention]         | What Does BERT Look At? [@Clark2019Bert]       | On the Turing Completeness of Modern Neural Network Architectures [@Perez2019Turing] |
-| Sequence to Sequence Learning [@Sutskever2014Sequence]    | Quantifying attention flow in transformers [@Abnar2020Quantifying] | Are Transformers Universal Approximators? [@Yun2019Transformers]        |
-| Self-Attention with Relative Position [@Shaw2018Selfattention] | Attention Is Not Explanation [@Jain2019Attention]  | Efficient streaming language models[@Xiao2023Efficient]          |
-
-
-## Group 2 – Scaling Laws and Emergence
-
-| **Scaling Laws**                                       | **Emergent Abilities**                                 | **Foundation Models**                                                                |
-| ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| Scaling Laws for Neural LMs [@Kaplan2020Scaling]       | Emergent Abilities of LLMs [@Wei2022Emergent]          | On the Opportunities and Risks of Foundation Models [@bommasani2022opportunities] |
-| Training Compute-Optimal Large Language Models
- [@Hoffmann2022training]      | Sparks of AGI [@Bubeck2023SparksAGI]                   | A Survey of Large Language Models [@Zhao2024LLMSurvey]                               |
-| | Are Emergent Abilities Real? [@Schaeffer2023emergent] | Scaling Instruction-Following Models [@Chung2022scaling]                  |
-
-
-## Group 3 – Text-as-Data and Business NLP
-
-| **End-to-End NLP Systems**                               | **Enterprise Information Extraction**                            | **Economic / Policy Text**                             |
-| -------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ |
-| NLP (Almost) from Scratch [@Collobert2011NLPFromScratch] | Information Extraction from Business Text [@Kogan2019BusinessIE] | Text as Data [@Gentzkow2019TextAsDataPaper]            |
-| A Unified Architecture for NLP [@Collobert2011Unified]   | Extracting Corporate Risk Disclosures [@Hassan2019RiskText]      | Measuring Economic Policy Uncertainty [@Baker2016EPU]  |
-| Deep Learning for NLP [@Goldberg2016DLNLP]               | NLP for Financial Forecasting [@Loughran2011Textual]             | ML for Text-Based Economic Research [@Athey2019MLText] |
-
-
-## Group 4 – Prompting, Reasoning, and Orchestration
-
-| **Prompting Taxonomies**                              | **Reasoning via Prompts**                                | **Programmatic Control**           |
-| ----------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- |
-| The Prompt Report [@Schulhoff2025PromptReport]        | Chain-of-Thought Prompting [@Wei2022CoT]                 | DSPy [@Khattab2023DSPy]            |
-| A Survey of Prompt Engineering [@Liu2023PromptSurvey] | Self-Consistency Improves CoT [@Wang2023SelfConsistency] | Toolformer [@Schick2023Toolformer] |
-| Automatic Prompt Optimization [@Zhou2023APO]          | Least-to-Most Prompting [@Zhou2022LeastToMost]           | ReAct [@Yao2023ReAct]              |
-
-
-## Group 5 – Alignment and Instruction Following
-
-| **Human Feedback Alignment**                                     | **Instruction Tuning**                                              | **Fine-Tuning Systems**                                      |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Training LMs with Human Feedback [@Ouyang2022RLHF]               | FLAN Instruction Tuning [@Wei2022FLAN]                              | Fine-Tuning from Human Preferences [@Ziegler2019Preferences] |
-| Learning to Summarize from Feedback [@Stiennon2020Summarization] | Scaling Instruction-Following Models [@Chung2022ScalingInstruction] | A Survey of LLM Fine-Tuning [@Pratap2025FineTuning]          |
-| Constitutional AI [@Bai2022Constitutional]                       | Instruction Tuning with GPT-4 [@Peng2023InstructionGPT4]            | Parameter-Efficient Fine-Tuning Survey [@He2022PEFT]         |
-
-
-## Group 6 – Retrieval-Augmented Generation (RAG)
-
-| **Classical RAG**                              | **Failure & Self-Correction**                            | **Hybrid Architectures**                            |
-| ---------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------- |
-| Retrieval-Augmented Generation [@Lewis2020RAG] | Seven Failure Points in RAG [@Barnett2024RAGFailures]    | HybridRAG [@Sarmah2024HybridRAG]                    |
-| REALM [@Guu2020REALM]                          | Self-RAG [@Asai2023SelfRAG]                              | Corrective RAG [@Yan2024CorrectiveRAG]              |
-| Dense Passage Retrieval [@Karpukhin2020DPR]    | Verification-Augmented Generation [@Min2023Verification] | Iterative Retrieval Generation [@Xiong2021ApproxIR] |
-
-
-
-## Group 7 – Efficient Fine-Tuning and Small Models
-
-| **Low-Rank Adaptation**       | **Quantization-Aware Tuning**  | **Small-Model Systems**                                |
-| ----------------------------- | ------------------------------ | ------------------------------------------------------ |
-| LoRA [@Hu2021LoRA]            | QLoRA [@Dettmers2023QLoRA]     | A Survey of Small Language Models [@Nguyen2024SmallLM] |
-| AdaLoRA [@Zhang2023AdaLoRA]   | GPTQ [@Frantar2022GPTQ]        | Distilling Step-by-Step [@Hsieh2023Distillation]       |
-| Prefix-Tuning [@Li2021Prefix] | AWQ Quantization [@Lin2023AWQ] | TinyStories [@Eldan2023TinyStories]                    |
-
-
-
-## Group 9 – Topic Models, Semantic Change, and Clustering
-
-| **Probabilistic Topic Models**                | **Semantic Change**                                      | **Text / Document Clustering**                                                 |
-| --------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| Dynamic Topic Models [@Blei2006DynamicTopics] | Diachronic Word Embeddings [@Hamilton2016SemanticChange] | A Survey of Text Clustering Algorithms [@AggarwalZhai2012TextClusteringSurvey] |
-| Topics over Time [@Wang2006Topics]            | Temporal Word Embeddings [@Kutuzov2018Diachronic]        | Clustering Short Texts with Word Embeddings [@Saha2017ShortText]               |
-| Structural Topic Models [@Roberts2014STM]     | Semantic Change Detection Survey [@Tahmasebi2021Survey]  | BERTopic [@Grootendorst2022BERTopicPaper]                                      |
-
-
-
-## Group 9 – Long Context and Multimodality
-
-| **Long Context Limits**                    | **Efficient Context Use**                   | **Multimodal Reasoning**                              |
-| ------------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
-| Lost in the Middle [@Liu2023ContextWindow] | LazyLLM [@Xu2024LazyLLM]                    | GPT-4V System Card [@OpenAI2023GPT4V]                 |
-| LongNet [@Ding2023LongNet]                 | StreamingLLM [@Xiao2023StreamingLLM]        | Segment Anything [@Kirillov2023SAM]                   |
-| Transformer-XL [@Dai2019TransformerXL]     | Memorizing Transformers [@Wu2022Memorizing] | Multimodal Chain-of-Thought [@Zhang2023MultimodalCoT] |
-
-
-## Group 10 – Evaluation, Hallucination, and Trust
-
-| **Human-Centric Evaluation**                  | **Model-as-Judge**                          | **Hallucination & Risk**                                   |
-| --------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
-| Evaluating LLMs [@Chang2024EvaluatingLLMs]    | LLM-as-a-Judge [@Gu2024LLMJudge]            | Survey on Hallucination in LLMs [@Huang2023Hallucinations] |
-| Beyond Accuracy [@Gehrmann2023BeyondAccuracy] | Chain-of-Verification [@Dhuliawala2023CoVe] | Stochastic Parrots [@Bender2021StochasticParrots]          |
-| HELM Benchmark [@Liang2022HELM]               | G-Eval [@Liu2023GEval]                      | Responsible AI for LLMs [@Raji2022ResponsibleAI]           |
-
-
-## Group 11 – Deployment, Governance, and Systemic Risk
-
-| **Enterprise Deployment & Operations**                                      | **Governance & Accountability**                                                      | **Agents, Autonomy, and Control**                                                      |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |
-| On the Dangers of Stochastic Parrots [@Bender2021StochasticParrots]         | On the Opportunities and Risks of Foundation Models [@Bommasani2021FoundationModels] | ReAct: Synergizing Reasoning and Acting [@Yao2023ReAct]                                |
-| Lessons from Deploying LLMs in the Real World [@Amodei2016ConcreteProblems] | Responsible AI for Large Language Models [@Raji2022ResponsibleAI]                    | Toolformer: Language Models Can Teach Themselves to Use Tools [@Schick2023Toolformer]  |
-| Red Teaming Language Models [@Ganguli2022RedTeaming]                        | Auditing Large Language Models [@Weidinger2021EthicalRisks]                          | Generative Agents: Interactive Simulacra of Human Behavior [@Park2023GenerativeAgents] 
-
-
-## Presentation Expectations
-
-### Presentation Length
+## Presentation Length
 
 * **10–12 minutes total**
 * **5–7 slides**
 * All group members must participate
 
-### Suggested Slide Structure
+## Suggested Slide Structure
 
 Your presentation **must include**:
 
@@ -222,7 +109,7 @@ Your presentation **must include**:
      * Responsible AI
 
 
-## Submission Requirements
+# Submission Requirements
 
 1. **Presentation Slides (PDF)**
 2. **One-page Paper Brief (PDF)** including:
@@ -243,8 +130,6 @@ Your presentation **must include**:
 
 This assignment is designed to help you **think like a researcher and systems designer**, not just a tool user.
 Choose wisely, read deeply, and present with clarity.
-
-## References
 
 :::{.ref}
 

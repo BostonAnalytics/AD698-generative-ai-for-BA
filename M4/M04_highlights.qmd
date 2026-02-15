@@ -1,5 +1,49 @@
 ---
-title: "M04 Highlights"
+title: "Module 4: Highlights"
+subtitle: "Model Architectures"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Transformers", "Attention", "Fine-Tuning", "Training Pipelines"]
 ---
 
-# M04 Highlights
+# Lecture 4.1: Transformers, Attention, and Context
+
+## Highlights
+
+* The limitations of RNNs and LSTMs in modeling long-range dependencies.
+* Self-attention as a mechanism for dynamic contextual weighting.
+* Query, key, and value matrices in attention computation.
+* Positional encoding and sequence order representation.
+* Scaling intuition: why transformers improve with model size and data.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Explain self-attention mathematically at a conceptual level.
+* Compare transformer architectures with recurrent models.
+* Describe how positional encoding preserves sequence information.
+* Understand why scaling improves emergent model capabilities.
+
+---
+
+# Lecture 4.2: Training Paradigms and Fine-Tuning Pipelines
+
+## Highlights
+
+* Pretraining objectives and large-scale corpus learning.
+* Supervised fine-tuning and instruction tuning.
+* Dataset formatting and alignment strategies.
+* Risks of overfitting, data leakage, and evaluation contamination.
+* Governance implications in model deployment.
+
+## Learning Objectives
+
+By the end of this lecture, students will be able to:
+
+* Distinguish between pretraining and fine-tuning stages.
+* Design basic fine-tuning pipelines responsibly.
+* Identify common data leakage risks in generative workflows.
+* Evaluate trade-offs between generalization and specialization.

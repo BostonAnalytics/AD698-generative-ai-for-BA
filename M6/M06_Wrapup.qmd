@@ -1,5 +1,39 @@
 ---
-title: "M06 Wrapup"
+title: "Module 6: Wrap-Up"
+subtitle: "Adaptation and Insight"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Model Adaptation", "Semantic Analytics", "Governance", "Deployment Strategy"]
 ---
 
-# M06 Wrapup
+# What We Learned
+
+Module 6 expanded generative AI from retrieval design to **adaptive optimization and semantic analytics**.
+
+* **Adaptation as Strategic Intervention**
+  We analyzed when modifying model weights through LoRA or PEFT is more appropriate than adjusting prompts or retrieval context.
+
+* **Cost-Aware System Design**
+  Efficient fine-tuning balances computational expense with performance gains.
+
+* **Semantic Insight at Scale**
+  Embedding-based clustering and search enable large-scale document intelligence.
+
+* **Monitoring and Drift Awareness**
+  Systems evolve over time, and embedding drift analysis becomes critical for governance and reliability.
+
+This module connects model engineering with analytical intelligence and operational oversight.
+
+# Preparing for Module 7
+
+Module 7 integrates long-context reasoning and multimodal systems.
+
+To prepare:
+
+* Review context window limitations and token budgeting.
+* Reflect on summarization as compression rather than simplification.
+* Consider how text, images, and structured data might share representation space.
+
+Next, we conclude with **context management and multimodal generative systems**, completing the full GenAI systems lifecycle.

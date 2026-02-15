@@ -1,5 +1,40 @@
 ---
-title: "M01 Wrapup"
+title: "Module 1: Wrap-Up"
+subtitle: "Language Probability and Representation"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Generative AI", "Language Modeling", "Probability", "System Design"]
 ---
 
-# M01 Wrapup
+# What We Learned
+
+In Module 1, we established the conceptual foundation of generative AI by reframing language as a **probabilistic modeling problem**.
+
+* **From Determinism to Probability**
+  We examined how large language models generate text through conditional probability rather than rule-based reasoning.
+
+* **Reproducible GenAI Workflows**
+  You set up structured environments for experimentation and documentation, reinforcing accountability in AI development.
+
+* **Prediction as Generation**
+  We formalized generation as next-token prediction under uncertainty.
+
+* **Uncertainty and Model Behavior**
+  Concepts like entropy and conditional likelihood were introduced to explain why outputs vary and why hallucinations occur.
+
+Together, these ideas shift your perspective from “AI as intelligence” to “AI as statistical sequence modeling.”
+
+# Preparing for Module 2
+
+Module 2 moves from probability to **representation and mathematical structure**. To prepare:
+
+* Review conditional probability and basic vector concepts.
+* Reflect on how meaning could be encoded geometrically.
+* Revisit entropy and perplexity as measures of model performance.
+* Ensure your experimentation workflow is fully reproducible and documented.
+
+Next, we move from *predicting language* to *representing meaning mathematically*.
+
+You now have the theoretical lens required to understand everything that follows.
