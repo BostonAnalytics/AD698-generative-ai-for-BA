@@ -19,7 +19,6 @@ dependencies = [
     "openai>=2.16.0",
     "openpyxl>=3.1.5",
     "pandas>=3.0.0",
-    "pillow>=12.1.0",
     "plotly>=6.5.2",
     "pywaffle>=1.1.1",
     "quarto>=0.1.0",

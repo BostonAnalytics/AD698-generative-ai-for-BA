@@ -61,10 +61,9 @@ Do not use these for the first presentation.
 - Stodden et al. (2016) *Computational Reproducibility*
 - Knuth (1984) *Literate Programming
 
-## Week 1 - Foundations of Language Representation
+## Foundations Readings in Language Representation
 
-[Reading instruction]{.uublue-bold}: Do only read these, no presentation.
-
+[Reading instruction]{.uublue-bold}: Read these, no presentation. 
 
 | **Neural Foundations**             | **Distributional Semantics**  | **Embeddings in Practice**        |
 | ----------------------------------------- | ------------------------------------ | ---------------------------------------- |
@@ -72,8 +71,7 @@ Do not use these for the first presentation.
 |Sequence to sequence learning [@Sutskever2014Sequence]|Are LLMs Models of Distributional Semantics? A Case Study on Quantifiers  [@Enyan2024Distributional]|Efficient Estimation of Word Representations in Vector Space [@Mikolov2013Efficient]|
 
 
-
-## Week 2 – Transformers: Architecture and Attention
+## Group 1 – Transformers: Architecture and Attention
 
 | **Transformer Core**                                      | **Interpretability & Attention**                   | **Representational Power**                                              |
 | --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -82,7 +80,7 @@ Do not use these for the first presentation.
 | Self-Attention with Relative Position [@Shaw2018Selfattention] | Attention Is Not Explanation [@Jain2019Attention]  | Efficient streaming language models[@Xiao2023Efficient]          |
 
 
-## Week 3 – Scaling Laws and Emergence
+## Group 2 – Scaling Laws and Emergence
 
 | **Scaling Laws**                                       | **Emergent Abilities**                                 | **Foundation Models**                                                                |
 | ------------------------------------------------------ | ------------------------------------------------------ | ------------------------------------------------------------------------------------ |
@@ -92,7 +90,7 @@ Do not use these for the first presentation.
 | | Are Emergent Abilities Real? [@Schaeffer2023emergent] | Scaling Instruction-Following Models [@Chung2022scaling]                  |
 
 
-## Week 4 – Text-as-Data and Business NLP
+## Group 3 – Text-as-Data and Business NLP
 
 | **End-to-End NLP Systems**                               | **Enterprise Information Extraction**                            | **Economic / Policy Text**                             |
 | -------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------ |
@@ -101,7 +99,7 @@ Do not use these for the first presentation.
 | Deep Learning for NLP [@Goldberg2016DLNLP]               | NLP for Financial Forecasting [@Loughran2011Textual]             | ML for Text-Based Economic Research [@Athey2019MLText] |
 
 
-## Week 5 – Prompting, Reasoning, and Orchestration
+## Group 4 – Prompting, Reasoning, and Orchestration
 
 | **Prompting Taxonomies**                              | **Reasoning via Prompts**                                | **Programmatic Control**           |
 | ----------------------------------------------------- | -------------------------------------------------------- | ---------------------------------- |
@@ -110,7 +108,7 @@ Do not use these for the first presentation.
 | Automatic Prompt Optimization [@Zhou2023APO]          | Least-to-Most Prompting [@Zhou2022LeastToMost]           | ReAct [@Yao2023ReAct]              |
 
 
-## Week 6 – Alignment and Instruction Following
+## Group 5 – Alignment and Instruction Following
 
 | **Human Feedback Alignment**                                     | **Instruction Tuning**                                              | **Fine-Tuning Systems**                                      |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -119,7 +117,7 @@ Do not use these for the first presentation.
 | Constitutional AI [@Bai2022Constitutional]                       | Instruction Tuning with GPT-4 [@Peng2023InstructionGPT4]            | Parameter-Efficient Fine-Tuning Survey [@He2022PEFT]         |
 
 
-## Week 7 – Retrieval-Augmented Generation (RAG)
+## Group 6 – Retrieval-Augmented Generation (RAG)
 
 | **Classical RAG**                              | **Failure & Self-Correction**                            | **Hybrid Architectures**                            |
 | ---------------------------------------------- | -------------------------------------------------------- | --------------------------------------------------- |
@@ -129,7 +127,7 @@ Do not use these for the first presentation.
 
 
 
-## Week 8 – Efficient Fine-Tuning and Small Models
+## Group 7 – Efficient Fine-Tuning and Small Models
 
 | **Low-Rank Adaptation**       | **Quantization-Aware Tuning**  | **Small-Model Systems**                                |
 | ----------------------------- | ------------------------------ | ------------------------------------------------------ |
@@ -139,7 +137,7 @@ Do not use these for the first presentation.
 
 
 
-## Week 9 – Topic Models, Semantic Change, and Clustering
+## Group 9 – Topic Models, Semantic Change, and Clustering
 
 | **Probabilistic Topic Models**                | **Semantic Change**                                      | **Text / Document Clustering**                                                 |
 | --------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------ |
@@ -149,7 +147,7 @@ Do not use these for the first presentation.
 
 
 
-## Week 10 – Long Context and Multimodality
+## Group 9 – Long Context and Multimodality
 
 | **Long Context Limits**                    | **Efficient Context Use**                   | **Multimodal Reasoning**                              |
 | ------------------------------------------ | ------------------------------------------- | ----------------------------------------------------- |
@@ -158,7 +156,7 @@ Do not use these for the first presentation.
 | Transformer-XL [@Dai2019TransformerXL]     | Memorizing Transformers [@Wu2022Memorizing] | Multimodal Chain-of-Thought [@Zhang2023MultimodalCoT] |
 
 
-## Week 11 – Evaluation, Hallucination, and Trust
+## Group 10 – Evaluation, Hallucination, and Trust
 
 | **Human-Centric Evaluation**                  | **Model-as-Judge**                          | **Hallucination & Risk**                                   |
 | --------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
@@ -167,7 +165,7 @@ Do not use these for the first presentation.
 | HELM Benchmark [@Liang2022HELM]               | G-Eval [@Liu2023GEval]                      | Responsible AI for LLMs [@Raji2022ResponsibleAI]           |
 
 
-## Week 12 – Deployment, Governance, and Systemic Risk
+## Group 11 – Deployment, Governance, and Systemic Risk
 
 | **Enterprise Deployment & Operations**                                      | **Governance & Accountability**                                                      | **Agents, Autonomy, and Control**                                                      |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------- |

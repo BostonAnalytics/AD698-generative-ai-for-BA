@@ -1,6 +1,6 @@
 ---
-title: "M02: Presentation"
-subtitle: "Prompt Engineering & In-Context Learning (ICL)"
+title: "AD698 - Applied Generative AI"
+subtitle: "Language Modeling, Structured Prediction, & Evaluation"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -38,3 +38,77 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
+
+# Language as a Probabilistic Model
+
+## Language as distribution over sequences
+
+## Chain rule & autoregressive factorization
+
+## Conditional likelihood
+
+## Likelihood vs log-likelihood
+
+## Maximum likelihood estimation (MLE)
+
+# Information Theory & Loss Functions
+
+## Entropy
+
+## Cross-entropy
+
+## KL divergence
+
+## Perplexity
+
+# Model Selection & Statistical Criteria
+
+## Overfitting & bias–variance tradeoff
+
+## AIC (Akaike Information Criterion)
+
+## BIC (Bayesian Information Criterion)
+
+## Log-likelihood comparison
+
+# Cross-Validation & Generalization
+
+## Train / validation / test split
+
+## K-fold cross-validation
+
+## Leave-One-Out Cross Validation (LOOCV)
+
+## Cross-validation for hyperparameters
+
+# Linear Algebra of Meaning
+
+## Vectors as semantic representation
+
+## Dot products & similarity
+
+## Matrix multiplication
+
+## Embedding matrices
+
+## Mahalanobis distance (if modeling embeddings statistically) 
+
+# Optimization & Learning
+
+## Softmax
+
+## Gradients & chain rule
+
+## Backpropagation
+
+## Regularization (L1/L2)
+
+# Neural Language Models
+
+## From n-gram to neural models
+
+## Feedforward neural LM
+
+## Recurrent neural networks
+
+## Backpropagation through time

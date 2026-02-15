@@ -10,6 +10,7 @@ project:
     - "*.qmd"
     - "!data/"
     - "!help-code/"
+    - "!deliverables-solutions/"
 
 editor:  
   render-on-save: true

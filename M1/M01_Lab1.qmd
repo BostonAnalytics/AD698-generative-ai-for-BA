@@ -78,7 +78,7 @@ In the notebook interface:
 
 Your notebook is now running on Google Colab 
 
-## Dataset Overview  {.unnumbered}
+## Dataset Overview {.unnumbered}
 
 - All data for this lab is located in: [SEC-10K-2024/](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=drive_link)
 - You will need to "copy" the folder to your own Google Drive
@@ -160,6 +160,24 @@ Each stage produces **artifacts** that help you answer analytical questions.
 
 
 ## Load and Inspect the Data {.unnumbered}
+
+### Mount Drive in Colab {.unnumbered}
+
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+### Verify Files {.unnumbered}
+
+```python
+import os
+os.listdir("/content/drive/MyDrive")
+```
+
+Adjust paths as needed.
+
+### For Local Drive (Optional) {.unnumbered}
 
 ```python
 from pathlib import Path

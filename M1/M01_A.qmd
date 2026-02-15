@@ -112,7 +112,7 @@ Adjust paths as needed.
 
 ## Business Goal
 
-- Loa
+- Load the raw text data from all 10-K filings
 - Create a clean, reproducible corpus that supports comparison across industries.
 - You can choose 7 different industries from the [SEC filings](https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list).
 - Justify why your selection is rational and what are you gaining from it.

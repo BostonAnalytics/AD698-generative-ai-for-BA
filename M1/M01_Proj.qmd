@@ -1,10 +1,482 @@
 ---
-title: "Project Introduction"
-subtitle: "M01 Project Milestone"
+title: "Business Running Case: Building a Section-Scoped RAG System for SEC 10-K (2024)"
+subtitle: "Data Cleaning, Retrieval Engineering, and Grounded LLM Development"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-14"
 date-modified: today
 date-format: long
-categories: ['Project', 'Introduction']
-description: "Project milestone: Project Introduction."
+engine: jupyter
+categories: ["Project", "LLM Systems", "RAG", "Vector Search", "SEC 10-K", "NLP"]
+
 ---
+
+# Objective and Context
+
+This project is designed for **teams of 3–5 students**, where each team will act as a **domain-specific AI systems engineering group** building a section-scoped Retrieval-Augmented Generation (RAG) system over 2024 SEC 10-K filings.
+
+Rather than building a generic financial chatbot, each team will select a **domain focus** and restrict their RAG system to the relevant SEC 10-K items.
+
+Each team must:
+
+* Select a domain track (e.g., Finance, HR, AI, Governance, Marketing, IS, Risk)
+* Identify the relevant 10-K item(s)
+* Build a section-scoped RAG system
+* Clean and chunk that section rigorously
+* Implement retrieval and grounded generation
+* Evaluate reliability and hallucination behavior
+
+This project reflects how enterprise AI systems are scoped by regulatory structure and business domain.
+
+# Domain-Based Project Tracks
+
+:::{.callout-note}
+The SEC Form 10-K is a comprehensive annual report required of publicly traded companies in the United States. It is not a single narrative document — it is a regulatorily structured disclosure framework divided into four major Parts, each containing numbered Items that correspond to specific reporting obligations.
+
+Understanding this structure is essential because your RAG system must operate within these regulatory boundaries.
+
+There are 4 parts and 16 items in total (listed below), but not all items are relevant to every domain. For example, if you choose a Finance track, you might focus on Part II (Financial Information) and select items like MD&A or Financial Statements. If you choose a Governance track, you might focus on Part III (Governance and Executive Structure) and select items related to directors and compensation.
+:::
+
+
+:::{.panel-tabset}
+## Part I
+
+**Business and Risk Overview:** Focuses on operational description and risk disclosure.
+
+* **Item 1** – Business
+* **Item 1A** – Risk Factors
+* **Item 1B** – Unresolved Staff Comments
+* **Item 2** – Properties
+* **Item 3** – Legal Proceedings
+* **Item 4** – Mine Safety Disclosures
+
+This section provides strategic positioning, industry context, and operational risk exposure.
+
+## Part II
+
+**Financial Information and Market Risk:** Focuses on performance, accounting data, and financial condition.
+
+* **Item 5** – Market for Common Equity
+* **Item 6** – Selected Financial Data
+* **Item 7** – Management’s Discussion and Analysis (MD&A)
+* **Item 7A** – Market Risk Disclosures
+* **Item 8** – Financial Statements
+* **Item 9** – Changes in and Disagreements with Accountants
+* **Item 9A** – Controls and Procedures
+* **Item 9B** – Other Information
+
+This section is heavily quantitative and forward-looking.
+
+## Part III
+
+**Governance and Executive Structure:** Focuses on management, ownership, and compensation.
+
+* **Item 10** – Directors and Corporate Governance
+* **Item 11** – Executive Compensation
+* **Item 12** – Security Ownership
+* **Item 13** – Related Transactions and Independence
+* **Item 14** – Principal Accounting Fees and Services
+
+This section reveals incentive structures and governance controls.
+
+## Part IV
+
+**Exhibits and Summary:** Administrative and supporting documentation.
+
+* **Item 15** – Exhibits and Financial Statement Schedules
+* **Item 16** – Form 10-K Summary
+
+These items primarily contain technical attachments and summaries.
+
+:::
+
+Below are recommended domain tracks mapped to SEC 10-K items. Teams must choose one track. These are meant to be illustrative, and teams can propose alternative tracks if they justify the item selection. 
+
+
+# Key Areas of Analysis (Teams Choose One Focus Area)
+
+Each team will **select one domain track** and restrict their RAG system to the relevant SEC 10-K Item(s).
+
+Multiple teams may choose the same domain, but systems must demonstrate:
+
+- Cleaning strategy
+- Retrieval tuning
+- Evaluation insights
+
+Teams may also propose a related focus area, provided it maps clearly to one or more specific 10-K Items.
+
+:::{.panel-tabset}
+## AI & Technology Strategy Analysis
+
+*Primary Items: 1, 1A, 7*
+
+Your RAG system should be able to answer questions such as:
+
+* How does the firm describe its **AI strategy or technological transformation**?
+* Is AI framed as a **core revenue driver, operational efficiency tool, or experimental initiative**?
+* Does the company disclose **AI-related risks** (regulatory, cybersecurity, operational)?
+* Is AI positioned as **labor substitution or labor complement**?
+* Are R&D investments linked to AI initiatives?
+* Does management describe measurable outcomes tied to digital transformation?
+
+Your system should return:
+
+* AI positioning classification
+* Opportunity vs. risk framing
+* Supporting citations
+
+## Human Capital & Labor Economics
+
+*Primary Items: 1, 1A, 11*
+
+Your RAG system should be able to answer:
+
+* Does the firm identify **labor shortages** as a structural risk?
+* Are wage pressures or retention concerns discussed?
+* Is workforce restructuring mentioned?
+* How is executive compensation structured relative to performance?
+* Does the company discuss human capital as a strategic asset?
+* Are training or reskilling initiatives described?
+
+Your system should produce:
+
+* Labor risk classification
+* Automation exposure indicators
+* Compensation alignment summary
+
+## Financial Performance & Risk Analysis
+
+*Primary Items: 6, 7, 7A, 8*
+
+Your RAG system should be able to answer:
+
+* What are the primary drivers of revenue growth or decline?
+* Is margin pressure attributed to labor, inflation, supply chain, or macroeconomic factors?
+* How does the firm describe liquidity and capital allocation strategy?
+* What market risks are disclosed (interest rate, FX, commodity exposure)?
+* Are forward-looking risks quantified?
+* Is capital expenditure linked to technological transformation?
+
+Your system should generate:
+
+* Performance driver summaries
+* Risk exposure classification
+* Market sensitivity indicators
+
+
+## Information Systems & Internal Controls
+
+*Primary Items: 9, 9A, 14*
+
+Your RAG system should be able to answer:
+
+* Does the firm report material weaknesses in internal controls?
+* Are IT systems described as critical operational infrastructure?
+* Are there disagreements with auditors?
+* How are accounting fees structured?
+* Is cybersecurity risk disclosed as part of controls?
+
+Your system should output:
+
+* Control weakness classification
+* Audit risk indicators
+* Governance robustness signals
+
+## Legal & Regulatory Exposure
+
+*Primary Items: 3, 1A, 9B*
+
+Your RAG system should answer:
+
+* What active legal proceedings are disclosed?
+* Does the firm face regulatory investigations?
+* Are environmental or compliance risks material?
+* Are sanctions or geopolitical exposures mentioned?
+* Does the firm quantify potential legal liabilities?
+
+Your system should return:
+
+* Litigation exposure taxonomy
+* Regulatory risk summary
+* Legal risk severity classification
+
+## Corporate Governance & Ownership
+
+*Primary Items: 10, 11, 12, 13*
+
+Your RAG system should answer:
+
+* What is the board structure and independence profile?
+* How concentrated is ownership?
+* Are related-party transactions disclosed?
+* Are executive incentives aligned with performance?
+* Does governance structure suggest control concentration?
+
+Your system should output:
+
+* Governance structure classification
+* Ownership concentration metric
+* Incentive alignment signal
+
+
+## Market Structure & Equity Behavior
+
+*Primary Items: 5, 7*
+
+Your RAG system should answer:
+
+* How does the firm describe its shareholder base?
+* Are share repurchases discussed?
+* Is equity volatility mentioned?
+* Does management discuss competitive positioning?
+* Are dividend policies linked to performance strategy?
+
+Your system should return:
+
+* Market positioning classification
+* Shareholder structure summary
+* Capital return strategy description
+
+## Physical Assets & Operational Footprint
+
+*Primary Items: 2, 4*
+
+Your RAG system should answer:
+
+* Where are primary physical assets located?
+* Is geographic concentration risk present?
+* Are safety risks disclosed?
+* Are properties described as strategically critical?
+* Does the company discuss modernization or expansion?
+
+Your system should output:
+
+* Geographic exposure summary
+* Asset concentration classification
+* Operational footprint profile
+
+:::
+
+
+# Project Milestones: Engineering a Section-Scoped SEC 10-K RAG System
+
+This project progresses through five technical milestones. Each milestone represents a system capability that builds toward a fully validated Retrieval-Augmented Generation (RAG) platform.
+
+
+## Milestone 1 — Section Extraction & Cleaning Infrastructure
+
+The foundation of your system begins with extending the **10K-Filings-Analyzer** repository.
+
+At this stage, you will:
+
+* Select your domain track and corresponding SEC 10-K Item(s).
+* Extract only those sections from 2024 filings.
+* Improve section boundary detection where necessary.
+* Remove table-of-contents contamination, duplicated headings, signature blocks, and HTML artifacts.
+* Normalize text formatting and encoding.
+
+By the end of this milestone, you must produce a **clean, section-scoped dataset** suitable for LLM processing.
+
+This milestone establishes the **data engineering layer** of your RAG system.
+
+
+## Milestone 2 — Token-Aware Chunking & Metadata Engineering
+
+Once section text is clean, it must be structured for retrieval.
+
+At this milestone, you will:
+
+* Implement token-aware chunking.
+* Justify chunk size and overlap strategy.
+* Attach structured metadata to every chunk:
+
+  * CIK
+  * Company name
+  * Filing year
+  * Section ID
+  * Chunk ID
+  * Token count
+
+You should analyze chunk distributions and verify that regulatory formatting does not distort chunk logic.
+
+By the end of this milestone, you will have an **LLM-ready structured corpus**.
+
+This milestone transforms regulatory text into **retrievable computational units**.
+
+## Milestone 3 — Embedding Layer & Section-Scoped Retrieval
+
+Now you build the retrieval backbone.
+
+At this milestone, you will:
+
+* Generate embeddings for all chunks.
+* Build a persistent vector index (FAISS or Chroma).
+* Enforce strict metadata filtering by section.
+* Demonstrate top-k retrieval with similarity scores.
+* Prove that retrieval does not cross section boundaries.
+
+By the end of this milestone, you will have a functioning **section-scoped retrieval system**.
+
+This milestone constructs the **search intelligence layer** of your platform.
+
+
+## Milestone 4 — Grounded RAG Generation Engine
+
+With retrieval functioning, you now integrate generation.
+
+At this milestone, you will:
+
+* Implement a Question → Retrieval → Context Assembly → LLM Answer pipeline.
+* Enforce structured JSON outputs.
+* Require explicit citation of chunk_id and Item number.
+* Implement refusal logic when evidence is insufficient.
+
+Your system must successfully answer at least:
+
+* 15 structured domain-specific questions
+* Across 10 distinct firms
+
+By the end of this milestone, you will have a complete **grounded RAG engine**.
+
+This milestone integrates retrieval with controlled LLM reasoning.
+
+
+## Milestone 5 — Evaluation and System Validation
+
+The final milestone is validation and reliability assessment.
+
+You must evaluate:
+
+- Retrieval Accuracy
+  - Create at least 20 labeled question–chunk pairs.
+  - Compute Recall@k or Hit@k.
+- Grounding Reliability
+    - Measure citation coverage.
+    - Estimate hallucination rate.
+- Section Integrity
+  - Demonstrate zero cross-item leakage.
+- You must conclude with:
+    - A system architecture diagram.
+    - Quantitative performance summary.
+    - Reflection on limitations and failure modes.
+
+By the end of this milestone, you will have delivered a **validated enterprise-style RAG system**.
+
+# Submission Instructions for Milestone — I
+
+This first submission focuses on **system scoping and architecture design**, not full implementation.
+
+Once your group is formed:
+
+- Self-enroll in your Blackboard group.
+- Select your **Domain Track** and corresponding SEC 10-K Item(s).
+- Define the scope of your Section-Scoped RAG system.
+- Prepare a short system design brief (see requirements below).
+
+GitHub is **optional at this stage**.
+
+If you wish to deploy your final system using **Streamlit, Heroku, or similar platforms**, you may create a repository. Deployment can earn up to **25 bonus points** (see Deployment Option below).
+
+# Selecting a Domain Track
+
+Treat this as a **system design problem**, not a research paper.
+
+Your team must:
+
+* Select one Domain Track (Finance, HR, AI, Governance, Legal, IS, etc.).
+* Identify the relevant SEC 10-K Item(s).
+* Clearly state what your RAG system will be able to answer.
+* Define the boundaries of retrieval (which Items are allowed).
+* Specify what the system will refuse to answer.
+
+Your first submission should include:
+
+* System objective
+* Selected SEC Item(s)
+* 10–15 structured leading questions
+* High-level architecture description
+* Anticipated cleaning challenges
+* Expected retrieval risks
+
+No literature review is required.
+
+
+# Milestone 1 Design Brief (First Submission)
+
+Submit a short technical design document (2–4 pages) covering:
+
+- System Scope
+  - Which SEC Item(s) are selected?
+  - Why are they appropriate for your chosen domain?
+  - What type of questions will your system answer?
+- Retrieval Boundaries
+  - Will retrieval be limited to one Item or multiple?
+  - How will you enforce section scoping?
+  - What types of cross-section questions will your system reject?
+-  Anticipated Data Cleaning Issues, Identify likely challenges:
+   -  Table-of-contents bleed
+   -  ML artifacts
+   -  Repeated headers
+   -  Long financial tables
+   -  Boilerplate legal disclaimers
+-  Initial Question Pack
+   -  Provide 10–15 structured domain questions your system must answer.
+   -  These questions will later be used for evaluation.
+- Proposed System Architecture
+  - Provide a simple diagram or explanation of:
+
+```{mermaid}
+flowchart TD
+    A[SEC Download] --> B[Section Extraction]
+    B --> C[Cleaning]
+    C --> D[Chunking]
+    D --> E[Embedding]
+    E --> F[Vector Store]
+    F --> G[RAG Engine]
+    G --> H[Evaluation]
+
+```
+
+
+# Optional: Repository & Deployment (Bonus Credit)
+
+Creating a GitHub repository is optional for the base project.
+
+However, teams may earn up to **25 bonus points** by:
+
+- Deploying their RAG system via:
+  - Streamlit
+  - Gradio
+  - Heroku
+  - Hugging Face Spaces
+- Providing a live demo interface.
+- Implementing user query logging.
+- Demonstrating real-time retrieval visualization.
+
+Deployment is considered an **engineering extension**, not a requirement.
+
+
+# What This First Submission Should Demonstrate
+
+By the end of Milestone 1, your team should show:
+
+- Clear domain scoping
+- Understanding of SEC structural segmentation
+- Awareness of cleaning complexity
+- Structured RAG question design
+- Retrieval boundary discipline
+
+This ensures that implementation begins with **architectural clarity**, not code experimentation.
+
+
+# Summary of What Needs to Submitted
+
+* Group enrollment in Blackboard
+* Domain Track selection
+* SEC Item(s) selected
+* 10–15 structured system questions
+* Cleaning challenges outline
+* High-level architecture description
+* Optional:
+  * GitHub repository (if planning deployment)
+  * Deployment plan for bonus credit

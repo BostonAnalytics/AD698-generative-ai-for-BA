@@ -5,7 +5,12 @@ number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-engine: jupyter
+format: 
+    docx:
+        reference-doc: ../theme/APA7.docx   
+    pdf: default
+    html: default
+
 bibliography: ../references.bib
 categories: ['Notes', 'Lecture', 'M02:']
 description: "Lecture covering Prompt Engineering & In-Context Learning (ICL)."
