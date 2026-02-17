@@ -464,3 +464,10 @@ pre.sourceCode,
   display: flex;
   justify-content: center;
 }
+
+/* Shrink the summary label in code-fold blocks */
+details.code-fold > summary {
+  font-size: 0.95rem !important;   /* adjust as needed */
+  font-weight: 600;                /* optional */
+  padding: 0.2rem 0;               /* optional */
+}

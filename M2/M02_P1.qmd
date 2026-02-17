@@ -12,9 +12,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -22,6 +19,7 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
+        code-fold: true
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
@@ -32,7 +30,7 @@ title-slide-attributes:
     data-background-size: 103% auto
     data-background-opacity: "0.95"
 execute: 
-  echo: false
+  echo: true
   warning: false
   message: false
 bibliography: ../references.bib
@@ -41,57 +39,382 @@ csl: ../mis-quarterly.csl
 
 # Language as a Probabilistic Model
 
-## Language as distribution over sequences
+## Language as a Distribution Over Sequences
 
-## Chain rule & autoregressive factorization
+- [Language is a distribution over sequences:]{.uublue-bold} every sentence has a probability, not just a grammatical form.  
+- [Models assign likelihoods]{.uublue-bold} to sequences of tokens, capturing patterns in how words co‑occur.  
+- [Generation = sampling]{.uublue-bold} from this learned distribution, producing fluent text by choosing probable next tokens.  
+- [Context shapes probabilities:]{.uublue-bold} each new token is conditioned on all previous tokens (and optional prompts or constraints).  
+- [Training data defines the distribution]{.uublue-bold}, enabling models to approximate how real language is used.  
+- [This probabilistic framing unifies tasks]{.uublue-bold} like prediction, generation, scoring, and continuation under one principle.
 
-## Conditional likelihood
+## From Classification to Generation
 
-## Likelihood vs log-likelihood
+- In probabilistic classification, we compute: $\mathbb{P}(y \mid \mathbf{x})$
+- In language modeling, we invert the problem: $\mathbb{P}(\mathbf{w})$
+  - We model the probability of entire sequences of tokens: $\mathbf{w} = (w_1, w_2, \ldots, w_M)$
+  - This is a distribution over sequences, not just classes. 
+  - $\mathcal{V} = {\text{aardvark}, \text{abacus}, \ldots, \text{zither}}$
+- The vocabulary is finite, typically between 30,000 and 100,000 tokens
+  - Tokens are not exactly equal to words. While a token can sometimes be a whole word, they are smaller units of text used by AI (like sub-words, single characters, or punctuation). A general rule of thumb is that 1 token equals roughly 
+ of a word, or 100 tokens 
+ 75 English words. 
+- The objective of a language model is to assign probability to *entire sequences*:
 
-## Maximum likelihood estimation (MLE)
 
-# Information Theory & Loss Functions
+## What Are Tokens?
 
-## Entropy
+- [Tokens are the units of text]{.uublue-bold} that models read and generate — they may be full words, sub‑words, characters, spaces, or punctuation.  
+- [Tokenization splits text]{.uublue-bold} into these units before the model processes anything.  
+- Helpful English rules of thumb:  
+  - 1 token $\approx$ 4 characters  
+  - 1 token $\approx \frac{3}{4}$ of a word  
+  - 1–2 sentences $\approx$ 30 tokens  
+  - 1 paragraph $\approx$ 100 tokens  
+- [Different languages tokenize differently:]{.uublue-bold} e.g., "Cómo estás" → 5 tokens for 10 characters.  
+- Real examples:  
+  - "You miss 100% of the shots you don’t take" → 11 tokens  
+  - U.S. Declaration of Independence → 1,695 tokens  
+- Token counts matter for [costs, limits, and model behavior]{.uublue-bold}.
 
-## Cross-entropy
+---
 
-## KL divergence
+## How Tokenization Works
+
+- When you send text to the API:  
+  - Text → split into tokens  
+  - Model processes tokens  
+  - Model generates new tokens  
+  - Tokens → converted back to text  
+- Token usage categories:  
+  - [Input tokens]{.uublue-bold} (your prompt)  
+  - [Output tokens]{.uublue-bold} (model’s response)  
+  - [Cached tokens]{.uublue-bold} (reused history)  
+  - [Reasoning tokens]{.uublue-bold} (internal steps in some models)  
+- [Context matters:]{.uured-bold} the *same word* can map to *different tokens* depending on spacing, capitalization, and position.  
+  - " red" (leading space, lowercase) → token like 2266  
+  - " Red" (leading space, uppercase) → token like 2297  
+  - "Red" (start of sentence, no space) → token like 7738  
+- **Frequent tokens get lower IDs**, rare ones get higher IDs.  
+
+---
+
+## Why Model Sequence Probability?
+
+::: {.columns}
+::: {.column}
+
+Sequence probability is foundational for:
+
+* Machine Translation
+* Speech Recognition
+* Summarization
+* Dialogue Systems
+* Text Generation
+:::
+::: {.column}
+
+- Spanish sentence: *El cafe negro me gusta mucho*
+- Literal translation: *The coffee black me pleases much*
+- The language model encodes fluency as probability.
+
+:::
+:::
+
+[A good English language model assigns]{.uublue-bold}: 
+$\mathbb{P}(\text{The coffee black me pleases much}) <\mathbb{P}(\text{I love dark coffee})$
+
+---
+
+## Language as a Probability Distribution
+
+- Generative AI reframes this formally:
+- Generation = sampling from a probability distribution - $\mathbf{z} \sim \mathbb{P}_{data}$
+- For text: $\mathbf{z} \in \mathbb{N}^d$
+- Each element is a token index. So, language modeling means: $\mathbf{w} \sim \mathbb{P}_{data}$
+- But we do not know ($\mathbb{P}_{data}$).
+- So, we [learn]{.uured-bold} an approximation:
+$$
+\begin{align}
+\mathbb{P}_{model}(\mathbf{w}) \approx \mathbb{P}_{data}(\mathbf{w})
+\end{align}
+$$
+
+
+---
+
+## Chain Rule of Probability
+
+- Directly modeling $\mathbb{P}(w_1, w_2, \ldots, w_M)$ is intractable.
+- We apply the chain rule:
+
+$$
+\begin{align}
+\mathbb{P}(w_1, w_2, \ldots, w_M) \\
+\prod_{t=1}^{M}
+p(w_t \mid w_1, \ldots, w_{t-1})
+\end{align}
+$$
+
+- This is [Autoregressive factorization]{.uured-bold}.
+- Each token depends on all previous tokens.
+- This is the building block of decoder-only transformers.
+
+---
+
+## Autoregressive Generation
+
+- Generation is iterative so, $w_t \sim p(w_t \mid w_{<t})$
+- We sample one token at a time, with each new token conditioned on the entire history, like, $\mathbf{z} \sim \mathbb{P}_{data}(\cdot \mid \mathbf{y})$
+- where ($\mathbf{y}$) is the prompt (conditioning context).
+
+---
+
+## The Noisy Channel Model
+
+- Remember, English sentence ($w^{(e)}$) and Spanish sentence ($w^{(s)}$)
+- We want to model translation: $\mathbb{P}(w^{(e)} \mid w^{(s)})$
+-  Let's use Bayes’ rule:
+$$
+\begin{align}
+p(w^{(e)} \mid w^{(s)})\\
+\frac{
+p(w^{(s)} \mid w^{(e)}) p(w^{(e)})
+}{
+p(w^{(s)})
+}
+\end{align}
+$$
+
+- If we ignore the denominator (since it does not depend on $w^{(e)}$):
+$$
+\begin{align}
+p(w^{(e)} \mid w^{(s)})
+\propto
+p(w^{(s)} \mid w^{(e)}) p(w^{(e)})
+\end{align}
+$$
+
+## Implications
+
+- This is the [Noisy Channel Model]{.uured-bold} for translation. 
+  - ($p(w^{(e)})$) = language model
+  - ($p(w^{(s)} \mid w^{(e)})$) = translation model
+- This decomposition allows:
+  - Translation model trained on bilingual data
+  - Language model trained on monolingual data
+
+# Estimation & Evaluation
+
+## Likelihood and Log-Likelihood
+
+- Given a training corpus
+$$
+\begin{align}
+\mathcal{D} = {\mathbf{w}^{(1)}, \ldots, \mathbf{w}^{(N)}}
+\end{align}
+$$
+
+- We want to find parameters ($\theta$) that maximize the likelihood of the data, given by
+$$
+\begin{align}
+\theta^*=\arg\max_{\theta}\prod_{i=1}^N p_\theta(\mathbf{w}^{(i)})
+\end{align}
+$$
+- We can apply the chain rule to factor each sequence probability into token-level probabilities,
+$$
+\begin{align}
+\arg\max_{\theta} \prod_{i=1}^N \prod_{t=1}^{M_i} p_\theta(w_t^{(i)} \mid w_{<t}^{(i)})
+\end{align}
+$$
+- The Log-Likelihood, then is
+$$
+\begin{align}
+\mathcal{L}(\theta)=\sum_{i=1}^N \sum_{t=1}^{M_i} \log p_\theta(w_t^{(i)} \mid w_{<t}^{(i)})
+\end{align}
+$$
+
+## Log Likelihood (Cross Entropy) Loss
+
+- Training maximizes log-likelihood or equivalently minimizes negative log-likelihood
+
+$$
+\begin{align}
+-\mathcal{L}(\theta)
+\end{align}
+$$
+
+- We know this as the [cross-entropy loss]{.uured-bold} in machine learning, which measures the distance between the true data distribution and the model's predicted distribution.
+
+---
 
 ## Perplexity
 
-# Model Selection & Statistical Criteria
+- Like, Entropy and Cross-Entropy, Perplexity is also an important evaluator for Large Language models
+- It is the exponentiated negative average log-likelihood
 
-## Overfitting & bias–variance tradeoff
+$$
+\begin{align}
+\text{PPL} &= \exp\left(-\frac{1}{T}\sum_{t=1}^T\log p(w_t \mid w_{<t})\right)
+\end{align}
+$$
 
-## AIC (Akaike Information Criterion)
 
-## BIC (Bayesian Information Criterion)
+- Entropy:	Measures the average uncertainty in a single probability distribution P
+- Cross-entropy:	Measures how well a predicted distribution Q approximates the true distribution P
+- Perplexity:	Exponentiation of cross-entropy; Measures how many likely candidate tokens the model is choosing between
 
-## Log-likelihood comparison
+---
 
-# Cross-Validation & Generalization
+## Conditional vs Unconditional Generation
+::: {.columns}
+::: {.column}
 
-## Train / validation / test split
+- Unconditional
+- Conditional
+- Bayes relationship
+- Modern LLMs implement
 
-## K-fold cross-validation
+:::
+::: {.column}
+$$
+\begin{align}
+\mathbf{z} &\sim \mathbb{P}_{data}\\
+\mathbf{z} &\sim \mathbb{P}_{data}(\cdot \mid \mathbf{y})\\
+\mathbb{P}(\mathbf{z}) &=\int \mathbb{P}(\mathbf{z} \mid \mathbf{y}) \mathbb{P}(\mathbf{y}) , d\mathbf{y}\\
+&\mathbb{P}(w_t \mid w_{<t}, \text{prompt})
+\end{align}
+$$
 
-## Leave-One-Out Cross Validation (LOOCV)
+:::
 
-## Cross-validation for hyperparameters
+:::
+---
+
+## Approximation and Generalization
+
+- We will never know the true data distribution, $\mathbb{P}_{data}$,
+ (Recall [Data Generation Process]{.uured-bold}), so we learn an approximation:
+- We always [estimate]{.uublue-bold} a model distribution, $\mathbb{P}_{model}$, that approximates $\mathbb{P}_{data}$:
+- The quality of this estimate depends on:
+  * Data coverage
+  * Model capacity
+  * Objective function
+  * Optimization success
 
 # Linear Algebra of Meaning
 
 ## Vectors as semantic representation
+- Most common NLP solution
+  - Use, e.g., WordNet, a thesaurus containing lists of [synonym sets]{.uured-bold} and [hypernyms]{.uured-bold} (“is a” relationships)
 
-## Dot products & similarity
+::: {.columns}
+::: {.column}
+```{python}
 
-## Matrix multiplication
+import nltk
+from nltk.corpus import wordnet as wn
+nltk.download('wordnet')
+poses = { 'n':'noun', 'v':'verb', 's':'adj (s)', 'a':'adj', 'r':'adv'}
 
-## Embedding matrices
+for synset in wn.synsets("good"):
+  print("{}: {}".format(poses[synset.pos()],
+      ", ".join([l.name() for l in synset.lemmas()])))
+```
+:::
+::: {.column}
+```{python}
+import nltk
+from nltk.corpus import wordnet as wn
+nltk.download('wordnet')
+panda = wn.synset("panda.n.01")
+hyper = lambda s: s.hypernyms()
+list(panda.closure(hyper))
+```
+:::
+:::
 
-## Mahalanobis distance (if modeling embeddings statistically) 
+## Word embeddings Problems 
+
+- A useful resource but missing nuance:
+  - e.g., [proficient]{.uublue-bold} is listed as a synonym for [good]{.uublue-bold}; This is only correct in some contexts
+  - Also, WordNet list offensive synonyms in some synonym sets without any coverage of the connotations or appropriateness of words
+- Missing new meanings of words:
+  - e.g., wicked, badass, nifty, wizard, genius, ninja, bombest
+  - Impossible to keep up-to-date!
+- Subjective
+- Requires human labor to create and adapt
+- Can’t be used to accurately compute word similarity
+
+## Vectors as semantic representation
+- In traditional NLP, we regard words as discrete symbols: [hotel]{.uublue-bold}, [conference]{.uublue-bold}, [motel]{.uublue-bold} – a localist representation
+- Such symbols for words can be represented by one-hot vectors:
+$$
+\begin{align}
+motel &= \begin{matrix}
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0
+\end{matrix}\\
+hotel &= \begin{matrix}
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0
+\end{matrix}
+\end{align}
+$$
+
+- Vector dimension = number of words in vocabulary (e.g., 500,000+)
+
+## Problem with words as discrete symbols
+
+- Let's say we want to search “Boston motel”, we would like to match
+documents containing “Boston hotel”
+- But motel and hotel are orthogonal vectors in one-hot representation
+- There is no natural notion of similarity for one-hot vectors!
+- Solution:
+- Rely on WordNet’s list of synonyms to get similarity?
+- But it is well-known to fail badly: incompleteness, and exhaustive list
+- Learn to encode similarity in the vectors themselves
+
+## Representing words by their context
+
+- Distributional semantics: A word’s meaning is given by the words that frequently appear close-by
+- "You shall know a word by the company it keeps" (J. R. Firth 1957: 11)
+- When a word w appears in a text, its [context]{.uured-bold} is the set of words that appear nearby (within a fixed-size window).
+- We use the many contexts of $w$ to build up a representation of $w$
+
+::: {.callout-tip}
+…government debt problems turning into [banking]{.uublue-bold} crises as happened in 2009…
+…saying that [Europe]{.uured-bold} needs unified [banking]{.uublue-bold} regulation to replace the hodgepodge…
+…[India]{.uured-bold} has just given its [banking]{.uublue-bold} system a shot in the arm…
+:::
+
+## Distributional Vectors
+
+People enjoy <span style="color:#4CAF50;">drinking</span> different kinds of beverages.  
+Some prefer a cold <span style="color:#C49A6C;">beer</span> on a warm day,  
+while others choose <span style="color:#8BC34A;">alcoholic drinks</span> like  
+<span style="color:#F48FB1;">wine</span> or <span style="color:#F48FB1;">red wine</span> with dinner.
+
+In many pubs, customers order <span style="color:#FF9800;">pints</span> of  
+<span style="color:#2196F3;">draught</span> <span style="color:#C49A6C;">beer</span>,  
+though some switch to <span style="color:#FF5722;">liquor</span> later in the night.
+
+Different cultures have their own traditional  
+<span style="color:#795548;">beverages</span>, and people often  
+<span style="color:#4CAF50;">drink</span> them during celebrations.
+
+Some regions are known for producing  
+<span style="color:#9C27B0;">grapes</span> used in making  
+<span style="color:#F48FB1;">wine</span>, and visitors may tour vineyards  
+to see how each <span style="color:#9C27B0;">grape</span> variety affects flavor.
+
+At gatherings, you might see tables filled with  
+<span style="color:#F44336;">glasses</span>,  
+<span style="color:#FFEB3B;">bottles</span>, and the occasional  
+<span style="color:#FFEB3B;">glass</span> of something special.
+
+Some people enjoy non‑alcoholic  
+<span style="color:#795548;">beverages</span> as well,  
+choosing them over <span style="color:#8BC34A;">alcohol</span> for personal or health reasons.
+
 
 # Optimization & Learning
 

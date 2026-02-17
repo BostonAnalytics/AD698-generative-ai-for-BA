@@ -38,41 +38,57 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-| **1. Defining the Word**                                  |                           |                        |
-| └─ Types, tokens, vocabulary                              | 2.2.1                     | —                      |
-| └─ Tokenization                                           | 8.4                       | 4.3.2                  |
-| └─ Out-of-vocabulary problem                              | 6.5                       | —                      |
-| **2. Representing Meaning**                               |                           |                        |
-| └─ Static embeddings                                      | 3.1                       | 2.3                    |
-| └─ Contextual embeddings                                  | 6.3                       | 4.3                    |
-| └─ Distance metrics in embedding space                    | —                         | 2.6                    |
-| └─ Mahalanobis distance for covariance-aware similarity   | —                         | —                      |
-| **3. Structured Prediction**                              |                           |                        |
-| └─ Sequence labeling                                      | 7.1                       | —                      |
-| └─ Hidden Markov Models                                   | 7.4                       | —                      |
-| └─ Conditional Random Fields                              | 7.5                       | —                      |
-| └─ Neural sequence labeling                               | 7.6                       | —                      |
-| **4. Classification Diagnostics & Evaluation**            |                           |                        |
-| └─ Confusion matrix                                       | 4.4.1                     | —                      |
-| └─ Precision, recall, F1                                  | 4.4.1                     | —                      |
-| └─ ROC curves                                             | 4.4.2                     | —                      |
-| └─ AUC                                                    | 4.4.2                     | —                      |
-| └─ Threshold-free metrics                                 | 4.4.2                     | —                      |
-| └─ Statistical significance testing                       | 4.4.3                     | —                      |
-| **5. Attention & Long-Range Dependencies**                |                           |                        |
-| └─ RNN limitations                                        | 6.3                       | —                      |
-| └─ Attention mechanism                                    | —                         | 4.4                    |
-| └─ Multi-head self-attention                              | —                         | 4.4.2                  |
-| **6. Transformer Architectures**                          |                           |                        |
-| └─ Encoder                                                | —                         | 4.3                    |
-| └─ Decoder                                                | —                         | 4.8                    |
-| └─ Encoder–decoder                                        | —                         | 4.10                   |
-| └─ Cross-attention                                        | —                         | 4.10.2                 |
-| **7. Pretraining Objectives**                             |                           |                        |
-| └─ Masked language modeling                               | —                         | 4.7                    |
-| └─ Causal language modeling                               | 6                         | 4.9                    |
-| **8. Modern Extensions**                                  |                           |                        |
-| └─ Vision transformers                                    | —                         | 4.6                    |
-| └─ Architectural innovations (MoE, RoPE, Flash Attention) | —                         | 4.12                   |
-| └─ Multimodal LLMs                                        | —                         | 3.6                    |
+# Defining the Word
+
+## Types, tokens, vocabulary                             
+
+## Tokenization                                          
+
+## Out-of-vocabulary problem                             
+
+# Representing Meaning
+
+## Static embeddings                                     
+## Contextual embeddings                                 
+## Distance metrics in embedding space                   
+## Mahalanobis distance for covariance-aware similarity  
+
+# Structured Prediction
+
+## Sequence labeling                                     
+## Hidden Markov Models                                  
+## Conditional Random Fields                             
+## Neural sequence labeling                              
+
+# Classification Diagnostics & Evaluation
+
+## Confusion matrix                                      
+## Precision, recall, F1                                 
+## ROC curves                                            
+## AUC                                                   
+## Threshold-free metrics                                
+## Statistical significance testing                      
+
+# Attention & Long-Range Dependencies
+
+## RNN limitations                                       
+## Attention mechanism                                   
+## Multi-head self-attention                             
+
+# Transformer Architectures
+## Encoder                                               
+## Decoder                                               
+## Encoder–decoder                                       
+## Cross-attention                                       
+
+# Pretraining Objectives
+
+## Masked language modeling                              
+## Causal language modeling                              
+
+# Modern Extensions
+
+## Vision transformers                                   
+## Architectural innovations (MoE, RoPE, Flash Attention)
+## Multimodal LLMs                                       
 
