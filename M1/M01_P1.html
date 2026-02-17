@@ -1,0 +1,2447 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-443ac161e34e8c1eedb78f958e3d9213.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.8.1">
+
+  <meta name="author" content="Nakul R. Padalkar">
+  <meta name="dcterms.date" content="2024-03-12">
+  <title>AD 698 Applied Generative AI Business Analytics – AD698 - Applied Generative AI</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+    /* CSS for citations */
+    div.csl-bib-body { }
+    div.csl-entry {
+      clear: both;
+      margin-bottom: 1em;
+    }
+    .hanging-indent div.csl-entry {
+      margin-left:2em;
+      text-indent:-2em;
+    }
+    div.csl-left-margin {
+      min-width:2em;
+      float:left;
+    }
+    div.csl-right-inline {
+      margin-left:2em;
+      padding-left:1em;
+    }
+    div.csl-indent {
+      margin-left: 2em;
+    }  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-0905e1987dacfde89208f1a95512a3b5.css">
+  <script>window.backupDefine = window.define; window.define = undefined;</script><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+  <script>document.addEventListener("DOMContentLoaded", function () {
+ var mathElements = document.getElementsByClassName("math");
+ var macros = [];
+ for (var i = 0; i < mathElements.length; i++) {
+  var texText = mathElements[i].firstChild;
+  if (mathElements[i].tagName == "SPAN") {
+   katex.render(texText.data, mathElements[i], {
+    displayMode: mathElements[i].classList.contains('display'),
+    throwOnError: false,
+    macros: macros,
+    fleqn: false
+   });
+}}});
+  </script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" data-background-image="../theme/blank_red.png" data-background-opacity="0.95" data-background-size="103% auto" class="quarto-title-block center">
+  <h1 class="title">AD698 - Applied Generative AI</h1>
+  <p class="subtitle">Introduction to Generative AI &amp; Business Applications</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Nakul R. Padalkar 
+</div>
+        <p class="quarto-title-affiliation">
+            Boston University
+          </p>
+    </div>
+</div>
+
+  <p class="date">March 12, 2024</p>
+</section><section id="TOC">
+<nav role="doc-toc"> 
+<h2 id="toc-title">Table of contents</h2>
+<ul>
+<li><a href="#/from-analytics-to-ai" id="/toc-from-analytics-to-ai">From Analytics to AI</a></li>
+<li><a href="#/anatomy-of-text-mining-and-analytics" id="/toc-anatomy-of-text-mining-and-analytics">Anatomy of Text Mining and Analytics</a></li>
+<li><a href="#/data-collection-and-acquisition" id="/toc-data-collection-and-acquisition">Data Collection and Acquisition</a></li>
+<li><a href="#/anatomy-of-a-webpage" id="/toc-anatomy-of-a-webpage">Anatomy of a Webpage</a></li>
+<li><a href="#/web-scraping-web-crawling" id="/toc-web-scraping-web-crawling">Web Scraping/ Web Crawling</a></li>
+<li><a href="#/apis-and-web-services" id="/toc-apis-and-web-services">APIs and Web Services</a></li>
+<li><a href="#/references" id="/toc-references">References</a></li>
+</ul>
+</nav>
+</section>
+<section id="course-welcome" class="slide level2">
+<h2>Course Welcome</h2>
+<ul>
+<li>Understand the breadth of generative AI technologies</li>
+<li>Explore core generative model architectures</li>
+<li>Gain insights into practical applications</li>
+</ul>
+<p><img data-src="./M01_lecture01_figures/ad698path.png" style="width:95.0%"></p>
+</section>
+<section id="how-to-print-revealjs-slides" class="slide level2">
+<h2>How to print Revealjs slides</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="../syllabus-images/Printing_Revealjs_Slides.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+</section>
+<section id="course-schedule-tentative" class="slide level2">
+<h2>Course Schedule (tentative)</h2>
+<div id="134f81fe" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<style type="text/css">
+#T_ac6a1 th {
+  text-align: left;
+}
+#T_ac6a1 td {
+  text-align: left;
+}
+</style>
+
+<table id="T_ac6a1" class="caption-top" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th id="T_ac6a1_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Module Name</th>
+<th id="T_ac6a1_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Lecture</th>
+<th id="T_ac6a1_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Title</th>
+<th id="T_ac6a1_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_ac6a1_row0_col0" class="data row0 col0">Technology Stack Preparation</td>
+<td id="T_ac6a1_row0_col1" class="data row0 col1">L0.1</td>
+<td id="T_ac6a1_row0_col2" class="data row0 col2">Optional GitHub Classroom &amp; Version Control Basics Optional GitHub account setup</td>
+<td id="T_ac6a1_row0_col3" class="data row0 col3">GitHub Classroom workflow; cloning and opening notebooks in Colab; basic version control concepts (commit, push, pull); when and why GitHub is used in applied GenAI work.</td>
+</tr>
+<tr class="even">
+<td id="T_ac6a1_row1_col0" class="data row1 col0">Technology Stack Preparation</td>
+<td id="T_ac6a1_row1_col1" class="data row1 col1">L0.2</td>
+<td id="T_ac6a1_row1_col2" class="data row1 col2">Google Colab &amp; Execution Environment Setup with technical orientation</td>
+<td id="T_ac6a1_row1_col3" class="data row1 col3">Google Colab setup; notebook fundamentals; Python runtime basics; managing files, sessions, and outputs; running, saving, exporting, and submitting notebooks.</td>
+</tr>
+<tr class="odd">
+<td id="T_ac6a1_row2_col0" class="data row2 col0">Language Probability and Representation</td>
+<td id="T_ac6a1_row2_col1" class="data row2 col1">L1.1</td>
+<td id="T_ac6a1_row2_col2" class="data row2 col2">Course Orientation and Reproducible GenAI Setup</td>
+<td id="T_ac6a1_row2_col3" class="data row2 col3">Course overview; GenAI system framing; AI disclosure files and accountability.</td>
+</tr>
+<tr class="even">
+<td id="T_ac6a1_row3_col0" class="data row3 col0">Language Probability and Representation</td>
+<td id="T_ac6a1_row3_col1" class="data row3 col1">L1.2</td>
+<td id="T_ac6a1_row3_col2" class="data row3 col2">Language Probability and Generative Systems</td>
+<td id="T_ac6a1_row3_col3" class="data row3 col3">Why language is probabilistic; prediction as generation; uncertainty in text; NLP as the foundation of GenAI.</td>
+</tr>
+<tr class="odd">
+<td id="T_ac6a1_row4_col0" class="data row4 col0">Meaning and Structured Text</td>
+<td id="T_ac6a1_row4_col1" class="data row4 col1">L2.1</td>
+<td id="T_ac6a1_row4_col2" class="data row4 col2">Mathematical Foundations Through Language Modeling</td>
+<td id="T_ac6a1_row4_col3" class="data row4 col3">Vectors as meaning; probability and conditional likelihood; loss functions; entropy and perplexity introduced through language modeling.</td>
+</tr>
+<tr class="even">
+<td id="T_ac6a1_row5_col0" class="data row5 col0">Meaning and Structured Text</td>
+<td id="T_ac6a1_row5_col1" class="data row5 col1">L2.2</td>
+<td id="T_ac6a1_row5_col2" class="data row5 col2">From Words to Structured Text</td>
+<td id="T_ac6a1_row5_col3" class="data row5 col3">Foundations of text representation; tokenization and normalization; n-grams; static versus contextual representations; document structure awareness.</td>
+</tr>
+<tr class="odd">
+<td id="T_ac6a1_row6_col0" class="data row6 col0">Prompting and Semantic Geometry</td>
+<td id="T_ac6a1_row6_col1" class="data row6 col1">L3.1</td>
+<td id="T_ac6a1_row6_col2" class="data row6 col2">Prompting as System Design</td>
+<td id="T_ac6a1_row6_col3" class="data row6 col3">Prompt engineering as probabilistic control; zero and few-shot learning; in-context learning; common failure modes.</td>
+</tr>
+<tr class="even">
+<td id="T_ac6a1_row7_col0" class="data row7 col0">Prompting and Semantic Geometry</td>
+<td id="T_ac6a1_row7_col1" class="data row7 col1">L3.2</td>
+<td id="T_ac6a1_row7_col2" class="data row7 col2">Tokenization Embeddings and Semantic Geometry</td>
+<td id="T_ac6a1_row7_col3" class="data row7 col3">Subword tokenization; embedding spaces; cosine similarity; semantic neighborhoods; semantic drift.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="course-schedule-tentative-1" class="slide level2">
+<h2>Course Schedule (tentative)</h2>
+<div id="f272ee0f" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<style type="text/css">
+#T_43d01 th {
+  text-align: left;
+}
+#T_43d01 td {
+  text-align: left;
+}
+</style>
+
+<table id="T_43d01" class="caption-top" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th id="T_43d01_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Module Name</th>
+<th id="T_43d01_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Lecture</th>
+<th id="T_43d01_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Title</th>
+<th id="T_43d01_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_43d01_row0_col0" class="data row0 col0">Model Architectures</td>
+<td id="T_43d01_row0_col1" class="data row0 col1">L4.1</td>
+<td id="T_43d01_row0_col2" class="data row0 col2">Transformers Attention and Context</td>
+<td id="T_43d01_row0_col3" class="data row0 col3">Self-attention; positional encoding; scaling intuition; why transformers replaced RNNs and LSTMs.</td>
+</tr>
+<tr class="even">
+<td id="T_43d01_row1_col0" class="data row1 col0">Model Architectures</td>
+<td id="T_43d01_row1_col1" class="data row1 col1">L4.2</td>
+<td id="T_43d01_row1_col2" class="data row1 col2">Training Paradigms and Fine-Tuning Pipelines</td>
+<td id="T_43d01_row1_col3" class="data row1 col3">Pretraining versus fine-tuning; instruction tuning; dataset formatting; overfitting and data leakage risks.</td>
+</tr>
+<tr class="odd">
+<td id="T_43d01_row2_col0" class="data row2 col0">Retrieval and Grounded Generation</td>
+<td id="T_43d01_row2_col1" class="data row2 col1">L5.1</td>
+<td id="T_43d01_row2_col2" class="data row2 col2">Retrieval Augmented Generation Concepts</td>
+<td id="T_43d01_row2_col3" class="data row2 col3">Chunking and indexing; embedding-based retrieval; grounding strategies; hallucination risks.</td>
+</tr>
+<tr class="even">
+<td id="T_43d01_row3_col0" class="data row3 col0">Retrieval and Grounded Generation</td>
+<td id="T_43d01_row3_col1" class="data row3 col1">L5.2</td>
+<td id="T_43d01_row3_col2" class="data row3 col2">Designing Retrieval-Augmented Pipelines</td>
+<td id="T_43d01_row3_col3" class="data row3 col3">End-to-end retrieval-augmented workflows; query design; citation tracing; system limitations.</td>
+</tr>
+<tr class="odd">
+<td id="T_43d01_row4_col0" class="data row4 col0">Adaptation and Insight</td>
+<td id="T_43d01_row4_col1" class="data row4 col1">L6.1</td>
+<td id="T_43d01_row4_col2" class="data row4 col2">Efficient Adaptation LoRA QLoRA and PEFT</td>
+<td id="T_43d01_row4_col3" class="data row4 col3">Parameter-efficient fine-tuning; tradeoffs between prompting retrieval and adaptation; cost governance.</td>
+</tr>
+<tr class="even">
+<td id="T_43d01_row5_col0" class="data row5 col0">Adaptation and Insight</td>
+<td id="T_43d01_row5_col1" class="data row5 col1">L6.2</td>
+<td id="T_43d01_row5_col2" class="data row5 col2">Semantic Search Clustering and Change Detection</td>
+<td id="T_43d01_row5_col3" class="data row5 col3">Embedding-based clustering; similarity search; longitudinal semantic analysis across document collections.</td>
+</tr>
+<tr class="odd">
+<td id="T_43d01_row6_col0" class="data row6 col0">Context and Multimodality</td>
+<td id="T_43d01_row6_col1" class="data row6 col1">L7.1</td>
+<td id="T_43d01_row6_col2" class="data row6 col2">Context Windows Memory and Compression</td>
+<td id="T_43d01_row6_col3" class="data row6 col3">Context limits; summarization; caching; memory strategies for long documents.</td>
+</tr>
+<tr class="even">
+<td id="T_43d01_row7_col0" class="data row7 col0">Context and Multimodality</td>
+<td id="T_43d01_row7_col1" class="data row7 col1">L7.2</td>
+<td id="T_43d01_row7_col2" class="data row7 col2">Multimodal Generative Models and Structured Data</td>
+<td id="T_43d01_row7_col3" class="data row7 col3">Vision-language models; multimodal inputs; tables figures and structured representations; enterprise use cases.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="course-grading" class="slide level2">
+<h2>Course Grading</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<div id="3b6b6fd7" class="cell" data-auto-stretch="false" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="M01_P1_files/figure-revealjs/cell-4-output-1.png"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:40%;">
+<div id="145bcf76" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<style type="text/css">
+#T_7b2e2 th {
+  text-align: left;
+}
+#T_7b2e2 td {
+  text-align: left;
+}
+#T_7b2e2 tbody td:nth-child(2) {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#T_7b2e2 tbody td:nth-child(3) {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
+
+<table id="T_7b2e2" class="caption-top" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th id="T_7b2e2_level0_col0" class="col_heading level0 col0" data-quarto-table-cell-role="th">Class Activity</th>
+<th id="T_7b2e2_level0_col1" class="col_heading level0 col1" data-quarto-table-cell-role="th">Count</th>
+<th id="T_7b2e2_level0_col2" class="col_heading level0 col2" data-quarto-table-cell-role="th">Points</th>
+<th id="T_7b2e2_level0_col3" class="col_heading level0 col3" data-quarto-table-cell-role="th">Max Points</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td id="T_7b2e2_row0_col0" class="data row0 col0">AWS Academy Generative AI Foundations</td>
+<td id="T_7b2e2_row0_col1" class="data row0 col1">1</td>
+<td id="T_7b2e2_row0_col2" class="data row0 col2">100</td>
+<td id="T_7b2e2_row0_col3" class="data row0 col3">100</td>
+</tr>
+<tr class="even">
+<td id="T_7b2e2_row1_col0" class="data row1 col0">Group Paper Presentation (Once per Group)*</td>
+<td id="T_7b2e2_row1_col1" class="data row1 col1">1</td>
+<td id="T_7b2e2_row1_col2" class="data row1 col2">50</td>
+<td id="T_7b2e2_row1_col3" class="data row1 col3">50</td>
+</tr>
+<tr class="odd">
+<td id="T_7b2e2_row2_col0" class="data row2 col0">Assignment</td>
+<td id="T_7b2e2_row2_col1" class="data row2 col1">4</td>
+<td id="T_7b2e2_row2_col2" class="data row2 col2">50</td>
+<td id="T_7b2e2_row2_col3" class="data row2 col3">200</td>
+</tr>
+<tr class="even">
+<td id="T_7b2e2_row3_col0" class="data row3 col0">Managerial report with Application Demo</td>
+<td id="T_7b2e2_row3_col1" class="data row3 col1">1</td>
+<td id="T_7b2e2_row3_col2" class="data row3 col2">70</td>
+<td id="T_7b2e2_row3_col3" class="data row3 col3">70</td>
+</tr>
+<tr class="odd">
+<td id="T_7b2e2_row4_col0" class="data row4 col0">Corpus Familiarization &amp; Chatbot Scope</td>
+<td id="T_7b2e2_row4_col1" class="data row4 col1">1</td>
+<td id="T_7b2e2_row4_col2" class="data row4 col2">-</td>
+<td id="T_7b2e2_row4_col3" class="data row4 col3">-</td>
+</tr>
+<tr class="even">
+<td id="T_7b2e2_row5_col0" class="data row5 col0">Text Structuring &amp; Retrieval Units</td>
+<td id="T_7b2e2_row5_col1" class="data row5 col1">1</td>
+<td id="T_7b2e2_row5_col2" class="data row5 col2">-</td>
+<td id="T_7b2e2_row5_col3" class="data row5 col3">-</td>
+</tr>
+<tr class="odd">
+<td id="T_7b2e2_row6_col0" class="data row6 col0">Embeddings &amp; Retrieval Baseline</td>
+<td id="T_7b2e2_row6_col1" class="data row6 col1">1</td>
+<td id="T_7b2e2_row6_col2" class="data row6 col2">-</td>
+<td id="T_7b2e2_row6_col3" class="data row6 col3">-</td>
+</tr>
+<tr class="even">
+<td id="T_7b2e2_row7_col0" class="data row7 col0">Grounded Generation &amp; Guardrails</td>
+<td id="T_7b2e2_row7_col1" class="data row7 col1">1</td>
+<td id="T_7b2e2_row7_col2" class="data row7 col2">-</td>
+<td id="T_7b2e2_row7_col3" class="data row7 col3">-</td>
+</tr>
+<tr class="odd">
+<td id="T_7b2e2_row8_col0" class="data row8 col0">Group Project Presentation</td>
+<td id="T_7b2e2_row8_col1" class="data row8 col1">1</td>
+<td id="T_7b2e2_row8_col2" class="data row8 col2">40</td>
+<td id="T_7b2e2_row8_col3" class="data row8 col3">40</td>
+</tr>
+<tr class="even">
+<td id="T_7b2e2_row9_col0" class="data row9 col0">Group Feedback</td>
+<td id="T_7b2e2_row9_col1" class="data row9 col1">1</td>
+<td id="T_7b2e2_row9_col2" class="data row9 col2">40</td>
+<td id="T_7b2e2_row9_col3" class="data row9 col3">40</td>
+</tr>
+<tr class="odd">
+<td id="T_7b2e2_row10_col0" class="data row10 col0">Total</td>
+<td id="T_7b2e2_row10_col1" class="data row10 col1">-</td>
+<td id="T_7b2e2_row10_col2" class="data row10 col2">-</td>
+<td id="T_7b2e2_row10_col3" class="data row10 col3">500</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div></div>
+</section>
+<section id="participation-points" class="slide level2">
+<h2>Participation Points</h2>
+<ul>
+<li>You are added to an AWS Academy Generative AI Foundations course in AWS Academy.</li>
+<li>There are self-paced 10 modules in the course.</li>
+<li>If you complete all modules, you will receive participation points for AWS academy.</li>
+<li>You are also added to AWS Learner Lab for hands-on practice.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/AWS-Certification-Current-Roadmap.jpg" class="quarto-figure quarto-figure-center" style="width:50.0%"></p>
+</figure>
+</div>
+</section>
+<section id="github-repository-and-portfolio" class="slide level2">
+<h2>GitHub Repository and Portfolio</h2>
+<ul>
+<li><span class="uured-bold">Lecture 0.1</span>, <span class="uured-bold">Lecture 0.2</span>, <span class="uured-bold">Lecture 0.3</span> videos cover basic portfolio creation using GitHub.</li>
+<li>Follow the video and submit the repository link in the assignment.</li>
+<li>This will be also used for submitting
+<ul>
+<li>Assignments</li>
+<li>Projects</li>
+<li>Weekly Quizzes, Presentations, and Problems solving exercises AKA Labs</li>
+</ul></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/brian-marion-aaron-project.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></p>
+</figure>
+</div>
+</section>
+<section id="in-class-presentations" class="slide level2">
+<h2>In class Presentations</h2>
+<ul>
+<li>Look for the Labs page in each lecture folder (M0X/Lecture) for the list of papers and suggestions for the presentation.</li>
+<li>Each student group will deliver <strong>one research paper presentation</strong> during the semester.
+<ul>
+<li>Presentation length: approximately <strong>15 minutes</strong></li>
+<li>Each presentation will be followed by <strong>guided class discussion</strong></li>
+<li>All students are expected to read the assigned paper(s), regardless of whether they are presenting</li>
+</ul></li>
+<li>Presentations focus on:
+<ul>
+<li>The problem the paper addresses</li>
+<li>The technical or conceptual contribution</li>
+<li>Limitations and assumptions</li>
+<li>Implications for building generative AI systems</li>
+</ul></li>
+<li>This component develops skills in <span class="uublue-bold">critical reading</span>, <span class="uublue-bold">synthesis</span>, and <span class="uublue-bold">technical communication</span>.</li>
+</ul>
+</section>
+<section id="individual-assignments" class="slide level2">
+<h2>Individual Assignments</h2>
+<ul>
+<li>Four individual assignments.
+<ul>
+<li>Report (word or pdf) and code (jupyter notebook).</li>
+</ul></li>
+<li>These are more detailed and require more time to complete.</li>
+</ul>
+</section>
+<section id="group-project" class="slide level2">
+<h2>Group Project</h2>
+<ul>
+<li><span class="uured-bold">Lecture 0.1</span> and <span class="uured-bold">Lecture 0.2</span> videos cover basic portfolio creation using GitHub.</li>
+<li>Focuses on equipping students with the knowledge to explore a dataset and extract meaningful insights. Throughout this assignment, you’ll complete the following:</li>
+</ul>
+<table class="caption-top">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 6%">
+<col style="width: 75%">
+</colgroup>
+<thead>
+<tr class="header">
+<th><strong>Component</strong></th>
+<th><strong>Points</strong></th>
+<th><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Project Milestones through GitHub</td>
+<td>70</td>
+<td>This includes Corpus Familiarization &amp; Chatbot Scope, Text Structuring &amp; Retrieval Units, Embeddings &amp; Retrieval Baseline, Grounded Generation &amp; Guardrails</td>
+</tr>
+<tr class="even">
+<td>Presentation</td>
+<td>40</td>
+<td>Effectively communicates the project findings and technical work.</td>
+</tr>
+<tr class="odd">
+<td>Group Feedback</td>
+<td>40</td>
+<td>Includes peer feedback and team collaboration evaluation.</td>
+</tr>
+<tr class="even">
+<td><strong>Total</strong></td>
+<td><strong>150</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="course-site" class="slide level2">
+<h2>Course Site</h2>
+<ul>
+<li><span class="uured-bold">Design and content is subjected to change</span>.</li>
+<li>All the assignments, quizzes, and projects will be posted on the course site.</li>
+<li>The course site is the main source of information for the course.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/blackboard-ultra-ad698.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+</section>
+<section id="office-hours-consultation-sessions" class="slide level2">
+<h2>Office Hours &amp; Consultation Sessions</h2>
+<ul>
+<li>Look for <span class="uugreen-bold">office hours</span> page on blackboard.</li>
+<li>Look for <span class="uugreen-bold">Consultation Sessions</span> page on blackboard.</li>
+<li><span class="uugreen-bold">Consultation Sessions</span>: For detailed help on assignments and projects.
+<ul>
+<li>Held separately on Saturday, time needs to be discussed.</li>
+<li>These will be review of labs and assignments.</li>
+<li>These will be held on Zoom.</li>
+<li><span class="uured-bold">Recorded only if there is an audience</span>.</li>
+</ul></li>
+</ul>
+</section>
+<section id="tools-used-in-the-course" class="slide level2">
+<h2>Tools used in the course</h2>
+<ul>
+<li><span class="uured-bold">Python</span>: dominant AI/ML language with simple, fast prototyping.<br>
+</li>
+<li><span class="uured-bold">PyTorch / TensorFlow</span>: core deep‑learning frameworks for GenAI.<br>
+</li>
+<li><span class="uured-bold">Hugging Face Transformers</span>: key library for LLMs, text generation, and RAG.<br>
+</li>
+<li><span class="uured-bold">OpenCV &amp; PIL</span>: essential for image/video processing in GenAI.</li>
+</ul>
+</section>
+<section id="what-is-generative-ai" class="slide level2">
+<h2>What is Generative AI?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/generative-ai.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+</section>
+<section id="enterprise-ai-landscape" class="slide level2">
+<h2>Enterprise AI Landscape</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/Enterprise-generative-AI-application-landscape-vw.png" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
+</figure>
+</div>
+</section>
+<section id="genai-core-characteristics" class="slide level2">
+<h2>GenAI Core Characteristics</h2>
+<ul>
+<li>Learning from existing data</li>
+<li>Generating novel, contextually relevant outputs</li>
+<li>Spanning multiple modalities (text, image, code, audio)</li>
+</ul>
+</section>
+<section id="evolution-of-model-architecture" class="slide level2">
+<h2>Evolution of Model Architecture</h2>
+<div id="fig-LLM-dialogue-system" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-LLM-dialogue-system-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="./M01_lecture01_figures/LLM-dialogue-system.jpg" class="quarto-figure quarto-figure-center" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-LLM-dialogue-system-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<strong>Figure</strong>&nbsp;1<strong>.</strong> Evolution of Language Model based Dialogue Systems <span class="citation" data-cites="Wang2023">(<a href="#/references" role="doc-biblioref" onclick="">Wang et al. 2023</a>)</span>
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="key-generative-model-architectures" class="slide level2">
+<h2>Key Generative Model Architectures</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Foundation Models and Algorithms
+<ul>
+<li>Convolutional Neural Networks (CNNs)</li>
+<li>Recurrent Neural Networks (RNNs)</li>
+<li>Transformer Architecture</li>
+<li>Generative Adversarial Networks (GANs)</li>
+</ul></li>
+<li>Language Models
+<ul>
+<li>GPT (Generative Pre-trained Transformer)</li>
+<li>BERT (Bidirectional Encoder Representations)</li>
+</ul></li>
+</ul>
+</div><div class="column">
+<ul>
+<li>Image Generation Models
+<ul>
+<li>DALL-E</li>
+<li>Stable Diffusion</li>
+<li>Midjourney</li>
+</ul></li>
+<li>Multimodal Models
+<ul>
+<li>Amazon Nova</li>
+<li>Meta Llama</li>
+<li>Gemini</li>
+<li>GPT</li>
+</ul></li>
+</ul>
+</div></div>
+</section>
+<section id="simulation-emulation-and-ai" class="slide level2">
+<h2>Simulation, Emulation, and AI</h2>
+<ul>
+<li>Given a function/process that exists with complex logical pathways, can it be mimicked by computers?
+<ul>
+<li>Economical transactions of a small city?</li>
+<li>Social interactions between a household?</li>
+<li>Weather patterns over a region?</li>
+<li>Train of thought of researcher doing their job?</li>
+</ul></li>
+<li><span class="uured-bold">Simulation</span>: The imitation of a process, function, or environment that could exist or at least makes sense.</li>
+<li><span class="uured-bold">Artificial Intelligence</span>: The implementation of systems that perform tasks that seemingly require human skills.</li>
+<li><span class="uured-bold">Machine Learning</span>: The use of algorithms and statistics to identify, act on, and/or mimic patterns.</li>
+<li><span class="uured-bold">Deep Learning</span>: The use of neural networks to create function approximators with machine learning patterns.</li>
+</ul>
+</section>
+<section id="deep-learning---history" class="slide level2">
+<h2>Deep Learning - History</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/nn_timeline.webp" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
+</figure>
+</div>
+</section>
+<section id="artificial-intelligence---history" class="slide level2">
+<h2>Artificial Intelligence - History</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/Intelligent-Machines-AI-timeline.jpg" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+</section>
+<section id="dartmouth-conference-the-birth-of-artificial-intelligence" class="slide level2">
+<h2>1956 - Dartmouth Conference: The Birth of Artificial Intelligence</h2>
+<h3 id="significance">Significance</h3>
+<ul>
+<li>The term “<span class="uublue-bold">Artificial Intelligence</span>” was first coined at the Dartmouth Conference, with credit to John McCarthy, one of the event organizers.</li>
+<li><span class="uublue-bold">Foundational Moment for AI</span>: This event is often considered the founding moment of AI as a field of study. It was the first time researchers from various disciplines came together to explore the concept of machine intelligence.</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/dartmouth_Fathers_AI.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</section>
+<section id="perceptron-by-rosenblatt-at-cornell" class="slide level2">
+<h2>1958 - Perceptron by Rosenblatt at Cornell</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li><span class="uured-bold">The perceptron</span>, introduced by Frank Rosenblatt in 1958, was an early artificial neuron model inspired by the brain and helped launch modern neural networks.<br>
+</li>
+<li>Despite its impact, it couldn’t handle non–linearly separable problems like <strong>XOR</strong>, a limitation that shaped future AI research.</li>
+</ul>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/0925_rosenblatt4.jpg" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="analysis-of-perceptrons-minsky-papert" class="slide level2">
+<h2>1969 - Analysis of Perceptrons Minsky &amp; Papert</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li><span class="uured-bold">Minsky and Papert’s book <em>Perceptrons</em></span> analyzed the strengths and limits of Rosenblatt’s perceptron, emphasizing its inability to solve non‑linearly separable problems like <span class="uured-bold">XOR</span>.<br>
+</li>
+<li>Their critique slowed neural‑network research and contributed to the <span class="uured-bold">AI Winter</span>.<br>
+</li>
+<li>The work also paved the way for later breakthroughs, including <span class="uured-bold">backpropagation</span> in the 1980s, which enabled training multilayer networks and revived interest in neural nets.</li>
+</ul>
+</div><div class="column">
+<div id="df8be2ec" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img data-src="M01_P1_files/figure-revealjs/cell-6-output-1.png"></p>
+</figure>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="text-st-ai-winter" class="slide level2">
+<h2>1974-1980 - <span class="math inline">1^{\text {st }}</span> AI Winter</h2>
+<h3 id="first-ai-winter">1974–1980 — First AI Winter</h3>
+<ul>
+<li>Period of reduced funding, interest, and institutional support for AI research</li>
+<li>Triggered by unmet promises of early symbolic AI systems</li>
+<li>Government and industry funding declined sharply</li>
+<li>Many AI labs were closed, downsized, or repurposed</li>
+</ul>
+<h3 id="key-impacts">Key Impacts</h3>
+<ul>
+<li>Researchers shifted to adjacent fields (statistics, control systems, cognitive science)</li>
+<li>Machine learning and statistical methods progressed quietly</li>
+<li>Emphasized the gap between theoretical breakthroughs and practical deployment</li>
+<li>Established lasting lessons on expectation management in AI research</li>
+</ul>
+</section>
+<section id="s-backpropagation-popularized" class="slide level2">
+<h2>1980s — Backpropagation Popularized</h2>
+<p><span class="uured-bold">Backpropagation</span> is a general algorithm for training neural networks by computing gradients of a loss function with respect to model parameters efficiently.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>Core ideas
+<ul>
+<li>Uses the <strong>chain rule</strong> to propagate error signals backward through layers</li>
+<li>Computes partial derivatives for each weight in the network</li>
+<li>Enables optimization via <strong>gradient-based learning</strong> (e.g., gradient descent)</li>
+</ul></li>
+<li>Why it was transformative
+<ul>
+<li>Solved the <em>credit assignment problem</em> in multi-layer networks</li>
+<li>Made it computationally feasible to train deep (for the time) architectures</li>
+<li>Shifted neural networks from theoretical constructs to trainable systems</li>
+<li>Backpropagation unified learning across arbitrary network depth</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/backprop.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="multi-layer-perceptron-mlp" class="slide level2">
+<h2>1986 - Multi-Layer Perceptron (MLP)</h2>
+<p>The 1986 backpropagation work demonstrated that <span class="uured-bold">multi-layer perceptrons (MLPs)</span> could be trained effectively and reliably.</p>
+<ul>
+<li>What changed
+<ul>
+<li><strong>Hidden layers learned internal representations</strong>, not hand-engineered features</li>
+<li>Networks captured <strong>hierarchical structure</strong> in data</li>
+<li>Non-linear activations enabled expressive decision boundaries</li>
+</ul></li>
+<li>Key advances
+<ul>
+<li>Demonstrated solutions to problems like <strong>XOR</strong>, impossible for linear models</li>
+<li>Showed learning was <strong>distributed across layers</strong>, not localized</li>
+<li>Provided empirical evidence that neural networks could generalize</li>
+</ul></li>
+<li>Why this mattered
+<ul>
+<li>Shifted AI from rule-based reasoning toward <strong>representation learning</strong></li>
+<li>Established the conceptual foundation for modern deep learning</li>
+</ul></li>
+</ul>
+</section>
+<section id="universal-function-approximation-theory" class="slide level2">
+<h2>1989 - Universal Function Approximation Theory</h2>
+<p>The <span class="uured-bold">Universal Approximation Theorem</span> provided a formal theoretical justification for neural networks.</p>
+<ul>
+<li>Core result
+<ul>
+<li>A feedforward network with:
+<ul>
+<li>One hidden layer</li>
+<li>Finite neurons</li>
+<li>A non-linear activation function</li>
+</ul></li>
+<li>Can approximate <strong>any continuous function</strong> on a compact domain</li>
+</ul></li>
+<li>What the theorem does (and does not) say
+<ul>
+<li>✔ Networks are <em>expressive enough in principle</em></li>
+<li>✘ Does not guarantee efficient training</li>
+<li>✘ Does not imply good generalization or data efficiency</li>
+</ul></li>
+<li>Why it mattered
+<ul>
+<li>Countered claims that neural networks were inherently limited</li>
+<li>Legitimated neural networks as universal function learners</li>
+<li>Encouraged continued research despite computational constraints</li>
+</ul></li>
+</ul>
+</section>
+<section id="why-didnt-neural-networks-take-over-immediately" class="slide level2">
+<h2>Why Didn’t Neural Networks Take Over Immediately?</h2>
+<div class="columns">
+<div class="column" style="width:60%;">
+<p>Despite strong theoretical foundations, neural networks did <strong>not</strong> dominate AI in the late 1980s and 1990s.</p>
+<ul>
+<li><strong>Key constraints</strong>
+<ul>
+<li><strong>Limited data:</strong> Large labeled datasets were rare</li>
+<li><strong>Insufficient compute:</strong> CPUs were slow; GPUs were not yet available</li>
+<li><strong>Optimization challenges:</strong> Training was unstable and slow</li>
+<li><strong>Tooling gaps:</strong> No mature frameworks for large-scale experimentation</li>
+</ul></li>
+<li><strong>Practical consequence</strong>
+<ul>
+<li>Neural networks were expressive <em>in theory</em></li>
+<li>But <strong>difficult to train, scale, and deploy</strong> in practice</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<h3 id="theory-vs-reality">Theory vs Reality</h3>
+<ul>
+<li>Capacity ✔</li>
+<li>Learnability ✔</li>
+<li>Scalability ✘</li>
+<li>Reliability ✘</li>
+</ul>
+</div></div>
+</section>
+<section id="s-1990s---the-2text-nd-ai-winter" class="slide level2">
+<h2>1980s-1990s - The <span class="math inline">2^{\text {nd}}</span> AI Winter</h2>
+<ul>
+<li><span class="uured-bold">Unmet Expectations</span>: Expert systems, initially promising, failed to generalize beyond narrow domains, leading to disillusionment.</li>
+<li><span class="uured-bold">Economic Recession</span>: The late 1980s recession led to budget cuts in AI research, shifting focus to more immediate technologies.</li>
+<li><span class="uured-bold">Technological Limits</span>: Insufficient computational power and algorithmic challenges hindered AI development.</li>
+<li><span class="uured-bold">Reduced Interest</span>: Funding and interest in AI dropped, leading to a slowdown in research and fewer innovations.</li>
+<li><span class="uured-bold">Legacy and Recovery</span>: Lessons from this period set the stage for the AI resurgence in the late 1990s, paving the way for modern AI advancements</li>
+</ul>
+</section>
+<section id="alexnet-and-the-deep-learning-breakthrough" class="slide level2">
+<h2>2012 — AlexNet and the Deep Learning Breakthrough</h2>
+<p><strong>AlexNet</strong> marked a decisive turning point in modern AI by demonstrating that <strong>deep neural networks scale effectively</strong> when paired with sufficient data and computation.</p>
+<ul>
+<li><strong>What AlexNet showed</strong>
+<ul>
+<li>Deep convolutional networks could vastly outperform classical vision pipelines</li>
+<li>End-to-end learning outperformed hand-crafted feature engineering</li>
+<li>Performance gains came from <strong>scale</strong>, not new theory alone</li>
+</ul></li>
+<li><strong>Why ImageNet mattered</strong>
+<ul>
+<li>1.2M labeled images across 1,000 classes</li>
+<li>AlexNet reduced top-5 error by ~10 percentage points</li>
+<li>Established benchmarks as a driver of progress</li>
+</ul></li>
+<li><strong>Infrastructure innovation</strong>
+<ul>
+<li>Training split across <strong>two GPUs</strong> due to memory limits</li>
+<li>GPU acceleration enabled faster iteration and deeper architectures</li>
+<li>Marked the beginning of <strong>hardware–model co-design</strong> in AI</li>
+</ul></li>
+</ul>
+</section>
+<section id="attention-is-all-you-need-and-the-transformer-era" class="slide level2">
+<h2>2017+ — <em>Attention Is All You Need</em> and the Transformer Era</h2>
+<p>The <span class="uured-bold">Transformer architecture</span> revolutionized modern AI by replacing recurrence and convolution with <strong>attention</strong>, fundamentally changing how models process language and sequences.</p>
+<ul>
+<li><strong>Core innovation</strong>
+<ul>
+<li>Self-attention enables global context modeling</li>
+<li>Parallelizable training replaces sequential recurrence</li>
+<li>Scales efficiently with data and compute</li>
+</ul></li>
+<li><strong>Why this mattered</strong>
+<ul>
+<li>Dramatically improved performance on NLP tasks</li>
+<li>Enabled large-scale pretraining on unlabeled text</li>
+<li>Decoupled sequence modeling from strict ordering constraints</li>
+</ul></li>
+<li><strong>From models to platforms</strong>
+<ul>
+<li>Transformers became the backbone of:
+<ul>
+<li>Language understanding (e.g., BERT-style models)</li>
+<li>Language generation (e.g., GPT-style models)</li>
+</ul></li>
+<li>Established the foundation for <strong>Large Language Models (LLMs)</strong></li>
+</ul></li>
+</ul>
+</section>
+<section id="innovations-in-modeling" class="slide level2">
+<h2>Innovations in Modeling</h2>
+<h3 id="research-aims-to-identify">Research aims to identify:</h3>
+<ul>
+<li>Key architectural drivers of model performance</li>
+<li>Scaling laws and emergent capabilities</li>
+<li>New use-cases enabled by model behavior</li>
+</ul>
+<h3 id="common-research-directions">Common research directions:</h3>
+<ul>
+<li>Model analysis via interpretability and controlled experiments</li>
+<li>New architectural components with useful properties</li>
+<li>Domain-aware training paired with scalable architectures</li>
+<li>Improved data and modality-specific learning strategies</li>
+</ul>
+</section>
+<section id="risks-of-genai" class="slide level2">
+<h2>Risks of GenAI</h2>
+<p><strong>Despite its transformative potential, Generative AI introduces systemic risks to core societal foundations:</strong></p>
+<ul>
+<li><strong>Trust &amp; information integrity</strong></li>
+<li><strong>Authenticity of digital records and identity</strong></li>
+<li><strong>Work, skills, and human purpose</strong></li>
+</ul>
+<p>These risks are amplified by today’s software environment:</p>
+<ul>
+<li>Ubiquitous data availability</li>
+<li>Always-on connectivity</li>
+<li>Cheap, scalable compute</li>
+</ul>
+</section>
+<section id="risk-mitigation" class="slide level2">
+<h2>Risk Mitigation</h2>
+<p><strong>Mitigation is complex and often costly, requiring deliberate trade-offs in favor of long-term societal value:</strong></p>
+<ul>
+<li><strong>Privacy &amp; security by design</strong></li>
+<li><strong>Transparency &amp; accountability mechanisms</strong></li>
+<li><strong>Fairness, inclusion, and human dignity</strong></li>
+<li><strong>Reliability, validation, and certification</strong></li>
+</ul>
+<blockquote>
+<p>Addressing these challenges frequently requires prioritizing legal, ethical, and social safeguards over short-term efficiency or profit.</p>
+</blockquote>
+</section>
+<section id="generative-ai-and-knowledge-creation" class="slide level2">
+<h2>Generative AI and Knowledge Creation</h2>
+<p>Generative AI automates problems that were traditionally <strong>hard, skill-intensive, and expensive</strong>, producing outputs that are often <em>good enough</em>, scalable, and easily replicated.</p>
+<p>This fundamentally lowers the cost of creating content that once required:</p>
+<ul>
+<li>Deep expertise</li>
+<li>Long training and experience</li>
+<li>Significant institutional or financial investment</li>
+</ul>
+<p><strong>Result:</strong> Knowledge production becomes faster, cheaper, and more widely accessible—but less tightly coupled to expertise.</p>
+</section>
+<section id="enablement-vs.-erosion-of-knowledge-signals" class="slide level2">
+<h2>Enablement vs.&nbsp;Erosion of Knowledge Signals</h2>
+<h3 id="enablement-and-scale-pros">Enablement and Scale <em>(Pros)</em></h3>
+<ul>
+<li>Rapid synthesis across large and complex datasets</li>
+<li>Broad access to advanced analytical and creative capabilities</li>
+<li>Accelerated experimentation, learning, and innovation</li>
+<li>Empowerment of individuals and small teams at scale</li>
+</ul>
+<h3 id="slop-and-misinformation-cons">Slop and Misinformation <em>(Cons)</em></h3>
+<ul>
+<li>Convincing text, images, audio, and video can be fabricated at scale</li>
+<li>Expertise can be mimicked without understanding or accountability</li>
+<li>Automated pipelines bypass editorial review and due process</li>
+<li>Long-term effects of widespread synthetic content remain uncertain</li>
+</ul>
+<blockquote>
+<p><strong>Key tension:</strong> Generative AI expands knowledge creation while weakening traditional signals of credibility, expertise, and trust.</p>
+</blockquote>
+</section>
+<section id="societal-impacts-from-genai" class="slide level2">
+<h2>Societal Impacts from GenAI</h2>
+<ul>
+<li>Automation of Routine Tasks:
+<ul>
+<li>Al is automating repetitive jobs like data entry and manufacturing, leading to job reductions in some areas.</li>
+</ul></li>
+<li>Impact on Skilled Jobs:
+<ul>
+<li>AI is increasingly capable of handling complex task, potentially automating niche-skill/high-memory roles.</li>
+<li>GenAI has been used to lower early career demand due to perceived upper-level role empowerment.</li>
+</ul></li>
+<li>New Job Opportunities:
+<ul>
+<li>While some jobs are lost, AI can also create new roles in areas like AI development and data science.</li>
+<li>Workers need reskilling to adapt, but some careers / demographics will have disproportionate impact.</li>
+</ul></li>
+<li>Impact on Psychology:
+<ul>
+<li>Much like the internet (rise of ubiquitous connectivity), psychological impacts of ubiquitous Al is inconclusive.</li>
+</ul></li>
+</ul>
+</section>
+<section id="broad-risk-mitigation-efforts-in-ai" class="slide level2">
+<h2>Broad Risk Mitigation Efforts in AI</h2>
+<p>AI safety and risk mitigation have become <strong>strategic priorities</strong> across governments, industry, and civil society. These efforts reflect competing—but overlapping—interests in <strong>national security, economic competitiveness, and public trust</strong>.</p>
+<ul>
+<li>Key characteristics of the current landscape
+<ul>
+<li>Fragmented but rapidly expanding standards ecosystem</li>
+<li>Mix of voluntary, industry-led initiatives and state-backed institutions</li>
+<li>Emphasis on <em>risk anticipation</em>, not just post-hoc compliance</li>
+</ul></li>
+<li>Global coordination trend
+<ul>
+<li>Early leadership by a small number of states</li>
+<li>Rapid international replication and diversification</li>
+<li>Increasing public–private collaboration</li>
+</ul></li>
+</ul>
+</section>
+<section id="examples-of-major-mitigation-initiatives" class="slide level2">
+<h2>Examples of Major Mitigation Initiatives</h2>
+<ul>
+<li><span class="uured-bold">AI Safety Institute (AISI)</span>: Nation-backed institutes focused on systemic AI risks, with early emphasis on national security and frontier models</li>
+<li><span class="uured-bold">AISI Consortium (AISIC)</span> <em>(US)</em>: Formal public–private collaboration with industry to support safety research, evaluations, and standards</li>
+<li><span class="uured-bold">Adobe Content Authenticity Initiative (CAI)</span>: Founded in 2019 to promote content provenance and authenticity tracking</li>
+<li><span class="uured-bold">Coalition for Content Provenance and Authenticity (C2PA)</span>: Open technical standard for cryptographically signed content credentials and metadata</li>
+<li><span class="uured-bold">NVIDIA Model Card++ / Trustworthy AI Efforts</span>: Expanded model documentation covering intended use, testing scope, risks, and deployment guidance</li>
+<li><span class="uured-bold">Open &amp; Sovereign AI Safety Advocacy</span>: Emphasis on secure self-hosting, open models, and safety practices for sensitive or regulated data contexts</li>
+</ul>
+</section>
+<section id="responsible-ai-core-principles" class="slide level2">
+<h2>Responsible AI: Core Principles</h2>
+<p>Responsible AI requires <strong>continuous evaluation</strong>, not one-time compliance. It integrates technical controls, organizational governance, and ethical commitments.</p>
+<ul>
+<li><span class="uured-bold">Privacy &amp; Security</span>: Protect data rights, secure sensitive information, and resist misuse or unauthorized access</li>
+<li><span class="uured-bold">Transparency &amp; Accountability</span>: Enable explainability, document design decisions, assign responsibility, and maintain oversight</li>
+<li><span class="uured-bold">Fairness &amp; Human Dignity</span>: Identify and mitigate bias; support nondiscrimination and equitable outcomes</li>
+<li><span class="uured-bold">Reliability &amp; Certification</span>: Ensure consistent performance, fitness for purpose, and ongoing validation in production</li>
+</ul>
+</section>
+<section>
+<section id="from-analytics-to-ai" class="title-slide slide level1 center">
+<h1>From Analytics to AI</h1>
+
+</section>
+<section id="evolution-of-decision-support-systems" class="slide level2">
+<h2>Evolution of Decision Support Systems</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/enterpriseai.png" class="quarto-figure quarto-figure-center" style="width:80.0%"></p>
+</figure>
+</div>
+</section>
+<section id="types-of-decision-support" class="slide level2">
+<h2>Types of Decision Support</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/typesofanalytics.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</section></section>
+<section>
+<section id="anatomy-of-text-mining-and-analytics" class="title-slide slide level1 center">
+<h1>Anatomy of Text Mining and Analytics</h1>
+
+</section>
+<section id="sources-of-data-and-information" class="slide level2">
+<h2>Sources of data and Information</h2>
+<ul>
+<li>Text Data is a form of unstructured data.</li>
+<li>Text Data is generated by humans and machines.</li>
+<li>Text Data is Massive Data</li>
+</ul>
+<div id="fig-world-in-data" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="What happens every second in the world">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-world-in-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="./M01_lecture01_figures/what-happens-every-second.gif" class="quarto-figure quarto-figure-center" style="width:60.0%" alt="What happens every second in the world">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-world-in-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<strong>Figure</strong>&nbsp;2<strong>.</strong> World in Data
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="information-backbone" class="slide level2">
+<h2>Information Backbone</h2>
+<div class="columns">
+<div class="column">
+<p>All Information is stored in the form of data. Data is the backbone of information systems.</p>
+<ul>
+<li>In general Web Architecture drives this connection from the user to the data.</li>
+<li>Typically, a web application architecture diagram comprises three core components:
+<ul>
+<li>Presentation layer / Client Layer</li>
+<li>Application Layer / Business Layer</li>
+<li>Data Layer</li>
+</ul></li>
+</ul>
+</div><div class="column">
+<div id="fig-web-architecture" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Web Architecture Diagram">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-web-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img data-src="./M01_lecture01_figures/web_architecture.png" class="quarto-figure quarto-figure-center" style="width:90.0%" alt="Web Architecture Diagram">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-web-architecture-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<strong>Figure</strong>&nbsp;3<strong>.</strong> Web Architecture
+</figcaption>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="massive-data-analytics" class="slide level2">
+<h2>Massive Data Analytics</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Massive Data Analytics is the process of analyzing large data sets generated by social, business, operations, or technical activities to uncover hidden patterns, unknown correlations, market trends, customer preferences, and other useful business information <span class="citation" data-cites="shroff2010enterprise">(<a href="#/references" role="doc-biblioref" onclick="">Shroff 2010</a>)</span>.</p>
+</div>
+</div>
+</div>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Behavioral data on people’s interactions with websites, mobile apps, and other physical and digital experiences</li>
+<li>Transactional data</li>
+<li>Social media data</li>
+<li>Metadata about interactions</li>
+<li>Data/Metadata related to the events, clicks</li>
+</ul>
+</div><div class="column">
+<ul>
+<li>Assists companies in creating value by <span class="uured-bold">improving revenue</span> or <span class="uured-bold">reducing cost</span>.</li>
+<li>Assists companies in gaining a <span class="uured-bold">deeper understanding of their customers</span> by analyzing their online behavior.</li>
+<li>Provides insights for <span class="uured-bold">making decisions</span> related to business planning, performance and strategy</li>
+<li>Informs <span class="uured-bold">predictive modeling</span>, <span class="uured-bold">testing</span>, <span class="uured-bold">optimization</span>, <span class="uured-bold">market research</span>, etc.</li>
+</ul>
+</div></div>
+</section>
+<section id="big-data-analytics-process" class="slide level2">
+<h2>Big Data Analytics Process</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/analytics-funnel.png" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li><span class="uured-bold">Data Collection</span>: Data is collected from various sources such as websites, social media, mobile apps, etc. by web scraping or using APIs.</li>
+<li><span class="uured-bold">Data Exploration</span>: Data is explored to identify patterns, trends, and relationships. It is processed and analyzed to generate meaningful insights</li>
+<li><span class="uured-bold">Analysis &amp; Visualization</span>: Exploring the data and variables will provide us with characteristics of the data.</li>
+<li><span class="uured-bold">Synthesis and Enhancement</span>: Upon analysis, we will eb presented with recommendations to enhance the “process”.</li>
+<li><span class="uured-bold">Implementation</span>: Once a recommendation is accepted the change needs to be implemented.</li>
+<li><span class="uured-bold">Monitoring</span>: The process is monitored to ensure that the change is effective.</li>
+</ul>
+</div></div>
+</section>
+<section id="analytics-ecosystem" class="slide level2">
+<h2>Analytics Ecosystem</h2>
+<p><img data-src="./M01_lecture01_figures/analytics-ecosystem.png"></p>
+</section></section>
+<section>
+<section id="data-collection-and-acquisition" class="title-slide slide level1 center">
+<h1>Data Collection and Acquisition</h1>
+
+</section>
+<section id="data-collection-and-acquisition-1" class="slide level2">
+<h2>Data Collection and Acquisition</h2>
+<div class="columns">
+<div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/analytics-funnel-big-data.png" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</div><div class="column" style="width:70%;">
+<ul>
+<li><span class="uured-bold">Early Web Analytics</span>:
+<ul>
+<li>Initial tools analyzed server logs, which tracked details such as the host requesting a webpage.</li>
+<li><span class="uured-bold">WebTrends</span>: A popular tool for measuring website “hits” (visitor count).</li>
+</ul></li>
+<li><span class="uured-bold">Modern Challenges</span>:
+<ul>
+<li>Understanding detailed user interactions beyond text-based content.</li>
+<li>Key considerations: Collecting fine-grained user interaction data.</li>
+</ul></li>
+<li><span class="uured-bold">Collecting User Interaction Data</span>:
+<ul>
+<li>Early 2000s: Companies began using JavaScript to capture user interactions via browsers.</li>
+<li><span class="uured-bold">Urchin</span>: Acquired by Google in 2005, forming the basis of <strong>Google Analytics</strong>.</li>
+<li><span class="uured-bold">JavaScript</span>: Enables programs to execute in browsers and collect client-side data.</li>
+</ul></li>
+</ul>
+</div></div>
+</section>
+<section id="cloud-platforms" class="slide level2">
+<h2>Cloud Platforms</h2>
+<div class="columns">
+<div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/cloud-platforms.jpeg" class="quarto-figure quarto-figure-center" style="width:75.0%"></p>
+</figure>
+</div>
+</div><div class="column">
+<ul>
+<li><span class="uured-bold">Amazon Web Services (AWS)</span>: Provides scalable cloud solutions for data storage, analytics, and AI services.</li>
+<li><span class="uured-bold">Google Cloud Platform (GCP)</span>: Offers services like BigQuery and AI-based analytics for large-scale data analysis.</li>
+<li><span class="uured-bold">Microsoft Azure</span>: Features cloud-based data solutions, including Azure Data Lake and machine learning tools.</li>
+<li><span class="uured-bold">IBM Cloud</span>: Provides enterprise cloud solutions with integrated AI and analytics.</li>
+<li><span class="uured-bold">Oracle Cloud</span>: Focuses on cloud databases and scalable cloud infrastructure.</li>
+</ul>
+</div></div>
+</section>
+<section id="data-collection-methods" class="slide level2">
+<h2>Data Collection Methods</h2>
+<table class="caption-top">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Points</th>
+<th style="text-align: left;">Primary Data</th>
+<th style="text-align: left;">Secondary Data</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Meaning</td>
+<td style="text-align: left;">Data collected by researcher himself</td>
+<td style="text-align: left;">Data collected by other persons.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Originality</td>
+<td style="text-align: left;">Original or unique information</td>
+<td style="text-align: left;">Not original or unique information.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Adjustment</td>
+<td style="text-align: left;">Doesn’t need adjustment, is focused</td>
+<td style="text-align: left;">Needs adjustment to suit actual aim.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sources</td>
+<td style="text-align: left;">Surveys, observations, experiments</td>
+<td style="text-align: left;">Internal records, Govt. published data, etc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Type of data</td>
+<td style="text-align: left;">Qualitative data</td>
+<td style="text-align: left;">Quantitative data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Methods</td>
+<td style="text-align: left;">Observation, experiment, interview</td>
+<td style="text-align: left;">Desk research method, searching online, etc.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reliability</td>
+<td style="text-align: left;">More reliable</td>
+<td style="text-align: left;">Less reliable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Time consumed</td>
+<td style="text-align: left;">More time consuming</td>
+<td style="text-align: left;">Less time consuming</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Need of investigators</td>
+<td style="text-align: left;">Needs team of trained investigators</td>
+<td style="text-align: left;">Doesn’t need team of investigators</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cost effectiveness</td>
+<td style="text-align: left;">Costly</td>
+<td style="text-align: left;">Economical</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Collected when</td>
+<td style="text-align: left;">Secondary data is inadequate</td>
+<td style="text-align: left;">Before primary data is collected</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Capability</td>
+<td style="text-align: left;">More capable to solve a problem</td>
+<td style="text-align: left;">Less capable to solve a problem</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Suitability</td>
+<td style="text-align: left;">Most suitable to achieve objective</td>
+<td style="text-align: left;">May or may not be suitable</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bias</td>
+<td style="text-align: left;">Possibility of bias exist</td>
+<td style="text-align: left;">Somewhat safe from bias</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Collected by</td>
+<td style="text-align: left;">Researcher or his agents</td>
+<td style="text-align: left;">Persons other than who collects primary data</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Precaution to use</td>
+<td style="text-align: left;">Not Necessary</td>
+<td style="text-align: left;">Quite necessary</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="structured-and-unstructured-data" class="slide level2">
+<h2>Structured and Unstructured Data</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/data-types-applications.jpeg" class="quarto-figure quarto-figure-center" style="width:90.0%"></p>
+</figure>
+</div>
+</section>
+<section id="data-organization-and-management" class="slide level2">
+<h2>Data Organization and Management</h2>
+<div class="columns">
+<div class="column">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>A <span class="uured-bold">Database Management System</span> (DBMS) is a centralized software program that connects the database to various applications and displays data to the user or customer.</p>
+</div>
+</div>
+</div>
+<ul>
+<li>In this course, you will be exposed to <span class="uured-bold">MySQL and PostgreSQL</span>.</li>
+<li>We will utilize <span class="uured-bold">Google colab</span> to run our code.</li>
+<li>You will also use <span class="uured-bold">PySpark</span>, a highly versatile and lightweight database for local data exploration <span class="uured-bold">as needed</span>.</li>
+<li>And <span class="uured-bold">Spark SQL</span> for Big Data processing.</li>
+</ul>
+</div><div class="column">
+<ul>
+<li>Examples of relational DBMS systems:
+<ul>
+<li><span class="uured-bold">Oracle</span></li>
+<li><span class="uured-bold">MySQL</span></li>
+<li><span class="uured-bold">hadoop</span></li>
+<li><span class="uured-bold">MongoDB</span></li>
+</ul></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/big-data-tools.jpeg" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+</div></div>
+</section></section>
+<section>
+<section id="anatomy-of-a-webpage" class="title-slide slide level1 center">
+<h1>Anatomy of a Webpage</h1>
+
+</section>
+<section id="http-protocol" class="slide level2">
+<h2>HTTP protocol</h2>
+<div class="columns">
+<div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/fetching-a-page.svg" class="quarto-figure quarto-figure-center" style="width:95.0%"></p>
+</figure>
+</div>
+</div><div class="column">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/DOM-model.png" class="quarto-figure quarto-figure-center" style="width:85.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="web-page-rendering" class="slide level2">
+<h2>Web Page Rendering</h2>
+<ul>
+<li>Go to <a href="https://www.bu.edu/met/">https://www.bu.edu/met/</a> and right-click on the page and select <code>inspect</code>.</li>
+<li>This will open the <code>developer tools</code> in your browser, showing the <code>DOM</code> (Document Object Model) of the page</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/bumet-inspect.png" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+</section></section>
+<section>
+<section id="web-scraping-web-crawling" class="title-slide slide level1 center">
+<h1>Web Scraping/ Web Crawling</h1>
+
+</section>
+<section id="the-web-as-a-data-set" class="slide level2">
+<h2>The web as a data-set</h2>
+<ul>
+<li>The Web link graph is arguably the most important modern directed network</li>
+<li><span class="uured-bold">Directed network</span>:
+<ul>
+<li>Hyperlinks from page A to page B, while page B may not have a link to page A.</li>
+<li>Users can link from a page to another <strong>without</strong> worrying about reciprocity</li>
+</ul></li>
+<li><span class="uured-bold">Web Nodes</span> = ANYTHING with a URL (people, images, pages, videos, etc )</li>
+<li><span class="uured-bold">Link</span> Hyperlinks points from one URL to another.</li>
+</ul>
+</section>
+<section id="section" class="slide level2">
+<h2><img data-src="./M01_lecture01_figures/graph-analytics-for-cluster-marketing.png" class="quarto-figure quarto-figure-center" style="width:55.0%"></h2>
+</section>
+<section id="web-crawlers" class="slide level2">
+<h2>Web Crawlers</h2>
+<ul>
+<li>Information on the Web is always changing and scattered across billions of pages served by millions of servers around the globe</li>
+<li><span class="uured-bold">Web crawlers</span> are programs that automatically download Web pages, to collect information that can be analyzed and mined in a <code>central location</code>.</li>
+<li>The primary application of crawlers are search engines</li>
+<li>A <span class="uured-bold">search engine</span> takes the information collected by a crawler and creates an <strong>index</strong></li>
+<li>The index maps content (keywords and phrases) to the pages, for rapid retrieval</li>
+<li>Search engine also rank results, to provide high quality results.</li>
+<li>Other applications: business intelligence, digital libraries, webometrics tools, research</li>
+<li>Malicious applications: harvesting email addresses and personal information for spam, phishing, and identity theft</li>
+</ul>
+</section>
+<section id="how-web-crawlers-work" class="slide level2">
+<h2>How web crawlers work</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<ul>
+<li>The basic concept of a crawler is simple: a <span class="uured-bold">breadth-first</span> traversal of the Web graph, as in the <span class="uured-bold">BFS</span> algorithm</li>
+<li>Start from a set of high-quality <span class="uured-bold">seed</span> pages, recursively extracts the links within them to fetch more pages</li>
+<li>The queue of unvisited URLs (<span class="uured-bold">frontier</span>)</li>
+<li><span class="uured-bold">Fetch</span> pages dequeued from the frontier, <span class="uured-bold">extract</span> links and add them to the frontier</li>
+<li>Stores the page (and other extracted info, i.e index terms) in a repository.</li>
+<li><span class="uured-bold">Devil in the details</span>: complications due to scalability, page revisit scheduling, spider traps, canonical URLs, robust HTML parsing, and the server ethics</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/webcrowlers.gif" class="quarto-figure quarto-figure-center" style="width:85.0%"></p>
+</figure>
+</div>
+</div></div>
+</section>
+<section id="web-and-cloud-data-sources" class="slide level2">
+<h2>Web and Cloud Data Sources</h2>
+<ul>
+<li><span class="uured-bold">Internal Data</span>: Data generated by systems within a company or its data centers.<br>
+</li>
+<li><span class="uured-bold">Digital Analytics Data</span>: Behavioral and transactional data from websites, social networks, emails, mobile devices, IoT, and emerging digital formats.<br>
+</li>
+<li><span class="uured-bold">Social Data</span>: Digital data from social media, capturing user inputs, behaviors, and transactions.<br>
+</li>
+<li><span class="uured-bold">Syndicated Research Data</span>: Surveyed or sampled data on audience behaviors, attitudes, and beliefs.<br>
+</li>
+<li><span class="uured-bold">Audience Data</span>: Geographic and household-level information about specific populations.<br>
+</li>
+<li><span class="uured-bold">Financial Data</span>: Details on cash flow, investments, creditworthiness, and household financials from public and private sources.<br>
+</li>
+<li><span class="uured-bold">B2B Data</span>: Business-to-business (firmographic) data.<br>
+</li>
+<li><span class="uured-bold">Specialized Research Data</span>: Custom or primary research insights on audiences, customers, and prospects.<br>
+</li>
+<li><span class="uured-bold">Television and Cable Data</span>: Subscription-based records showing what content or ads viewers watched and when.</li>
+</ul>
+</section>
+<section id="cloud-and-social-analytics-evolution" class="slide level2">
+<h2>Cloud and Social Analytics Evolution</h2>
+<ul>
+<li><span class="uured-bold">AD Tech</span>: Machines used data to rapidly serve the right ads to the right audience</li>
+<li><span class="uured-bold">Personalization and Semantic Web</span>: Focus on delivering personalization at scale
+<ul>
+<li><span class="uured-bold">Audience</span>: What type of audience arrive - at your site, devices they use</li>
+<li><span class="uured-bold">Acquisition</span>: Where do they come from - Search, Blogs, Ad Campaigns</li>
+<li><span class="uured-bold">Behavior</span>: What do they do after they come to the site, which pages they visit</li>
+<li><span class="uured-bold">Conversion</span>: Are they meeting the Goals, e.g.&nbsp;Purchase Completed</li>
+<li>Multiple Channels and Attribution problem</li>
+<li><span class="uured-bold">Custom Events</span> – Google Tag Manager</li>
+</ul></li>
+</ul>
+</section></section>
+<section>
+<section id="apis-and-web-services" class="title-slide slide level1 center">
+<h1>APIs and Web Services</h1>
+
+</section>
+<section id="introduction-to-apis" class="slide level2">
+<h2>Introduction to APIs</h2>
+<ul>
+<li><span class="uured-bold">A</span>pplication <span class="uured-bold">P</span>rogramming <span class="uured-bold">I</span>nterfaces:
+<ul>
+<li>the “developer-facing” part of a data pipeline/service</li>
+</ul></li>
+<li>APIs are essential for modern software development.</li>
+<li>They enable interoperability, integration, and efficient development.</li>
+<li>Think of it like…
+<ul>
+<li><span class="uured-bold">Electrical outlet</span>: you just want <strong>electricity</strong> from it, without knowing details of Alternating/Direct Currents</li>
+<li><span class="uured-bold">Water fountain</span>: you just want <strong>water</strong> from it, without knowing details of how it’s pumped into the fountain</li>
+<li><span class="uured-bold">Car</span>: you can <strong>accelerate</strong>, <strong>brake</strong>, &amp; <strong>reverse</strong>, w/o knowledge of the combustion engine</li>
+</ul></li>
+</ul>
+</section>
+<section id="what-does-an-api-do" class="slide level2">
+<h2>What Does an API Do?</h2>
+<ul>
+<li><span class="uured-bold">Bridge</span>: It acts as a bridge between different software applications.</li>
+<li><span class="uured-bold">Communication</span>: Allows different software components to communicate and interact.</li>
+<li>Exposes <strong>endpoints</strong> for use by other developers, without requiring them to know the nuts and bolts of your pipeline/service
+<ul>
+<li><span class="uured-bold">Electrical outlet</span>: endpoint is <strong>socket</strong>,</li>
+<li><span class="uured-bold">Water fountain</span>: endpoint is <strong>aerator</strong>,</li>
+<li><span class="uured-bold">Car</span>: endpoint is <strong>pedals</strong>, <strong>steering wheel</strong>.</li>
+</ul></li>
+</ul>
+</section>
+<section id="benefits-and-key-concepts" class="slide level2">
+<h2>Benefits and key concepts</h2>
+<ul>
+<li>Benefits of Using APIs
+<ul>
+<li><span class="uured-bold">Efficiency</span>: Reuse existing functionality, saving development time and effort.</li>
+<li><span class="uured-bold">Integration</span>: Programmatic nature integrates external services into your applications.</li>
+<li><span class="uured-bold">Scalability</span>: Allows applications to scale by utilizing external resources.</li>
+</ul></li>
+<li>Key Concepts
+<ul>
+<li><span class="uured-bold">Requests and Responses</span>: APIs use requests to ask for data or perform actions &amp; respond with the required information.</li>
+<li><span class="uured-bold">Data Exchange</span>: Data is exchanged in a structured format, commonly in JSON or XML.</li>
+<li><span class="uured-bold">Functionality</span>: Provides access to specific functions or features of a software or service.</li>
+</ul></li>
+</ul>
+</section>
+<section id="types-of-apis" class="slide level2">
+<h2>Types of APIs</h2>
+<ul>
+<li><span class="uured-bold">Library APIs</span>: APIs provided by programming libraries for specific tasks or functions.</li>
+<li><span class="uured-bold">Operating System APIs</span>: Enable interaction with the operating system’s resources &amp; services.</li>
+<li><span class="uured-bold">Hardware APIs</span>: Interface with hardware components like cameras, sensors, or printers.</li>
+<li><span class="uured-bold">Web APIs</span>: Used for web-based apps &amp; services. Accessed using HTTP requests.
+<ul>
+<li><strong>This is the case we are most interested in, since they allow us to gather data</strong></li>
+<li>RESTful APIs</li>
+<li>SOAP APIs</li>
+<li>GraphQL APIs</li>
+</ul></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img data-src="./M01_lecture01_figures/api-ui.webp" class="quarto-figure quarto-figure-center" style="width:70.0%"></p>
+</figure>
+</div>
+</section>
+<section id="closer-look-at-web-apis" class="slide level2">
+<h2>Closer look at Web APIs</h2>
+<p>Here are various types of web APIs, each with its own purpose. There are others but Restful APIs are the most common.</p>
+<ul>
+<li><span class="uured-bold">RESTful APIs</span>:
+<ul>
+<li>Representational State Transfer (REST) APIs are based on architectural principles.</li>
+<li>Use standard HTTP methods (GET, POST, PUT, DELETE) to interact with resources.</li>
+<li>Uses URLs to identify resources, &amp; data is often transferred in JSON or XML format.</li>
+</ul></li>
+<li><span class="uured-bold">SOAP APIs</span>:
+<ul>
+<li>Simple Object Access Protocol (SOAP) APIs use XML for message formatting.</li>
+<li>Tend to be more rigid and have stricter standards compared to REST.</li>
+<li>Often used in enterprise-level applications and web services.</li>
+</ul></li>
+<li><span class="uured-bold">GraphQL APIs</span>:
+<ul>
+<li>GraphQL allows clients to request specific data, reducing over-fetching or under-fetching of information.</li>
+<li>Clients define structure of the response, for more efficient &amp; flexible data retrieval.</li>
+</ul></li>
+</ul>
+</section>
+<section id="public-vs.-private-apis" class="slide level2">
+<h2>Public vs.&nbsp;Private APIs</h2>
+<ul>
+<li><span class="uured-bold">Open APIs (Public APIs)</span>:
+<ul>
+<li>Accessible to external developers and the public with minimal restrictions.</li>
+<li>Typically require an API key or token for use.</li>
+<li>Enable third-party developers to extend platform functionality (e.g., Twitter, Facebook).</li>
+</ul></li>
+<li><span class="uured-bold">Restricted APIs (Private APIs)</span>:
+<ul>
+<li>Limited to specific users or organizations.</li>
+<li>Require special permissions or credentials for access.</li>
+<li>Used for internal systems or trusted partner integrations.</li>
+</ul></li>
+</ul>
+</section>
+<section id="common-apis-for-data-gathering" class="slide level2">
+<h2>Common APIs for data gathering</h2>
+<p>Think of these as Project examples</p>
+<ul>
+<li><span class="uured-bold">Social Media APIs</span>: Access user data, post updates, or integrate social media features into applications.</li>
+<li><span class="uured-bold">Payment Gateway APIs</span>: Enable online payments and transactions.</li>
+<li><span class="uured-bold">Maps APIs</span>: Access maps, location data, and geospatial information.</li>
+<li><span class="uured-bold">Weather APIs</span>: Retrieve weather forecasts and historical data.</li>
+<li><span class="uured-bold">News APIs</span>: Aggregate news articles and content from various sources.</li>
+<li><span class="uured-bold">Stock Market APIs</span>: Access stock prices, market data, and financial information.</li>
+<li><span class="uured-bold">E-commerce APIs</span>: Integrate e-commerce platforms, product data, and payment processing.</li>
+</ul>
+</section>
+<section id="common-sources" class="slide level2">
+<h2>Common Sources</h2>
+<ul>
+<li><span class="uured-bold">Twitter API</span>: Used for sentiment analysis and trend monitoring; access is now limited.<br>
+</li>
+<li><span class="uured-bold">Facebook Graph API</span>: Gathers data and insights on user interactions.<br>
+</li>
+<li><span class="uured-bold">Reddit API</span>: Accesses Reddit content, user data, and community features.<br>
+</li>
+<li><span class="uured-bold">Google Maps API</span>: Provides maps, geolocation, and routing data.<br>
+</li>
+<li><span class="uured-bold">GitHub API</span>: Retrieves code repositories and collaboration data.<br>
+</li>
+<li><span class="uured-bold">OpenWeatherMap API</span>: Supplies global weather data and forecasts.<br>
+</li>
+<li><span class="uured-bold">News API</span>: Aggregates news for sentiment analysis and trends.<br>
+</li>
+<li><span class="uured-bold">NASA API</span>: Offers space imagery, astronomy, and mission data.<br>
+</li>
+<li><span class="uured-bold">COVID-19 Data APIs</span>: Tracks and analyzes pandemic data.<br>
+</li>
+<li><span class="uured-bold">Web Scraping Libraries</span>: Tools like Beautiful Soup and Scrapy extract website data.</li>
+</ul>
+</section>
+<section id="example-federal-reserve-bank-of-st.-louis." class="slide level2">
+<h2>Example: Federal Reserve Bank of St.&nbsp;Louis.</h2>
+<ul>
+<li><span class="uured-bold">Base URL</span>: <a href="https://api.stlouisfed.org/fred/" target="_blank"><code>https://api.stlouisfed.org/fred/</code></a><br>
+</li>
+<li>The <span class="uured-bold">endpoint</span>: <code>series/observations</code><br>
+</li>
+<li>The <span class="uured-bold">parameters</span>:
+<ul>
+<li><span class="uured-bold">series_id</span>: The unique ID of the economic data series (e.g., <code>"GDP"</code>).<br>
+</li>
+<li><span class="uured-bold">api_key</span>: Your personal API key obtained from the FRED website.<br>
+</li>
+<li><span class="uured-bold">file_type</span>: Desired response format (<code>json</code>, <code>xml</code>, etc.).<br>
+</li>
+</ul></li>
+<li>The <span class="uured-bold">example request</span>:<br>
+<a href="https://api.stlouisfed.org/fred/series/observations?series_id=GDP&amp;api_key=abcdefghijklmnopqrstuvwxyz123456&amp;file_type=json" target="_blank"><code>https://api.stlouisfed.org/fred/series/observations?series_id=GDP&amp;api_key=abcdefghijklmnopqrstuvwxyz123456&amp;file_type=json</code></a></li>
+</ul>
+<p><strong>Note</strong>: Replace <code>abcdefghijklmnopqrstuvwxyz123456</code> with your actual API key. You can obtain an API key by registering on the FRED website. (<a href="https://fred.stlouisfed.org/docs/api/api_key.html">fred.stlouisfed.org</a>)</p>
+</section>
+<section id="fred-api-in-python" class="slide level2">
+<h2>Fred API in python</h2>
+<div class="columns">
+<div class="column">
+<div id="d8ecd14c" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a></a><span class="im">import</span> requests</span>
+<span id="cb1-2"><a></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a></a></span>
+<span id="cb1-4"><a></a><span class="co"># Define the FRED API parameters</span></span>
+<span id="cb1-5"><a></a>base_url <span class="op">=</span> <span class="st">"https://api.stlouisfed.org/fred/series/observations"</span></span>
+<span id="cb1-6"><a></a>api_key <span class="op">=</span> <span class="st">"abcdefghijklmnopqrstuvwxyz123456"</span>  <span class="co"># Replace with your actual FRED API key</span></span>
+<span id="cb1-7"><a></a>params <span class="op">=</span> {</span>
+<span id="cb1-8"><a></a>    <span class="st">"series_id"</span>: <span class="st">"UNRATE"</span>,  <span class="co"># Unemployment Rate series ID</span></span>
+<span id="cb1-9"><a></a>    <span class="st">"api_key"</span>: api_key,</span>
+<span id="cb1-10"><a></a>    <span class="st">"file_type"</span>: <span class="st">"json"</span>  <span class="co"># Request JSON format</span></span>
+<span id="cb1-11"><a></a>}</span>
+<span id="cb1-12"><a></a></span>
+<span id="cb1-13"><a></a><span class="co"># Send the request to the FRED API</span></span>
+<span id="cb1-14"><a></a>response <span class="op">=</span> requests.get(base_url, params<span class="op">=</span>params)</span>
+<span id="cb1-15"><a></a></span>
+<span id="cb1-16"><a></a><span class="co"># Check if the request was successful</span></span>
+<span id="cb1-17"><a></a><span class="cf">if</span> response.status_code <span class="op">==</span> <span class="dv">200</span>:</span>
+<span id="cb1-18"><a></a>    <span class="co"># Parse the JSON response</span></span>
+<span id="cb1-19"><a></a>    data <span class="op">=</span> response.json()</span>
+<span id="cb1-20"><a></a>    observations <span class="op">=</span> data.get(<span class="st">"observations"</span>, [])</span>
+<span id="cb1-21"><a></a>    </span>
+<span id="cb1-22"><a></a>    <span class="co"># Convert observations to a DataFrame</span></span>
+<span id="cb1-23"><a></a>    df <span class="op">=</span> pd.DataFrame(observations)</span>
+<span id="cb1-24"><a></a>    </span>
+<span id="cb1-25"><a></a>    <span class="co"># Save the data to a CSV file</span></span>
+<span id="cb1-26"><a></a>    file_path <span class="op">=</span> <span class="st">"/data/UNRATE_data.csv"</span></span>
+<span id="cb1-27"><a></a>    df.to_csv(file_path, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb1-28"><a></a>    <span class="bu">print</span>(<span class="ss">f"Data saved to </span><span class="sc">{</span>file_path<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb1-29"><a></a><span class="cf">else</span>:</span>
+<span id="cb1-30"><a></a>    <span class="bu">print</span>(<span class="ss">f"Failed to fetch data. Status code: </span><span class="sc">{</span>response<span class="sc">.</span>status_code<span class="sc">}</span><span class="ss">, Message: </span><span class="sc">{</span>response<span class="sc">.</span>text<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div><div class="column">
+<div class="cell" data-execution_count="7">
+<div id="tbl-unrate" class="cell quarto-float quarto-figure quarto-figure-center" data-execution_count="7">
+<figure class="quarto-float quarto-float-tbl">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-unrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1<strong>.</strong> Data from the Unemployment Rate series (UNRATE) obtained from the FRED API
+</figcaption>
+<div aria-describedby="tbl-unrate-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe do-not-create-environment cell caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">realtime_start</th>
+<th data-quarto-table-cell-role="th">realtime_end</th>
+<th data-quarto-table-cell-role="th">date</th>
+<th data-quarto-table-cell-role="th">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2026-02-11</td>
+<td>2026-02-11</td>
+<td>1948-01-01</td>
+<td>3.4</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2026-02-11</td>
+<td>2026-02-11</td>
+<td>1948-02-01</td>
+<td>3.8</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>2026-02-11</td>
+<td>2026-02-11</td>
+<td>1948-03-01</td>
+<td>4.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>2026-02-11</td>
+<td>2026-02-11</td>
+<td>1948-04-01</td>
+<td>3.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>2026-02-11</td>
+<td>2026-02-11</td>
+<td>1948-05-01</td>
+<td>3.5</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</div></div>
+</section>
+<section id="reddit-api" class="slide level2">
+<h2>Reddit API</h2>
+<ul>
+<li>Here are some examples of Reddit API Usage.</li>
+<li>Here are some useful resources:
+<ul>
+<li><a href="https://www.geeksforgeeks.org/python/scraping-reddit-using-python/">Scraping Reddit Using Python</a></li>
+<li><a href="https://www.reddit.com/dev/api/">Reddit API Documentation</a></li>
+<li><a href="https://www.jcchouinard.com/reddit-api/">Reddit API</a></li>
+<li><a href="https://pythonprogramming.net/introduction-python-reddit-api-wrapper-praw-tutorial/">Reddit API</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="sec-edgar-api" class="slide level2">
+<h2>SEC EDGAR API</h2>
+<div id="1b6204ab" class="cell columns column-output-location" data-execution_count="8">
+<div class="column">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a></a><span class="im">import</span> requests</span>
+<span id="cb2-2"><a></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb2-3"><a></a></span>
+<span id="cb2-4"><a></a>SEC_URL <span class="op">=</span> (</span>
+<span id="cb2-5"><a></a>    <span class="st">"https://www.sec.gov/Archives/edgar/data/"</span></span>
+<span id="cb2-6"><a></a>    <span class="st">"320193/000032019325000079/aapl-20250927.htm"</span></span>
+<span id="cb2-7"><a></a>)</span>
+<span id="cb2-8"><a></a></span>
+<span id="cb2-9"><a></a>OUTPUT_DIR <span class="op">=</span> Path(<span class="st">"./data/sec_10k"</span>)</span>
+<span id="cb2-10"><a></a>OUTPUT_FILE <span class="op">=</span> OUTPUT_DIR <span class="op">/</span> <span class="st">"apple_2025_10k.html"</span></span>
+<span id="cb2-11"><a></a></span>
+<span id="cb2-12"><a></a>HEADERS <span class="op">=</span> {</span>
+<span id="cb2-13"><a></a>    <span class="st">"User-Agent"</span>: <span class="st">"Academic Research - SEC 10K Download (email@example.edu)"</span>,</span>
+<span id="cb2-14"><a></a>    <span class="st">"Accept-Encoding"</span>: <span class="st">"gzip, deflate"</span>,</span>
+<span id="cb2-15"><a></a>}</span>
+<span id="cb2-16"><a></a></span>
+<span id="cb2-17"><a></a>TIMEOUT_SECONDS <span class="op">=</span> <span class="dv">30</span></span>
+<span id="cb2-18"><a></a></span>
+<span id="cb2-19"><a></a><span class="co"># Create output directory</span></span>
+<span id="cb2-20"><a></a>OUTPUT_DIR.mkdir(parents<span class="op">=</span><span class="va">True</span>, exist_ok<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-21"><a></a></span>
+<span id="cb2-22"><a></a><span class="co"># Download</span></span>
+<span id="cb2-23"><a></a>response <span class="op">=</span> requests.get(</span>
+<span id="cb2-24"><a></a>    SEC_URL,</span>
+<span id="cb2-25"><a></a>    headers<span class="op">=</span>HEADERS,</span>
+<span id="cb2-26"><a></a>    timeout<span class="op">=</span>TIMEOUT_SECONDS</span>
+<span id="cb2-27"><a></a>)</span>
+<span id="cb2-28"><a></a>response.raise_for_status()</span>
+<span id="cb2-29"><a></a></span>
+<span id="cb2-30"><a></a>OUTPUT_FILE.write_bytes(response.content)</span>
+<span id="cb2-31"><a></a></span>
+<span id="cb2-32"><a></a><span class="bu">print</span>(<span class="st">"Downloaded:"</span>, OUTPUT_FILE.resolve())</span>
+<span id="cb2-33"><a></a><span class="bu">print</span>(<span class="st">"File size (KB):"</span>, <span class="bu">round</span>(OUTPUT_FILE.stat().st_size <span class="op">/</span> <span class="dv">1024</span>, <span class="dv">2</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>Downloaded: D:\Repositories\AD698-generative-ai-for-BA\M1\data\sec_10k\apple_2025_10k.html
+File size (KB): 1484.58</code></pre>
+</div>
+</div></div>
+</section>
+<section id="what-we-did-in-this-lecture" class="slide level2">
+<h2>What We Did in This Lecture</h2>
+<ul>
+<li>Defined <strong>Generative AI</strong> and its scope</li>
+<li>Positioned GenAI within the <strong>history of AI and NLP</strong></li>
+<li>Shifted from model-first to <strong>data-first thinking</strong></li>
+<li>Introduced <strong>web datasets and APIs</strong> as primary text sources</li>
+</ul>
+<blockquote>
+<p>This lecture focused on <strong>where text comes from</strong>, not how models work.</p>
+</blockquote>
+</section>
+<section id="key-takeaway" class="slide level2">
+<h2>Key Takeaway</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<ul>
+<li>Generative AI begins with <strong>data</strong></li>
+<li>Most NLP failures start <strong>before modeling</strong></li>
+<li>APIs and datasets define:
+<ul>
+<li>Scale</li>
+<li>Bias</li>
+<li>Coverage</li>
+<li>Limits of downstream models</li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:45%;">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>If you cannot explain your data source, you cannot explain your model.</p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="where-we-go-next" class="slide level2">
+<h2>Where We Go Next</h2>
+<div class="columns">
+<div class="column" style="width:55%;">
+<p><strong>Lecture 2: Natural Language Processing with Neural Networks</strong></p>
+<ul>
+<li>Why classical text features fail</li>
+<li>How text becomes vectors</li>
+<li>Embeddings as the bridge to neural models</li>
+<li>Setting the stage for transformers</li>
+</ul>
+</div><div class="column" style="width:45%;">
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>From <strong>text as documents</strong> <span class="math inline">\to</span> <strong>text as representations</strong></p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="between-now-and-next-lecture" class="slide level2">
+<h2>Between Now and Next Lecture</h2>
+<ul>
+<li><p>Explore one public text dataset or API</p></li>
+<li><p>Download a small corpus</p></li>
+<li><p>Inspect:</p>
+<ul>
+<li>Raw text</li>
+<li>Metadata</li>
+<li>Structure</li>
+</ul></li>
+</ul>
+<blockquote>
+<p>You don’t need to model anything yet — just <em>look at the data</em>.</p>
+</blockquote>
+</section></section>
+<section id="references" class="title-slide slide level1 smaller scrollable">
+<h1>References</h1>
+<div class="refs">
+
+</div>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="1" role="list">
+<div id="ref-shroff2010enterprise" class="csl-entry" role="listitem">
+Shroff, G. 2010. <em>Enterprise Cloud Computing: Technology, Architecture, Applications</em>, Cambridge university press.
+</div>
+<div id="ref-Wang2023" class="csl-entry" role="listitem">
+Wang, H., Wang, L., Du, Y., Chen, L., Zhou, J., Wang, Y., and Wong, K.-F. 2023. <span>“A Survey of the Evolution of Language Model-Based Dialogue Systems,”</span> <em>arXiv Preprint arXiv:2311.16789</em>. (<a href="https://arxiv.org/abs/2311.16789">https://arxiv.org/abs/2311.16789</a>).
+</div>
+</div>
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<p><img src="../theme/figures/met_logotype_black.png" class="slide-logo"></p>
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
