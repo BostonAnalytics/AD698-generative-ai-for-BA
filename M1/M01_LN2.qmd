@@ -1,5 +1,14 @@
 ---
-title: "M01 Lecture Note 02"
+title: "M01: Lecture Note 2"
+subtitle: "Language, Probability, and Generative Systems"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+format:
+    html: default
+    docx: 
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+categories: ['M01:', 'Notes', 'Lecture']
+description: "Lecture covering Introduction to Generative AI & Business Applications."
 ---
-
-# M01 Lecture Note 02
