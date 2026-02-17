@@ -386,25 +386,725 @@ documents containing “Boston hotel”
 …[India]{.uured-bold} has just given its [banking]{.uublue-bold} system a shot in the arm…
 :::
 
+Absolutely, Nakul — let’s build a **clean, extended, presentation‑ready section on Distributional Vectors**, fully aligned with your existing slide style and pedagogical flow. I’ll take your three starter slides and expand them into a **coherent, lecture‑ready mini‑module** that fits naturally into your Text Mining / NLP course.
+
+I’ll keep the tone slide‑friendly (short, punchy, high‑signal), but with enough depth that you can speak to each slide for several minutes.
+
+Below is the **extended presentation**, with your original slides polished and expanded, plus several new slides that build the conceptual arc from one‑hot vectors → distributional semantics → co‑occurrence matrices → dimensionality reduction → embeddings.
+
 ## Distributional Vectors
 
+- A **distributional vector** represents a word by the company it keeps  
+- Constructed from **co‑occurrence statistics**  
+- Words with similar contexts → similar vectors  
+- Captures semantic similarity *without* any manual labeling  
+- Foundation for modern embeddings (word2vec, GloVe, fastText)
+
+
+## Why Distributional Vectors Work
+
+- Words that appear in similar contexts tend to have similar meanings  
+  - “doctor” and “nurse” appear near *hospital, patient, medical*  
+  - “bank” (financial) appears near *loan, credit, interest*  
+- Distributional vectors encode these patterns numerically  
+- Similarity emerges naturally via cosine similarity
+
+
+## From One‑Hot to Distributional Vectors
+
+| Representation | Dimensionality | Similarity | Meaning |
+|----------------|----------------|------------|---------|
+| One‑hot        | Vocabulary size | None (orthogonal) | None |
+| Distributional | Vocabulary size (co‑occurrence) | Yes | Context‑based |
+
+- One‑hot: sparse, meaningless  
+- Distributional: dense, meaningful  
+
+
+## Building Distributional Vectors: Co‑Occurrence Matrix
+
+- Define a **context window** (e.g., ±2 words)  
+- Count how often each word appears near each other word  
+- Build a matrix $M$ where:  
+  - Rows = target words  
+  - Columns = context words  
+  - Values = co‑occurrence counts  
+
+Example (toy):
+
+| word | bank | loan | river | water |
+|------|------|------|-------|--------|
+| bank | 0 | 12 | 9 | 7 |
+| loan | 12 | 0 | 0 | 0 |
+| river | 9 | 0 | 0 | 15 |
+
+- “bank” is similar to both *loan* and *river* → polysemy emerges
+
+
+## Weighting Co‑Occurrence Counts
+
+Raw counts are not ideal. We often use:
+
+- **TF‑IDF**  
+- **PPMI (Positive Pointwise Mutual Information)**  
+- **Log‑counts**  
+
+These emphasize informative co‑occurrences and reduce noise.
+
+---
+
+## Dimensionality Reduction
+
+Co‑occurrence matrices are huge.  
+We compress them using:
+
+- **SVD (Singular Value Decomposition)**  
+- **PCA**  
+- **Truncated SVD / LSA**  
+- **T SNE / UMAP** (for visualization)
+
+This yields dense, low‑dimensional vectors that capture latent semantic structure.
+
+---
+
+## Distributional Vectors vs. Neural Embeddings
+
+- Distributional vectors:
+  - Built from co‑occurrence statistics  
+  - Often large and sparse  
+  - Require dimensionality reduction  
+- Neural embeddings (word2vec, GloVe):
+  - Learn vectors directly from prediction tasks  
+  - Dense, low‑dimensional  
+  - Capture deeper semantic and syntactic patterns  
+
+Distributional vectors are the **conceptual precursor** to modern embeddings.
+
+---
+
+## Similarity in Distributional Space
+
+- Use **cosine similarity** to measure closeness  
+- Similar words cluster together  
+- Analogies sometimes emerge (weakly):  
+  - *king – man + woman ≈ queen* (stronger in neural embeddings)
+
+---
+
+## Limitations of Distributional Vectors
+
+- Still bag‑of‑words based  
+- Cannot handle polysemy cleanly  
+- Context window is fixed  
+- No dynamic meaning (unlike contextual embeddings like BERT)
+
+---
+
+# Visual Intuition
+
+You can add a scatterplot of PCA‑reduced distributional vectors:
+
+- *hotel, motel, inn* cluster  
+- *bank, loan, credit* cluster  
+- *river, stream, water* cluster  
+
+This visually reinforces the idea of semantic neighborhoods.
+
+---
+
+## Example: Building a Co‑Occurrence Matrix
+
+```{python}
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+
+corpus = [
+    "the bank approved the loan",
+    "the river overflowed near the bank",
+    "she applied for a loan at the bank"
+]
+
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(corpus)
+co_occurrence = (X.T @ X).toarray()
+
+print(vectorizer.get_feature_names_out())
+print(co_occurrence)
+```
 
 # Optimization & Learning
 
-## Softmax
+## Why Optimization Matters in ML
 
-## Gradients & chain rule
+- Machine learning models are trained by **optimizing** an objective function  
+- For classification, this is often a **loss** that measures how wrong the model is  
+- Optimization = adjusting parameters to **minimize loss**  
+- Gradient‑based methods are the backbone of modern deep learning  
+- To understand optimization, we need two core tools:  
+  - **Softmax** (for turning scores into probabilities)  
+  - **Gradients & the chain rule** (for learning)
+
+---
+
+## Softmax: Turning Scores into Probabilities
+
+- Many models output **raw scores** (logits), not probabilities  
+- Softmax converts a vector of scores into a **probability distribution**  
+- Ensures:  
+  - All outputs are positive  
+  - They sum to 1  
+  - Higher scores → higher probability  
+
+$$
+\begin{align}
+\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}
+\end{align}
+$$
+
+---
+
+## Why Softmax Works
+
+- Exponentiation **amplifies differences** between scores  
+- Normalization ensures a **valid probability distribution**  
+- Smooth and differentiable → perfect for gradient‑based learning  
+- Softmax + cross‑entropy loss is the **standard** for multi‑class classification
+
+---
+
+## Softmax Intuition
+
+- Small differences in scores → meaningful differences in probabilities.
+
+::: {.columns}
+::: {.column}
+Imagine scores:
+
+- cat: 2.1  
+- dog: 1.9  
+- car: 0.1  
+
+:::
+::: {.column}
+
+Softmax transforms them into:
+
+- cat: 0.46  
+- dog: 0.38  
+- car: 0.02  
+:::
+:::
+
+
+---
+
+## Softmax in NLP
+
+- Language models output a score for **every word in the vocabulary**  
+- Softmax converts these scores into a probability distribution over next words  
+- Example:  
+  - “The cat sat on the ___”  
+  - Softmax assigns high probability to *mat*, lower to *roof*, tiny to *economy*
+
+---
+
+## Gradients: How Models Learn
+
+- A gradient tells us **how much** a change in a parameter affects the loss  
+- Gradient descent updates parameters in the direction that **reduces** loss  
+
+$$
+\begin{align}
+\theta \leftarrow \theta - \eta \nabla_\theta L
+\end{align}
+$$
+
+- $\eta$ = learning rate  
+- $\nabla_\theta L$ = gradient of loss w.r.t. parameters  
+
+---
+
+## Why Gradients Matter
+
+- Without gradients, models cannot learn from data  
+- Gradients tell us:  
+  - Which direction to move  
+  - How big the step should be  
+- Deep learning = computing gradients through **many layers**
+
+---
+
+## Chain Rule: The Engine of Backpropagation
+
+- Deep networks are compositions of functions  
+- To compute gradients, we apply the **chain rule** repeatedly  
+
+$$
+\begin{align}
+\frac{dL}{dx} = \frac{dL}{dy} \cdot \frac{dy}{dx}
+\end{align}
+$$
+
+- Backpropagation = systematic application of chain rule from output → input  
+- Allows efficient training of networks with millions of parameters
+
+---
+
+## Chain Rule Intuition
+
+Think of a pipeline:
+
+$$
+\begin{align}
+x \rightarrow h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow L
+\end{align}
+$$
+
+To know how $x$ affects $L$:
+
+$$
+\begin{align}
+\frac{dL}{dx} = 
+\frac{dL}{dh_3}
+\cdot
+\frac{dh_3}{dh_2}
+\cdot
+\frac{dh_2}{dh_1}
+\cdot
+\frac{dh_1}{dx}
+\end{align}
+$$
+
+Each layer contributes a piece of the gradient.
+
+---
+
+## Backpropagation in Practice
+
+- Forward pass: compute outputs and loss  
+- Backward pass: compute gradients using chain rule  
+- Update parameters using gradient descent  
+- Repeat for many epochs  
+
+This is the core loop of training neural networks.
+
+---
+
+## Softmax + Gradients = Learning
+
+- Softmax gives probabilities  
+- Cross‑entropy measures how wrong the model is  
+- Gradients tell us how to fix the model  
+- Chain rule lets us compute gradients through deep architectures  
+
+Together, they form the foundation of modern deep learning.
+
+---
+
+## Softmax + Cross‑Entropy Derivative
+
+If you want to show the elegant simplification:
+
+$$
+\begin{align}
+\frac{\partial L}{\partial z_i} = p_i - y_i
+\end{align}
+$$
+
+Where:
+
+- $p_i$ = softmax probability  
+- $y_i$ = one‑hot label  
+
+This is why softmax + cross‑entropy is so efficient.
+
+---
+
+## Visualizing Gradient Descent
+
+![](./M02_lecture02_figures/sgd-convergence.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+
+## Visualizing Gradient Descent
+
+![](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+
+Absolutely, Nakul — let’s extend your **Optimization & Learning** deck with three new, polished, presentation‑ready sections:
+
+- **Backpropagation**  
+- **Regularization (L1/L2)**  
+- **Neural Language Models: From n‑grams to neural models**
+---
 
 ## Backpropagation
 
-## Regularization (L1/L2)
+- Backpropagation is the algorithm that allows neural networks to **learn from data**  
+- It computes how the loss changes with respect to each parameter  
+- Uses the **chain rule** to propagate gradients backward through the network  
+- Two phases:  
+  - **Forward pass**: compute predictions and loss  
+  - **Backward pass**: compute gradients layer by layer  
+- Enables efficient training even for networks with millions of parameters  
 
-# Neural Language Models
+### Why it works
+- Each layer contributes a small part of the gradient  
+- Chain rule links these contributions together  
+- Gradients tell us how to update weights to reduce loss  
 
-## From n-gram to neural models
+## Intuition
+$$
+\begin{align}
+x \rightarrow h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow L
+\end{align}
+$$
 
-## Feedforward neural LM
+$$
+\begin{align}
+\frac{dL}{dx} = 
+\frac{dL}{dh_3}
+\cdot
+\frac{dh_3}{dh_2}
+\cdot
+\frac{dh_2}{dh_1}
+\cdot
+\frac{dh_1}{dx}
+\end{align}
+$$
 
-## Recurrent neural networks
+Backprop = computing this efficiently.
 
-## Backpropagation through time
+---
+
+## Regularization (L1 / L2)
+
+Regularization prevents overfitting by discouraging overly complex models.
+- Neural networks can memorize training data  
+- Regularization encourages **simpler**, more **generalizable** solutions  
+- [Neural Network Playground](https://playground.tensorflow.org/#activation=tanh&batchSize=10&dataset=circle&regDataset=reg-plane&learningRate=0.03&regularizationRate=0&noise=0&networkShape=4,2&seed=0.00263&showTestData=false&discretize=false&percTrainData=50&x=true&y=true&xTimesY=false&xSquared=false&ySquared=false&cosX=false&sinX=false&cosY=false&sinY=false&collectStats=false&problem=classification&initZero=false&hideText=false)
+
+---
+
+## L2 Regularization (Weight Decay)
+
+- Adds a penalty proportional to the **square** of weights  
+- Encourages small, smooth weights  
+- Most common in deep learning  
+
+$$
+\begin{align}
+L_{\text{total}} = L_{\text{data}} + \lambda \sum_i w_i^2
+\end{align}
+$$
+
+Effects:
+- Smooths the model  
+- Reduces variance  
+- Works well with gradient descent  
+
+---
+
+## L1 Regularization
+
+- Adds a penalty proportional to the **absolute value** of weights  
+
+$$
+\begin{align}
+L_{\text{total}} = L_{\text{data}} + \lambda \sum_i |w_i|
+\end{align}
+$$
+
+Effects:
+- Drives many weights to **zero**  
+- Produces **sparse** models  
+- Useful for feature selection  
+
+---
+
+## L1 vs L2: When to use which
+
+| Goal | Use |
+|------|-----|
+| Smooth, stable weights | L2 |
+| Sparse, interpretable model | L1 |
+| Deep learning | L2 (default) |
+| High‑dimensional sparse features | L1 |
+
+## From n‑gram Models to Neural Models
+
+### The n‑gram era
+- Predict next word using counts of previous $n-1$ words  
+- Simple, fast, interpretable  
+- But suffers from:  
+  - **Data sparsity**  
+  - **No generalization**  
+  - **No notion of similarity**  
+  - **Huge parameter tables**  
+
+Example:
+- “the cat sat on the ___”  
+- n‑gram model only knows what it has seen before  
+
+---
+
+## Why n‑grams Fail
+
+- Cannot handle unseen sequences  
+- Cannot share statistical strength across similar words  
+- Cannot capture long‑range dependencies  
+- Vocabulary explosion  
+- No continuous representation of meaning  
+
+This sets the stage for neural models.
+
+---
+
+## Neural Language Models: The Breakthrough
+
+Neural language models solve n‑gram limitations by:
+
+- Learning **continuous word vectors** (embeddings)  
+- Using **neural networks** to model context  
+- Sharing parameters across similar words  
+- Capturing longer‑range dependencies  
+
+General idea:
+
+$$
+\begin{align}
+P(w_t \mid w_{t-1}, \dots, w_{t-n}) = \text{NeuralNetwork}(\text{embeddings})
+\end{align}
+$$
+
+---
+
+## Neural LM Architecture (Classic)
+
+1. **Embed** each input word  
+2. **Concatenate** embeddings  
+3. Feed into a **hidden layer**  
+4. Output a **softmax distribution** over next words  
+
+This was the architecture in Bengio et al. (2003), the first neural LM.
+
+---
+
+## Why Neural LMs Work Better
+
+- Embeddings capture similarity  
+- Neural networks generalize to unseen sequences  
+- Smooth probability distributions  
+- Better perplexity than n‑grams  
+- Foundation for:  
+  - word2vec  
+  - GloVe  
+  - RNNs  
+  - LSTMs  
+  - GRUs  
+  - Transformers  
+
+---
+
+## From Neural LMs to Modern LMs
+
+- RNNs → capture sequential structure  
+- LSTMs/GRUs → handle long‑range dependencies  
+- Transformers → parallelize and scale  
+- Today’s LLMs (GPT, PaLM, LLaMA) are **giant neural language models** trained on massive corpora  
+
+## Feedforward Neural Language Models
+
+:::{.callout-note}
+
+A feedforward neural language model (NNLM) predicts the next word using a **fixed window** of previous words.  
+This was the breakthrough model introduced by **Bengio et al. (2003)**.
+
+:::
+
+- Introduced **learned word embeddings**  
+- Replaced sparse n‑gram tables with **dense neural representations**  
+- Enabled **generalization** to unseen word sequences  
+- Dramatically reduced perplexity compared to n‑grams  
+
+---
+
+## Architecture Overview
+
+Given a context of $n-1$ words:
+
+$$
+\begin{align}
+(w_{t-n+1}, \dots, w_{t-1})
+\end{align}
+$$
+
+the model:
+
+1. **Looks up embeddings** for each word  
+2. **Concatenates** them into a single vector  
+3. Passes through a **hidden layer** with nonlinearity  
+4. Outputs a **softmax distribution** over the vocabulary  
+
+---
+
+## Computation Graph
+
+- **Embedding matrix** $E$: learns distributed word representations  
+- **Hidden layer**: captures interactions between context words  
+- **Softmax layer**: produces next‑word probabilities  
+
+$$
+\begin{align}
+\text{Input words} \rightarrow \text{Embeddings} \rightarrow \text{Hidden layer} \rightarrow \text{Softmax} \rightarrow P(w_t)
+\end{align}
+$$
+
+
+---
+
+## Strengths
+
+- Learns **continuous word vectors**  
+- Generalizes beyond memorized n‑grams  
+- Smooth probability distribution  
+- Captures semantic similarity  
+
+---
+
+## Limitations
+
+- Fixed context window → cannot model long‑range dependencies  
+- Concatenation → parameter explosion  
+- Slow for large vocabularies (softmax bottleneck)  
+
+These limitations motivated the move to **recurrent** models.
+
+---
+
+# **Recurrent Neural Networks (RNNs)**
+
+- Feedforward models treat each context window independently.  
+- RNNs introduce **recurrence**, allowing the model to maintain a **hidden state** that summarizes all previous words.
+
+---
+
+## RNN Architecture
+
+At each time step $t$:
+
+$$
+\begin{align}
+h_t = \tanh(W_h h_{t-1} + W_x x_t + b)
+\end{align}
+$$
+
+$$
+\begin{align}
+P(w_t \mid w_{<t}) = \text{softmax}(W_o h_t)
+\end{align}
+$$
+
+Where:
+- $x_t$ = embedding of current word  
+- $h_t$ = hidden state (memory)  
+- $W_h, W_x, W_o$ = learned parameters  
+
+---
+
+## Intuition
+
+- The hidden state $h_t$ acts as a **summary** of all previous words  
+- The model can, in principle, capture **long‑range dependencies**  
+- The same parameters are reused at every time step → efficient and elegant  
+
+---
+
+## Strengths of RNNs
+
+- Variable‑length context  
+- Parameter sharing across time  
+- Better modeling of sequential structure  
+- Foundation for LSTMs, GRUs, and Transformers  
+
+---
+
+## Weaknesses
+
+- Hard to train due to **vanishing/exploding gradients**  
+- Struggles with very long dependencies  
+- Slow sequential computation  
+
+These issues led to improved architectures (LSTM, GRU) and eventually Transformers.
+
+---
+
+##  Backpropagation Through Time (BPTT)
+
+- RNNs reuse the same parameters at every time step.  
+- To train them, we must compute gradients **through the entire sequence**.
+-  To compute gradients, we “unroll” the RNN across time:
+
+$$
+\begin{align}
+x_1 \rightarrow h_1 \rightarrow x_2 \rightarrow h_2 \rightarrow \dots \rightarrow h_T
+\end{align}
+$$
+
+This creates a long computation graph.
+
+---
+
+## Applying the Chain Rule
+
+The gradient of the loss with respect to parameters (e.g., $W_h$) depends on **all time steps**:
+
+$$
+\begin{align}
+\frac{\partial L}{\partial W_h}
+= \sum_{t=1}^T 
+\frac{\partial L}{\partial h_t}
+\cdot
+\frac{\partial h_t}{\partial W_h}
+\end{align}
+$$
+
+This is where vanishing/exploding gradients arise.
+
+---
+
+## Vanishing Gradients
+
+- Repeated multiplication by derivatives < 1  
+- Gradients shrink exponentially  
+- Model fails to learn long‑range dependencies  
+
+---
+
+## Exploding Gradients
+
+- Repeated multiplication by derivatives > 1  
+- Gradients blow up  
+- Training becomes unstable  
+
+### Solutions
+- Gradient clipping  
+- Better architectures (LSTM, GRU)  
+- Layer normalization  
+- Residual connections  
+
+---
+
+## Putting It All Together
+
+### Feedforward NNLM
+- Fixed window  
+- Learns embeddings  
+- Limited context  
+
+### RNN
+- Variable‑length context  
+- Hidden state carries memory  
+- Hard to train  
+
+### BPTT
+- Computes gradients through time  
+- Suffers from vanishing/exploding gradients  
+- Motivates LSTMs, GRUs, Transformers  

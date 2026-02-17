@@ -12,3 +12,1724 @@ bibliography: ../references.bib
 categories: ['M01:', 'Notes', 'Lecture']
 description: "Lecture covering Introduction to Generative AI & Business Applications."
 ---
+
+# Text Analytics and Sentiment Analysis
+
+## Introduction to Text Analytics
+
+Text analytics is the discipline concerned with extracting meaningful information, patterns, and insights from unstructured text data. In today’s digital world, vast amounts of information are generated in textual form — emails, social media posts, customer reviews, reports, and more. Text analytics provides the computational tools and methodologies to transform this raw text into structured knowledge that organizations can use for decision‑making, automation, and research. 
+
+The figure below provides a high‑level overview of the text mining landscape, illustrating how raw text is processed, analyzed, and converted into actionable insights.
+
+![Text Analytics [@talib2016text]](./M01_lecture02_figures/text_mining_overview.jpg){width=80% fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+
+Text analytics draws from multiple fields — including information retrieval, machine learning, statistics, and linguistics — to build systems that can understand and interpret human language at scale. It is often used interchangeably with *text mining*, though the two terms have subtle differences that we will clarify shortly.
+
+## Text Mining Process
+
+Text mining refers to the computational process of discovering patterns, extracting information, and generating structured representations from unstructured text. The workflow typically involves several stages, from lexical processing (working with characters and tokens) to structural and semantic interpretation (building syntax trees, extracting entities, and constructing knowledge bases). 
+
+The diagram below illustrates a typical NLP pipeline used in text mining systems:
+
+```{dot}
+digraph NLP_Pipeline {
+
+    /* =========================
+       Global graph settings
+       ========================= */
+
+    newrank="true";
+    rankdir="TB";
+    splines="spline";
+
+    graph [
+        fontname="Helvetica"
+        fontsize=10
+        bgcolor="white"
+        ranksep="1.25"
+        pad="0.5"
+    ];
+
+    node [
+        shape="box"
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=11
+        color="#1f3a8a"
+        fillcolor="#e8f0ff"
+    ];
+
+    edge [
+        fontname="Helvetica"
+        fontsize=9
+        color="#1f3a8a"
+    ];
+
+    /* =========================
+       TOP ROW — Lexical pipeline
+       ========================= */
+
+    subgraph cluster_lexical {
+        label="Lexical processing";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        Characters;
+        Tokens;
+        TaggedTokens [ label="Tagged tokens" ];
+
+        Characters -> Tokens;
+        Tokens -> TaggedTokens;
+    }
+
+    /* =========================
+       BOTTOM ROW — Structural pipeline
+       ========================= */
+
+    subgraph cluster_structural {
+        label="Structural representation";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        EntityRelations [ label="Entity relationships" ];
+        SyntaxTree      [ label="Syntax tree" ];
+        KnowledgeBase   [ label="Knowledge base" ];
+
+        /* Right-to-left logical flow */
+        SyntaxTree    -> EntityRelations;
+        EntityRelations -> KnowledgeBase;
+
+    }
+    
+    subgraph cluster_algorithm {
+        label="Algorithm";
+        style="filled,rounded";
+        color="grey95";
+        rank=same;
+
+        fst_regex[color="#99CC99" fillcolor="#D6EBD6" label="Regular expression" ];
+        fst_pos  [color="#99CC99" fillcolor="#D6EBD6" label="Part-of-Speech" ];
+        fst_logic[color="#99CC99" fillcolor="#D6EBD6" label="Logic compiler" ];
+        fst_ie   [color="#99CC99" fillcolor="#D6EBD6" label="Information extractor" ];
+    }
+
+    /* =========================
+       Invisible merge anchors
+       ========================= */
+
+    merge_tokens [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    merge_tagged [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    merge_syntax [
+        shape="circle"
+        width=".25"
+        fixedsize="true"
+        label=""
+        style="invis"
+    ];
+
+    /* =========================
+       Controlled merges
+       ========================= */
+
+    Tokens        -> SyntaxTree      [ arrowhead="vee"];
+    TaggedTokens -> SyntaxTree       [ arrowhead="vee"];
+
+    /* =========================
+       FST annotations (semantic)
+       ========================= */
+
+    /* Invisible anchors for labels */
+    // fst_regex  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_pos    [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_logic  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+    // fst_ie     [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+
+    fst_regex -> Tokens       [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    fst_regex -> TaggedTokens [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    SyntaxTree   -> fst_pos [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    KnowledgeBase-> fst_ie    [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+    KnowledgeBase-> fst_logic [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+
+    /* Labels */
+    // fst_regex  [ xlabel="Regular expressions" ];
+    // fst_pos    [ xlabel="POS tagger (FST)" ];
+    // fst_logic  [ xlabel="Logic compiler (FST)" ];
+    // fst_ie     [ xlabel="Information extractor (FST)" ];
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank="same"; Characters; Tokens; TaggedTokens; }
+    { rank="same"; EntityRelations; SyntaxTree; KnowledgeBase; }
+    { rank="same"; fst_regex; fst_pos; fst_logic; fst_ie}
+}
+```
+
+This pipeline highlights three major layers:
+
+### Lexical Processing
+
+Lexical processing focuses on the surface form of text — characters, words, and tokens.  
+- [Characters]{.uured-bold} represent the raw textual input.  
+- [Tokens]{.uured-bold} are meaningful units such as words or punctuation marks.  
+- [Tagged tokens]{.uured-bold} include additional linguistic information such as part‑of‑speech tags.
+
+This stage prepares the text for deeper syntactic and semantic analysis.
+
+### Structural Representation
+
+Once text is tokenized and annotated, the system constructs higher‑level structures:
+- [Syntax trees]{.uured-bold} capture grammatical relationships between words.  
+- [Entity relationships]{.uured-bold} identify connections between named entities (e.g., “Apple acquired Beats”).  
+- [Knowledge bases]{.uured-bold} store structured facts extracted from text.
+
+These representations enable downstream tasks such as information extraction and reasoning.
+
+### Algorithmic Components
+The pipeline integrates algorithmic modules such as:
+- [Regular expressions]{.uured-bold} for pattern matching  
+- [Part‑of‑speech taggers]{.uured-bold}  
+- [Logic compilers]{.uured-bold} for rule‑based reasoning  
+- [Information extractors]{.uured-bold} for identifying entities, events, and relations  
+
+These components interact with the structural layers to produce meaningful outputs.
+
+
+## Text Analytics: Definitions and Scope
+
+Text analytics is a broader umbrella term that encompasses text mining as well as other analytical processes. It includes tasks such as information retrieval, summarization, classification, and visualization. The relationship between text mining and text analytics can be expressed mathematically as follows:
+
+$$
+\begin{align}
+\text{Text Mining} &= \text{Information Extraction} + \text{Data Mining} + \text{Web Mining} \\
+\text{Text Analytics} &= \text{Information Retrieval} + \text{Text Mining}
+\end{align}
+$$
+
+In other words:
+- **Text mining** focuses on extracting structured information from text.  
+- **Text analytics** includes text mining *plus* the broader ecosystem of tools used to search, retrieve, and analyze text at scale. 
+
+
+## Application Areas of Text Mining
+
+Text mining supports a wide range of applications across industries. Some of the most common include:
+
+### Information Extraction
+Automatically identifying entities, relationships, and events from text.
+
+### Topic Tracking
+Monitoring how topics evolve over time in news, social media, or research literature.
+
+### Summarization
+Generating concise summaries of long documents, either extractively or abstractively.
+
+### Categorization
+Assigning documents to predefined categories (e.g., spam detection, news classification).
+
+### Clustering
+Grouping similar documents without predefined labels.
+
+### Concept Linking
+Connecting related concepts across documents to reveal hidden associations.
+
+### Question Answering
+Building systems that can answer natural‑language questions using textual data.
+
+These applications demonstrate the versatility of text mining in both academic and commercial settings. 
+
+
+## Text Mining and Analytics Pipeline
+
+The following figure provides a general overview of the NLP pipeline that underlies most text mining and analytics systems:
+
+![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
+
+This pipeline typically includes:
+- Text preprocessing  
+- Feature extraction  
+- Model training or rule‑based analysis  
+- Evaluation and deployment  
+
+Each stage builds upon the previous one to transform raw text into structured insights.
+
+
+
+## Sentiment Analysis
+
+Sentiment analysis is one of the most widely used applications of text mining. It aims to determine the emotional tone or subjective opinion expressed in text. This is especially valuable in domains such as marketing, customer service, finance, and social media analytics.
+
+The figure below illustrates the major tasks, tools, and methods used in sentiment analysis:
+
+![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align="center" fig-alt="Sentiment Analysis Process" #fig-sentiment-analysis}
+
+### Methods
+Sentiment analysis can be approached using several methodological families:
+- [Lexicon‑based methods]{.uured-bold}, which rely on predefined sentiment dictionaries  
+- [Machine learning methods]{.uured-bold}, which learn patterns from labeled data  
+- [Deep learning methods]{.uured-bold}, which use neural networks to capture complex linguistic patterns  
+- [Hybrid methods]{.uured-bold}, which combine lexicons with machine learning for improved accuracy
+
+### Applications
+Sentiment analysis is used in:
+- **Domain‑specific applications** such as product reviews or political analysis  
+- **Large language model pipelines**, where sentiment signals can guide downstream tasks
+
+### Challenges
+Two major categories of challenges arise:
+- **Methodological challenges**, such as handling sarcasm or domain adaptation  
+- **Text context challenges**, including ambiguity, negation, and cultural variation
+
+
+## Sentiment Classification Algorithms
+
+The following DOT diagram summarizes the major families of sentiment classification algorithms:
+
+```{dot}
+digraph Sentiment_Approaches {
+
+    /* =========================
+       Global settings
+       ========================= */
+
+    rankdir=TD;
+    newrank=true;
+    splines=curved;
+
+    graph [
+        fontname="Handlee"
+        fontsize=11
+        bgcolor="white"
+        pad="0.0"
+        margin="0"
+        nodesep="0.6"
+        ranksep="1.2"
+    ];
+
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Handlee"
+        fontsize=11
+        color="#555555"
+    ];
+
+    edge [
+        fontname = "Handlee"
+        color="#333333"
+        penwidth=1.6
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       ROOT NODES
+       ========================= */
+
+    ML_Approach [
+        label="Machine Learning\nApproach"
+        fillcolor="#ffd37f"
+        fontsize=12
+    ];
+
+    Lexicon_Approach [
+        label="Lexicon-based\nApproach"
+        fillcolor="#cde6a3"
+        fontsize=12
+    ];
+
+    /* =========================
+       MACHINE LEARNING BRANCH
+       ========================= */
+
+    Supervised [
+        label="Supervised\nLearning"
+        fillcolor="#ffd37f"
+    ];
+
+    Unsupervised [
+        label="Unsupervised\nLearning"
+        fillcolor="#ffd37f"
+    ];
+
+    ML_Approach -> Supervised;
+    ML_Approach -> Unsupervised;
+
+    /* ---- Classifier families ---- */
+
+    DecisionTree [
+        label="Decision Tree\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    LinearCls [
+        label="Linear\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    RuleBased [
+        label="Rule-based\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    Probabilistic [
+        label="Probabilistic\nClassifiers"
+        fillcolor="#ffd37f"
+    ];
+
+    Supervised -> DecisionTree;
+    Supervised -> LinearCls;
+    Supervised -> RuleBased;
+    Unsupervised -> Probabilistic;
+
+    /* ---- Specific algorithms ---- */
+
+    SVM [
+        label="Support Vector\nMachine (SVM)"
+        fillcolor="#ffb000"
+    ];
+
+    NN [
+        label="Neural Network\n(NN)"
+        fillcolor="#ffb000"
+    ];
+
+    DL [
+        label="Deep Learning\n(DL)"
+        fillcolor="#ffb000"
+    ];
+
+    NB [
+        label="Naïve Bayes\n(NB)"
+        fillcolor="#ffb000"
+    ];
+
+    BN [
+        label="Bayesian Network\n(BN)"
+        fillcolor="#ffb000"
+    ];
+
+    ME [
+        label="Maximum\nEntropy (ME)"
+        fillcolor="#ffb000"
+    ];
+
+    DecisionTree -> SVM;
+    LinearCls   -> NN;
+    LinearCls   -> DL;
+
+    Probabilistic -> NB;
+    Probabilistic -> BN;
+    Probabilistic -> ME;
+
+    /* =========================
+       LEXICON-BASED BRANCH
+       ========================= */
+
+    Dictionary [
+        label="Dictionary-based\nApproach"
+        fillcolor="#cde6a3"
+    ];
+
+    Corpus [
+        label="Corpus-based\nApproach"
+        fillcolor="#cde6a3"
+    ];
+
+    Lexicon_Approach -> Dictionary;
+    Lexicon_Approach -> Corpus;
+
+    Statistical [
+        label="Statistical"
+        fillcolor="#bfe3ea"
+    ];
+
+    Semantic [
+        label="Semantic"
+        fillcolor="#bfe3ea"
+    ];
+
+    Corpus -> Statistical;
+    Corpus -> Semantic;
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; ML_Approach; Lexicon_Approach; }
+    { rank=same; Supervised; Unsupervised; Dictionary; Corpus; }
+    { rank=same; DecisionTree; LinearCls; RuleBased; Probabilistic; Statistical; Semantic; }
+    { rank=same; SVM; NN; DL; NB; BN; ME; }
+}
+```
+
+This taxonomy divides sentiment analysis approaches into two broad categories:
+
+### Machine Learning Approaches
+These include:
+- **Supervised learning**, where models learn from labeled examples 
+  - Specific algorithms include SVMs, neural networks, deep learning models, Naïve Bayes, Bayesian networks, and maximum entropy models.
+  - Decision tree classifiers  
+  - Linear classifiers  
+  - Rule‑based classifiers  
+  - Probabilistic models  
+- **Unsupervised learning**, where models infer structure without labels  
+
+
+### Lexicon‑Based Approaches
+These rely on sentiment dictionaries or corpus‑derived lexicons.  
+Two major subtypes include:
+- **Dictionary‑based approaches**, which use curated word lists  
+- **Corpus‑based approaches**, which infer sentiment from statistical or semantic patterns in large corpora
+
+
+## Types of Sentiment Analysis
+
+Sentiment analysis can be specialized into several sub‑tasks:
+
+- **Aspect‑based sentiment analysis**, which identifies sentiment toward specific product attributes  
+- **Emotion‑based analysis**, which classifies emotions such as joy, anger, or fear  
+- **Fine‑grained sentiment analysis**, which assigns sentiment scores on a multi‑point scale  
+- **Intent‑based analysis**, which infers user intentions behind the text  
+
+The following sequence of images illustrates these types:
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 1.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 2.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+
+
+# Web Mining, Personalization, and Social Analytics
+
+## Web Mining
+
+Web mining refers to the application of data mining techniques to discover patterns, extract knowledge, and derive insights from the vast and heterogeneous resources available on the World Wide Web. As the web continues to grow exponentially, organizations increasingly rely on automated methods to understand user behavior, content structure, and emerging trends. Web mining bridges information retrieval, machine learning, and analytics to make sense of this large‑scale digital ecosystem.
+
+At a high level, web mining can be divided into three major categories:
+
+- **Web Content Mining** — extracting information from the content of web pages  
+- **Web Structure Mining** — analyzing the link structure of the web  
+- **Web Usage Mining** — understanding user behavior through logs and interaction data  
+
+The following diagram illustrates a typical workflow for weblog mining, one of the most common forms of web usage mining:
+
+```{dot}
+digraph Weblog_Mining_Process {
+
+  /* =========================
+     Global styling
+     ========================= */
+  graph [
+    fontname="Helvetica,Arial,sans-serif",
+    fontsize=14,
+    bgcolor="white",
+    pad="0.2",
+    ranksep="1.1",
+    nodesep="0.9",
+    splines=curved
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica,Arial,sans-serif",
+    fontsize=14,
+    fillcolor="#f7f7f7",
+    color="#333333",
+    margin="0.25,0.18"
+  ];
+
+  edge [
+    color="#333333",
+    penwidth=1.4,
+    arrowsize=0.8
+  ];
+
+  /* =========================
+     Cluster 1 — Data Collection
+     ========================= */
+  subgraph cluster_collection {
+    label="Data Collection";
+    style="filled,rounded";
+    color="#e3f2fd";
+
+    RawData     [ label="Raw Data" ];
+    Collection  [ label="Weblog Data Collection" ];
+
+    RawData -> Collection;
+  }
+
+  /* =========================
+     Cluster 2 — Pre-processing
+     ========================= */
+  subgraph cluster_preprocessing {
+    label="Pre-processing";
+    style="filled,rounded";
+    color="#e8f5e9";
+
+    Integration   [ label="Data Integration" ];
+    Preprocessing [ label="Data Pre-processing" ];
+
+    Integration -> Preprocessing;
+  }
+
+  /* =========================
+     Cluster 3 — Pattern Discovery
+     ========================= */
+  subgraph cluster_discovery {
+    label="Pattern Discovery";
+    style="filled,rounded";
+    color="#fff3e0";
+
+    Extraction [ label="Pattern Extraction" ];
+    Analysis   [ label="Pattern Analysis" ];
+
+    Extraction -> Analysis;
+  }
+
+  /* =========================
+     Cluster 4 — Output
+     ========================= */
+  subgraph cluster_output {
+    label="Output";
+    style="filled,rounded";
+    color="#fce4ec";
+
+    Output [ label="Patterns Formed" ];
+  }
+
+  /* =========================
+     Cross-cluster flow
+     ========================= */
+  Collection   -> Integration;
+  Preprocessing -> Extraction;
+  Analysis     -> Output;
+
+  /* =========================
+     Rank alignment (2 rows)
+     ========================= */
+  { rank=same; RawData; Integration; Extraction; }
+  { rank=same; Collection; Preprocessing; Analysis; Output; }
+}
+
+```
+
+### Understanding the Web Mining Process
+
+The process begins with **data collection**, where raw weblog data is gathered from servers, proxies, or client‑side scripts. This data often includes page requests, timestamps, user identifiers, and clickstream paths.
+
+Next, the data undergoes **pre‑processing**, which is essential because raw logs are noisy and inconsistent. Pre‑processing includes cleaning, session identification, user identification, and integration of logs from multiple sources.
+
+Once the data is prepared, **pattern discovery** techniques such as clustering, association rule mining, sequential pattern mining, or classification are applied. These methods reveal behavioral patterns, navigation paths, or correlations in user activity.
+
+Finally, the discovered patterns are interpreted and transformed into actionable insights — for example, improving website design, personalizing content, or optimizing marketing strategies.
+
+
+## Web Content Mining (Web Scraping)
+
+Web content mining focuses on extracting useful information from the content of web pages. This content may include text, images, metadata, HTML structure, or embedded multimedia. Because much of the web is unstructured, automated extraction — often referred to as **web scraping** — plays a central role.
+
+Web scraping systems typically follow a pipeline that includes:
+
+- **Crawling**: systematically navigating web pages  
+- **Parsing**: interpreting HTML or XML structure  
+- **Extraction**: identifying and capturing relevant content  
+- **Transformation**: converting extracted data into structured formats such as CSV, JSON, or databases  
+
+The figure below illustrates the general workflow of a web scraping system:
+
+![Web Scraping Process](./M01_lecture02_figures/web-scrapping.png){width=80% fig-align="center" #fig-web-scrapping fig-alt="Web Scraping Process"}
+
+Web content mining is widely used in applications such as price monitoring, competitive intelligence, sentiment analysis, and large‑scale text analytics.
+
+
+## Web Usage Mining (Web Analytics)
+
+Web usage mining, often referred to as **web analytics**, focuses on analyzing user interactions with websites. Every visit, click, and navigation step generates data that can be used to understand user behavior and improve digital experiences.
+
+Web usage mining typically involves:
+
+- **Collecting clickstream data** from server logs, cookies, or tracking scripts  
+- **Identifying user sessions** to reconstruct navigation paths  
+- **Analyzing behavioral patterns** such as frequent paths, drop‑off points, or conversion funnels  
+- **Supporting decision‑making** in areas like personalization, recommendation systems, and UX design  
+
+The following figure illustrates the typical process of web usage mining:
+
+![Web Mining Process](./M01_lecture02_figures/Web_Usage_Mining.png){width=80% fig-align="center" fig-alt="Web Usage Mining Process"}
+
+This form of mining is foundational to modern digital marketing, A/B testing, and user experience optimization.
+
+
+## Social Analytics
+
+Social analytics focuses on understanding digital interactions and relationships across social platforms. As individuals, organizations, and communities increasingly communicate online, social analytics provides the tools to measure influence, detect trends, and interpret collective behavior.
+
+A widely accepted definition describes social analytics as:
+
+> *Monitoring, analyzing, measuring, and interpreting digital interactions and relationships of people, topics, ideas, and content.*
+
+Social analytics encompasses two major subfields:
+
+- **Social Network Analysis (SNA)** — studying the structure of relationships among individuals or entities  
+- **Social Media Analytics (SMA)** — analyzing content, engagement, and trends on platforms such as Twitter, Instagram, Reddit, or LinkedIn  
+
+The diagram below captures this conceptual division:
+
+```{dot}
+digraph Social_Analytics {
+
+    /* =========================
+       Global settings
+       ========================= */
+
+    rankdir=LR;
+    newrank=true;
+    splines=curved;
+
+    graph [
+        fontname="Helvetica"
+        fontsize=14
+        bgcolor="white"
+        pad="0.2"
+        nodesep="1.0"
+        ranksep="1.4"
+    ];
+
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=16
+        color="black"
+        fillcolor="#cfe1f7"
+        margin="0.35,0.25"
+    ];
+
+    edge [
+        color="black"
+        penwidth=2.0
+        arrowsize=0.8
+    ];
+
+    /* =========================
+       Nodes
+       ========================= */
+
+    SocialAnalytics [
+        label="Social Analytics"
+        fontsize=18
+    ];
+
+    SNA [
+        label="Social Network Analysis\n(SNA)"
+    ];
+
+    SMA [
+        label="Social Media Analytics"
+    ];
+
+    /* =========================
+       Structure
+       ========================= */
+
+    SocialAnalytics -> SNA;
+    SocialAnalytics -> SMA;
+
+    /* =========================
+       Rank alignment
+       ========================= */
+
+    { rank=same; SNA; SMA; }
+}
+
+```
+
+### Social Network Analysis (SNA)
+SNA examines how individuals or entities are connected. It uses graph theory to analyze nodes (people, organizations) and edges (relationships, interactions). Key metrics include centrality, density, modularity, and community structure. SNA is used in fields ranging from epidemiology to marketing and organizational behavior.
+
+### Social Media Analytics (SMA)  
+SMA focuses on the content and interactions occurring on social platforms. It includes sentiment analysis, trend detection, topic modeling, engagement measurement, and influencer identification. SMA helps organizations understand public opinion, track brand perception, and respond to emerging issues in real time.
+
+## Text Mining
+
+Text mining refers to the process of extracting meaningful, high‑quality information from unstructured text. In modern organizations, an estimated 85–90% of corporate data exists in unstructured form—emails, documents, logs, social media, and more. This volume is growing rapidly, doubling roughly every 18 months. As a result, the ability to analyze text is no longer optional; it is essential for competitive advantage.
+
+High‑quality information is typically obtained by identifying patterns, trends, and relationships within text. These patterns may be statistical, linguistic, or semantic, and they support downstream tasks such as classification, summarization, recommendation, and decision‑making.
+
+::: {.callout-note}
+Text mining is the process of deriving high‑quality information from text, often through statistical pattern learning and structured extraction.
+:::
+
+
+## Knowledge Discovery from Web Data
+
+Knowledge discovery from textual web data involves collecting, cleaning, structuring, and analyzing large volumes of online content. This process often includes crawling web pages, extracting relevant text, transforming it into structured representations, and applying analytical or machine learning techniques.
+
+![Example Data exploration workflow for textual data extraction [@Gupta2024]](./M01_lecture02_figures/knowledge_extraction.jpg){width=80% fig-align="center" fig-alt="Knowledge Discovery from Web Data" #fig-knowledge-discovery-web-data}
+
+
+# Natural Language Processing (NLP)
+
+Natural Language Processing (NLP) is the field that enables computers to process, understand, generate, and interact with human language. NLP systems bridge raw text and computational models, allowing machines to interpret meaning, perform tasks, and generate coherent language.
+
+Key capabilities include:
+
+- **Learning useful representations**: encoding text into structured forms (e.g., embeddings) that capture meaning  
+- **Generating language**: producing text for tasks such as translation, summarization, or dialogue  
+- **Connecting language and action**: enabling systems to use language to perform tasks, reason, or interact with environments  
+
+# General NLP Framework
+
+At its core, NLP involves learning a function that maps an input $X$ to an output $Y$, where either or both involve language. The table below illustrates common NLP tasks:
+
+```{dot}
+digraph NLP_Tasks {
+  node [shape=plaintext]
+
+  nlp_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+      <TR>
+        <TD bgcolor="#137dcb"><B>Input X</B></TD>
+        <TD bgcolor="lightcoral"><B>Output Y</B></TD>
+        <TD bgcolor="#0ccc90"><B>Task</B></TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Continuing Text</TD>
+        <TD>Language Modeling</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Text in Other Language</TD>
+        <TD>Translation</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Label</TD>
+        <TD>Text Classification</TD>
+      </TR>
+      <TR>
+        <TD>Text</TD>
+        <TD>Linguistic Structure</TD>
+        <TD>Language Analysis</TD>
+      </TR>
+      <TR>
+        <TD>Image</TD>
+        <TD>Text</TD>
+        <TD>Image Captioning</TD>
+      </TR>
+    </TABLE>
+  >]
+
+  title [label=<
+    <TABLE BORDER="0" CELLBORDER="0">
+      <TR><TD><B>Create a function to map an input X into an output Y, where X and/or Y involve language.</B></TD></TR>
+    </TABLE>
+  >]
+
+  title -> nlp_table
+}
+```
+
+This framework covers tasks such as language modeling, translation, classification, linguistic analysis, and multimodal tasks like image captioning.
+
+---
+
+# Building NLP Systems
+
+NLP systems can be built in several ways, ranging from rule‑based approaches to modern machine learning and prompting.
+
+### Rule‑based Systems
+These rely on manually crafted rules:
+
+```
+def classify(x: str) -> str:
+    sports_keywords = ["baseball", "soccer", "football", "tennis"]
+    if any(keyword in x for keyword in sports_keywords):
+        return "sports"
+    else:
+        return "other"
+```
+
+### Prompting
+Prompting uses a language model without training:
+
+```{dot}
+digraph PromptLogic {
+  rankdir=LR
+  node [shape=plaintext]
+
+  decision_box [label=<
+    <TABLE BORDER="0.50" CELLBORDER="0.5" CELLSPACING="0" CELLPADDING="2" bgcolor="lightyellow">
+      <TR><TD width="400" fixedsize="false"><B>If the following sentence is about 'sports', reply 'sports'. Otherwise reply 'other'.</B></TD></TR>
+    </TABLE>
+  >]
+
+  lm_node [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightblue">
+      <TR><TD width="75" fixedsize="true"><B>LM</B></TD></TR>
+    </TABLE>
+  >]
+
+  decision_box -> lm_node
+}
+
+```
+
+### Fine‑tuning
+Fine‑tuning trains a model on paired examples $\langle X, Y \rangle$:
+
+```{dot}
+digraph TextClassificationTraining {
+    rankdir=LR
+
+  node [shape=plaintext]
+
+  samples [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
+      <TR><TD><B>Sentence</B></TD><TD><B>Label</B></TD></TR>
+      <TR><TD>"I love to play baseball."</TD><TD>sports</TD></TR>
+      <TR><TD>"The stock price is going up."</TD><TD>other</TD></TR>
+      <TR><TD>"He got a hat-trick yesterday."</TD><TD>sports</TD></TR>
+      <TR><TD>"He is wearing tennis shoes."</TD><TD>other</TD></TR>
+    </TABLE>
+  >]
+
+  training [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightgray">
+      <TR><TD><B>Training</B></TD></TR>
+    </TABLE>
+  >]
+
+  model [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
+      <TR>
+        <TD><IMG SRC="M01_lecture02_figures/reshot-icon-engineering-6XYGVMCJ59.png"/></TD>
+        <TD><B>Model</B></TD>
+      </TR>
+    </TABLE>
+  >]
+
+  samples -> training -> model
+}
+```
+
+---
+
+# Data Requirements for System Building
+
+Different approaches require different amounts of data:
+
+- **Rules or intuition‑based prompting**: no data required  
+- **Spot‑check prompting**: small samples of input $X$ 
+- **Rigorous evaluation**: development and test sets  
+- **Fine‑tuning**: large labeled datasets; performance improves with scale  
+
+```{dot}
+digraph DataSplit {
+  rankdir=LR
+  node [shape=plaintext]
+
+  split_table [label=<
+    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
+      <TR>
+        <TD bgcolor="lightgreen" width="378">
+          <B>Train Data</B><BR/><FONT COLOR="red">X_train, y_train</FONT><BR/>60%
+        </TD>
+        <TD bgcolor="lightblue" width="108">
+          <B>Test Data</B><BR/><FONT COLOR="red">X_test, y_test</FONT><BR/>20%
+        </TD>
+        <TD bgcolor="lightyellow" width="54">
+          <B>Validation (Dev)</B><BR/><FONT COLOR="red">X_val, y_val</FONT><BR/>20%
+        </TD>
+      </TR>
+    </TABLE>
+  >]
+}
+
+```
+
+
+# Natural Language Processing Pipeline
+
+The NLP pipeline transforms raw text into structured representations and downstream outputs. It typically includes data ingestion, parsing, cleaning, feature engineering, and consumption by models or analytics systems.
+
+```{dot}
+digraph Pipeline {
+
+  rankdir=LR;
+  splines=ortho;
+  concentrate=true;
+  nodesep=0.8;
+  ranksep=1.2;
+  fontname="Helvetica";
+
+  node [
+    shape=box,
+    style="filled,rounded",
+    fontname="Helvetica",
+    fillcolor="blanchedalmond"
+  ];
+
+  edge [
+    arrowhead=vee,
+    penwidth=1.2
+  ];
+
+  /* =========================
+     STAGE 1 — DATA SOURCES
+     ========================= */
+  subgraph cluster_data {
+    label="Data Sources";
+    color="#f4cccc";
+    style=filled;
+    rank=same;
+
+    ds1 [label="Survey Data"];
+    ds2 [label="Logs"];
+    ds3 [label="APIs"];
+    ds4 [label="Databases"];
+    ds5 [label="Files"];
+    ds6 [label="External Feeds"];
+  }
+
+  /* =========================
+     STAGE 2 — INGESTION
+     ========================= */
+  subgraph cluster_ingest {
+    label="Ingestion & Parsing";
+    color="#cfe2f3";
+    style=filled;
+    rank=same;
+
+    p1 [label="Load"];
+    p2 [label="Parse"];
+    p3 [label="Validate"];
+    p4 [label="Normalize"];
+    p5 [label="Enrich"];
+  }
+
+  /* =========================
+     STAGE 3 — TRANSFORMATION
+     ========================= */
+  subgraph cluster_transform {
+    label="Transformation";
+    color="#fff2cc";
+    style=filled;
+    rank=same;
+
+    t1 [label="Clean"];
+    t2 [label="Aggregate"];
+    t3 [label="Feature Engineering"];
+  }
+
+  /* =========================
+     STAGE 4 — DATA PRODUCTS
+     ========================= */
+  subgraph cluster_products {
+    label="Data Products";
+    color="#d9ead3";
+    style=filled;
+    rank=same;
+    splines=curved;
+
+
+    o1 [label="Structured Tables"];
+    o2 [label="Feature Store"];
+    o3 [label="Analytics Dataset"];
+  }
+
+  /* =========================
+     STAGE 5 — CONSUMPTION
+     ========================= */
+  subgraph cluster_consume {
+    label="Consumption";
+    color="#ead1dc";
+    style=filled;
+    rank=same;
+
+    c1 [label="Dashboards"];
+    c2 [label="ML Models"];
+    c3 [label="Reports"];
+  }
+
+  /* =========================
+     FLOWS
+     ========================= */
+  ds1 -> p1;
+  ds2 -> p2;
+  ds3 -> p2;
+  ds4 -> p2;
+  ds5 -> p3;
+  ds6 -> p4;
+
+  p1 -> t1;
+  p2 -> t1;
+  p3 -> t2;
+  p4 -> t2;
+  p5 -> t3;
+
+  t1 -> o1;
+  t2 -> o2;
+  t3 -> o3;
+
+  o1 -> c1;
+  o2 -> c2;
+  o3 -> c3;
+}
+```
+
+## Text Summarization
+
+Text summarization condenses long documents into concise, informative summaries. The process includes preprocessing, feature extraction, sentence ranking, and summary construction.
+
+```{dot}
+digraph SummarizationPipeline {
+
+  rankdir=LR;
+  splines=ortho;
+  nodesep=0.6;
+  ranksep=0.9;
+  fontname="Helvetica";
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#f5f5f5",
+    color="#333333"
+  ];
+
+  edge [
+    arrowhead=vee,
+    color="#333333",
+    penwidth=1.2
+  ];
+
+  /* =========================
+     INPUT
+     ========================= */
+  TextInput [
+    label="Text Input",
+    shape=parallelogram,
+    fillcolor="#e8f3ff"
+  ];
+
+  /* =========================
+     PREPROCESSING
+     ========================= */
+  subgraph cluster_pre {
+    label="1. Pre-processing";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
+
+    Lowercase   [label="Lowercasing"];
+    Punct       [label="Remove punctuation"];
+    Tokenize    [label="Tokenization"];
+    Stopwords   [label="Stopword removal"];
+    SentSeg     [label="Sentence segmentation"];
+  }
+
+  /* =========================
+     FEATURES
+     ========================= */
+  subgraph cluster_features {
+    label="2. Linguistic & Statistical Features";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
+
+    POSTag      [label="POS tagging"];
+    WordSeg     [label="Word segmentation"];
+    OccStats    [label="Occurrence statistics (TF, TF-IDF)"];
+    Keywords    [label="Keyword extraction"];
+    SentFeat    [label="Sentence-level features"];
+  }
+
+  /* =========================
+     RANKING
+     ========================= */
+  subgraph cluster_rank {
+    label="3. Sentence Ranking";
+    fontsize=12;
+    style="rounded,filled";
+    fillcolor="#fff2cc";
+    color="#7d6608";
+
+    Unsupervised [label="Unsupervised (TextRank, LexRank)"];
+    Supervised   [label="Supervised ML models"];
+    Neural       [label="Neural models (BART, T5, Pegasus)"];
+  }
+
+  /* =========================
+     SUMMARY
+     ========================= */
+  subgraph cluster_summary {
+    label="4. Summary Construction";
+    fontsize=12;
+    style="rounded";
+    color="#cccccc";
+
+    Select      [label="Select top sentences"];
+    OrderSmooth [label="Order and smooth"];
+    Compress    [label="Optional compression/paraphrasing"];
+  }
+
+  /* =========================
+     OUTPUT
+     ========================= */
+  SummaryOutput [
+    label="Summary Output",
+    shape=parallelogram,
+    fillcolor="#e8f3ff"
+  ];
+
+  /* =========================
+     MAIN FLOW
+     ========================= */
+
+  TextInput -> Lowercase;
+  Lowercase -> Punct -> Tokenize -> Stopwords -> SentSeg;
+
+  SentSeg -> POSTag;
+  SentSeg -> WordSeg;
+  SentSeg -> OccStats;
+
+  POSTag -> Keywords;
+  WordSeg -> Keywords;
+  OccStats -> Keywords;
+  Keywords -> SentFeat;
+
+  SentFeat -> Unsupervised;
+  SentFeat -> Supervised;
+  SentFeat -> Neural;
+
+  Unsupervised -> Select;
+  Supervised   -> Select;
+  Neural       -> Select;
+
+  Select -> OrderSmooth -> Compress -> SummaryOutput;
+}
+
+```
+
+
+## Core NLP Tasks
+
+NLP encompasses a wide range of tasks, including:
+
+- Part‑of‑speech tagging  
+- Text segmentation  
+- Word sense disambiguation  
+- Handling syntactic ambiguity  
+- Speech acts  
+- Question answering  
+- Summarization  
+- Natural language generation and understanding  
+- Machine translation  
+- Speech recognition and text‑to‑speech  
+- OCR  
+- Text proofing  
+
+
+# Classical vs. Deep Learning NLP
+
+To avoid redundancy, only one representative version of each diagram is kept.
+
+![](./M01_lecture02_figures/classical_nlp_and_deep_learning_based_nlp_layouts.jpg){width=80% fig-align="center" fig-alt="Classical vs. Deep Learning NLP"}
+
+
+# Sentiment Classification
+
+Sentiment analysis determines whether text expresses positive, negative, or neutral sentiment.
+
+## Text Information
+
+```{python}
+
+def read_xy_data(filename: str) -> tuple[list[str], list[int]]:
+    x_data = []
+    y_data = []
+    with open(filename, 'r') as f:
+        for line in f:
+            label, text = line.strip().split(' ||| ')
+            x_data.append(text)
+            y_data.append(int(label))
+    return x_data, y_data
+
+
+x_train, y_train = read_xy_data('./data/sentiment-treebank/train.txt')
+x_test, y_test = read_xy_data('./data/sentiment-treebank/dev.txt')
+
+
+print("Document:-", x_train[0])
+print("Label:-", y_train[0])
+```
+
+## Segmentation, Tokenization, and Cleaning
+
+```{python}
+
+def extract_features(x: str) -> dict[str, float]:
+    features = {}
+    x_split = x.split(' ')
+
+    # Count the number of "good words" and "bad words" in the text
+    good_words = ['love', 'good', 'nice', 'great', 'enjoy', 'enjoyed']  # <1>
+    bad_words = ['hate', 'bad', 'terrible',
+                 'disappointing', 'sad', 'lost', 'angry']  # <1>
+    for x_word in x_split:  # <2>
+        if x_word in good_words:  # <2>
+            features['good_word_count'] = features.get(
+                'good_word_count', 0) + 1  # <2>
+        if x_word in bad_words:  # <2>
+            features['bad_word_count'] = features.get(
+                'bad_word_count', 0) + 1  # <2>
+
+    # The "bias" value is always one, to allow us to assign a "default" score to the text
+    features['bias'] = 1  # <3>
+
+    return features
+
+
+feature_weights = {'good_word_count': 1.0, 'bad_word_count': -1.0, 'bias': 0.5}
+```
+
+## Decision Algorithm
+
+```{python}
+def run_classifier(x: str) -> int:
+    score = 0
+    for feat_name, feat_value in extract_features(x).items():
+        score = score + feat_value * feature_weights.get(feat_name, 0)
+    if score > 0:
+        return 1
+    elif score < 0:
+        return -1
+    else:
+        return 0
+
+def calculate_accuracy(x_data: list[str], y_data: list[int]) -> float:
+    total_number = 0
+    correct_number = 0
+    for x, y in zip(x_data, y_data):
+        y_pred = run_classifier(x)
+        total_number += 1
+        if y == y_pred:
+            correct_number += 1
+    return correct_number / float(total_number)
+```
+
+## Results
+
+```{python}
+label_count = {}
+for y in y_test:
+    if y not in label_count:
+        label_count[y] = 0
+    label_count[y] += 1
+print(label_count)
+
+train_accuracy = calculate_accuracy(x_train, y_train)
+test_accuracy = calculate_accuracy(x_test, y_test)
+
+print(f'Train accuracy: {train_accuracy}')
+print(f'Dev/test accuracy: {test_accuracy}')
+
+# Display 4 decimal
+print(f'Train accuracy: {train_accuracy:.4f}')
+print(f'Dev/test accuracy: {test_accuracy:.4f}')
+
+```
+
+## Model Evaluation
+
+```{python}
+
+import random
+
+def find_errors(x_data, y_data):
+    error_ids = []
+    y_preds = []
+    for i, (x, y) in enumerate(zip(x_data, y_data)):
+        y_preds.append(run_classifier(x))
+        if y != y_preds[-1]:
+            error_ids.append(i)
+    for _ in range(5):
+        my_id = random.choice(error_ids)
+        x, y, y_pred = x_data[my_id], y_data[my_id], y_preds[my_id]
+        print(f'{x}\ntrue label: {y}\npredicted label: {y_pred}\n')
+
+
+find_errors(x_train, y_train)
+```
+
+## Improving the Model
+
+A typical improvement loop:
+
+1. Diagnose errors  
+2. Modify features or scoring  
+3. Measure improvements  
+4. Iterate  
+5. Evaluate on test data  
+
+
+# Linguistic Barriers
+
+Challenges include:
+
+- Low‑frequency words  
+- Conjugation  
+- Negation  
+- Metaphor  
+- Analogy  
+- Symbolic language  
+
+::: {.callout-tip}
+Consider how feature engineering or modern embeddings can address these issues.
+:::
+
+# Probabilistic Topic Modeling
+
+Topic modeling uncovers latent themes in large text corpora.
+
+![Probabilistic Topic Modeling](M01_lecture02_figures/Probabilistic-Topic-Modeling.png){width=80% fig-align="center" #fig-topic-modeling fig-alt="screenshot of papers from Science magazine about topic modeling"}
+
+
+## Machine Learning Foundations
+
+Machine learning aims to estimate a function $f(x)$ that predicts labels from text.  
+The function may be linear or nonlinear, hand‑crafted or learned from data.
+
+![Machine Learning](M01_lecture02_figures/MLsteps.png){width=80% fig-align="center" #fig-machine-learning fig-alt="Machine Learning end to end pipeline"}
+
+
+## Bag of Words Approach
+
+Bag of Words (BoW) represents text as unordered collections of word counts.
+
+![Bag of Words](M01_lecture02_figures/bag-of-words.png){width=60% fig-align="center" #fig-bag-of-words fig-alt="Bag of Words"}
+
+## Why BoW Matters
+
+- Converts text into fixed‑length numeric vectors  
+- Simple, interpretable, and effective for many tasks  
+- Ignores word order but preserves frequency  
+
+
+## Text Cleaning
+
+```text
+Original: Despite suffering a sense-of-humour failure...
+Cleaned: despite suffering a sense of humour failure...
+```
+
+```{python}
+import random
+
+def sample_sentences(x, y, n=4, seed=42):
+    random.seed(seed)
+    idx = random.sample(range(len(x)), n)
+    return [(y[i], x[i]) for i in idx]
+
+samples = sample_sentences(x_train, y_train, n=4)
+
+for i, (label, text) in enumerate(samples, 1):
+    print(f"S{i} [label={label}]: {text}")
+```
+
+Cleaning typically includes lowercasing, removing punctuation, and optional stopword removal.
+
+## Tokenization and CountVectorizer
+
+```{python}
+
+from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+
+docs = [text for _, text in samples]
+
+vectorizer = CountVectorizer(
+    lowercase=True,
+    stop_words=None   # keep everything for teaching clarity
+)
+
+X = vectorizer.fit_transform(docs)
+
+bow_df = pd.DataFrame(
+    X.toarray(),
+    columns=vectorizer.get_feature_names_out(),
+    index=[f"S{i+1}" for i in range(len(docs))]
+)
+
+bow_df.iloc[:, 0:8]
+
+```
+
+
+## Vocabulary, DTM, and Word Frequencies
+
+BoW produces a document‑term matrix (DTM) where rows are documents and columns are word counts.
+
+```{python}
+#| echo: false
+#| eval: true
+#| 
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Sum word counts across all sampled documents
+term_frequencies = bow_df.sum(axis=0)
+
+# Select top 15 terms
+top_terms = term_frequencies.sort_values(ascending=False).head(15)
+
+# Drop words below 3 letters for clarity
+top_terms_3 = top_terms[top_terms.index.str.len() >= 3]
+
+# ---------------------------------------------------------
+# 1. Prepare data for grouped barplot
+# ---------------------------------------------------------
+
+df_plot = pd.DataFrame({
+    "term": top_terms.index,
+    "count_top15": top_terms.values,
+    "count_top15_3": top_terms_3.reindex(top_terms.index, fill_value=0).values
+})
+
+df_melt = df_plot.melt(
+    id_vars="term",
+    value_vars=["count_top15", "count_top15_3"],
+    var_name="category",
+    value_name="count"
+)
+
+df_melt["category"] = df_melt["category"].map({
+    "count_top15": "Top 15 Terms",
+    "count_top15_3": "Top Terms (≥3 letters)"
+})
+
+# ---------------------------------------------------------
+# 2. Global styling
+# ---------------------------------------------------------
+
+plt.rcParams["font.family"] = "Roboto"
+plt.rcParams["axes.titleweight"] = "bold"
+plt.rcParams["axes.labelweight"] = "bold"
+
+sns.set_theme(style="white")
+
+# ---------------------------------------------------------
+# 3. Plot
+# ---------------------------------------------------------
+plt.figure(figsize=(10, 5.5))
+
+ax = sns.barplot(
+    data=df_melt,
+    x="term",
+    y="count",
+    hue="category",
+    palette=sns.color_palette("dark", n_colors=2),
+    alpha=0.6 #
+)
+
+# Title: bold, left-aligned, 14 pt
+plt.title("Comparison of Top Terms vs. Top Terms (≥3 letters)",
+          fontsize=14, fontweight="bold", loc="left")
+
+# Axis labels bold
+plt.xlabel("Term", fontsize=12, fontweight="bold")
+plt.ylabel("Word Count", fontsize=12, fontweight="bold")
+
+plt.xticks(rotation=45, ha="right", fontsize=11)
+
+# Legend outside top-right
+plt.legend(
+    title="",
+    fontsize=12,
+    loc="upper right",           # anchor to top-right corner
+    bbox_to_anchor=(1, 1),       # position inside plot
+    ncol=2,                      # horizontal layout
+    borderaxespad=0.2,           # slight padding
+    frameon=False                # optional: remove legend box
+)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+
+
+# Strengths and Limitations of BoW
+
+## Strengths
+- Simple  
+- Fast  
+- Effective for short, structured text  
+
+## Limitations
+- Ignores order and meaning  
+- Sparse representations  
+- Vocabulary explosion  
+
+## BoW in Practice (Sentiment Analysis)
+
+```{dot}
+digraph SentimentPipeline {
+
+    rankdir=LR;
+    splines=ortho;
+    bgcolor="white";
+    nodesep=0.6;
+    ranksep=0.9;
+    fontname="Helvetica";
+
+    node [
+        shape=box,
+        style="rounded,filled",
+        fontname="Helvetica",
+        fontsize=10,
+        fillcolor="#F7F7F7",
+        color="#555555"
+    ];
+
+    edge [
+        fontname="Helvetica",
+        fontsize=9,
+        color="#555555"
+    ];
+
+    /* ===== Input Layer ===== */
+    Text [
+        label="Textual Data\n(A statement)",
+        fillcolor="#E8F1FA"
+    ];
+
+    /* ===== Lexicons ===== */
+    Lex1 [
+        label="Corpus",
+        shape=folder,
+        fillcolor="#FFF3CD"
+    ];
+
+    Lex2 [
+        label="Lexicon",
+        shape=cylinder,
+        fillcolor="#FFF3CD"
+    ];
+
+    /* ===== Processing Steps ===== */
+    Step1 [
+        label="Step 1:\nCalculate O–S Polarity",
+        fillcolor="#E3F2FD"
+    ];
+
+    Decision [
+        label="Is there a sentiment?",
+        shape=diamond,
+        fillcolor="#FDEDEC"
+    ];
+
+    Step2 [
+        label="Step 2:\nCalculate N–P Polarity\nof the sentiment",
+        fillcolor="#E3F2FD"
+    ];
+
+    Step3 [
+        label="Step 3:\nIdentify the target\nfor the sentiment",
+        fillcolor="#E3F2FD"
+    ];
+
+    /* ===== Output Layer ===== */
+    Record [
+        label="Record Polarity,\nStrength,\nand Target",
+        fillcolor="#E8F8F5"
+    ];
+
+    Step4 [
+        label="Step 4:\nTabulate & aggregate\nsentiment analysis results",
+        fillcolor="#D5F5E3"
+    ];
+
+    /* ===== Layout Control (Two Rows) ===== */
+    { rank=same; Text; Step1; Decision }
+    { rank=same; Step2; Step3; Record; Step4 }
+
+    /* ===== Edges ===== */
+    Text -> Step1;
+    Lex1 -> Step1;
+
+    Step1 -> Decision;
+
+    Decision -> Text   [label="No"];
+    Decision -> Step2  [label="Yes"];
+
+    Lex2 -> Step2;
+
+    Step2 -> Step3;
+
+    Step1 -> Record [label="O–S Polarity"];
+    Step2 -> Record [label="N–P Polarity"];
+    Step3 -> Record [label="Target"];
+
+    Record -> Step4;
+}
+
+```
+
+
+## When to Use Bag of Words
+
+Use BoW when:
+
+- Data is small or medium  
+- Interpretability matters  
+- You need a fast baseline  
+
+Avoid BoW when:
+
+- Documents are long  
+- Semantic nuance matters  
+- Context is essential  
+
+
+## Key Takeaways
+
+- Bag of Words is fundamentally about **counting**, not understanding  
+- It is a stepping stone to TF‑IDF, embeddings, and transformers  
+- Representation is the foundation of all NLP  
+- Generative and discriminative models offer complementary perspectives  
+
+
+### References {.unnumbered}
+
+::: {#refs}
+
+:::
