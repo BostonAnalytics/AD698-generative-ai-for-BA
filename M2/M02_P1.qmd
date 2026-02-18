@@ -386,12 +386,6 @@ documents containing “Boston hotel”
 …[India]{.uured-bold} has just given its [banking]{.uublue-bold} system a shot in the arm…
 :::
 
-Absolutely, Nakul — let’s build a **clean, extended, presentation‑ready section on Distributional Vectors**, fully aligned with your existing slide style and pedagogical flow. I’ll take your three starter slides and expand them into a **coherent, lecture‑ready mini‑module** that fits naturally into your Text Mining / NLP course.
-
-I’ll keep the tone slide‑friendly (short, punchy, high‑signal), but with enough depth that you can speak to each slide for several minutes.
-
-Below is the **extended presentation**, with your original slides polished and expanded, plus several new slides that build the conceptual arc from one‑hot vectors → distributional semantics → co‑occurrence matrices → dimensionality reduction → embeddings.
-
 ## Distributional Vectors
 
 - A **distributional vector** represents a word by the company it keeps  
@@ -728,12 +722,6 @@ This is why softmax + cross‑entropy is so efficient.
 
 ![](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
 
-Absolutely, Nakul — let’s extend your **Optimization & Learning** deck with three new, polished, presentation‑ready sections:
-
-- **Backpropagation**  
-- **Regularization (L1/L2)**  
-- **Neural Language Models: From n‑grams to neural models**
----
 
 ## Backpropagation
 

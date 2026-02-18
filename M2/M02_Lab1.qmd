@@ -8,6 +8,8 @@ date-format: long
 engine: jupyter
 categories: ['Neural Networks', 'RNNs', 'BPTT']
 description: "Hands-on lab activity: AI-assisted workflow automation with Jupyter."
+execute: 
+  eval: false
 ---
 
 The purpose of this notebook is to develop a recurrent neural network using LSTM cells that can generate patent abstracts. We will look at using a _word level_ recurrent neural network and _embedding_ the vocab, both with pre-trained vectors and training our own embeddings. We will train the model by feeding in as the features a long sequence of words (for example 50 words) and then using the next word as the label. Over time, the network will (hopefully) learn to predict the next word in a given sequence and we can use the model predictions to generate entirely novel patent abstracts.
