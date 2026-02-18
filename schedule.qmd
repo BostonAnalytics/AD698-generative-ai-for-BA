@@ -5,6 +5,7 @@ number-sections: true
 format:
     html:
       toc: false
+    docx: default
 html-table-processing: none
 ---
 

@@ -2,6 +2,10 @@
 title: "AD 698 Generative AI for Business Analytics"
 subtitle: "Deliverables"
 number-sections: false
+format:
+    html:
+      toc: false
+    docx: default
 bibliography: references.bib
 csl: chicago-syllabus.csl
 # html-table-processing: none

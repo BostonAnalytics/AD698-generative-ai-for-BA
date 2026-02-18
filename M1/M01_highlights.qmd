@@ -4,6 +4,10 @@ subtitle: "Language Probability and Representation"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
+format:
+    html:
+        code-fold: true
+    docx: default
 date-format: long
 categories: ["Generative AI", "Language Modeling", "Probability", "NLP Foundations"]
 ---

@@ -2,11 +2,12 @@
 title: "AD 698 Generative AI Business Analytics" 
 subtitle: "Syllabus"
 number-sections: true
+format: 
+    html:
+      toc: false
+    docx: default
 bibliography: references.bib
 csl: chicago-syllabus.csl
-format:
-  html: default
-  docx: default
 ---
 
 ## Course Sections

@@ -2,6 +2,10 @@
 title: "Module 2: Wrap-Up"
 subtitle: "Meaning and Structured Text"
 number-sections: true
+format: 
+    html:
+        code-fold: true
+    docx: default
 date: "2026-01-01"
 date-modified: today
 date-format: long
