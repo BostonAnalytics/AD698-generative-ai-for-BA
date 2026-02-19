@@ -1,0 +1,476 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{\textbf{Figure}}
+\else
+  \newcommand\figurename{\textbf{Figure}}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\captionsetup{labelsep=period}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={AD698 - Applied Generative AI},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{AD698 - Applied Generative AI}
+\usepackage{etoolbox}
+\makeatletter
+\providecommand{\subtitle}[1]{% add subtitle to \maketitle
+  \apptocmd{\@title}{\par {\large #1 \par}}{}{}
+}
+\makeatother
+\subtitle{Language Modeling, Structured Prediction, \& Evaluation}
+\author{}
+\date{November 21, 2024}
+\begin{document}
+\maketitle
+
+
+Natural language is rich, ambiguous, creative, and endlessly variable.
+Yet one of the most powerful ideas in modern NLP is that language can be
+treated as a \textbf{probability distribution over sequences of tokens}.
+This perspective---simple in form but profound in
+consequence---underlies everything from classical n‑gram models to
+today's large language models (LLMs). It provides a unified mathematical
+framework for prediction, generation, scoring, and understanding.
+
+This lecture note develops that idea carefully, beginning with the
+notion of language as a distribution, then contrasting classification
+with generative modeling, and finally examining the role of tokenization
+in making these models computationally feasible.
+
+\subsection{Language as a Distribution Over
+Sequences}\label{language-as-a-distribution-over-sequences}
+
+At the heart of probabilistic language modeling lies a single premise:
+
+\begin{quote}
+\textbf{Language is a probability distribution over sequences of
+tokens.}
+\end{quote}
+
+Every sentence---grammatical or not, common or rare---has a probability.
+This probability reflects how likely a sequence is to occur in natural
+usage. The model's task is to approximate this distribution.
+
+Let a sequence of tokens be\\
+\[
+\begin{align}
+\mathbf{w} = (w_1, w_2, \ldots, w_M).
+\end{align}
+\]
+
+A language model assigns a probability
+
+\[
+\begin{align}
+\mathbb{P}(w_1, w_2, \ldots, w_M).
+\end{align}
+\]
+
+This probability is not arbitrary. It encodes patterns of co‑occurrence,
+syntactic regularities, semantic plausibility, and pragmatic
+expectations. A fluent model assigns high probability to sequences like:
+
+\begin{quote}
+\emph{The cat sat on the mat.}
+\end{quote}
+
+and low probability to sequences like:
+
+\begin{quote}
+\emph{Mat the on sat cat the.}
+\end{quote}
+
+The model does not ``know'' grammar in a symbolic sense; instead, it
+captures statistical regularities that correlate with grammaticality.
+
+\subsection{Autoregressive
+Factorization}\label{autoregressive-factorization}
+
+Directly modeling (\mathbb{P}(\mathbf{w})) is intractable because the
+space of all sequences is enormous. The standard solution is to factor
+the joint distribution using the chain rule:
+
+\[
+\begin{align}
+\mathbb{P}(w_1, \ldots, w_M)
+= \prod_{t=1}^{M} \mathbb{P}(w_t \mid w_1, \ldots, w_{t-1}).
+\end{align}
+\]
+
+This factorization is the foundation of autoregressive language models.
+It says:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Generation = sampling one token at a time},\\
+\item
+  \textbf{Conditioned on all previous tokens},\\
+\item
+  \textbf{Using the model's learned distribution}.
+\end{itemize}
+
+This is why LLMs generate text sequentially: each new token is chosen
+based on the probability distribution conditioned on the entire
+preceding context.
+
+\subsection{Training Data Defines the
+Distribution}\label{training-data-defines-the-distribution}
+
+A language model does not invent its distribution from scratch. It
+\textbf{learns} it from data. During training, the model adjusts its
+parameters so that sequences in the training corpus receive higher
+probability than sequences that rarely or never occur.
+
+Thus:
+
+\begin{itemize}
+\tightlist
+\item
+  The model's ``knowledge'' is statistical.\\
+\item
+  Its ``fluency'' is a reflection of corpus patterns.\\
+\item
+  Its ``world knowledge'' is encoded implicitly in token co‑occurrence
+  statistics.
+\end{itemize}
+
+This probabilistic framing unifies tasks such as:
+
+\begin{itemize}
+\tightlist
+\item
+  next‑token prediction\\
+\item
+  text generation\\
+\item
+  scoring candidate sentences\\
+\item
+  continuation and infilling\\
+\item
+  perplexity evaluation
+\end{itemize}
+
+All are simply different ways of interacting with the same underlying
+distribution.
+
+\section{From Classification to
+Generation}\label{from-classification-to-generation}
+
+To appreciate the shift from discriminative to generative modeling,
+consider the contrast with standard supervised learning.
+
+\subsection{Probabilistic
+Classification}\label{probabilistic-classification}
+
+In classification, we model:
+
+\[
+\begin{align}
+\mathbb{P}(y \mid \mathbf{x}),
+\end{align}
+\]
+
+where (\mathbf{x}) is an input (e.g., a document) and (y) is a label
+(e.g., sentiment). The model's job is to choose the most likely label
+given the input.
+
+This is a \textbf{conditional} distribution.
+
+\subsection{Language Modeling as Sequence
+Probability}\label{language-modeling-as-sequence-probability}
+
+Language modeling inverts the perspective. Instead of predicting a label
+given text, we predict the probability of the text itself:
+
+\[
+\begin{align}
+\mathbb{P}(\mathbf{w}).
+\end{align}
+\]
+
+Here:
+
+\begin{itemize}
+\tightlist
+\item
+  The ``output space'' is not a small set of labels but the space of all
+  possible sequences.\\
+\item
+  The vocabulary (\mathcal{V}) is finite (typically 30k--100k tokens).\\
+\item
+  A sequence is a path through this vocabulary, one token at a time.
+\end{itemize}
+
+This shift---from predicting labels to predicting sequences---transforms
+NLP from a classification problem into a generative modeling problem.
+Here's a smooth, book‑style revision that gives you \textbf{descriptive,
+narrative explanations} of both \emph{linguistic tokens} and
+\emph{LLM/modern NLP tokens}, integrating them into your lecture note so
+the distinction is conceptually crisp and academically grounded. I avoid
+lists and instead write in a flowing, textbook‑like style.
+
+\subsection{Linear Text Classification
+(Recap)}\label{linear-text-classification-recap}
+
+We saw in the bag of words example from last class that the joint
+probability of a bag of words \(\textbf{x}\) and its true label \(y\) is
+written \(\mathbb{P}(\mathbf{x}, y)\). Suppose we have a dataset of
+\(N\) labeled instances, \({(\mathbf{x}^{(i)}, y^{(i)})}_{i=1}^N\),
+which we assume are independent and identically distributed (IID). Then
+the joint probability of the entire dataset, written
+\(\mathbb{P}(\mathbf{x}^{(1: N)}, y^{(1: N)})\), is equal to
+\(\prod_{i=1}^N \mathbb{P}_{X, Y}(\mathbf{x}^{(i)}, y^{(i)}) .^4\)
+
+\section{Tokens: Linguistic Units vs.~Computational
+Units}\label{tokens-linguistic-units-vs.-computational-units}
+
+A central subtlety in modern NLP arises from the fact that the word
+\emph{token} is used in two very different senses. In traditional
+linguistics and early NLP, a \emph{token} refers to a linguistically
+meaningful unit---typically a word or punctuation mark---obtained by
+segmenting text according to grammatical and orthographic conventions.
+In contrast, contemporary neural language models use \emph{tokens} as
+computational units derived from statistical compression schemes rather
+than linguistic theory. Although they share a name, these two notions of
+``token'' emerge from different intellectual traditions and serve
+different purposes.
+
+\subsection{Linguistic Tokens}\label{linguistic-tokens}
+
+In linguistics, a token is the concrete realization of a word in running
+text. When a sentence is written or spoken, each occurrence of a word
+counts as a token. This notion is tied to the study of morphology,
+syntax, and semantics: tokens are the observable instances of types, and
+they form the basis for counting frequencies, analyzing collocations,
+and studying grammatical structure. Tokenization in this classical sense
+is a process of segmentation guided by linguistic rules---spaces,
+punctuation, affixes, contractions, and orthographic conventions. For
+example, the sentence \emph{``I can't believe it's raining.''} would
+typically be segmented into the tokens \emph{I}, \emph{ca}, \emph{n't},
+\emph{believe}, \emph{it}, \emph{'s}, \emph{raining}, and \emph{.}
+depending on the tokenizer's treatment of contractions. The goal is to
+preserve units that correspond to meaningful linguistic categories,
+enabling downstream tasks such as part‑of‑speech tagging, parsing, or
+named‑entity recognition.
+
+This form of tokenization is inherently language‑dependent. Chinese and
+Japanese require character‑ or dictionary‑based segmentation;
+agglutinative languages like Turkish or Finnish produce long,
+morphologically complex words that may be split into stems and affixes;
+and languages with rich inflectional morphology may require
+sophisticated rules to identify word boundaries. In all cases, the
+guiding principle is linguistic interpretability: tokens should reflect
+the structure of the language as humans understand it.
+
+\subsection{Tokens in Modern NLP and
+LLMs}\label{tokens-in-modern-nlp-and-llms}
+
+Modern neural language models adopt a very different perspective. For
+these models, a token is not a linguistic unit but a
+\textbf{computational primitive}---a unit of text chosen to make the
+model efficient, expressive, and robust. Instead of relying on
+linguistic rules, tokenization is learned from data using algorithms
+such as Byte‑Pair Encoding (BPE), WordPiece, or SentencePiece. These
+methods identify frequently occurring character sequences and merge them
+into subword units that strike a balance between vocabulary size and
+coverage. As a result, a token may correspond to a whole word, a
+meaningful subword fragment, a single character, or even whitespace.
+
+This design is motivated by practical constraints. A vocabulary
+consisting of all words in a language would be enormous, sparse, and
+brittle. Subword tokenization allows the model to represent rare or
+novel words by composing them from smaller, frequently occurring pieces.
+It also ensures that the model can encode any string, including
+misspellings, code snippets, or foreign words, without requiring an
+ever‑expanding vocabulary. The resulting tokens are not linguistically
+interpretable; they are artifacts of a compression scheme optimized for
+statistical efficiency.
+
+An important consequence is that tokenization becomes context‑sensitive.
+The same word may be split differently depending on capitalization,
+leading spaces, or its frequency in the training corpus. For instance,
+\emph{``red''}, \emph{`` red''}, and \emph{``Red''} may map to entirely
+different token IDs because the tokenizer has learned distinct patterns
+for these forms. Token IDs themselves are assigned according to
+frequency, with common tokens receiving low indices and rare ones
+receiving high indices, further emphasizing the statistical rather than
+linguistic nature of the system.
+
+\subsection{Why the Distinction
+Matters}\label{why-the-distinction-matters}
+
+Although both linguistic and computational tokens serve as ``units'' of
+text, they belong to different conceptual frameworks. Linguistic tokens
+reflect human‑interpretable structure; LLM tokens reflect the internal
+mechanics of a probabilistic model. When we say that a language model
+assigns a probability to a sequence of tokens, we are referring to these
+computational units, not to words in the linguistic sense. The
+probabilistic model is defined over the tokenizer's vocabulary, and the
+granularity of these units shapes the model's behavior, its efficiency,
+and its ability to generalize.
+
+Understanding this distinction is essential for interpreting model
+outputs, estimating token counts, managing context windows, and
+reasoning about the statistical foundations of language modeling. It
+also clarifies why token counts do not align neatly with word counts,
+why different languages behave differently under the same tokenizer, and
+why the same sentence may produce different tokenizations depending on
+subtle formatting differences.
+
+
+
+
+\end{document}

@@ -1,17 +1,221 @@
 ---
-title: "M02: Lecture Notes"
-subtitle: "Prompt Engineering & In-Context Learning (ICL)"
+title: "AD698 - Applied Generative AI"
+subtitle: "Language Modeling, Structured Prediction, & Evaluation"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
 format: 
+    html: 
+        html-math-method: mathjax
+        include-in-header:
+          text: |
+            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
+            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
     docx:
         reference-doc: ../theme/APA7.docx   
-    pdf: default
-    html: default
-
 bibliography: ../references.bib
 categories: ['Notes', 'Lecture', 'M02:']
 description: "Lecture covering Prompt Engineering & In-Context Learning (ICL)."
+filters:
+  - pseudocode
 ---
+
+Natural language is rich, ambiguous, creative, and endlessly variable. Yet one of the most powerful ideas in modern NLP is that language can be treated as a **probability distribution over sequences of tokens**. This perspective—simple in form but profound in consequence—underlies everything from classical n‑gram models to today's large language models (LLMs). It provides a unified mathematical framework for prediction, generation, scoring, and understanding.
+
+This lecture note develops that idea carefully, beginning with the notion of language as a distribution, then contrasting classification with generative modeling, and finally examining the role of tokenization in making these models computationally feasible.
+
+## Language as a Distribution Over Sequences
+
+At the heart of probabilistic language modeling lies a single premise:
+
+> **Language is a probability distribution over sequences of tokens.**
+
+Every sentence—grammatical or not, common or rare—has a probability. This probability reflects how likely a sequence is to occur in natural usage. The model's task is to approximate this distribution.
+
+Let a sequence of tokens be  
+$$
+\begin{align}
+\mathbf{w} = (w_1, w_2, \ldots, w_M).
+\end{align}
+$$  
+
+A language model assigns a probability  
+
+$$
+\begin{align}
+\mathbb{P}(w_1, w_2, \ldots, w_M).
+\end{align}
+$$
+
+This probability is not arbitrary. It encodes patterns of co‑occurrence, syntactic regularities, semantic plausibility, and pragmatic expectations. A fluent model assigns high probability to sequences like:
+
+> *The cat sat on the mat.*
+
+and low probability to sequences like:
+
+> *Mat the on sat cat the.*
+
+The model does not "know" grammar in a symbolic sense; instead, it captures statistical regularities that correlate with grammaticality.
+
+## Autoregressive Factorization
+
+Directly modeling $\mathbb{P}(\mathbf{w})$ is intractable because the space of all sequences is enormous. The standard solution is to factor the joint distribution using the chain rule:
+
+$$
+\begin{align}
+\mathbb{P}(w_1, \ldots, w_M)
+= \prod_{t=1}^{M} \mathbb{P}(w_t \mid w_1, \ldots, w_{t-1}).
+\end{align}
+$$
+
+This factorization is the foundation of autoregressive language models. It says:
+
+- **Generation = sampling one token at a time**,  
+- **Conditioned on all previous tokens**,  
+- **Using the model's learned distribution**.
+
+This is why LLMs generate text sequentially: each new token is chosen based on the probability distribution conditioned on the entire preceding context.
+
+## Training Data Defines the Distribution
+
+A language model does not invent its distribution from scratch. It **learns** it from data. During training, the model adjusts its parameters so that sequences in the training corpus receive higher probability than sequences that rarely or never occur.
+
+Thus:
+
+- The model's "knowledge" is statistical.  
+- Its "fluency" is a reflection of corpus patterns.  
+- Its "world knowledge" is encoded implicitly in token co‑occurrence statistics.
+
+This probabilistic framing unifies tasks such as:
+
+- next‑token prediction  
+- text generation  
+- scoring candidate sentences  
+- continuation and infilling  
+- perplexity evaluation  
+
+All are simply different ways of interacting with the same underlying distribution.
+
+
+# From Classification to Generation
+
+To appreciate the shift from discriminative to generative modeling, consider the contrast with standard supervised learning.
+
+## Probabilistic Classification
+
+In classification, we model:
+
+$$
+\begin{align}
+\mathbb{P}(y \mid \mathbf{x}),
+\end{align}
+$$
+
+where $\mathbf{x}$ is an input (e.g., a document) and $y$ is a label (e.g., sentiment). The model's job is to choose the most likely label given the input.
+
+This is a **conditional** distribution.
+
+## Language Modeling as Sequence Probability
+
+Language modeling inverts the perspective. Instead of predicting a label given text, we predict the probability of the text itself:
+
+$$
+\begin{align}
+\mathbb{P}(\mathbf{w}).
+\end{align}
+$$
+
+Here:
+
+- The "output space" is not a small set of labels but the space of all possible sequences.  
+- The vocabulary $\mathcal{V}$ is finite (typically 30k–100k tokens).  
+- A sequence is a path through this vocabulary, one token at a time.
+
+This shift—from predicting labels to predicting sequences—transforms NLP from a classification problem into a generative modeling problem.
+Here's a smooth, book‑style revision that gives you **descriptive, narrative explanations** of both *linguistic tokens* and *LLM/modern NLP tokens*, integrating them into your lecture note so the distinction is conceptually crisp and academically grounded. I avoid lists and instead write in a flowing, textbook‑like style.
+
+# Linear Text Classification 
+
+Continuing from the bag of words, we know the joint probability of a bag of words $\boldsymbol{x}$ and its true label $y$ is written $\mathbf{p}(\boldsymbol{x}, y)$. Suppose we have a dataset of $N$ labeled instances, $\left\{\left(\boldsymbol{x}^{(i)}, y^{(i)}\right)\right\}_{i=1}^N$, which we assume are independent and identically distributed (IID) (see § A.3). Then the joint probability of the entire dataset, written $\mathrm{p}\left(\boldsymbol{x}^{(1: N)}, y^{(1: N)}\right)$, is equal to $\prod_{i=1}^N \mathrm{p}_{X, Y}\left(\boldsymbol{x}^{(i)}, y^{(i)}\right).$^[The notation $\mathrm{p}_{x, Y}\left(\boldsymbol{x}^{(1)}, y^{(1)}\right)$ indicates the joint probability that random variables $X$ and $Y$ take the specific values $x^{(1)}$ and $y^{(1)}$ respectively. The subscript will often be omitted when it is clear from context.]
+
+What does this have to do with classification? One approach to classification is to set the weights $\theta$ so as to maximize the joint probability of a training set of labeled documents. This is known as maximum likelihood estimation:
+
+$$
+\begin{align}
+\hat{\boldsymbol{\theta}} & =\underset{\boldsymbol{\theta}}{\operatorname{argmax}} \mathrm{p}\left(\boldsymbol{x}^{(1: N)}, y^{(1: N)} ; \boldsymbol{\theta}\right) \\
+& =\underset{\boldsymbol{\theta}}{\operatorname{argmax}} \prod_{i=1}^N \mathrm{p}\left(\boldsymbol{x}^{(i)}, y^{(i)} ; \boldsymbol{\theta}\right) \\
+& =\underset{\boldsymbol{\theta}}{\operatorname{argmax}} \sum_{i=1}^N \log \mathrm{p}\left(\boldsymbol{x}^{(i)}, y^{(i)} ; \boldsymbol{\theta}\right) .
+\end{align}
+$$
+
+
+The notation $\mathrm{p}\left(\boldsymbol{x}^{(i)}, y^{(i)} ; \boldsymbol{\theta}\right)$ indicates that $\boldsymbol{\theta}$ is a parameter of the probability function. The product of probabilities can be replaced by a sum of log-probabilities because the log function is monotonically increasing over positive arguments, and so the same $\theta$ will maximize both the probability and its logarithm. Working with logarithms is desirable because of numerical stability: on a large dataset, multiplying many probabilities can underflow to zero.^[Throughout this text, you may assume all logarithms and exponents are base 2, unless otherwise indicated. Any reasonable base will yield an identical classifier, and base 2 is most convenient for working out examples by hand.] 
+
+```{.pseudocode}
+#| html-indent-size: "1.2em"
+#| html-comment-delimiter: "//"
+#| html-line-number: true
+#| html-line-number-punc: ":"
+#| html-no-end: false
+
+\begin{algorithm}
+\caption{Naïve Bayes Generative Model}
+\begin{algorithmic}
+\For{$i = 1$ \textbf{to} $N$}
+    \State Sample class label:
+        $y^{(i)} \sim \text{Categorical}(\mu)$
+    \State Sample feature vector:
+        $x^{(i)} \sim \text{Multinomial}(\phi_{y^{(i)}})$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+```
+
+The probability $\mathrm{p}\left(\boldsymbol{x}^{(i)}, y^{(i)} ; \boldsymbol{\theta}\right)$ is defined through a generative model - an idealized random process that has generated the observed data. ${ }^6$ Algorithm 1 describes the generative model underlying the Naïve Bayes classifier, with parameters $\theta=\{\mu, \phi\}$.
+- The first line of this generative model encodes the assumption that the instances are mutually independent: neither the label nor the text of document $i$ affects the label or text of document $j .{ }^7$ Furthermore, the instances are identically distributed: the distributions over the label $y^{(i)}$ and the text $\boldsymbol{x}^{(i)}$ (conditioned on $y^{(i)}$ ) are the same for all instances $i$. In other words, we make the assumption that every document has the same distribution over labels, and that each document's distribution over words depends only on the label, and not on anything else about the document. We also assume that the documents don't affect each other. if the word whale appears in document $i=7$, that does not make it any more or less likely that it will appear again in document $i=8$.
+- The second line of the generative model states that the random variable $y^{(i)}$ is drawn from a categorical distribution with parameter $\boldsymbol{\mu}$. Categorical distributions are like weighted dice: the column vector $\boldsymbol{\mu}=\left[\mu_1 ; \mu_2 ; \ldots ; \mu_K\right]$ gives the probabilities of each label, so that the probability of drawing label $y$ is equal to $\mu_y$. For example, if $\mathcal{Y}=\{$ POSITIVE, NEGATIVE, NEUTRAL $\}$, we might have $\boldsymbol{\mu}=[0.1 ; 0.7 ; 0.2]$. We require $\sum_{y \in \mathcal{Y}} \mu_y=1$ and $\mu_y \geq 0, \forall y \in \mathcal{Y}$ : each label's probability is non-negative, and the sum of these probabilities is equal to one. ${ }^8$
+- The third line describes how the bag-of-words counts $\boldsymbol{x}^{(i)}$ are generated. By writing $\boldsymbol{x}^{(i)} \mid y^{(i)}$, this line indicates that the word counts are conditioned on the label, so that the joint probability is factored using the chain rule,
+
+$$
+\mathrm{p}_{X, Y}\left(\boldsymbol{x}^{(i)}, y^{(i)}\right)=\mathrm{p}_{X \mid Y}\left(\boldsymbol{x}^{(i)} \mid y^{(i)}\right) \times \mathrm{p}_Y\left(y^{(i)}\right) .
+$$
+
+
+The specific distribution $\mathrm{p}_{X \mid Y}$ is the multinomial, which is a probability distribution over vectors of non-negative counts. The probability mass function for this distribution is:
+
+$$
+\begin{align}
+\mathrm{P}_{\mathrm{mult}}(\boldsymbol{x} ; \phi) & =B(\boldsymbol{x}) \prod_{j=1}^V \phi_j^{x_j} \\
+B(\boldsymbol{x}) & =\frac{\left(\sum_{j=1}^V x_j\right)!}{\prod_{j=1}^V\left(x_{j}!\right)}
+\end{align}
+$$
+
+
+As in the categorical distribution, the parameter $\phi_j$ can be interpreted as a probability: specifically, the probability that any given token in the document is the word $j$. The multinomial distribution involves a product over words, with each term in the product equal to the probability $\phi_j$, exponentiated by the count $x_j$. Words that have zero count play no role in this product, because $\phi_j^0=1$. The term $B(\boldsymbol{x})$ is called the multinomial coefficient. It doesn't depend on $\phi$, and can usually be ignored. Can you see why we need this term at all? ${ }^9$
+The notation $\mathrm{p}(\boldsymbol{x} \mid y ; \phi)$ indicates the conditional probability of word counts $\boldsymbol{x}$ given label $y$, with parameter $\phi$, which is equal to $\mathrm{p}_{\text {mult }}\left(\boldsymbol{x} ; \phi_y\right)$. By specifying the multinomial distribution, we describe the multinomial Naïve Bayes classifier. Why "naïve"? Because the multinomial distribution treats each word token independently, conditioned on the class: the probability mass function factorizes across the counts.
+
+# Tokens: Linguistic Units vs. Computational Units
+
+A central subtlety in modern NLP arises from the fact that the word *token* is used in two very different senses. In traditional linguistics and early NLP, a *token* refers to a linguistically meaningful unit—typically a word or punctuation mark—obtained by segmenting text according to grammatical and orthographic conventions. In contrast, contemporary neural language models use *tokens* as computational units derived from statistical compression schemes rather than linguistic theory. Although they share a name, these two notions of "token" emerge from different intellectual traditions and serve different purposes.
+
+## Linguistic Tokens
+
+In linguistics, a token is the concrete realization of a word in running text. When a sentence is written or spoken, each occurrence of a word counts as a token. This notion is tied to the study of morphology, syntax, and semantics: tokens are the observable instances of types, and they form the basis for counting frequencies, analyzing collocations, and studying grammatical structure. Tokenization in this classical sense is a process of segmentation guided by linguistic rules—spaces, punctuation, affixes, contractions, and orthographic conventions. For example, the sentence *"I can't believe it's raining."* would typically be segmented into the tokens *I*, *ca*, *n't*, *believe*, *it*, *'s*, *raining*, and *.* depending on the tokenizer's treatment of contractions. The goal is to preserve units that correspond to meaningful linguistic categories, enabling downstream tasks such as part‑of‑speech tagging, parsing, or named‑entity recognition.
+
+This form of tokenization is inherently language‑dependent. Chinese and Japanese require character‑ or dictionary‑based segmentation; agglutinative languages like Turkish or Finnish produce long, morphologically complex words that may be split into stems and affixes; and languages with rich inflectional morphology may require sophisticated rules to identify word boundaries. In all cases, the guiding principle is linguistic interpretability: tokens should reflect the structure of the language as humans understand it.
+
+## Tokens in Modern NLP and LLMs
+
+Modern neural language models adopt a very different perspective. For these models, a token is not a linguistic unit but a **computational primitive**—a unit of text chosen to make the model efficient, expressive, and robust. Instead of relying on linguistic rules, tokenization is learned from data using algorithms such as Byte‑Pair Encoding (BPE), WordPiece, or SentencePiece. These methods identify frequently occurring character sequences and merge them into subword units that strike a balance between vocabulary size and coverage. As a result, a token may correspond to a whole word, a meaningful subword fragment, a single character, or even whitespace.
+
+This design is motivated by practical constraints. A vocabulary consisting of all words in a language would be enormous, sparse, and brittle. Subword tokenization allows the model to represent rare or novel words by composing them from smaller, frequently occurring pieces. It also ensures that the model can encode any string, including misspellings, code snippets, or foreign words, without requiring an ever‑expanding vocabulary. The resulting tokens are not linguistically interpretable; they are artifacts of a compression scheme optimized for statistical efficiency.
+
+An important consequence is that tokenization becomes context‑sensitive. The same word may be split differently depending on capitalization, leading spaces, or its frequency in the training corpus. For instance, *"red"*, *" red"*, and *"Red"* may map to entirely different token IDs because the tokenizer has learned distinct patterns for these forms. Token IDs themselves are assigned according to frequency, with common tokens receiving low indices and rare ones receiving high indices, further emphasizing the statistical rather than linguistic nature of the system.
+
+## Why the Distinction Matters
+
+Although both linguistic and computational tokens serve as "units" of text, they belong to different conceptual frameworks. Linguistic tokens reflect human‑interpretable structure; LLM tokens reflect the internal mechanics of a probabilistic model. When we say that a language model assigns a probability to a sequence of tokens, we are referring to these computational units, not to words in the linguistic sense. The probabilistic model is defined over the tokenizer's vocabulary, and the granularity of these units shapes the model's behavior, its efficiency, and its ability to generalize.
+
+Understanding this distinction is essential for interpreting model outputs, estimating token counts, managing context windows, and reasoning about the statistical foundations of language modeling. It also clarifies why token counts do not align neatly with word counts, why different languages behave differently under the same tokenizer, and why the same sentence may produce different tokenizations depending on subtle formatting differences.
