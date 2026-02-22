@@ -85,6 +85,61 @@ By completing this assignment, you will:
 * Scaling Laws for Neural LMs [@Kaplan2020Scaling]
 * Sparks of AGI [@Bubeck2023SparksAGI]
 
+
+## Group 3 – Text-as-Data & Business NLP
+
+* Text as Data [@Gentzkow2019TextAsDataPaper]
+* Information Extraction from Business Text [@Kogan2019BusinessIE]
+
+
+## Group 4 – Prompting & Reasoning
+
+* Chain-of-Thought Prompting [@Wei2022CoT]
+* ReAct [@Yao2023ReAct]
+
+
+## Group 5 – Alignment & Instruction
+
+* Training Language Models with Human Feedback [@Ouyang2022RLHF]
+* Constitutional AI [@Bai2022Constitutional]
+
+
+## Group 6 – Retrieval-Augmented Generation
+
+* Retrieval-Augmented Generation [@Lewis2020RAG]
+* Self-RAG [@Asai2023SelfRAG]
+
+
+## Group 7 – Efficient Fine-Tuning
+
+* LoRA [@Hu2021LoRA]
+* QLoRA [@Dettmers2023QLoRA]
+
+
+## Group 8 – Long Context & Memory
+
+* Lost in the Middle [@Liu2023ContextWindow]
+* Transformer-XL [@Dai2019TransformerXL]
+
+
+## Group 9 – Evaluation & Benchmarks
+
+* HELM Benchmark [@Liang2022HELM]
+* Evaluating LLMs [@Chang2024EvaluatingLLMs]
+
+
+## Group 10 – Hallucination & Trust
+
+* Survey on Hallucination in LLMs [@Huang2023Hallucinations]
+* Stochastic Parrots [@Bender2021StochasticParrots]
+
+
+## Group 11 – Governance & Deployment
+
+* Foundation Models Paper [@bommasani2022opportunities]
+* Responsible AI for LLMs [@Raji2022ResponsibleAI]
+
+
 # Presentation Expectations
 
 ## Presentation Length

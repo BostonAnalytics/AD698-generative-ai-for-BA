@@ -50,15 +50,94 @@ By completing this assignment, you will:
 - Names of the papers are listed in the table and are also available at the end of this document.
 - You can also search these papers on [scholar.google.com](https://scholar.google.com). 
 
+
+## Open science & reproducibility (classic but still essential)
+
+[Reading instruction]{.uured-bold}: Read these, no presentation. 
+
+- Wilson et al. (2014) *Best Practices for Scientific Computing*
+- Peng (2011) *Reproducible Research in Computational Science*
+- Stodden et al. (2014) *The Practice of Reproducible Research*
+- Stodden et al. (2016) *Computational Reproducibility*
+- Knuth (1984) *Literate Programming
+
+## Foundations Readings in Language Representation
+
+[Reading instruction]{.uured-bold}: Read these, no presentation. 
+
+| **Neural Foundations**             | **Distributional Semantics**  | **Embeddings in Practice**        |
+| ----------------------------------------- | ------------------------------------ | ---------------------------------------- |
+| A Neural Probabilistic Language Model [@Bengio2003NeuralLM] | Vector Space Models of Semantics [@TurneyPantel2010VSM] | Distributed Representations of Words [@Mikolov2013Word2Vec] |
+|Sequence to sequence learning [@Sutskever2014Sequence]|Are LLMs Models of Distributional Semantics? A Case Study on Quantifiers  [@Enyan2024Distributional]|Efficient Estimation of Word Representations in Vector Space [@Mikolov2013Efficient]|
+
+
+## Group 1 – Transformers: Architecture and Attention
+
+| **Transformer Core**                                      | **Interpretability & Attention**                   | **Representational Power**                                              |
+| --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
+| Attention Is All You Need [@Vaswani2017Attention]         | What Does BERT Look At? [@Clark2019Bert]       | On the Turing Completeness of Modern Neural Network Architectures [@Perez2019Turing] |
+| Sequence to Sequence Learning [@Sutskever2014Sequence]    | Quantifying attention flow in transformers [@Abnar2020Quantifying] | Are Transformers Universal Approximators? [@Yun2019Transformers]        |
+| Self-Attention with Relative Position [@Shaw2018Selfattention] | Attention Is Not Explanation [@Jain2019Attention]  | Efficient streaming language models[@Xiao2023Efficient]          |
+
+
+## Group 2 – Scaling & Emergence
+
+* Scaling Laws for Neural LMs [@Kaplan2020Scaling]
+* Sparks of AGI [@Bubeck2023SparksAGI]
+
+
 ## Group 3 – Text-as-Data & Business NLP
 
 * Text as Data [@Gentzkow2019TextAsDataPaper]
 * Information Extraction from Business Text [@Kogan2019BusinessIE]
 
+
 ## Group 4 – Prompting & Reasoning
 
 * Chain-of-Thought Prompting [@Wei2022CoT]
 * ReAct [@Yao2023ReAct]
+
+
+## Group 5 – Alignment & Instruction
+
+* Training Language Models with Human Feedback [@Ouyang2022RLHF]
+* Constitutional AI [@Bai2022Constitutional]
+
+
+## Group 6 – Retrieval-Augmented Generation
+
+* Retrieval-Augmented Generation [@Lewis2020RAG]
+* Self-RAG [@Asai2023SelfRAG]
+
+
+## Group 7 – Efficient Fine-Tuning
+
+* LoRA [@Hu2021LoRA]
+* QLoRA [@Dettmers2023QLoRA]
+
+
+## Group 8 – Long Context & Memory
+
+* Lost in the Middle [@Liu2023ContextWindow]
+* Transformer-XL [@Dai2019TransformerXL]
+
+
+## Group 9 – Evaluation & Benchmarks
+
+* HELM Benchmark [@Liang2022HELM]
+* Evaluating LLMs [@Chang2024EvaluatingLLMs]
+
+
+## Group 10 – Hallucination & Trust
+
+* Survey on Hallucination in LLMs [@Huang2023Hallucinations]
+* Stochastic Parrots [@Bender2021StochasticParrots]
+
+
+## Group 11 – Governance & Deployment
+
+* Foundation Models Paper [@bommasani2022opportunities]
+* Responsible AI for LLMs [@Raji2022ResponsibleAI]
 
 
 # Presentation Expectations
