@@ -1,0 +1,38 @@
+---
+title: "AD698 - Applied Generative AI"
+subtitle: "Neural Networks for Classification and Regression"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../references.bib
+categories: ['Neural Networks', 'Classification', 'Regression', 'generalization', 'overfitting', 'underfitting']
+description: "Lecture covering Neural Networks for Classification and Regression."
+---
+
+{{< include "./m08_l01_content/1.neural-network-regression.qmd" >}}
+
+<!-- {{< include "./m08_l01_content/1.linear-regression.md" >}}
+
+{{< include "./m08_l01_content/2.oo-design.md" >}}
+
+{{< include "./m08_l01_content/3.synthetic-regression-data.md" >}}
+
+{{< include "./m08_l01_content/4.linear-regression-scratch.md" >}}
+
+{{< include "./m08_l01_content/5.linear-regression-concise.md" >}}
+
+{{< include "./m08_l01_content/6.generalization.md" >}}
+
+{{< include "./m08_l01_content/7.weight-decay.md" >}}
+
+
+{{< include "./m08_l01_content/8.classification-index.md" >}}
+{{< include "./m08_l01_content/9.softmax-regression.md" >}}
+{{< include "./m08_l01_content/10.image-classification-dataset.md" >}}
+{{< include "./m08_l01_content/11.batch-classification.md" >}}
+{{< include "./m08_l01_content/12.softmax-regression-scratch.md" >}}
+{{< include "./m08_l01_content/13.softmax-regression-concise.md" >}}
+{{< include "./m08_l01_content/14.generalization-classification.md" >}}
+{{< include "./m08_l01_content/15.environment-and-distribution-shift.md" >}} -->

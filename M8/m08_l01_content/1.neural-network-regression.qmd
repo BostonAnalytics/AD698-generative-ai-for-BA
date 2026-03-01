@@ -1,0 +1,1166 @@
+---
+number-sections: true
+bibliography: ../../references.bib
+date: "2024-11-21"
+date-modified: today
+date-format: long
+engine: jupyter
+---
+
+## Linear Neural Networks for Regression
+
+Before we worry about making our neural networks deep,
+it will be helpful to implement some shallow ones,
+for which the inputs connect directly to the outputs.
+This will prove important for a few reasons.
+First, rather than getting distracted by complicated architectures,
+we can focus on the basics of neural network training,
+including parametrizing the output layer, handling data,
+specifying a loss function, and training the model.
+Second, this class of shallow networks happens
+to comprise the set of linear models,
+which subsumes many classical methods of statistical prediction,
+including linear and softmax regression.
+Understanding these classical tools is pivotal
+because they are widely used in many contexts
+and we will often need to use them as baselines
+when justifying the use of fancier architectures.
+This chapter will focus narrowly on linear regression
+and the next one will extend our modeling repertoire
+by developing linear neural networks for classification.
+
+## Linear Regression {#sec-linear_regression}
+
+*Regression* problems pop up whenever we want to predict a numerical value.
+Common examples include predicting prices (of homes, stocks, etc.),
+predicting the length of stay (for patients in the hospital),
+forecasting demand (for retail sales), among numerous others.
+Not every prediction problem is one of classical regression.
+Later on, we will introduce classification problems,
+where the goal is to predict membership among a set of categories.
+
+As a running example, suppose that we wish
+to estimate the prices of houses (in dollars)
+based on their area (in square feet) and age (in years).
+To develop a model for predicting house prices,
+we need to get our hands on data,
+including the sales price, area, and age for each home.
+In the terminology of machine learning,
+the dataset is called a *training dataset* or *training set*,
+and each row (containing the data corresponding to one sale)
+is called an *example* (or *data point*, *instance*, *sample*).
+The thing we are trying to predict (price)
+is called a *label* (or *target*).
+The variables (age and area)
+upon which the predictions are based
+are called *features* (or *covariates*).
+
+### Basic Setup {#sec-basic_setup}
+
+```{python}
+#| echo: true
+#| eval: true
+
+import math
+import numpy as np
+import time
+
+# Pytorch is the default framework, but we can also use TensorFlow, JAX, and MXNet.
+import torch
+
+# tensorflow is not a default dependency, so we need to import it conditionally
+import tensorflow as tf
+```
+
+*Linear regression* is both the simplest and most popular among the standard tools for tackling regression problems. Dating back to the dawn of the 19th century [@Legendre.1805,@Gauss.1809], linear regression flows from a few simple assumptions. First, we assume that the relationship
+between features $\mathbf{x}$ and target $y$
+is approximately linear,
+i.e., that the conditional mean $E[Y \mid X=\mathbf{x}]$
+can be expressed as a weighted sum
+of the features $\mathbf{x}$.
+This setup allows that the target value
+may still deviate from its expected value
+on account of observation noise.
+Next, we can impose the assumption that any such noise
+is well behaved, following a Gaussian distribution.
+Typically, we will use $n$ to denote
+the number of examples in our dataset.
+We use superscripts to enumerate samples and targets,
+and subscripts to index coordinates.
+More concretely,
+$\mathbf{x}^{(i)}$ denotes the $i^{\textrm{th}}$ sample
+and $x_j^{(i)}$ denotes its $j^{\textrm{th}}$ coordinate.
+
+#### Model {#sec-linear_model}
+
+At the heart of every solution is a model
+that describes how features can be transformed
+into an estimate of the target.
+The assumption of linearity means that
+the expected value of the target (price) can be expressed
+as a weighted sum of the features (area and age):
+
+$$
+\begin{align}
+\textrm{price} = w_{\textrm{area}} \cdot \textrm{area} + w_{\textrm{age}} \cdot \textrm{age} + b.
+\end{align}
+$$ {#eq-price-area}
+
+Here $w_{\textrm{area}}$ and $w_{\textrm{age}}$
+are called *weights*, and $b$ is called a *bias*
+(or *offset* or *intercept*).
+The weights determine the influence of each feature on our prediction.
+The bias determines the value of the estimate when all features are zero.
+Even though we will never see any newly-built homes with precisely zero area,
+we still need the bias because it allows us
+to express all linear functions of our features
+(rather than restricting us to lines that pass through the origin).
+Strictly speaking, @eq-price-area is an *affine transformation* of input features, which is characterized by a *linear transformation* of features via a weighted sum, combined with a *translation* via the added bias.
+Given a dataset, our goal is to choose
+the weights $\mathbf{w}$ and the bias $b$
+that, on average, make our model's predictions
+fit the true prices observed in the data as closely as possible.
+
+In disciplines where it is common to focus
+on datasets with just a few features,
+explicitly expressing models long-form,
+as in @eq-price-area, is common.
+In machine learning, we usually work
+with high-dimensional datasets,
+where it is more convenient to employ
+compact linear algebra notation.
+When our inputs consist of $d$ features,
+we can assign each an index (between $1$ and $d$)
+and express our prediction $\hat{y}$
+(in general the "hat" symbol denotes an estimate) as
+
+$$\hat{y} = w_1  x_1 + \cdots + w_d  x_d + b.$$
+
+Collecting all features into a vector $\mathbf{x} \in \mathbb{R}^d$
+and all weights into a vector $\mathbf{w} \in \mathbb{R}^d$,
+we can express our model compactly via the dot product
+between $\mathbf{w}$ and $\mathbf{x}$:
+
+$$
+\begin{align}
+\hat{y} = \mathbf{w}^\top \mathbf{x} + b.
+\end{align}
+$$ {#eq-linreg-y}
+
+In @eq-linreg-y, the vector $\mathbf{x}$
+corresponds to the features of a single example.
+We will often find it convenient
+to refer to features of our entire dataset of $n$ examples
+via the *design matrix* $\mathbf{X} \in \mathbb{R}^{n \times d}$.
+Here, $\mathbf{X}$ contains one row for every example
+and one column for every feature.
+For a collection of features $\mathbf{X}$,
+the predictions $\hat{\mathbf{y}} \in \mathbb{R}^n$
+can be expressed via the matrix--vector product:
+
+$$
+\begin{align}
+{\hat{\mathbf{y}}} = \mathbf{X} \mathbf{w} + b,
+\end{align}
+$$ {#eq-linreg-y-vec}
+
+where broadcasting is applied during the summation.
+Given features of a training dataset $\mathbf{X}$
+and corresponding (known) labels $\mathbf{y}$,
+the goal of linear regression is to find
+the weight vector $\mathbf{w}$ and the bias term $b$
+such that, given features of a new data example
+sampled from the same distribution as $\mathbf{X}$,
+the new example's label will (in expectation)
+be predicted with the smallest error.
+
+Even if we believe that the best model for
+predicting $y$ given $\mathbf{x}$ is linear,
+we would not expect to find a real-world dataset of $n$ examples where
+$y^{(i)}$ exactly equals $\mathbf{w}^\top \mathbf{x}^{(i)}+b$
+for all $1 \leq i \leq n$.
+For example, whatever instruments we use to observe
+the features $\mathbf{X}$ and labels $\mathbf{y}$, there might be a small amount of measurement error.
+Thus, even when we are confident
+that the underlying relationship is linear,
+we will incorporate a noise term to account for such errors.
+
+Before we can go about searching for the best *parameters*
+(or *model parameters*) $\mathbf{w}$ and $b$,
+we will need two more things:
+(i) a measure of the quality of some given model;
+and (ii) a procedure for updating the model to improve its quality.
+
+#### Loss Function {#sec-linear-regression-loss-function}
+
+Naturally, fitting our model to the data requires
+that we agree on some measure of *fitness*
+(or, equivalently, of *unfitness*).
+*Loss functions* quantify the distance
+between the *real* and *predicted* values of the target.
+The loss will usually be a nonnegative number
+where smaller values are better
+and perfect predictions incur a loss of 0.
+For regression problems, the most common loss function is the squared error.
+When our prediction for an example $i$ is $\hat{y}^{(i)}$
+and the corresponding true label is $y^{(i)}$,
+the *squared error* is given by:
+
+$$
+\begin{align}
+l^{(i)}(\mathbf{w}, b) = \frac{1}{2} \left(\hat{y}^{(i)} - y^{(i)}\right)^2.
+\end{align}
+$$ {#eq-mse}
+
+The constant $\frac{1}{2}$ makes no real difference
+but proves to be notationally convenient,
+since it cancels out when we take the derivative of the loss.
+Because the training dataset is given to us,
+and thus is out of our control,
+the empirical error is only a function of the model parameters.
+In @fig-fit_linreg, we visualize the fit of a linear regression model
+In @fig-fit_linreg, we visualize the fit of a linear regression model
+in a problem with one-dimensional inputs.
+
+```{python}
+#| echo: true
+#| eval: true
+#| label: fig-fit_linreg
+#| fig-cap: "Fitting a linear regression model to one-dimensional data."
+#| fig-alt: "A line plot on cartesian coordinates"
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# --- synthetic data (you can replace with real data) ---
+np.random.seed(0)
+x = np.linspace(0, 10, 8)
+y = 2.0 * x + 3 + np.random.normal(scale=2.0, size=len(x))
+
+# --- fit linear regression ---
+coef = np.polyfit(x, y, 1)
+m, b = coef
+y_pred = m * x + b
+
+# --- plot ---
+fig, ax = plt.subplots(figsize=(6, 4))
+
+# regression line
+ax.plot(x, y_pred, color="black", linewidth=1.5)
+
+# data points
+ax.scatter(x, y, s=60, facecolor="white", edgecolor="#7ab6f9", linewidth=2)
+
+# residual lines (vertical distances)
+for xi, yi, ypi in zip(x, y, y_pred):
+    ax.plot([xi, xi], [yi, ypi], color="#7ab6f9", linewidth=1.5)
+
+# axes arrows (to mimic the SVG)
+ax.annotate("", xy=(11, 0), xytext=(-1, 0),
+            arrowprops=dict(arrowstyle="->", lw=1.5, color="black"))
+ax.annotate("", xy=(0, 25), xytext=(0, -5),
+            arrowprops=dict(arrowstyle="->", lw=1.5, color="black"))
+
+# Axis arrows 
+ax.annotate("", xy=(11, 0), xytext=(-1, 0), arrowprops=dict(arrowstyle="->", lw=1.5, color="black"))
+ax.annotate("", xy=(0, 25), xytext=(0, -5), arrowprops=dict(arrowstyle="->", lw=1.5, color="black"))
+
+# Axis labels near arrowheads
+ax.text(11.2, 0, r"$x$", fontsize=14)
+ax.text(0, 25.5, r"$y$", fontsize=14)
+
+# clean look
+ax.set_xlim(-1, 11)
+ax.set_ylim(-5, 25)
+ax.set_xticks([])
+ax.set_yticks([])
+ax.set_frame_on(False)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+Note that large differences between
+estimates $\hat{y}^{(i)}$ and targets $y^{(i)}$
+lead to even larger contributions to the loss,
+due to its quadratic form
+(this quadraticity can be a double-edge sword; while it encourages the model to avoid large errors
+it can also lead to excessive sensitivity to anomalous data).
+To measure the quality of a model on the entire dataset of $n$ examples,
+we simply average (or equivalently, sum)
+the losses on the training set:
+
+$$
+\begin{align}
+L(\mathbf{w}, b) =\frac{1}{n}\sum_{i=1}^n l^{(i)}(\mathbf{w}, b) =\frac{1}{n} \sum_{i=1}^n \frac{1}{2}\left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right)^2.
+\end{align}
+$$
+
+When training the model, we seek parameters ($\mathbf{w}^*, b^*$)
+that minimize the total loss across all training examples:
+
+$$
+\begin{align}
+\mathbf{w}^*, b^* = \operatorname*{argmin}_{\mathbf{w}, b}\  L(\mathbf{w}, b).
+\end{align}
+$$
+
+#### Analytic Solution
+
+Unlike most of the models that we will cover,
+linear regression presents us with
+a surprisingly easy optimization problem.
+In particular, we can find the optimal parameters
+(as assessed on the training data)
+analytically by applying a simple formula as follows.
+First, we can subsume the bias $b$ into the parameter $\mathbf{w}$
+by appending a column to the design matrix consisting of all 1s.
+Then our prediction problem is to minimize $\|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2$.
+As long as the design matrix $\mathbf{X}$ has full rank
+(no feature is linearly dependent on the others),
+then there will be just one critical point on the loss surface
+and it corresponds to the minimum of the loss over the entire domain.
+Taking the derivative of the loss with respect to $\mathbf{w}$
+and setting it equal to zero yields:
+
+$$
+\begin{align}
+    \partial_{\mathbf{w}} \|\mathbf{y} - \mathbf{X}\mathbf{w}\|^2 =
+    2 \mathbf{X}^\top (\mathbf{X} \mathbf{w} - \mathbf{y}) = 0
+    \textrm{ and hence }
+    \mathbf{X}^\top \mathbf{y} = \mathbf{X}^\top \mathbf{X} \mathbf{w}.
+\end{align}
+$$
+
+Solving for $\mathbf{w}$ provides us with the optimal solution
+for the optimization problem.
+Note that this solution 
+
+$$
+\begin{align}
+\mathbf{w}^* = (\mathbf X^\top \mathbf X)^{-1}\mathbf X^\top \mathbf{y}
+\end{align}
+$$
+
+will only be unique
+when the matrix $\mathbf X^\top \mathbf X$ is invertible,
+i.e., when the columns of the design matrix
+are linearly independent [@Golub.Van-Loan.1996].
+
+While simple problems like linear regression
+may admit analytic solutions,
+you should not get used to such good fortune.
+Although analytic solutions allow for nice mathematical analysis,
+the requirement of an analytic solution is so restrictive
+that it would exclude almost all exciting aspects of deep learning.
+
+#### Minibatch Stochastic Gradient Descent{#sec-batch_norm}
+
+Fortunately, even in cases where we cannot solve the models analytically,
+we can still often train models effectively in practice.
+Moreover, for many tasks, those hard-to-optimize models
+turn out to be so much better that figuring out how to train them
+ends up being well worth the trouble.
+
+The key technique for optimizing nearly every deep learning model,
+and which we will call upon throughout this book,
+consists of iteratively reducing the error
+by updating the parameters in the direction
+that incrementally lowers the loss function.
+This algorithm is called *gradient descent*.
+
+The most naive application of gradient descent
+consists of taking the derivative of the loss function,
+which is an average of the losses computed
+on every single example in the dataset.
+In practice, this can be extremely slow:
+we must pass over the entire dataset before making a single update,
+even if the update steps might be very powerful [@Liu.Nocedal.1989].
+Even worse, if there is a lot of redundancy in the training data,
+the benefit of a full update is limited.
+
+The other extreme is to consider only a single example at a time and to take
+update steps based on one observation at a time.
+The resulting algorithm, *stochastic gradient descent* (SGD)
+can be an effective strategy [@Bottou.2010], even for large datasets.
+Unfortunately, SGD has drawbacks, both computational and statistical.
+One problem arises from the fact that processors are a lot faster
+multiplying and adding numbers than they are
+at moving data from main memory to processor cache.
+It is up to an order of magnitude more efficient to
+perform a matrix--vector multiplication
+than a corresponding number of vector--vector operations.
+This means that it can take a lot longer to process
+one sample at a time compared to a full batch.
+A second problem is that some of the layers,
+such as batch normalization,
+only work well when we have access
+to more than one observation at a time.
+
+The solution to both problems is to pick an intermediate strategy:
+rather than taking a full batch or only a single sample at a time,
+we take a *minibatch* of observations [@Li.Zhang.Chen.ea.2014].
+The specific choice of the size of the said minibatch depends on many factors,
+such as the amount of memory, the number of accelerators,
+the choice of layers, and the total dataset size.
+Despite all that, a number between 32 and 256,
+preferably a multiple of a large power of $2$, is a good start.
+This leads us to *minibatch stochastic gradient descent*.
+
+In its most basic form, in each iteration $t$,
+we first randomly sample a minibatch $\mathcal{B}_t$
+consisting of a fixed number $|\mathcal{B}|$ of training examples.
+We then compute the derivative (gradient) of the average loss
+on the minibatch with respect to the model parameters.
+Finally, we multiply the gradient
+by a predetermined small positive value $\eta$,
+called the *learning rate*,
+and subtract the resulting term from the current parameter values.
+We can express the update as follows:
+
+$$
+\begin{align}
+(\mathbf{w},b) \leftarrow (\mathbf{w},b) - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}_t} \partial_{(\mathbf{w},b)} l^{(i)}(\mathbf{w},b).
+\end{align}
+$$
+
+In summary, minibatch SGD proceeds as follows:
+(i) initialize the values of the model parameters, typically at random;
+(ii) iteratively sample random minibatches from the data,
+updating the parameters in the direction of the negative gradient.
+For quadratic losses and affine transformations,
+this has a closed-form expansion:
+
+$$
+\begin{align}
+\mathbf{w} & \leftarrow \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}_t} \partial_{\mathbf{w}} l^{(i)}(\mathbf{w}, b) && = \mathbf{w} - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}_t} \mathbf{x}^{(i)} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right)\\ b &\leftarrow b -  \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}_t} \partial_b l^{(i)}(\mathbf{w}, b) &&  = b - \frac{\eta}{|\mathcal{B}|} \sum_{i \in \mathcal{B}_t} \left(\mathbf{w}^\top \mathbf{x}^{(i)} + b - y^{(i)}\right).
+\end{align}
+$$ {#eq-linreg_batch_update}
+
+Since we pick a minibatch $\mathcal{B}$
+we need to normalize by its size $|\mathcal{B}|$.
+Frequently minibatch size and learning rate are user-defined.
+Such tunable parameters that are not updated
+in the training loop are called *hyperparameters*.
+They can be tuned automatically by a number of techniques, such as Bayesian optimization
+[@Frazier.2018]. In the end, the quality of the solution is
+typically assessed on a separate *validation dataset* (or *validation set*).
+
+After training for some predetermined number of iterations
+(or until some other stopping criterion is met),
+we record the estimated model parameters,
+denoted $\hat{\mathbf{w}}, \hat{b}$.
+Note that even if our function is truly linear and noiseless,
+these parameters will not be the exact minimizers of the loss, nor even deterministic.
+Although the algorithm converges slowly towards the minimizers
+it typically will not find them exactly in a finite number of steps.
+Moreover, the minibatches $\mathcal{B}$
+used for updating the parameters are chosen at random.
+This breaks determinism.
+
+Linear regression happens to be a learning problem
+with a global minimum
+(whenever $\mathbf{X}$ is full rank, or equivalently,
+whenever $\mathbf{X}^\top \mathbf{X}$ is invertible).
+However, the loss surfaces for deep networks contain many saddle points and minima.
+Fortunately, we typically do not care about finding
+an exact set of parameters but merely any set of parameters
+that leads to accurate predictions (and thus low loss).
+In practice, deep learning practitioners
+seldom struggle to find parameters
+that minimize the loss *on training sets*
+[@Izmailov.Podoprikhin.Garipov.ea.2018,@Frankle.Carbin.2018].
+The more formidable task is to find parameters
+that lead to accurate predictions on previously unseen data,
+a challenge called *generalization*.
+We return to these topics throughout the book.
+
+#### Predictions
+
+Given the model $\hat{\mathbf{w}}^\top \mathbf{x} + \hat{b}$,
+we can now make *predictions* for a new example,
+e.g., predicting the sales price of a previously unseen house
+given its area $x_1$ and age $x_2$.
+Deep learning practitioners have taken to calling the prediction phase *inference*
+but this is a bit of a misnomer---*inference* refers broadly
+to any conclusion reached on the basis of evidence,
+including both the values of the parameters
+and the likely label for an unseen instance.
+If anything, in the statistics literature
+*inference* more often denotes parameter inference
+and this overloading of terminology creates unnecessary confusion
+when deep learning practitioners talk to statisticians.
+In the following we will stick to *prediction* whenever possible.
+
+
+### Vectorization for Speed
+
+When training our models, we typically want to process
+whole minibatches of examples simultaneously.
+Doing this efficiently requires that we vectorize the calculations and leverage
+fast linear algebra libraries
+rather than writing costly for-loops in Python.
+
+To see why this matters so much,
+let's consider two methods for adding vectors.
+To start, we instantiate two 10,000-dimensional vectors
+containing all 1s.
+In the first method, we loop over the vectors with a Python for-loop.
+In the second, we rely on a single call to `+`.
+
+```{python}
+#| echo: true
+#| eval: true
+
+n = 10000
+a = torch.ones(n)
+b = torch.ones(n)
+```
+
+Now we can benchmark the workloads.
+First, we add them, one coordinate at a time,
+using a for-loop.
+
+```{python}
+#| echo: true
+#| eval: true
+
+# Python loop
+c = torch.zeros(n)
+t = time.time()
+with torch.no_grad():
+    for i in range(n):
+        c[i] = a[i] + b[i]
+loop_time = time.time() - t
+loop_time
+
+```
+
+Alternatively, we rely on the reloaded `+` operator to compute the elementwise sum.
+
+```{python}
+#| echo: true
+#| eval: true
+
+# Vectorized
+t = time.time()
+with torch.no_grad():
+    c2 = a + b
+vec_time = time.time() - t
+vec_time
+
+```
+
+
+The second method is dramatically faster than the first.
+Vectorizing code often yields order-of-magnitude speedups.
+Moreover, we push more of the mathematics to the library
+so we do not have to write as many calculations ourselves,
+reducing the potential for errors and increasing portability of the code.
+
+
+### The Normal Distribution and Squared Loss {#sec-normal_distribution_and_squared_loss}
+
+So far we have given a fairly functional motivation
+of the squared loss objective:
+the optimal parameters return the conditional expectation $E[Y\mid X]$
+whenever the underlying pattern is truly linear,
+and the loss assigns large penalties for outliers.
+We can also provide a more formal motivation
+for the squared loss objective
+by making probabilistic assumptions
+about the distribution of noise.
+
+Linear regression was invented at the turn of the 19th century.
+While it has long been debated whether Gauss or Legendre
+first thought up the idea,
+it was Gauss who also discovered the normal distribution
+(also called the *Gaussian*).
+It turns out that the normal distribution
+and linear regression with squared loss
+share a deeper connection than common parentage.
+
+To begin, recall that a normal distribution
+with mean $\mu$ and variance $\sigma^2$ (standard deviation $\sigma$)
+is given as
+
+$$p(x) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (x - \mu)^2\right).$$
+
+Below we define a function to compute the normal distribution.
+
+```{python}
+#| echo: true
+#| eval: true
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+def normal_np(x, mu, sigma):
+    return (1 / (np.sqrt(2 * np.pi) * sigma)) * np.exp(-0.5 * ((x - mu) / sigma)**2)
+
+```
+
+We can now (**visualize the normal distributions**).
+
+```{python}
+#| echo: true
+#| eval: true
+#| label: fig-normal_distributions
+#| fig-cap: "Normal distributions with different means and variances."
+#| fig-alt: "A line plot of three normal distributions with different means and variances."
+#| fig-align: "center"
+
+# Use NumPy again for visualization
+x = np.arange(-7, 7, 0.01)
+params = [(0, 1), (0, 2), (3, 1)]
+
+# Mean and standard deviation pairs
+plt.figure(figsize=(5.5, 4.0))
+
+for mu, sigma in params:
+    plt.plot(x, normal_np(x, mu, sigma), label=f"mean {mu}, std {sigma}")
+
+plt.xlabel("x")
+plt.ylabel("p(x)")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+```
+
+Note that changing the mean corresponds
+to a shift along the $x$-axis,
+and increasing the variance
+spreads the distribution out,
+lowering its peak.
+
+One way to motivate linear regression with squared loss
+is to assume that observations arise from noisy measurements,
+where the noise $\epsilon$ follows the normal distribution 
+$\mathcal{N}(0, \sigma^2)$:
+
+$$
+\begin{align}
+y = \mathbf{w}^\top \mathbf{x} + b + \epsilon \textrm{ where } \epsilon \sim \mathcal{N}(0, \sigma^2).
+\end{align}
+$$
+
+Thus, we can now write out the *likelihood*
+of seeing a particular $y$ for a given $\mathbf{x}$ via
+
+$$
+\begin{align}
+P(y \mid \mathbf{x}) = \frac{1}{\sqrt{2 \pi \sigma^2}} \exp\left(-\frac{1}{2 \sigma^2} (y - \mathbf{w}^\top \mathbf{x} - b)^2\right).
+\end{align}
+$$
+
+As such, the likelihood factorizes.
+According to *the principle of maximum likelihood*,
+the best values of parameters $\mathbf{w}$ and $b$ are those
+that maximize the *likelihood* of the entire dataset:
+
+$$
+\begin{align}
+P(\mathbf y \mid \mathbf X) = \prod_{i=1}^{n} p(y^{(i)} \mid \mathbf{x}^{(i)}).
+\end{align}
+$$
+
+The equality follows since all pairs $(\mathbf{x}^{(i)}, y^{(i)})$
+were drawn independently of each other.
+Estimators chosen according to the principle of maximum likelihood
+are called *maximum likelihood estimators*.
+While, maximizing the product of many exponential functions,
+might look difficult,
+we can simplify things significantly, without changing the objective,
+by maximizing the logarithm of the likelihood instead.
+For historical reasons, optimizations are more often expressed
+as minimization rather than maximization.
+So, without changing anything,
+we can *minimize* the *negative log-likelihood*,
+which we can express as follows:
+
+$$-\log P(\mathbf y \mid \mathbf X) = \sum_{i=1}^n \frac{1}{2} \log(2 \pi \sigma^2) + \frac{1}{2 \sigma^2} \left(y^{(i)} - \mathbf{w}^\top \mathbf{x}^{(i)} - b\right)^2.$$
+
+If we assume that $\sigma$ is fixed,
+we can ignore the first term,
+because it does not depend on $\mathbf{w}$ or $b$.
+The second term is identical
+to the squared error loss introduced earlier,
+except for the multiplicative constant $\frac{1}{\sigma^2}$.
+Fortunately, the solution does not depend on $\sigma$ either.
+It follows that minimizing the mean squared error
+is equivalent to the maximum likelihood estimation
+of a linear model under the assumption of additive Gaussian noise.
+
+
+### Linear Regression as a Neural Network
+
+While linear models are not sufficiently rich
+to express the many complicated networks
+that we will introduce in this book,
+(artificial) neural networks are rich enough
+to subsume linear models as networks
+in which every feature is represented by an input neuron,
+all of which are connected directly to the output.
+
+@fig-single_neuron depicts
+linear regression as a neural network.
+The diagram highlights the connectivity pattern,
+such as how each input is connected to the output,
+but not the specific values taken by the weights or biases.
+
+![Linear regression is a single-layer neural network.](../M08_lecture01_figures/singleneuron.svg){#fig-single_neuron width=80%, fig-align="center" fig-alt="A diagram of a single neuron with multiple inputs and one output."}
+
+The inputs are $x_1, \ldots, x_d$.
+We refer to $d$ as the *number of inputs*
+or the *feature dimensionality* in the input layer.
+The output of the network is $o_1$.
+Because we are just trying to predict
+a single numerical value,
+we have only one output neuron.
+Note that the input values are all *given*.
+There is just a single *computed* neuron.
+In summary, we can think of linear regression
+as a single-layer fully connected neural network.
+We will encounter networks
+with far more layers
+in later chapters.
+
+#### Biology
+
+Because linear regression predates computational neuroscience,
+it might seem anachronistic to describe
+linear regression in terms of neural networks.
+Nonetheless, they were a natural place to start
+when the cyberneticists and neurophysiologists
+Warren McCulloch and Walter Pitts began to develop
+models of artificial neurons.
+Consider the cartoonish picture
+of a biological neuron in @fig-Neuron,
+consisting of *dendrites* (input terminals),
+the *nucleus* (CPU), the *axon* (output wire),
+and the *axon terminals* (output terminals),
+enabling connections to other neurons via *synapses*.
+
+![The real neuron (source: "Anatomy and Physiology" by the US National Cancer Institute's Surveillance, Epidemiology and End Results (SEER) Program).](../M08_lecture01_figures/neuron.svg){#fig-Neuron width=80%, fig-align="center" fig-alt="A diagram of a biological neuron with dendrites, nucleus, axon, and axon terminals."}
+
+Information $x_i$ arriving from other neurons
+(or environmental sensors) is received in the dendrites.
+In particular, that information is weighted
+by *synaptic weights* $w_i$,
+determining the effect of the inputs,
+e.g., activation or inhibition via the product $x_i w_i$.
+The weighted inputs arriving from multiple sources
+are aggregated in the nucleus
+as a weighted sum $y = \sum_i x_i w_i + b$,
+possibly subject to some nonlinear postprocessing via a function $\sigma(y)$.
+This information is then sent via the axon to the axon terminals,
+where it reaches its destination
+(e.g., an actuator such as a muscle)
+or it is fed into another neuron via its dendrites.
+
+Certainly, the high-level idea that many such units
+could be combined, provided they have the correct connectivity and learning algorithm,
+to produce far more interesting and complex behavior
+than any one neuron alone could express
+arises from our study of real biological neural systems.
+At the same time, most research in deep learning today
+draws inspiration from a much wider source.
+We invoke @Russell.Norvig.2016
+who pointed out that although airplanes might have been *inspired* by birds,
+ornithology has not been the primary driver
+of aeronautics innovation for some centuries.
+Likewise, inspiration in deep learning these days
+comes in equal or greater measure
+from mathematics, linguistics, psychology,
+statistics, computer science, and many other fields.
+
+### Summary
+
+In this section, we introduced
+traditional linear regression,
+where the parameters of a linear function
+are chosen to minimize squared loss on the training set.
+We also motivated this choice of objective
+both via some practical considerations
+and through an interpretation
+of linear regression as maximimum likelihood estimation
+under an assumption of linearity and Gaussian noise.
+After discussing both computational considerations
+and connections to statistics,
+we showed how such linear models could be expressed
+as simple neural networks where the inputs
+are directly wired to the output(s).
+While we will soon move past linear models altogether,
+they are sufficient to introduce most of the components
+that all of our models require:
+parametric forms, differentiable objectives,
+optimization via minibatch stochastic gradient descent,
+and ultimately, evaluation on previously unseen data.
+
+
+## Object-Oriented Design for Implementation {#sec-oo-design}
+
+In our introduction to linear regression,
+we walked through various components
+including
+the data, the model, the loss function,
+and the optimization algorithm.
+Indeed,
+linear regression is
+one of the simplest machine learning models.
+Training it,
+however, uses many of the same components that other models in this book require.
+Therefore,
+before diving into the implementation details
+it is worth
+designing some of the APIs
+that we use throughout.
+Treating components in deep learning
+as objects,
+we can start by
+defining classes for these objects
+and their interactions.
+This object-oriented design
+for implementation
+will greatly
+streamline the presentation and you might even want to use it in your projects.
+
+Inspired by open-source libraries such as [PyTorch Lightning](https://www.pytorchlightning.ai/),
+at a high level
+we wish to have three classes:
+(i) `Module` contains models, losses, and optimization methods;
+(ii) `DataModule` provides data loaders for training and validation;
+(iii) both classes are combined using the `Trainer` class, which allows us to
+train models on a variety of hardware platforms.
+Most code in this book adapts `Module` and `DataModule`. We will touch upon the `Trainer` class only when we discuss GPUs, CPUs, parallel training, and optimization algorithms.
+
+
+```{python}
+#| echo: true
+#| eval: true
+
+import time
+import numpy as np
+import torch
+from torch import nn
+import tensorflow as tf
+```
+
+### Utilities {#sec-oo-design-utilities}
+
+We need a few utilities to simplify object-oriented programming in Jupyter notebooks. One of the challenges is that class definitions tend to be fairly long blocks of code. Notebook readability demands short code fragments, interspersed with explanations, a requirement incompatible with the style of programming common for Python libraries. The first
+utility function allows us to register functions as methods in a class *after* the class has been created. In fact, we can do so *even after* we have created instances of the class! It allows us to split the implementation of a class into multiple code blocks.
+
+```{python}
+#| echo: true
+#| eval: true
+def add_to_class(Class):  #@save
+    """Register functions as methods in created class."""
+    def wrapper(obj):
+        setattr(Class, obj.__name__, obj)
+    return wrapper
+```
+
+Let's have a quick look at how to use it. We plan to implement a class `A` with a method `do`. Instead of having code for both `A` and `do` in the same code block, we can first declare the class `A` and create an instance `a`.
+
+```{python}
+#| echo: true
+#| eval: true
+class A:
+    def __init__(self):
+        self.b = 1
+
+a = A()
+```
+
+Next we define the method `do` as we normally would, but not in class `A`'s scope. Instead, we decorate this method by `add_to_class` with class `A` as its argument. In doing so, the method is able to access the member variables of `A` just as we would expect had it been included as part of `A`'s definition. Let's see what happens when we invoke it for the instance `a`.
+
+```{python}
+#| echo: true
+#| eval: true
+
+@add_to_class(A)
+def do(self):
+    print('Class attribute "b" is', self.b)
+
+a.do()
+```
+
+The second one is a utility class that saves all arguments in a class's `__init__` method as class attributes. This allows us to extend constructor call signatures implicitly without additional code.
+
+```{python}
+#| echo: true
+#| eval: true
+
+import inspect
+
+class HyperParameters:
+    def save_hyperparameters(self, ignore=None):
+        if ignore is None:
+            ignore = []
+
+        frame = inspect.currentframe().f_back
+        args = inspect.getargvalues(frame).locals
+
+        self.hparams = {
+            k: v for k, v in args.items()
+            if k not in ignore and k != 'self' and not k.startswith('_')
+        }
+
+        for k, v in self.hparams.items():
+            setattr(self, k, v)
+
+```
+
+We defer its implementation into :numref:`sec_utils`. To use it, we define our class that inherits from `HyperParameters` and calls `save_hyperparameters` in the `__init__` method.
+
+```{python}
+#| echo: true
+#| eval: true
+
+# Call the fully implemented HyperParameters class
+class B(HyperParameters):
+    def __init__(self, a, b, c):
+        self.save_hyperparameters(ignore=['c'])
+        print('self.a =', self.a, 'self.b =', self.b)
+        print('There is no self.c =', not hasattr(self, 'c'))
+
+
+b = B(a=1, b=2, c=3)
+```
+
+The final utility allows us to plot experiment progress interactively while it is going on. In deference to the much more powerful (and complex) [TensorBoard](https://www.tensorflow.org/tensorboard) we name it `ProgressBoard`. For now, let's simply see it in action.
+
+The `draw` method plots a point `(x, y)` in the figure, with `label` specified in the legend. The optional `every_n` smooths the line by only showing $1/n$ points in the figure. Their values are averaged from the $n$ neighbor points in the original figure.
+
+```{python}
+#| echo: true
+#| eval: true
+
+import inspect
+import collections
+import matplotlib.pyplot as plt
+from IPython import display
+
+class ProgressBoard(HyperParameters):
+    """Animated plotting of streaming data."""
+    def __init__(self, xlabel=None, ylabel=None, xlim=None, ylim=None,
+                 xscale='linear', yscale='linear',
+                 ls=('-', '--', '-.', ':'), colors=('C0', 'C1', 'C2', 'C3'),
+                 fig=None, axes=None, figsize=(3.5, 2.5), display=True):
+        self.save_hyperparameters()
+
+    def draw(self, x, y, label, every_n=1):
+        Point = collections.namedtuple('Point', ['x', 'y'])
+
+        if not hasattr(self, 'raw_points'):
+            self.raw_points = collections.OrderedDict()
+            self.data = collections.OrderedDict()
+
+        if label not in self.raw_points:
+            self.raw_points[label] = []
+            self.data[label] = []
+
+        points = self.raw_points[label]
+        line = self.data[label]
+        points.append(Point(x, y))
+
+        if len(points) != every_n:
+            return
+
+        mean = lambda xs: sum(xs) / len(xs)
+        line.append(Point(mean([p.x for p in points]),
+                          mean([p.y for p in points])))
+        points.clear()
+
+        if not self.display:
+            return
+
+        if self.fig is None:
+            self.fig = plt.figure(figsize=self.figsize)
+
+        plt.clf()
+        ax = self.axes if self.axes else plt.gca()
+
+        for (k, v), ls, color in zip(self.data.items(), self.ls, self.colors):
+            ax.plot([p.x for p in v], [p.y for p in v],
+                    linestyle=ls, color=color, label=k)
+
+        if self.xlim: ax.set_xlim(self.xlim)
+        if self.ylim: ax.set_ylim(self.ylim)
+        if self.xlabel: ax.set_xlabel(self.xlabel)
+        if self.ylabel: ax.set_ylabel(self.ylabel)
+        ax.set_xscale(self.xscale)
+        ax.set_yscale(self.yscale)
+        ax.legend()
+
+        display.display(self.fig)
+        display.clear_output(wait=True)
+
+```
+
+In the following example, we draw `sin` and `cos` with a different smoothness. If you run this code block, you will see the lines grow in animation.
+
+```{python}
+#| echo: true
+#| eval: true
+#| fig-align: "center"
+#| fig-alt: "A line plot of the sine and cosine functions with different smoothness."
+#| fig-cap: "The sine and cosine functions with different smoothness."
+#| label: fig-sin_cos
+
+import numpy as np
+
+board = ProgressBoard('x')
+for x in np.arange(0, 10, 0.1):
+    board.draw(x, np.sin(x), 'sin', every_n=2)
+    board.draw(x, np.cos(x), 'cos', every_n=10)
+
+```
+
+### Models {#sec-oo-design-models}
+
+The `Module` class is the base class of all models we will implement. At the very least we need three methods. The first, `__init__`, stores the learnable parameters, the `training_step` method accepts a data batch to return the loss value, and finally, `configure_optimizers` returns the optimization method, or a list of them, that is used to update the learnable parameters. Optionally we can define `validation_step` to report the evaluation measures.
+Sometimes we put the code for computing the output into a separate `forward` method to make it more reusable.
+
+```{python}
+#| echo: true
+#| eval: true
+import torch
+import torch.nn as nn
+import numpy as np
+
+class Module(nn.Module, HyperParameters):
+    """Base class for models with training/validation hooks and plotting."""
+    def __init__(self, plot_train_per_epoch=2, plot_valid_per_epoch=1):
+        nn.Module.__init__(self)
+        HyperParameters.__init__(self)
+        self.save_hyperparameters()
+        self.board = ProgressBoard()
+
+    def loss(self, y_hat, y):
+        raise NotImplementedError
+
+    def forward(self, X):
+        assert hasattr(self, 'net'), "Define self.net in your subclass"
+        return self.net(X)
+
+    def plot(self, key, value, train):
+        assert hasattr(self, 'trainer'), "Trainer must set self.trainer"
+
+        self.board.xlabel = "epoch"
+
+        if train:
+            x = self.trainer.train_batch_idx / self.trainer.num_train_batches
+            n = self.trainer.num_train_batches / self.plot_train_per_epoch
+        else:
+            x = self.trainer.epoch + 1
+            n = self.trainer.num_val_batches / self.plot_valid_per_epoch
+
+        v = value.detach().cpu().numpy() if torch.is_tensor(value) else float(value)
+        label = ("train_" if train else "val_") + key
+        self.board.draw(x, v, label, every_n=int(n))
+
+    def training_step(self, batch):
+        X, y = batch[:-1], batch[-1]
+        y_hat = self(*X)
+        l = self.loss(y_hat, y)
+        self.plot("loss", l, train=True)
+        return l
+
+    def validation_step(self, batch):
+        X, y = batch[:-1], batch[-1]
+        y_hat = self(*X)
+        l = self.loss(y_hat, y)
+        self.plot("loss", l, train=False)
+
+    def configure_optimizers(self):
+        raise NotImplementedError
+
+```
+
+### Data {#sec-oo-design-data}
+
+The `DataModule` class is the base class for data. Quite frequently the `__init__` method is used to prepare the data. This includes downloading and preprocessing if needed. The `train_dataloader` returns the data loader for the training dataset. A data loader is a (Python) generator that yields a data batch each time it is used. This batch is then fed into the `training_step` method of `Module` to compute the loss. There is an optional `val_dataloader` to return the validation dataset loader. It behaves in the same manner, except that it yields data batches for the `validation_step` method in `Module`.
+
+```{python}
+#| echo: true
+#| eval: true
+
+from torch.utils.data import DataLoader
+
+class DataModule(HyperParameters):
+    """Base class for datasets and dataloaders."""
+    def __init__(self, root="../data", num_workers=4, batch_size=32):
+        self.save_hyperparameters()
+
+    def get_dataloader(self, train):
+        raise NotImplementedError
+
+    def train_dataloader(self):
+        return self.get_dataloader(train=True)
+
+    def val_dataloader(self):
+        return self.get_dataloader(train=False)
+
+```
+
+### Training {#sec-oo-design-training}
+
+```{python}
+#| echo: true
+#| eval: true
+
+import torch
+from torch.utils.data import DataLoader
+
+class Trainer(HyperParameters):
+    """Minimal training loop compatible with the custom Module class."""
+    def __init__(self, max_epochs=10, device=None):
+        self.save_hyperparameters()
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+
+    def prepare_batch(self, batch):
+        return [b.to(self.device) for b in batch]
+
+    def fit(self, model, train_loader, val_loader=None):
+        model.trainer = self
+        model.to(self.device)
+
+        optimizer = model.configure_optimizers()
+
+        self.num_train_batches = len(train_loader)
+        self.num_val_batches = len(val_loader) if val_loader else 0
+
+        for epoch in range(self.max_epochs):
+            self.epoch = epoch
+            model.train()
+            for batch_idx, batch in enumerate(train_loader):
+                self.train_batch_idx = batch_idx
+                batch = self.prepare_batch(batch)
+                loss = model.training_step(batch)
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            if val_loader:
+                model.eval()
+                with torch.no_grad():
+                    for batch in val_loader:
+                        batch = self.prepare_batch(batch)
+                        model.validation_step(batch)
+
+```
+
+### Summary
+
+To highlight the object-oriented design
+for our future deep learning implementation,
+the above classes simply show how their objects
+store data and interact with each other.
+
+a *lightweight toolkit* that makes structured modeling for deep learning easy.
+In particular, it facilitates reusing many components between projects without changing much at all. For instance, we can replace just the optimizer, just the model, just the dataset, etc.;
+this degree of modularity pays dividends throughout the book in terms of conciseness and simplicity (this is why we added it) and it can do the same for your own projects.
