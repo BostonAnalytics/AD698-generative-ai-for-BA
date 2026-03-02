@@ -386,7 +386,8 @@ figure.quarto-float img {
 }
 
 // Style the caption
-.quarto-float-caption {
+.quarto-float-caption 
+.caption{
   text-align: center; // center caption text
   font-size: 0.9rem;
   color: #a51c30;
@@ -396,7 +397,8 @@ figure.quarto-float img {
 }
 
 /* Keep the label (Figure, number, period) bold */ 
-.quarto-float-caption strong {
+.quarto-float-caption strong 
+.caption {
    font-style: normal; /* Remove italic from the label */
    font-weight: 700; /* Ensure bold */
   }

@@ -1,0 +1,30 @@
+<svg width="300" height="250" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Input -->
+  <text x="140" y="230" font-size="18">x₁</text>
+  <circle cx="150" cy="180" r="8" fill="black"/>
+
+  <!-- Neuron -->
+  <circle cx="150" cy="120" r="25" stroke="black" fill="white" stroke-width="2"/>
+  <text x="145" y="125" font-size="16">h</text>
+
+  <!-- Output -->
+  <circle cx="150" cy="50" r="8" fill="black"/>
+  <text x="160" y="55" font-size="18">y</text>
+
+  <!-- Arrowhead -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="black"/>
+    </marker>
+  </defs>
+
+  <!-- Arrows -->
+  <line x1="150" y1="180" x2="150" y2="145" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="150" y1="95" x2="150" y2="58" stroke="black" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Labels -->
+  <text x="90" y="160" font-size="14">w₁ = 1</text>
+  <text x="70" y="120" font-size="14">bias = -0.5</text>
+
+</svg>
