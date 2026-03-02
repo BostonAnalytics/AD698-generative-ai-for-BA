@@ -13,6 +13,7 @@ dependencies = [
     "kaleido>=1.2.0",
     "keras>=3.13.2",
     "lxml>=6.0.2",
+    "manim>=0.20.1",
     "matplotlib>=3.10.8",
     "nltk>=3.9.2",
     "numpy>=2.4.2",

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="quarto-1.9.26" />
+  <meta name="generator" content="quarto-1.8.1" />
 
   <meta name="author" content="Nakul R. Padalkar">
   <meta name="dcterms.date" content="2024-03-12">
@@ -13,9 +13,6 @@
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
   <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
   <style>
-    /* Default styles provided by pandoc.
-    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
-    */
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -94,7 +91,7 @@
     code span.vs { color: #20794d; } /* VerbatimString */
     code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-7286b70d4ac40fc397ab7c99bb5d2238.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto-a400d9a48e1a3fb37b4dcb1d3b627284.css">
   <script defer="" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
   <script>document.addEventListener("DOMContentLoaded", function () {
  var mathElements = document.getElementsByClassName("math");
@@ -572,7 +569,7 @@ p(w^{(s)} \mid w^{(e)}) p(w^{(e)})
 </ul>
 <div class="columns">
 <div class="column">
-<div id="820515a3" class="cell" data-execution_count="1">
+<div id="6530d360" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode" id="cb1"><pre class="sourceCode numberSource python cell-code number-lines"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> nltk</span>
@@ -615,7 +612,7 @@ adv: thoroughly, soundly, good</code></pre>
 </div>
 </div>
 </div><div class="column">
-<div id="b7b56abd" class="cell" data-execution_count="2">
+<div id="957b3c8e" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode" id="cb3"><pre class="sourceCode numberSource python cell-code number-lines"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> nltk</span>
@@ -928,7 +925,7 @@ We compress them using:</p>
 </section>
 <section id="example-building-a-cooccurrence-matrix" class="slide level2">
 <h2>Example: Building a Co‑Occurrence Matrix</h2>
-<div id="97e746ff" class="cell" data-execution_count="3">
+<div id="571dc090" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode" id="cb5"><pre class="sourceCode numberSource python cell-code number-lines"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> CountVectorizer</span>
@@ -1183,7 +1180,7 @@ x \rightarrow h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow L
 </section>
 <section id="visualizing-gradient-descent" class="slide level2">
 <h2>Visualizing Gradient Descent</h2>
-<div id="fig-text-mining-overview" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Text Mining Overview" width="80%">
+<div id="fig-text-mining-overview" class="quarto-float quarto-figure quarto-figure-center" alt="Text Mining Overview" data-fig-align="center" width="80%">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-text-mining-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img data-src="./M02_lecture02_figures/sgd-convergence.gif" id="fig-text-mining-overview" class="quarto-figure quarto-figure-center" style="width:80.0%" alt="Text Mining Overview" />
@@ -1196,7 +1193,7 @@ x \rightarrow h_1 \rightarrow h_2 \rightarrow h_3 \rightarrow L
 </section>
 <section id="visualizing-gradient-descent-1" class="slide level2">
 <h2>Visualizing Gradient Descent</h2>
-<div id="fig-text-mining-overview" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Text Mining Overview" width="80%">
+<div id="fig-text-mining-overview" class="quarto-float quarto-figure quarto-figure-center" alt="Text Mining Overview" data-fig-align="center" width="80%">
 <figure class="quarto-float quarto-float-fig">
 <div aria-describedby="fig-text-mining-overview-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img data-src="./M02_lecture02_figures/Saddle-Point-Imgur.gif" id="fig-text-mining-overview" class="quarto-figure quarto-figure-center" style="width:80.0%" alt="Text Mining Overview" />
@@ -1899,14 +1896,13 @@ x_1 \rightarrow h_1 \rightarrow x_2 \rightarrow h_2 \rightarrow \dots \rightarro
           e.clearSelection();
         }
         const getTextToCopy = function(trigger) {
-          const outerScaffold = trigger.parentElement.cloneNode(true);
-          const codeEl = outerScaffold.querySelector('code');
-          for (const childEl of codeEl.children) {
-            if (isCodeAnnotation(childEl)) {
-              childEl.remove();
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
             }
-          }
-          return codeEl.innerText;
+            return codeEl.innerText;
         }
         const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
           text: getTextToCopy

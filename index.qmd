@@ -50,7 +50,7 @@ display(HTML(styled_table.to_html()))
 
 ### Course Description
 
-This course is designed for **analytics developers and advanced business students** seeking to build **practical, production-ready applications** using **Generative AI (GenAI)**. Emphasizing hands-on learning, students will explore key techniques such as **prompt engineering, in-context learning (ICL), retrieval-augmented generation (RAG), AI agents, and responsible AI design**.
+This course is designed for **analytics developers and advanced business students** seeking to build **practical, production-ready Generative AI (GenAI)** Applications. Emphasizing hands-on learning, students will explore key techniques such as  **Natural Language Processing, Recurrent Neural Networks and Transformer Architectures, prompt engineering, in-context learning (ICL), retrieval-augmented generation (RAG), Agentic Artificial Intelligence, and responsible AI design**.
 
 Students will work with **open-source tools and APIs** including **LangChain**, **LlamaIndex**, and **embedding models**, while learning to implement GenAI systems across the **entire development lifecycle** — from prompt design and knowledge retrieval to fine-tuning and deployment.
 

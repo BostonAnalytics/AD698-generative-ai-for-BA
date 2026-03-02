@@ -389,6 +389,7 @@ plt.show()
   - Threshold effects  
   - ROC & PR curves  
   - Imbalance manipulation
+- More Detailed discussion is in module 8 lecture note 1.
 
 ```{python}
 #| eval: true
@@ -439,6 +440,12 @@ plt.ylabel("Bill Depth (mm)")
 plt.legend(title="Species")
 plt.show()
 ```
+
+---
+
+## Confusion Matrix & Thresholding
+
+![Contingency Table](./M02_lecture02_figures/complete-contingecy-matrix.png){width=60% fig-align=center #fig-confusion-matrix fig-alt="Illustration of a confusion matrix showing true positives, false positives, true negatives, and false negatives."}
 
 ---
 
@@ -544,14 +551,121 @@ plt.show()
 
 # Feedforward Architectures
 
-## Sigmoid & ReLU Neurons
+## Feedforward Neural Networks
+
+- Check module 8 Lecture note 1 and 2 for details on feedforward architectures and Backpropagation.
+- Download data for analysis from [here](https://drive.google.com/drive/folders/1djzbe1pWmHpGwHIHPiN_PQYnBIWQJ6vd?usp=sharing)
+
+# Recurrent Architectures
+
+## Recurrent Neural Networks
+
+- Check module 8 Lecture note 3 for details on recurrent architectures and LSTM.
+- Download data for analysis from [here](https://drive.google.com/drive/folders/1djzbe1pWmHpGwHIHPiN_PQYnBIWQJ6vd?usp=sharing)
 
 
-# Attention & Long-Range Dependencies
+# Attention & Long‑Range Dependencies
 
-## RNN limitations                                       
-## Attention mechanism                                   
-## Multi-head self-attention                             
+
+## Why RNNs Struggle With Long‑Range Dependencies
+- RNNs compress all past information into a **single hidden state**.  
+- Gradients must flow through **many time steps**, causing vanishing/exploding gradients.  
+- Sequential processing prevents **parallelization**.  
+- Even LSTMs/GRUs struggle when dependencies span **dozens or hundreds** of tokens.  
+- Bottleneck:  
+  $$
+  \begin{align}
+  h_t = f(h_{t-1}, x_t)
+  \end{align}
+  $$  
+
+- All information must pass through $h_t$.
+
+---
+
+## The Need for Direct Access to Context
+- Many tasks require linking distant tokens:  
+  - Coreference (“The book… *it*…”)  
+  - Long sentences  
+  - Document‑level reasoning  
+- RNNs force the model to “remember” everything.  
+- We want a mechanism where a token can **look up** relevant information directly.  
+- Key idea: **don’t compress the past — attend to it.**
+
+---
+
+## The Attention Mechanism
+- Each token produces:  
+  - **Query** $Q$  
+  - **Key** $K$  
+  - **Value** $V$  
+- Attention score:  
+  $$
+  \begin{align}
+  \text{score}(Q,K) = \frac{QK^\top}{\sqrt{d_k}}
+  \end{align}
+  $$  
+- Softmax turns scores into weights.  
+- Output is a weighted sum of values:  
+  $$
+  \begin{align}
+  \text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+  \end{align}
+  $$  
+- Tokens retrieve information from anywhere in the sequence.
+
+---
+
+## Why Attention Solves Long‑Range Dependencies
+- No recurrence → no vanishing gradients.  
+- Every token can attend to **any other token**.  
+- Parallelizable across sequence length.  
+- Learns dynamic context:  
+  - Syntax  
+  - Semantics  
+  - Coreference  
+  - Long‑range structure  
+
+---
+
+## Multi‑Head Self‑Attention
+- Instead of one attention pattern, use **multiple heads**.  
+- Each head learns a different projection of $Q, K, V$.  
+- Heads capture different relationships:  
+  - Syntax  
+  - Semantic similarity  
+  - Positional patterns  
+- Outputs are concatenated and projected:  
+  $$
+  \begin{align}
+  \text{MHA}(X) = \text{Concat}(\text{head}_1,\dots,\text{head}_h)W^O
+  \end{align}
+  $$
+
+---
+
+## Visualizing Multi‑Head Attention
+- Each head = a different “view” of the sequence.  
+- Some heads track subject–verb agreement.  
+- Some track coreference.  
+- Some track positional offsets.  
+- Combined → rich contextual representation.
+
+---
+
+## Leading to Transformers
+- Attention removes RNN bottlenecks.  
+- Enables full parallelization.  
+- Scales to long sequences.  
+- Forms the core of:  
+  - BERT  
+  - GPT  
+  - T5  
+  - LLaMA  
+  - All modern LLMs  
+- This is the key architectural leap from RNNs → Transformers.
+
+                    
 
 # Transformer Architectures
 ## Encoder                                               

@@ -328,13 +328,41 @@ plt.show()
 Large language models produce probability distributions over tokens. Evaluating correctness involves ranking the correct token above incorrect ones, which is conceptually identical to ROC‑AUC. When correct answers are rare, PR‑AUC becomes more informative. Calibration metrics such as the Brier score and expected calibration error (ECE) further extend these ideas. The penguins example builds intuition for these modern evaluation techniques.
 
 
-     
+# Feedforward Architectures
 
-# Attention & Long-Range Dependencies
+Check module 8 Lecture note 1 and 2 for details on feedforward architectures and Backpropagation.
 
-## RNN limitations                                       
-## Attention mechanism                                   
-## Multi-head self-attention                             
+# Recurrent Architectures
+
+Check module 8 Lecture note 3 for details on recurrent architectures and LSTM.
+
+# Attention & Long‑Range Dependencies
+
+
+## RNN limitations
+Recurrent neural networks process sequences one token at a time, maintaining a hidden state that summarizes all previous inputs. This creates a structural bottleneck: the hidden state must compress all relevant information into a single vector. As sequences grow longer, this compression becomes increasingly lossy. Gradients must propagate through many time steps, which leads to vanishing or exploding gradients even with gated architectures such as LSTMs and GRUs. These issues make it difficult for RNNs to capture long‑range dependencies, such as linking pronouns to distant antecedents or maintaining coherence across long sentences. Additionally, RNNs are inherently sequential, preventing parallelization and slowing training.
+
+
+
+## The need for direct access to context
+Many natural language tasks require linking information across long spans. For example, resolving coreference (“The scientist… *she*…”) requires connecting tokens that may be far apart. RNNs force the model to “remember” everything through the hidden state, which is both inefficient and unreliable. A more flexible mechanism would allow each token to directly retrieve relevant information from any other token in the sequence, bypassing the recurrent bottleneck. This motivates the development of attention.
+
+
+
+## The attention mechanism
+Attention provides a way for each token to selectively focus on other tokens. Each token produces a query vector, and every token in the sequence provides key and value vectors. The similarity between a query and each key determines how much of each value contributes to the output. This mechanism allows the model to dynamically retrieve information based on content rather than position. The scaled dot‑product formulation stabilizes gradients and improves training. Attention is fully differentiable and can be computed in parallel across all tokens, making it efficient and expressive.
+
+
+## Why attention solves long‑range dependencies
+Attention eliminates the need for a single compressed hidden state. Instead, each token can directly access any other token’s representation, regardless of distance. This removes the vanishing‑gradient problem associated with long sequences and allows the model to learn relationships that span hundreds or thousands of tokens. Because attention is parallelizable, it also dramatically accelerates training compared to RNNs. These properties make attention a powerful mechanism for modeling long‑range dependencies.
+
+
+## Multi‑head self‑attention
+Multi‑head attention extends the basic attention mechanism by allowing the model to attend to different types of relationships simultaneously. Each head learns its own projection of queries, keys, and values, enabling the model to capture multiple patterns such as syntactic structure, semantic similarity, or positional relationships. The outputs of all heads are concatenated and projected to form the final representation. This architecture allows transformers to model complex dependencies across long sequences efficiently and in parallel, which is why it forms the core of modern large language models.
+
+
+## Leading to transformers
+The limitations of RNNs and the strengths of attention naturally lead to the transformer architecture. Transformers replace recurrence entirely with stacked layers of multi‑head self‑attention and feedforward networks. This design enables full parallelization, efficient training on large corpora, and the ability to model long‑range dependencies. Transformers form the foundation of all modern LLMs, including GPT, BERT, T5, and LLaMA. Understanding attention is therefore essential for understanding how LLMs work                       
 
 # Transformer Architectures
 ## Encoder                                               
