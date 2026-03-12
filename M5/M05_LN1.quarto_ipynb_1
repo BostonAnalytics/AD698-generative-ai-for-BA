@@ -1,0 +1,33 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"M05: Lecture Notes\"\n",
+        "subtitle: \"AI for Workflow Automation & API Integration\"\n",
+        "number-sections: true\n",
+        "date: \"2024-11-21\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "bibliography: ../references.bib\n",
+        "categories: ['M05:', 'Notes', 'Lecture']\n",
+        "description: \"Lecture covering AI for Workflow Automation & API Integration.\"\n",
+        "---"
+      ],
+      "id": "94aa6237"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

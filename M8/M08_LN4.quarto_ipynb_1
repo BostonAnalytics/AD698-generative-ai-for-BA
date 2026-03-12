@@ -1,0 +1,33 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"M07: Lecture Notes\"\n",
+        "subtitle: \"AI-Powered Business Dashboards\"\n",
+        "number-sections: true\n",
+        "date: \"2024-11-21\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "bibliography: ../references.bib\n",
+        "categories: ['Notes', 'Lecture', 'M07:']\n",
+        "description: \"Lecture covering AI-Powered Business Dashboards.\"\n",
+        "---"
+      ],
+      "id": "e2ee2d67"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

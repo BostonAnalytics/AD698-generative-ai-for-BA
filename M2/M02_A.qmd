@@ -1,5 +1,297 @@
 ---
-title: "M02 Assignment"
+title: "Module 2 Assignment: Extracting Strategic Technology Signals from Form 10-K"
+subtitle: "Building a Retrieval-Ready Corpus for LLM Systems"
+number-sections: true
+date: "2026-02-15"
+date-modified: today
+date-format: long
+engine: jupyter
+execute:
+  eval: false
+  echo: false
 ---
 
-# M02 Assignment
+# Important Reminder {.unnumbered}
+
+- This assignment may be completed using [Google Colab]{.uublue-bold} or [AWS Academy]{.uublue-bold}.
+- You must reuse the [cleaned corpus created in Assignment 1]{.uugreen-bold}.
+- The goal is to build a [retrieval-ready dataset for LLM systems]{.uured-bold}, not to train large models.
+- Start with a small subset of filings and scale once your pipeline works.
+
+
+# Submission Instructions {.unnumbered}
+
+You must submit the following files on Blackboard:
+
+## Word Document (`.docx`) {.unnumbered}
+
+Maximum **5 pages** (excluding cover page and references).
+
+The report should include:
+
+- construct definition
+- extraction strategy
+- dataset summary
+- short business interpretation
+
+Do **not include code** in this document.
+
+## Jupyter Notebook (`.ipynb`) {.unnumbered}
+
+Your notebook must be:
+
+- Fully executable
+- Organized by Question (Q1–Q3)
+- Clearly commented
+
+Suggested structure:
+
+1. Config and paths  
+2. Load artifacts from Assignment 1  
+3. Define extraction construct  
+4. Candidate sentence extraction  
+5. Chunk construction  
+6. Embedding generation  
+7. Dataset export  
+
+## Generative AI Prompt Disclosure {.unnumbered}
+
+If you use generative AI tools for any part of the assignment, you must disclose:
+- which tools you used
+- Each prompt and its outcome
+- submit it as a word document
+
+## Final Dataset {.unnumbered}
+
+Submit the extracted dataset as either:
+
+- `.csv`
+- `.json`
+
+This dataset will be used directly in **Assignment 3 for building a RAG system**.
+
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+Assignment 1 focused on building a **general NLP corpus from corporate filings**.
+
+Assignment 2 focuses on **targeted information extraction** and preparing a dataset that can support **LLM retrieval systems**.
+:::
+
+You will design a pipeline that extracts **one strategic technology signal** from corporate filings and converts it into a structured dataset suitable for **vector search and retrieval**.
+
+
+# Business Context {.unnumbered}
+
+Technology investors increasingly analyze corporate disclosures to understand how firms are investing in digital capabilities.
+
+Important signals often appear in long narrative disclosures rather than structured financial tables.
+
+Examples include references to:
+
+- artificial intelligence investment
+- cloud infrastructure expansion
+- datacenter capacity
+- technology platform upgrades
+- digital transformation initiatives
+
+These signals are buried in thousands of pages of filings.
+
+Your task is to build a **pipeline that extracts and structures one such signal from Form 10-K filings**.
+
+
+## SEC 2024 Form 10-K TXT Files {.unnumbered}
+
+You will use the same **2024 SEC Form 10-K TXT filings** used in Assignment 1. All files are available in the shared folder:
+
+[2024 SEC 10-K Filings](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=sharing)
+[2024 SEC 10-K Filings - HTML](https://drive.google.com/drive/folders/1tqqoqDfcOpGKBoRN7PpAtElcmzKcrbGz?usp=sharing)
+
+You must reuse the **processed corpus created in Assignment 1**, including:
+
+- cleaned section text
+- sentence-level chunks
+- company identifiers
+- SIC codes
+
+# Defining the Target Strategic Signal {#sec-q1}
+
+Select **one technology-related signal** to extract from corporate filings.
+
+Choose one of the following:
+
+- Artificial Intelligence investment  
+- Technology infrastructure spending  
+- Datacenter / compute infrastructure expansion  
+- Digital transformation initiatives  
+
+Your goal is to convert a vague theme into a **clear extraction construct**.
+
+## Technical Instructions
+
+1. Define your signal clearly:
+   - what language counts as evidence
+   - what language does not count
+2. Provide **example sentences** that represent valid evidence.
+3. Identify **keywords or phrases** likely to appear in filings.
+
+Examples may include terms related to:
+
+- AI systems
+- machine learning
+- data infrastructure
+- cloud computing
+- computing capacity
+- technology platforms
+
+4. Decide which filing sections are most relevant, such as:
+
+- Item 1 – Business  
+- Item 1A – Risk Factors  
+- Item 7 – Management Discussion & Analysis  
+
+## Expected Outputs
+
+- Definition of the signal construct
+- Table of inclusion and exclusion examples
+- Initial keyword list
+
+
+# Extracting Evidence from the 10-K Corpus {#sec-q2}
+
+Identify sentences or passages in filings that contain evidence of your selected signal.
+
+## Technical Instructions
+
+Using the cleaned corpus from Assignment 1:
+
+1. Programmatically search filings using your keyword list.
+2. Extract candidate sentences or paragraphs containing signal language.
+3. Store extracted evidence along with metadata fields such as:
+
+- company identifier
+- SIC code
+- filing section
+- evidence text
+- keyword trigger
+
+4. Remove duplicates and obviously irrelevant matches.
+
+## Example Output Schema
+
+Your dataset should resemble the following structure:
+
+```
+
+company
+sic
+section
+evidence_text
+keyword_trigger
+
+```
+
+5. Provide a small sample of extracted evidence and manually verify that it reflects the intended signal.
+
+## Expected Outputs
+
+- extraction pipeline description
+- table summarizing extracted records
+- sample evidence sentences
+
+---
+
+# Building a Retrieval-Ready Dataset {#sec-q3}
+
+Transform extracted evidence into a dataset suitable for **LLM retrieval systems**.
+
+This dataset will later be used to build a **vector search system in Assignment 3**.
+
+## Technical Instructions
+
+1. Convert extracted evidence into **clean text chunks**.
+
+2. Create a structured dataset with fields such as:
+
+```
+
+chunk_id
+company
+sic
+section
+signal_type
+chunk_text
+
+```
+
+3. Generate **sentence embeddings** for each chunk using a Hugging Face model.
+
+Examples include:
+
+- sentence-transformers models
+- other embedding models available in Python
+
+4. Store embeddings alongside the metadata.
+
+Example schema:
+
+```
+
+chunk_id
+company
+sic
+section
+signal_type
+chunk_text
+embedding_vector
+
+```
+
+5. Save the final dataset as `.csv` or `.json`.
+
+## Expected Outputs
+
+- summary statistics of the dataset
+- number of companies represented
+- number of evidence chunks extracted
+- example embedding vectors
+
+# Use of Generative AI {.unnumbered}
+
+:::{.callout-important}
+Generative AI tools may be used for:
+
+- code assistance
+- keyword discovery
+- explanation
+- summarization
+
+However, you must still **build and validate the extraction pipeline yourself**.
+:::
+
+You must briefly document:
+
+- where generative AI tools were used
+- how outputs were validated or modified
+
+---
+
+# Looking Ahead {.unnumbered}
+
+:::{.callout-note}
+
+The dataset you create in this assignment will be reused in later modules.
+
+Assignment 3 will introduce **vector retrieval systems**, where this dataset will become the **searchable corpus**.
+
+Assignment 4 will extend the pipeline to **retrieval-augmented generation (RAG)** systems that answer questions using corporate disclosures.
+
+:::
+
+# Resources {.unnumbered}
+
+- SEC EDGAR Filings Guide  
+- Hugging Face Transformers Documentation  
+- Sentence Transformers Documentation  
+- PyTorch Documentation  

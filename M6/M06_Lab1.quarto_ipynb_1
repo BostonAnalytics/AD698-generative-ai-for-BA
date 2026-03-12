@@ -1,0 +1,32 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"M06: Lab 1\"\n",
+        "subtitle: \"AI-assisted financial forecasting in SQL\"\n",
+        "number-sections: true\n",
+        "date: \"2024-11-21\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "categories: ['1', 'M06:', 'Lab']\n",
+        "description: \"Hands-on lab activity: AI-assisted financial forecasting in SQL.\"\n",
+        "---"
+      ],
+      "id": "0633d88e"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
