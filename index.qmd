@@ -73,18 +73,16 @@ By the end of this course, students will be able to:
 - [Develop autonomous AI agents]{.uublue-bold} that can reason, retrieve, and execute tasks across business workflows using frameworks such as LangChain and AutoGen.
 - [Fine-tune and customize foundation models]{.uublue-bold} (e.g., LLaMA, Mistral) using parameter-efficient techniques like LoRA and QLoRA to adapt to business-specific domains.
 - [Evaluate and audit generative models]{.uublue-bold} for quality, risk, bias, and alignment using both manual and automated tools (e.g., OpenAI Evals, GPT-judge, Trulens).
-- [Deploy GenAI applications]{.uublue-bold} using lightweight serverless pipelines (e.g., Streamlit, FastAPI, GitHub Actions) and optimize for cost and performance.
 - [Critically assess ethical and governance implications]{.uublue-bold} of deploying GenAI in enterprise settings, including risks of hallucination, misinformation, and data leakage.
-- [Collaborate using modern software development workflows]{.uublue-bold}, including version control (Git/GitHub), cloud-based inference, and reproducible notebooks.
 
 
 ## Course Resources
 
-There is **one required textbook** for this course. All core readings, technical documentation, and video tutorials will be provided on the course site.
+[Fundamentals of Generative AI](https://github.com/ajayvohra2005/fundamentals-of-generative-ai-book/releases) required for this course. All core readings, technical documentation, and video tutorials will be provided on the blackboard course site. Please choose the latest release pdf version of the book.
 
 **Required Readings:**
 
-- Lecture notes per module are available on Blackboard. You can click on them to view and use `Crtl+p` to print them in pdf format.
+- Lecture notes per module are available on Blackboard. You can click on them to view and use `Crtl+p` to print them in PDF format.
 - Each Module has two lecture notes.
   - For Online class you will need to use both lecture notes from Module
   - For In Person class you will need to use one lecture notes per lecture from Module.
@@ -92,10 +90,10 @@ There is **one required textbook** for this course. All core readings, technical
 
 **Recommended (not required):**
 
-- *Designing LLM Applications with LangChain* (docs.langchain.com)
-- *OpenAI Cookbook* (cookbook.openai.com)
-- *The Hitchhiker’s Guide to LLMOps* (arize.com)
-- *Generative AI with Python and Hugging Face Transformers* (available via BU Library or Hugging Face Hub)
+- [Designing LLM Applications with LangChain](https://docs.langchain.com/)
+- [OpenAI Cookbook](https://cookbook.openai.com/)
+- [The Hitchhiker’s Guide to LLMOps](https://arize.com/docs/ax)
+- [Generative AI with Python and Hugging Face Transformers](https://huggingface.co/docs/transformers/en/index)
 
 **Tools & Platforms Used:**
 
@@ -186,7 +184,7 @@ Please note that you are not to post attachments of the required or other readin
 
 ## Blackboard Course Website
 
-To access your course website, go to [http://learn.bu.edu/](http://learn.bu.edu/) and select AD688 Web Analytics for Business
+To access your course website, go to [http://learn.bu.edu/](http://learn.bu.edu/) and select AD698 Generative AI for Business Analytics
 
 ### Software Applications & Remote Access to Virtual Labs
 
@@ -195,13 +193,16 @@ In this course, students will be using AWS Academy and a massive dataset connect
 [https://www.bu.edu/metit/services/client-technology/virtual-lab/](https://www.bu.edu/metit/services/client-technology/virtual-lab/)
 
 ### Live Classroom in Zoom
-Select Live Classroom from the left-hand navigator of the course website and follow the instructions.
+
+Select Live Classroom in the **Live Classroom and Offices** Module on the course homepage. Please note that the live sessions are only for the online class.
+
+![](./syllabus-images/live-classroom.jpeg){width="80%" fig-align="center" fig-alt="Live Classroom Zoom link screenshot"}
 
 ## Grading and Assessment
 
 ### Grading Structure
 
-On the course homepage, all of the material is presented by modules and each module covers two lectures. In the on-campus version of this course, each week we will have a live classroom session that will cover one lecture. In addition, students will work in teams in our virtual labs and will participate in group discussion boards. Please review the Course Calendar & Outline document to get the full schedule of this course.
+On the course homepage, all the material is presented by modules and each module covers two lectures. In the on-campus version of this course, each week we will have a live classroom session that will cover one lecture. In addition, students will work in teams in our virtual labs and will participate in group discussion boards. Please review the Course Calendar & Outline document to get the full schedule of this course.
 
 ## Grading Breakdown
 
@@ -350,7 +351,7 @@ styled = (
 display(HTML(styled.to_html()))
 ```
 
-[*=On Campus Class Only]{.bloodred-bold}
+Labs are available in each module deliverables and are meant for self learning and not graded.
 
 ## Class Policies
 
@@ -379,3 +380,6 @@ This should not be understood as a discouragement for discussing the material or
 ### Request for Accommodations
 
 If you have a disability and will be requesting accommodations for this course, please inform the instructor early in the semester. Advance notice and appropriate documentation are required for accommodations.
+
+
+## References
