@@ -51,6 +51,7 @@ Let's start by discovering all the HTML files in the data directory and loading 
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
 
 import os
 import re
@@ -100,6 +101,8 @@ else:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 DATA_DIR = Path("../../data/SEC-10K-2024-HTML")
 OUTPUT_DIR = Path("./outputs/sec_10k_sections")
@@ -111,13 +114,17 @@ print(f"Total HTML files found: {len(ALL_HTML_FILES)}")
 
 ## Selecting small sample for testing
 
+Number of files selected for processing can be changed by adjusting the `sample_n` parameter. Setting it to `None` will process all files, while a smaller integer will limit the number of files for quicker testing and debugging.
+
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def select_html_files(
     files: List[Path],
-    sample_n: Optional[int] = None,
+    sample_n: Optional[int] = None, # set sample to none
     random_sample: bool = False,
     random_state: int = 42
 ) -> List[Path]:
@@ -148,7 +155,12 @@ def select_html_files(
         selected = files[:sample_n]
 
     return selected
+```
 
+
+```{python}
+#| echo: false
+#| eval: true
 html_files = select_html_files(
     ALL_HTML_FILES,
     sample_n=25,
@@ -163,14 +175,16 @@ html_files[:5]
 
 The goal here is to turn messy SEC HTML into normalized text before section extraction. So before we can reliably extract sections, we need to clean the HTML and normalize the text. 
 
-In general we want to process all the HTML files and convert them into clean text. 
+In general, we want to process all the HTML files and convert them into clean text. 
 
-1. The first function `normalize_text` will handle unicode normalization, space cleanup, and line break standardization to make regex matching more stable.
+1. The first function `normalize_text` will handle Unicode normalization, space cleanup, and line break standardization to make regex matching more stable.
 2. The second function `html_to_text` will use BeautifulSoup to parse the HTML, remove irrelevant tags (like scripts and styles), and extract the plain text content.
 
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def normalize_text(text: str) -> str:
     """
@@ -218,6 +232,8 @@ The main challenge is that SEC filings often contain, so we need a reasonably de
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 ITEM_PATTERNS = {
     "item_1": re.compile(
@@ -257,6 +273,8 @@ ITEM_PATTERNS = {
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def find_item_positions(text: str, pattern: re.Pattern) -> List[int]:
     """
@@ -280,6 +298,8 @@ This is the most important part. A filing may mention “Item 1A” in the table
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def extract_section_by_bounds(
     text: str,
@@ -330,6 +350,8 @@ We define section boundaries as:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def extract_target_sections(text: str) -> Dict[str, Optional[str]]:
     item_1 = extract_section_by_bounds(
@@ -371,6 +393,8 @@ If you want, later we can add extraction for fields like, company name, CIK, fil
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def extract_basic_metadata(file_path: Path, text: str) -> Dict[str, str]:
     """
@@ -389,6 +413,8 @@ def extract_basic_metadata(file_path: Path, text: str) -> Dict[str, str]:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def process_html_files(
     html_files: List[Path],
@@ -527,6 +553,8 @@ def process_html_files(
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_sections, df_recheck = process_html_files(html_files)
 
 print("Main corpus shape:", df_sections.shape)
@@ -536,6 +564,8 @@ print("Recheck shape:", df_recheck.shape)
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 df_sections.head().style.hide(axis="index")
 
@@ -548,6 +578,8 @@ Let's check how many files we processed, and how many had each section successfu
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 summary = pd.DataFrame({
     "metric": [
@@ -572,6 +604,8 @@ Let's also get the section length summaries:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 df_sections[["item_1_len", "item_1a_len", "item_7_len"]].describe()
 ```
@@ -582,6 +616,8 @@ df_sections[["item_1_len", "item_1a_len", "item_7_len"]].describe()
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_sections.to_csv(OUTPUT_DIR / "sec_10k_2024_sections.csv", index=False)
 
 with open(OUTPUT_DIR / "sec_10k_2024_sections.json", "w", encoding="utf-8") as f:
@@ -598,6 +634,8 @@ After we extract the three sections, the next notebook block should reshape the 
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 section_rows = []
 
@@ -622,6 +660,8 @@ Save it:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_long.to_csv(OUTPUT_DIR / "sec_10k_2024_sections_long.csv", index=False)
 ```
 
@@ -637,6 +677,8 @@ We still split into sentences first, because sentences are the best building blo
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 import nltk
 import re
@@ -661,6 +703,8 @@ While we are extracting the sentences lets also check for Sentence quality. We c
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 def is_valid_sentence(text: str, min_chars: int = 25) -> bool:
     """
@@ -690,6 +734,8 @@ def is_valid_sentence(text: str, min_chars: int = 25) -> bool:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 sentence_rows = []
 
 for _, row in df_long.iterrows():
@@ -725,6 +771,8 @@ Save the sentence-level file for diagnostics and later reuse:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_sentences.to_csv(OUTPUT_DIR / "sec_10k_2024_sentences.csv", index=False)
 ```
 
@@ -740,6 +788,8 @@ This is not identical to a transformer tokenizer, but it is enough for chunk con
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 def approximate_token_count(text: str) -> int:
     """
     Approximate token count using regex-based word/punctuation splitting.
@@ -755,11 +805,16 @@ Apply it to the sentence table:
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_sentences["approx_token_count"] = df_sentences["sentence_text"].apply(approximate_token_count)
 
 df_sentences[["sentence_text", "approx_token_count"]].head().style.hide(axis="index")
 ```
 
+- [Check the first few words, if you see something unusual like 'Description of Business' it suggests that you might have to adjust processing. You can also remove these words later in processing.]{.uured-bold}
+- [Check the token counts, if you see a lot of sentences with 0 or 1 tokens, you might want to adjust the sentence filtering or cleaning steps.]{.uured-bold}
+- [Check dates and months in the sentences, if you see a lot of them, you might want to add a regex filter to remove sentences that are just dates or table of contents entries.]{.uured-bold}
 
 ## Build rolling sentence chunks with approximate token control
 
@@ -774,6 +829,8 @@ This creates chunks that are better for retrieval than single sentences.
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 from typing import List, Dict
 
@@ -888,6 +945,8 @@ def build_sentence_window_chunks(
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 
 df_chunks = build_sentence_window_chunks(
     df_sentences=df_sentences,
@@ -909,6 +968,8 @@ This is the main dataset you will likely use in later assignments.
 ```{python}
 #| echo: true
 #| eval: true
+#| code-overflow: wrap
+
 df_chunks.to_csv(OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv", index=False)
 
 df_chunks.to_json(
@@ -922,97 +983,983 @@ print("Saved rolling chunk corpus.")
 ```
 
 
-#  Diagnostics
+#  Diagnostics Chunks by section
 
-# Chunks by section
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
 
-```python
 df_chunks["section_name"].value_counts()
 ```
 
-### Token count summary
+## Token count summary
 
-```python
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
 df_chunks["approx_token_count"].describe()
 ```
 
-### Sentences per chunk
+## Sentences per chunk
 
-```python
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
 df_chunks["n_sentences"].describe()
 ```
 
-### Sample chunks
+## Sample chunks
 
-```python
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
 df_chunks.sample(10, random_state=42)[
     ["file_name", "section_name", "start_sentence", "end_sentence", "approx_token_count", "chunk_text"]
+].style.hide(axis="index")
+```
+
+
+# Defining Subject Matter
+
+Now that the corpus is in **rolling chunk format**, the next two sections should do help us get closer to our target signal extraction by:
+
+1. **defining one target signal clearly**
+2. **extracting candidate evidence programmatically from the chunk corpus**
+
+This should stay lightweight and reproducible. For this assignment, I recommend you choose **one** of these:
+
+* AI investment
+* technology infrastructure spending
+* datacenter / compute infrastructure expansion
+* digital transformation initiatives
+
+The helper code below will build the section so that the code works for **any one chosen signal**, with a clean dictionary-driven design.
+
+# Target Signal Definition
+
+In general, the goal of this section is to take a high-level business concept and turn it into a clear set of signal definitions that can be operationalized in code. This involves: 
+
+## Load the rolling chunk corpus
+
+We already have this built in the memory but in case it's not, you can load it from the saved CSV file. This is the main dataset we will be working with for signal extraction in the next steps. 
+
+```{python}
+#| echo: true
+#| eval: false
+
+from pathlib import Path
+import pandas as pd
+import re
+from collections import Counter
+
+OUTPUT_DIR = Path("./outputs/sec_10k_sections")
+CHUNKS_FILE = OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv"
+
+df_chunks = pd.read_csv(CHUNKS_FILE)
+print(df_chunks.shape)
+df_chunks.head()
+```
+
+
+## Choose one signal
+
+For the assignment, choose one signal that you are interested in analyzing.
+We can represent that as a variable. Comment and uncomment the one you want to work with. This will allow the rest of the code to be reusable for any of the defined signals.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+TARGET_SIGNAL = "ai_investment"
+# TARGET_SIGNAL = "technology_infrastructure"
+# TARGET_SIGNAL = "datacenter_compute"
+# TARGET_SIGNAL = "digital_transformation"
+```
+
+
+## Define signal dictionaries
+
+The cleanest design is to use a dictionary of dictionaries.
+
+Each signal can have:
+
+* `core_terms`: direct signal words
+* `support_terms`: contextual words that strengthen interpretation
+* `exclude_terms`: words that may create false positives
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+SIGNAL_DEFINITIONS = {
+    "ai_investment": {
+        "label": "Artificial Intelligence Investment",
+        "description": "Language indicating spending, deployment, development, or strategic investment related to AI, machine learning, generative AI, or related systems.",
+        "core_terms": [
+            "artificial intelligence",
+            "machine learning",
+            "generative ai",
+            "genai",
+            "foundation model",
+            "large language model",
+            "llm",
+            "ai model",
+            "ai capability",
+            "ai system",
+            "automated decision",
+            "intelligent automation"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "infrastructure",
+            "platform",
+            "development",
+            "deployment",
+            "training",
+            "compute",
+            "data center",
+            "datacenter",
+            "cloud",
+            "model development",
+            "technology investment"
+        ],
+        "exclude_terms": [
+            "artificial flavors",
+            "machine shop"
+        ]
+    },
+
+    "technology_infrastructure": {
+        "label": "Technology Infrastructure Spending",
+        "description": "Language describing spending or strategic allocation toward enterprise systems, cloud, platforms, networks, compute, storage, or other digital infrastructure.",
+        "core_terms": [
+            "technology infrastructure",
+            "information technology infrastructure",
+            "cloud infrastructure",
+            "platform infrastructure",
+            "network infrastructure",
+            "compute infrastructure",
+            "digital infrastructure",
+            "technology platform",
+            "enterprise platform"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "upgrade",
+            "expansion",
+            "modernization",
+            "migration",
+            "implementation",
+            "deployment",
+            "storage",
+            "servers",
+            "compute",
+            "systems"
+        ],
+        "exclude_terms": []
+    },
+
+    "datacenter_compute": {
+        "label": "Datacenter / Compute Infrastructure Expansion",
+        "description": "Language related to datacenter growth, compute capacity, server expansion, storage systems, and related infrastructure buildout.",
+        "core_terms": [
+            "data center",
+            "datacenter",
+            "compute capacity",
+            "compute infrastructure",
+            "server capacity",
+            "gpu",
+            "processing capacity",
+            "storage infrastructure",
+            "server infrastructure",
+            "compute cluster"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "expansion",
+            "construction",
+            "lease",
+            "facility",
+            "capacity",
+            "hardware",
+            "cloud",
+            "power",
+            "cooling"
+        ],
+        "exclude_terms": []
+    },
+
+    "digital_transformation": {
+        "label": "Digital Transformation Initiatives",
+        "description": "Language describing digital modernization, enterprise transformation, platform change, automation, or technology-enabled business process redesign.",
+        "core_terms": [
+            "digital transformation",
+            "technology transformation",
+            "business transformation",
+            "platform modernization",
+            "enterprise modernization",
+            "digital platform",
+            "automation initiative",
+            "systems modernization"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "initiative",
+            "program",
+            "implementation",
+            "deployment",
+            "upgrade",
+            "migration",
+            "modernization",
+            "efficiency",
+            "transformation"
+        ],
+        "exclude_terms": []
+    }
+}
+```
+
+
+## Inspect the chosen signal definition
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+signal_config = SIGNAL_DEFINITIONS[TARGET_SIGNAL]
+
+print("Target signal:", TARGET_SIGNAL)
+print("Label:", signal_config["label"])
+print("Description:", signal_config["description"])
+print("\nCore terms:")
+print(signal_config["core_terms"])
+print("\nSupport terms:")
+print(signal_config["support_terms"])
+```
+
+
+## Create regex patterns
+
+We will compile patterns once and reuse them.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def build_phrase_pattern(terms):
+    """
+    Build a case-insensitive regex pattern from a list of phrases.
+    """
+    escaped_terms = [re.escape(term) for term in terms]
+    pattern = r"\b(?:%s)\b" % "|".join(escaped_terms)
+    return re.compile(pattern, flags=re.IGNORECASE)
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+core_pattern = build_phrase_pattern(signal_config["core_terms"])
+support_pattern = build_phrase_pattern(signal_config["support_terms"])
+
+exclude_terms = signal_config.get("exclude_terms", [])
+exclude_pattern = build_phrase_pattern(exclude_terms) if exclude_terms else None
+```
+
+
+## Programmatic Extraction
+
+Now we move from definition to actual extraction on the chunk corpus.
+
+The design below is intentionally simple and transparent:
+
+* flag chunks with at least one core term
+* count support terms
+* filter excluded cases
+* generate a lightweight confidence tier
+
+This gives you a clean weak-labeling pipeline before later RAG.
+
+## Match helper functions
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def find_matches(pattern, text):
+    """
+    Return all matched phrases for a compiled regex pattern.
+    """
+    if pattern is None:
+        return []
+    return pattern.findall(str(text))
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+def unique_lower(items):
+    """
+    Normalize matched items to lowercase unique values while preserving order.
+    """
+    seen = set()
+    result = []
+    for item in items:
+        item_l = str(item).lower().strip()
+        if item_l not in seen:
+            seen.add(item_l)
+            result.append(item_l)
+    return result
+```
+
+
+## Score each chunk against the target signal
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def score_chunk_for_signal(text, core_pattern, support_pattern, exclude_pattern=None):
+    """
+    Compute weak-label signal features for a single chunk.
+    """
+    text = str(text)
+
+    core_matches = unique_lower(find_matches(core_pattern, text))
+    support_matches = unique_lower(find_matches(support_pattern, text))
+    exclude_matches = unique_lower(find_matches(exclude_pattern, text)) if exclude_pattern else []
+
+    n_core = len(core_matches)
+    n_support = len(support_matches)
+    n_exclude = len(exclude_matches)
+
+    has_signal = n_core > 0 and n_exclude == 0
+
+    # simple confidence heuristic
+    if has_signal and n_core >= 1 and n_support >= 2:
+        confidence = "high"
+    elif has_signal and n_core >= 1 and n_support >= 1:
+        confidence = "medium"
+    elif has_signal:
+        confidence = "low"
+    else:
+        confidence = "none"
+
+    return {
+        "has_signal": has_signal,
+        "core_matches": core_matches,
+        "support_matches": support_matches,
+        "exclude_matches": exclude_matches,
+        "n_core_matches": n_core,
+        "n_support_matches": n_support,
+        "n_exclude_matches": n_exclude,
+        "signal_confidence": confidence
+    }
+```
+
+
+## Apply the scoring function to all chunks
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+signal_rows = []
+
+for _, row in df_chunks.iterrows():
+    score = score_chunk_for_signal(
+        text=row["chunk_text"],
+        core_pattern=core_pattern,
+        support_pattern=support_pattern,
+        exclude_pattern=exclude_pattern
+    )
+
+    signal_rows.append({
+        "chunk_id": row["chunk_id"],
+        "file_name": row["file_name"],
+        "file_path": row["file_path"],
+        "section_name": row["section_name"],
+        "start_sentence": row["start_sentence"],
+        "end_sentence": row["end_sentence"],
+        "n_sentences": row["n_sentences"],
+        "chunk_length_chars": row["chunk_length_chars"],
+        "approx_token_count": row["approx_token_count"],
+        "signal_type": TARGET_SIGNAL,
+        "chunk_text": row["chunk_text"],
+        **score
+    })
+
+df_signal = pd.DataFrame(signal_rows)
+
+print(df_signal.shape)
+df_signal.head().style.hide(axis="index")
+```
+
+
+## Keep only candidate evidence chunks
+
+These are the chunks that actually triggered the signal logic.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates = df_signal[df_signal["has_signal"]].copy()
+
+print(df_signal_candidates.shape)
+df_signal_candidates.head().style.hide(axis="index")
+```
+
+## Inspect extraction quality
+
+### Count by confidence
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates["signal_confidence"].value_counts(dropna=False)
+```
+
+### Count by section
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates["section_name"].value_counts(dropna=False)
+```
+
+### Sample extracted chunks
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates.sample(
+    n=min(10, len(df_signal_candidates)),
+    random_state=42
+)[[
+    "chunk_id",
+    "file_name",
+    "section_name",
+    "signal_confidence",
+    "core_matches",
+    "support_matches",
+    "chunk_text"
+]]
+```
+
+
+## Create a cleaner evidence dataset
+
+For later retrieval and reporting, it helps to flatten the match lists into strings.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+def collapse_matches(values):
+    if not values:
+        return ""
+    return "; ".join(values)
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_evidence = df_signal_candidates.copy()
+
+df_evidence["core_matches_str"] = df_evidence["core_matches"].apply(collapse_matches)
+df_evidence["support_matches_str"] = df_evidence["support_matches"].apply(collapse_matches)
+df_evidence["exclude_matches_str"] = df_evidence["exclude_matches"].apply(collapse_matches)
+
+df_evidence = df_evidence[[
+    "chunk_id",
+    "file_name",
+    "file_path",
+    "section_name",
+    "signal_type",
+    "signal_confidence",
+    "start_sentence",
+    "end_sentence",
+    "n_sentences",
+    "chunk_length_chars",
+    "approx_token_count",
+    "n_core_matches",
+    "n_support_matches",
+    "core_matches_str",
+    "support_matches_str",
+    "exclude_matches_str",
+    "chunk_text"
+]].copy()
+
+print(df_evidence.shape)
+df_evidence.head().style.hide(axis="index")
+```
+
+
+## Save the extracted evidence corpus
+
+This is the main output of the target-signal extraction stage.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+EVIDENCE_FILE = OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.csv"
+df_evidence.to_csv(EVIDENCE_FILE, index=False)
+
+print("Saved evidence file to:", EVIDENCE_FILE)
+```
+
+Optional JSON export:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_evidence.to_json(
+    OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.json",
+    orient="records",
+    force_ascii=False,
+    indent=2
+)
+```
+
+
+
+# Optional Enhancement: company-level summary table
+
+Since we want to aggregate **company/sector-based RAG**, it is useful to aggregate evidence counts by filing.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_company_signal_summary = (
+    df_evidence
+    .groupby(["file_name", "signal_type", "section_name"], as_index=False)
+    .agg(
+        n_signal_chunks=("chunk_id", "count"),
+        avg_chunk_tokens=("approx_token_count", "mean"),
+        high_conf_chunks=("signal_confidence", lambda x: (x == "high").sum())
+    )
+)
+
+df_company_signal_summary.head().style.hide(axis="index")
+```
+
+Save:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_company_signal_summary.to_csv(
+    OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_company_summary.csv",
+    index=False
+)
+```
+
+
+# Build the Direct Retrieval-Ready Dataset
+
+This section assumes you already have:
+
+* `df_chunks` from the rolling sentence-window chunking step
+* optionally `df_sections` from the extracted section corpus
+* optionally `df_signal_candidates` or `df_evidence` from the signal extraction step
+
+The goal here is to create a **single clean chunk dataset** that can later be embedded and indexed. Since we have created **target signal definition**
+and **programmatic extraction**. The next logical step is to **annotate the chunk corpus with the extracted signal labels** and then **finalize the retrieval-ready dataset**.
+
+So this next section should do following:
+
+1. add and normalize **metadata**
+2. export a **clean retrieval-ready corpus** for Assignment 3
+
+In most cases these could be separate notebook sections and the only final deliverable is the csv file that is used to create the vector database.
+
+
+## Load the chunk corpus
+
+If not already in memory, load the chunk corpus from the saved CSV file. This is the main dataset we will be working with for retrieval preparation.
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+from pathlib import Path
+import pandas as pd
+import re
+
+OUTPUT_DIR = Path("./outputs/sec_10k_sections")
+
+CHUNKS_FILE = OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv"
+SECTIONS_FILE = OUTPUT_DIR / "sec_10k_2024_sections.csv"
+
+df_chunks = pd.read_csv(CHUNKS_FILE)
+df_sections = pd.read_csv(SECTIONS_FILE)
+
+print("Chunks shape:", df_chunks.shape)
+print("Sections shape:", df_sections.shape)
+```
+
+
+## Inspect available columns
+
+This helps confirm what metadata is already present.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+print("Chunk columns:")
+print(df_chunks.columns.tolist())
+
+print("\nSection columns:")
+print(df_sections.columns.tolist())
+```
+
+
+## Create minimal filing-level metadata
+
+If the current extraction pipeline only preserved `file_name` and `file_path`, we can still build a useful retrieval table with those.
+
+If later you add richer metadata such as `company_name`, `cik`, `filing_date`, `accession_number`, or `sic`, this merge step can be extended.
+
+For now, we will derive a minimal metadata table from `df_sections`.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+metadata_cols = [col for col in [
+    "file_name",
+    "file_path",
+    "company_name",
+    "cik",
+    "filing_date",
+    "accession_number",
+    "sic",
+    "sector"
+] if col in df_sections.columns]
+
+df_metadata = df_sections[metadata_cols].drop_duplicates().copy()
+
+print(df_metadata.shape)
+df_metadata.head().style.hide(axis="index")
+```
+
+If only `file_name` and `file_path` exist, that is fine.
+
+
+## Merge metadata into chunk corpus
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+merge_keys = [col for col in ["file_name", "file_path"] if col in df_chunks.columns and col in df_metadata.columns]
+
+df_retrieval = df_chunks.merge(
+    df_metadata,
+    on=merge_keys,
+    how="left"
+)
+
+print(df_retrieval.shape)
+df_retrieval.head().style.hide(axis="index")
+```
+
+## Add retrieval-friendly metadata fields
+
+Now we create a few standardized fields that will be useful later for vector search and RAG filtering.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+df_retrieval["document_type"] = "10-K"
+df_retrieval["filing_year"] = 2024
+df_retrieval["source_type"] = "sec_html_extracted"
+df_retrieval["retrieval_unit"] = "sentence_window_chunk"
+```
+
+If `section_name` exists, normalize it:
+
+```{python}
+SECTION_LABELS = {
+    "item_1": "Item 1 - Business",
+    "item_1a": "Item 1A - Risk Factors",
+    "item_7": "Item 7 - MD&A"
+}
+
+df_retrieval["section_label"] = df_retrieval["section_name"].map(SECTION_LABELS).fillna(df_retrieval["section_name"])
+```
+
+
+## Clean and standardize chunk text
+
+We want the final retrieval text to be consistently formatted.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def clean_chunk_text(text: str) -> str:
+    text = str(text)
+    text = text.replace("\xa0", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval["chunk_text"] = df_retrieval["chunk_text"].apply(clean_chunk_text)
+```
+
+Remove empty chunks if any slipped through:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval = df_retrieval[df_retrieval["chunk_text"].str.len() > 0].copy()
+print(df_retrieval.shape)
+```
+
+
+## Optional signal flags
+
+If you want the retrieval corpus to remember whether a chunk was flagged in the earlier extraction step, merge that in as a lightweight flag.
+
+This is optional but useful.
+
+### If you saved the signal evidence file
+
+Example:
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+TARGET_SIGNAL = "ai_investment"
+EVIDENCE_FILE = OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.csv"
+```
+
+```{python}
+if EVIDENCE_FILE.exists():
+    df_evidence = pd.read_csv(EVIDENCE_FILE)
+
+    signal_cols = [col for col in [
+        "chunk_id",
+        "signal_type",
+        "signal_confidence",
+        "n_core_matches",
+        "n_support_matches"
+    ] if col in df_evidence.columns]
+
+    df_signal_meta = df_evidence[signal_cols].drop_duplicates().copy()
+
+    df_retrieval = df_retrieval.merge(
+        df_signal_meta,
+        on="chunk_id",
+        how="left"
+    )
+
+    df_retrieval["has_target_signal"] = df_retrieval["signal_type"].notna()
+else:
+    df_retrieval["signal_type"] = None
+    df_retrieval["signal_confidence"] = None
+    df_retrieval["n_core_matches"] = None
+    df_retrieval["n_support_matches"] = None
+    df_retrieval["has_target_signal"] = False
+```
+
+This preserves the full corpus while marking the filtered evidence chunks.
+
+
+## Reorder columns into a clean retrieval schema
+
+This is the main schema students should carry forward.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+preferred_cols = [
+    "chunk_id",
+    "file_name",
+    "file_path",
+    "company_name",
+    "cik",
+    "filing_date",
+    "accession_number",
+    "sic",
+    "sector",
+    "document_type",
+    "filing_year",
+    "source_type",
+    "retrieval_unit",
+    "section_name",
+    "section_label",
+    "start_sentence",
+    "end_sentence",
+    "n_sentences",
+    "approx_token_count",
+    "chunk_length_chars",
+    "has_target_signal",
+    "signal_type",
+    "signal_confidence",
+    "n_core_matches",
+    "n_support_matches",
+    "chunk_text"
 ]
+
+final_cols = [col for col in preferred_cols if col in df_retrieval.columns]
+df_retrieval = df_retrieval[final_cols].copy()
+
+print(df_retrieval.shape)
+df_retrieval.head().style.hide(axis="index")
 ```
 
----
 
-## Why this is better than sentence-only rows
+## Check chunk quality
 
-This design gives you:
+These diagnostics are worth saving in the notebook.
 
-* enough context for company-level and sector-level retrieval
-* chunk sizes that are manageable for embeddings
-* overlapping windows so important context is not lost at chunk boundaries
-* a sentence table that can still be used for debugging and keyword detection
+### Token count summary
 
-So the pipeline becomes:
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
 
-```text
-HTML filing
-   ↓
-Item 1 / 1A / 7 extraction
-   ↓
-section-level corpus
-   ↓
-sentence-level corpus
-   ↓
-rolling token-aware chunk corpus
-   ↓
-embeddings
-   ↓
-retrieval / RAG
+df_retrieval["approx_token_count"].describe()
 ```
 
----
+### Chunks by section
 
-## Suggested defaults for your course
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
 
-These are good starting values for SEC filings:
-
-```python
-target_tokens = 250
-max_tokens = 320
-overlap_sentences = 2
-min_chunk_tokens = 40
+df_retrieval["section_name"].value_counts(dropna=False)
 ```
 
-If later you want broader context for RAG, you can increase to:
+### Chunks flagged with target signal
 
-```python
-target_tokens = 350
-max_tokens = 450
-overlap_sentences = 2
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+if "has_target_signal" in df_retrieval.columns:
+    print(df_retrieval["has_target_signal"].value_counts(dropna=False))
 ```
 
----
+### Random chunk sample
 
-## Recommended artifact naming
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
 
-At this point, students should save:
+df_retrieval.sample(
+    n=min(10, len(df_retrieval)),
+    random_state=42
+)[[
+    col for col in [
+        "chunk_id",
+        "file_name",
+        "section_name",
+        "approx_token_count",
+        "has_target_signal",
+        "signal_confidence",
+        "chunk_text"
+    ] if col in df_retrieval.columns
+]].style.hide(axis="index")
+```
 
-* `sec_10k_2024_sections.csv`
-* `sec_10k_2024_sections_long.csv`
-* `sec_10k_2024_sentences.csv`
-* `sec_10k_2024_sentence_window_chunks.csv`
 
-The last one should be the main **retrieval corpus** for Assignment 3.
+## Save the direct retrieval-ready dataset
 
----
+This is the main output for Assignment 3.
 
-The next best step is to build the **target-signal extraction layer** on top of `df_chunks`, so students can identify chunks related to AI, datacenter, infrastructure, or technology spending.
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+RETRIEVAL_FILE = OUTPUT_DIR / "sec_10k_2024_retrieval_ready_chunks.csv"
+
+df_retrieval.to_csv(RETRIEVAL_FILE, index=False)
+print("Saved retrieval-ready dataset to:", RETRIEVAL_FILE)
+```
+
+Optional JSON export:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval.to_json(
+    OUTPUT_DIR / "sec_10k_2024_retrieval_ready_chunks.json",
+    orient="records",
+    force_ascii=False,
+    indent=2
+)
+```
