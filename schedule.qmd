@@ -7,6 +7,9 @@ format:
       toc: false
     docx: default
 html-table-processing: none
+execute: 
+  freeze: false
+  cache: true
 ---
 
 ## Course Schedule

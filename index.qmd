@@ -8,6 +8,9 @@ format:
     docx: default
 bibliography: references.bib
 csl: chicago-syllabus.csl
+execute: 
+  freeze: false
+  cache: true
 ---
 
 ## Course Sections

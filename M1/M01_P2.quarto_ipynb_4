@@ -1254,7 +1254,7 @@
         "\n",
         "## Text Information"
       ],
-      "id": "c06686a3"
+      "id": "5a40d2d9"
     },
     {
       "cell_type": "code",
@@ -1283,7 +1283,7 @@
         "print(\"Document:-\", x_train[0])\n",
         "print(\"Label:-\", y_train[0])"
       ],
-      "id": "47b43c5a",
+      "id": "fd2d56b6",
       "execution_count": null,
       "outputs": []
     },
@@ -1293,7 +1293,7 @@
       "source": [
         "## Segmentation, Tokenization, and Cleaning"
       ],
-      "id": "34889064"
+      "id": "5276a12c"
     },
     {
       "cell_type": "code",
@@ -1328,7 +1328,7 @@
         "\n",
         "feature_weights = {'good_word_count': 1.0, 'bad_word_count': -1.0, 'bias': 0.5}"
       ],
-      "id": "cd597822",
+      "id": "6e6a22c3",
       "execution_count": null,
       "outputs": []
     },
@@ -1343,7 +1343,7 @@
         "\n",
         "## Decision ML Algorithm"
       ],
-      "id": "a7204c68"
+      "id": "ceefd232"
     },
     {
       "cell_type": "code",
@@ -1375,7 +1375,7 @@
         "            correct_number += 1\n",
         "    return correct_number / float(total_number)\n"
       ],
-      "id": "233d072d",
+      "id": "225de306",
       "execution_count": null,
       "outputs": []
     },
@@ -1385,7 +1385,7 @@
       "source": [
         "## Results "
       ],
-      "id": "0ed0324a"
+      "id": "e49ab948"
     },
     {
       "cell_type": "code",
@@ -1413,7 +1413,7 @@
         "print(f'Train accuracy: {train_accuracy:.4f}')\n",
         "print(f'Dev/test accuracy: {test_accuracy:.4f}')"
       ],
-      "id": "e1e950a0",
+      "id": "8359e6d6",
       "execution_count": null,
       "outputs": []
     },
@@ -1423,7 +1423,7 @@
       "source": [
         "## Model Evaluation"
       ],
-      "id": "ec302039"
+      "id": "c8a702df"
     },
     {
       "cell_type": "code",
@@ -1452,7 +1452,7 @@
         "\n",
         "find_errors(x_train, y_train)"
       ],
-      "id": "3b9912c2",
+      "id": "be51e660",
       "execution_count": null,
       "outputs": []
     },
@@ -1542,7 +1542,7 @@
         "\n",
         "## Stanford Text Corpus Import"
       ],
-      "id": "018ff1bf"
+      "id": "7f5890b9"
     },
     {
       "cell_type": "code",
@@ -1565,7 +1565,7 @@
         "for i, (label, text) in enumerate(samples, 1):\n",
         "    print(f\"S{i} [label={label}]: {text}\")"
       ],
-      "id": "2307519e",
+      "id": "f8a4bcc6",
       "execution_count": null,
       "outputs": []
     },
@@ -1589,7 +1589,7 @@
         "\n",
         "## Building `CountVectorizer`"
       ],
-      "id": "02d5a300"
+      "id": "6e74ec99"
     },
     {
       "cell_type": "code",
@@ -1620,7 +1620,7 @@
         "\n",
         "bow_df.iloc[:, 0:8]"
       ],
-      "id": "2aa5d6e0",
+      "id": "a881c89f",
       "execution_count": null,
       "outputs": []
     },
@@ -1646,7 +1646,7 @@
         "\n",
         "## Word Frequencies"
       ],
-      "id": "2ba7894c"
+      "id": "dd757fab"
     },
     {
       "cell_type": "code",
@@ -1739,7 +1739,7 @@
         "plt.tight_layout()\n",
         "plt.show()"
       ],
-      "id": "9877dff7",
+      "id": "7fe447fb",
       "execution_count": null,
       "outputs": []
     },
@@ -1980,7 +1980,7 @@
         "\n",
         ":::  "
       ],
-      "id": "d5213737"
+      "id": "14414301"
     }
   ],
   "metadata": {

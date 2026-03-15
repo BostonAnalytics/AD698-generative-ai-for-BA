@@ -1,10 +1,10 @@
 {
-    "version": "2.0.0",
+    "version": "3.0.0",
     "tasks": [
         {
             "label": "Render and Zip Quarto Site",
             "type": "shell",
-            "command": "powershell -ExecutionPolicy Bypass -Command \"uv run quarto render --execute; Compress-Archive -Force -Path _site -DestinationPath _site.zip\"",
+            "command": "powershell -ExecutionPolicy Bypass -Command \"uv lock; uv sync --refresh; uv sync --upgrade; uv lock; uv run quarto render --execute --cache-refresh; Compress-Archive -Force -Path _site -DestinationPath _site.zip\"",
             "problemMatcher": [],
             "presentation": {
                 "echo": true,
