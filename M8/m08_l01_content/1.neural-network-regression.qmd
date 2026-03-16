@@ -710,7 +710,7 @@ The diagram highlights the connectivity pattern,
 such as how each input is connected to the output,
 but not the specific values taken by the weights or biases.
 
-![Linear regression is a single-layer neural network.](../M08_lecture01_figures/singleneuron.svg){#fig-single_neuron width=80%, fig-align="center" fig-alt="A diagram of a single neuron with multiple inputs and one output."}
+![Linear regression is a single-layer neural network.](./images/singleneuron.svg){#fig-single_neuron width=80%, fig-align="center" fig-alt="A diagram of a single neuron with multiple inputs and one output."}
 
 The inputs are $x_1, \ldots, x_d$.
 We refer to $d$ as the *number of inputs*
@@ -743,7 +743,7 @@ the *nucleus* (CPU), the *axon* (output wire),
 and the *axon terminals* (output terminals),
 enabling connections to other neurons via *synapses*.
 
-![The real neuron (source: "Anatomy and Physiology" by the US National Cancer Institute's Surveillance, Epidemiology and End Results (SEER) Program).](../M08_lecture01_figures/neuron.svg){#fig-Neuron width=80%, fig-align="center" fig-alt="A diagram of a biological neuron with dendrites, nucleus, axon, and axon terminals."}
+![The real neuron (source: "Anatomy and Physiology" by the US National Cancer Institute's Surveillance, Epidemiology and End Results (SEER) Program).](./images/neuron.svg){#fig-Neuron width=80%, fig-align="center" fig-alt="A diagram of a biological neuron with dendrites, nucleus, axon, and axon terminals."}
 
 Information $x_i$ arriving from other neurons
 (or environmental sensors) is received in the dendrites.
@@ -949,7 +949,7 @@ class ProgressBoard(HyperParameters):
     def __init__(self, xlabel=None, ylabel=None, xlim=None, ylim=None,
                  xscale='linear', yscale='linear',
                  ls=('-', '--', '-.', ':'), colors=('C0', 'C1', 'C2', 'C3'),
-                 fig=None, axes=None, figsize=(3.5, 2.5), display=True):
+                 fig=None, axes=None, figsize=(5.5, 3.5), display=True):
         self.save_hyperparameters()
 
     def draw(self, x, y, label, every_n=1):

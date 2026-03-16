@@ -9,6 +9,7 @@ dependencies = [
     "fastai>=2.1.10",
     "google-genai>=1.61.0",
     "jupyter>=1.1.1",
+    "jupyter-cache>=1.0.1",
     "jupyterlab>=4.5.3",
     "kaleido>=1.2.0",
     "keras>=3.13.2",

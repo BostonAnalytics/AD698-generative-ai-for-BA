@@ -1,0 +1,79 @@
+[
+  {
+    "file_name":"20240102_10-K_edgar_data_1827855_0001683168-24-000004.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240102_10-K_edgar_data_1827855_0001683168-24-000004.html",
+    "raw_text_length":803318,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240103_10-K_edgar_data_1610718_0001213900-24-000769.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240103_10-K_edgar_data_1610718_0001213900-24-000769.html",
+    "raw_text_length":899099,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240105_10-K_edgar_data_1634293_0001599916-24-000027.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240105_10-K_edgar_data_1634293_0001599916-24-000027.html",
+    "raw_text_length":1279462,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240112_10-K_edgar_data_1088638_0001477932-24-000153.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240112_10-K_edgar_data_1088638_0001477932-24-000153.html",
+    "raw_text_length":1172822,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240112_10-K_edgar_data_1510518_0001213900-24-003308.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240112_10-K_edgar_data_1510518_0001213900-24-003308.html",
+    "raw_text_length":1117913,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240116_10-K_edgar_data_1231339_0001477932-24-000210.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240116_10-K_edgar_data_1231339_0001477932-24-000210.html",
+    "raw_text_length":1713393,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  },
+  {
+    "file_name":"20240116_10-K_edgar_data_1497649_0001903596-24-000016.html",
+    "file_path":"..\\..\\data\\SEC-10K-2024-HTML\\20240116_10-K_edgar_data_1497649_0001903596-24-000016.html",
+    "raw_text_length":1364851,
+    "missing_item_1":false,
+    "missing_item_1a":true,
+    "missing_item_7":false,
+    "status":"recheck",
+    "error":null,
+    "recheck_reason":"missing Item 1A"
+  }
+]

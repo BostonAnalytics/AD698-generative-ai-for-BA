@@ -1,5 +1,247 @@
 ---
-title: "M02 Assignment"
+title: "Module 2 Assignment: Engineering an AI Investment Corpus from Form 10-K"
+subtitle: "Signal Extraction and Retrieval-Ready Dataset Construction"
+number-sections: true
+date: "2026-02-15"
+date-modified: today
+date-format: long
+engine: jupyter
+execute:
+  eval: false
+  echo: false
 ---
 
-# M02 Assignment
+# Important Reminder {.unnumbered}
+
+* This assignment may be completed using **Google Colab** or **AWS Academy**.
+* You must reuse the **processed corpus created in Assignment 1**.
+* The objective is to **engineer a clean retrieval corpus**, not to train or fine-tune models.
+* You must focus **only on Artificial Intelligence investment signals**.
+* You must carefully review:
+
+  * **Module 2 Tutorial Video 1**
+  * **Module 2 Tutorial Video 2**
+  * **Module 2 Tutorial Instructions 1**
+
+These materials provide the **pipeline logic required to complete the assignment**.
+
+Start with a **small subset of filings**, validate your pipeline, then scale.
+
+
+# Submission Instructions {.unnumbered}
+
+You must submit the following:
+
+## Word Document (`.docx`) {.unnumbered}
+
+Maximum **5 pages** (excluding cover and references).
+
+The report must include:
+
+* AI investment signal definition
+* extraction strategy
+* chunk engineering strategy
+* dataset summary
+* short business interpretation
+
+**Do not include code.**
+
+
+## Jupyter Notebook (`.ipynb`) {.unnumbered}
+
+The notebook must:
+
+* run without errors
+* follow the pipeline structure from tutorials
+* include comments explaining each stage
+* clearly separate Q1–Q3 sections
+
+Suggested structure:
+
+1. Configuration and corpus loading
+2. AI signal definition
+3. Programmatic extraction
+4. Sentence processing
+5. Rolling-window chunk engineering
+6. Retrieval dataset construction
+7. Export outputs
+
+
+## Generative AI Prompt Disclosure {.unnumbered}
+
+If generative AI tools are used:
+
+* list tools used
+* include prompts
+* include outputs
+* explain validation
+
+Submit as a separate document.
+
+
+## Final Dataset {.unnumbered}
+
+Submit the final **retrieval-ready dataset** as:
+
+* `.csv` or `.json`
+
+This dataset will be reused in **Assignment 3 (Retrieval Systems)**.
+
+
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+- Assignment 1 focused on **building a structured NLP corpus** from SEC filings.
+- Assignment 2 focuses on **extracting a specific strategic signal** and engineering a dataset that supports **future LLM retrieval workflows**.
+:::
+
+Your task is to design a pipeline that extracts **Artificial Intelligence investment signals** from Form 10-K filings and transforms them into a **retrieval-ready corpus**.
+
+
+# Business Context {.unnumbered}
+
+Technology analysts and investors increasingly rely on narrative disclosures to understand:
+
+* firm-level AI capability investment
+* digital transformation strategy
+* infrastructure modernization
+* competitive positioning
+
+These signals appear in:
+
+* long narrative filings
+* inconsistent language
+* dispersed disclosure sections
+
+Your task is to **systematically detect and structure AI investment language**.
+
+
+# Data Source {.unnumbered}
+
+You must use the [2024 SEC Form 10-K HTML]{.uublue-bold} located [2024 SEC 10-K Filings - HTML](https://drive.google.com/drive/folders/1tqqoqDfcOpGKBoRN7PpAtElcmzKcrbGz?usp=sharing)
+
+# Defining the AI Investment Signal
+
+You must operationalize **AI investment** as an extraction construct.
+
+## Requirements
+
+1. Define what counts as AI investment evidence.
+2. Define what does **not** count.
+3. Provide examples of valid evidence sentences.
+4. Develop an initial keyword strategy.
+5.  Identify relevant filing sections:
+    1.  Item 1 – Business
+    2.  Item 1A – Risk Factors
+    3.  Item 7 – MD&A
+    4.  Item 7A – Quantitative and Qualitative Disclosures about Market Risk
+
+## Expected Output
+
+* conceptual signal definition
+* inclusion / exclusion examples
+* keyword table
+
+
+# Programmatic Extraction Pipeline
+
+1. Using the cleaned corpus:
+  1. Search for AI-related language using regex / keyword logic.
+  2. Extract candidate text segments.
+  3. Attach metadata:
+    1. company identifier
+    2. filing section
+    3. keyword trigger
+    4. raw evidence text
+2. Store results in structured format.
+3. Maintain a **recheck dataset** for extraction failures.
+
+## Expected Output
+
+* extraction pipeline description
+* dataset summary
+* sample extracted evidence
+
+
+# Chunk Engineering and Retrieval Dataset Construction
+
+You will transform extracted evidence into a **retrieval-ready corpus**. This stage focuses on **text engineering**, not modeling.
+
+## Required Steps
+
+1. [Sentence Processing]{.uublue-bold}: Clean and structure raw text.
+   1. clean extracted text
+   2. split into sentences
+   3. remove noise
+2. [Chunk Construction]{.uublue-bold}: Build retrieval chunks using a rolling window approach.
+   1. sentence-based windows
+   2. overlap strategy
+   3. approximate token control
+3. [Rolling Window Chunk Construction]{.uublue-bold}
+   1. sentence-based windows
+   2. overlap strategy
+   3. approximate token control
+4. [Metadata Attachment]{.uublue-bold}: Ensure each chunk is richly annotated for retrieval.
+   1. company identifier
+   2. filing section
+   3. chunk size metrics
+   4. source tracking fields
+5. [Dataset Assembly]{.uublue-bold}: Compile chunks into a structured dataset ready for embedding generation and retrieval workflows.
+   1. Final dataset should resemble:
+
+  ```
+  chunk_id
+  company
+  section
+  signal_type
+  chunk_text
+  sentence_count
+  approx_token_count
+  ```
+
+:::{.callout-important}
+You are **not required to generate embeddings in this assignment**. That step will be introduced in Assignment 3.
+:::
+
+## Expected Output
+
+* dataset summary statistics
+* number of companies represented
+* number of chunks generated
+* example chunk inspection
+
+
+# Use of Generative AI {.unnumbered}
+
+:::{.callout-important}
+Generative AI may assist with:
+
+* regex design
+* keyword exploration
+* debugging
+* explanation
+
+However, you must:
+
+* verify all outputs
+* understand pipeline logic
+* ensure reproducibility
+:::
+
+
+# Looking Ahead {.unnumbered}
+
+:::{.callout-note}
+Assignment 3 will introduce:
+
+* embedding generation
+* vector search systems
+* retrieval evaluation
+
+Assignment 4 will extend this into:
+
+* full Retrieval-Augmented Generation pipelines.
+:::
+
+

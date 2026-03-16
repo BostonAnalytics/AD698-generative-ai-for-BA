@@ -313,3 +313,8 @@ ul.navbar-nav {
 .g-col-12 {
   display: flex
 }
+
+.cell-output-stdout code {
+  word-break: break-wor !important;
+  white-space: pre-wrap !important;
+}
