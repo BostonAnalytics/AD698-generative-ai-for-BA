@@ -38,3 +38,381 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
+
+# Prompting as System Design
+
+## Prompting as System Design
+
+- Prompt engineering as probabilistic control  
+- Zero-shot, few-shot, and in-context learning  
+- Prompt templates, decomposition, and workflow design  
+- Common failure modes and evaluation principles
+- We Now want to move from representation to control.
+  - The base model is not the full system.
+  - The application emerges from how we condition, constrain, scaffold, and evaluate the model at inference time.
+
+---
+
+## Why Prompting Matters
+
+A strong base model is **necessary** but rarely **sufficient**.
+
+::: {.columns}
+::: {.column width="55%"}
+### Vanilla model limitations
+
+- knowledge cutoff and missing recency
+- weak domain specificity
+- inconsistent formatting and style
+- brittle behavior under ambiguous instructions
+- limited effective context handling
+- hard-to-debug failures
+:::
+
+::: {.column width="45%"}
+### Design implication
+
+Prompting is not just “asking nicely.”  
+It is the **first layer of system design** for a probabilistic model.
+
+> The prompt defines task framing, constraints, retrieval context, response structure, and often the evaluation target.
+:::
+:::
+
+---
+
+## From Base Model to System
+
+```{mermaid}
+flowchart LR
+    A[Base model] --> B[Prompt template]
+    B --> C[Context and examples]
+    C --> D[Inference-time workflow]
+    D --> E[Output]
+    E --> F[Evaluation and revision]
+    F --> B
+```
+
+### Key idea
+
+The deployed system is usually a combination of:
+
+- **model capability**
+- **prompt design**
+- **retrieval or memory context**
+- **workflow decomposition**
+- **evaluation and guardrails**
+
+::: notes
+Emphasize that prompt engineering belongs to software architecture, not just interaction design. Students should see prompting as a control surface layered over model parameters.
+:::
+
+---
+
+## Prompting as Probabilistic Control
+
+We can treat prompting as conditioning a generative distribution.
+
+$$
+P(y \mid x, \theta) \;\rightarrow\; P(y \mid x, p, \theta)
+$$
+
+where:
+
+- $x$ = user input or task input  
+- $p$ = prompt context  
+- $\theta$ = model parameters  
+- $y$ = generated output
+
+### Interpretation
+
+The prompt changes:
+
+- the **task prior** the model assumes
+- the **response manifold** it searches over
+- the **local probability mass** assigned to candidate outputs
+- the **structure** of the decoding trajectory
+
+> Prompting does not update weights. It updates the model’s *inference conditions*.
+
+---
+
+## Prompt = A System Interface
+
+A useful prompt usually contains several layers.
+
+1. **Role** — Who should the model act as?
+2. **Task** — What exactly must be done?
+3. **Context** — What information should shape the answer?
+4. **Constraints** — What must the model avoid or preserve?
+5. **Output schema** — What form should the answer take?
+6. **Quality criteria** — What counts as a good answer?
+
+### Example template
+
+> Act as a policy analyst. Summarize this report in five bullet points for city officials. Focus on findings, risks, and implementation implications. Do not include technical derivations.
+
+::: notes
+Point out that good prompts reduce uncertainty. They do this by shrinking the plausible output space and clarifying which dimensions matter.
+:::
+
+---
+
+## Zero-Shot, Few-Shot, and In-Context Learning
+
+| Mode | What the model receives | Strength | Main risk |
+|---|---|---|---|
+| **Zero-shot** | instruction only | fast, cheap, flexible | ambiguity |
+| **Few-shot** | instruction + examples | stronger alignment to task conventions | example bias |
+| **In-context learning** | task framing + demonstrations + context | adapts at inference time without weight updates | context length and brittleness |
+
+### Useful interpretation
+
+- **Zero-shot** = rely on the model’s pretraining prior
+- **Few-shot** = anchor the desired local behavior with examples
+- **In-context learning** = temporary task adaptation inside the context window
+
+---
+
+## Why Few-Shot Often Helps
+
+Few-shot examples do two jobs at once:
+
+- they teach the **task**
+- they teach the **format**
+
+### Example
+
+**Instruction:** Classify the review as positive, neutral, or negative.
+
+**Examples:**
+
+- “Exceeded expectations completely.” → Positive  
+- “It is acceptable, but I wanted more features.” → Negative  
+- “The service was adequate.” → Neutral
+
+### Lesson
+
+The model does not just infer labels. It infers:
+
+- boundary conditions
+- tone conventions
+- acceptable output vocabulary
+- hidden preferences of the application owner
+
+---
+
+## Prompt Design Patterns
+
+### High-value patterns
+
+- **role prompting** — activate an expert frame
+- **output schemas** — demand JSON, bullets, tables, tags
+- **decomposition** — break one hard task into smaller tasks
+- **critique and revise** — ask the model to inspect its own answer
+- **prompt templates** — turn good prompts into reusable system components
+
+### Practical principle
+
+A prompt should reduce variance **without** overconstraining the model into useless rigidity.
+
+> Good prompts are specific about goals and structure, but selective about where flexibility remains.
+
+---
+
+## Chain-of-Thought and Reasoning Guidance
+
+Chain-of-thought prompting encourages the model to expose intermediate reasoning steps.
+
+### Why it can work
+
+- decomposes a hard task into smaller subproblems
+- keeps intermediate structure visible in context
+- reduces shallow pattern matching on some reasoning tasks
+
+### But use carefully
+
+- it increases latency and token cost
+- it may expose noisy or low-quality reasoning traces
+- it is not a guarantee of correctness
+
+### Better framing
+
+Use reasoning prompts when the task needs:
+
+- multi-step calculation
+- explicit comparison
+- constraint satisfaction
+- explanation of trade-offs
+
+---
+
+## Prompt Chaining as Workflow Design
+
+A single prompt can behave like a **monolith**.  
+A chained workflow behaves more like a **pipeline**.
+
+```{mermaid}
+flowchart LR
+    A[User request] --> B[Extract key facts]
+    B --> C[Plan response]
+    C --> D[Generate draft]
+    D --> E[Critique or verify]
+    E --> F[Final answer]
+```
+
+### Advantages of chaining
+
+- better observability
+- easier debugging
+- component-level evaluation
+- reusable sub-prompts
+- tighter control over failure points
+
+### Cost
+
+- more latency
+- more orchestration complexity
+- more surface area for engineering decisions
+
+::: notes
+Use the software analogy explicitly: one prompt is a monolith; chained prompts resemble microservices or staged computation.
+:::
+
+---
+
+## Common Failure Modes
+
+::: {.columns}
+::: {.column width="50%"}
+### Instruction-level failures
+
+- underspecified task
+- conflicting constraints
+- missing output schema
+- hidden assumptions in the prompt
+- examples that teach the wrong boundary
+:::
+
+::: {.column width="50%"}
+### Model-behavior failures
+
+- hallucination
+- overfitting to demonstrations
+- brittle reasoning chains
+- instruction leakage from context
+- loss of focus in long prompts
+:::
+:::
+
+### Diagnostic question
+
+When the model fails, ask:
+
+> Is this a model-capability problem, a context problem, or a prompt-design problem?
+
+---
+
+## Evaluating Prompt Systems
+
+Prompt engineering without evaluation is unreliable.
+
+### Evaluation layers
+
+- **end-to-end**: Did the final response satisfy the user goal?
+- **component-level**: Which step in the chain failed?
+- **objective**: extraction accuracy, schema validity, latency
+- **subjective**: tone, usefulness, clarity, persuasiveness
+
+### Common methods
+
+- human review
+- rubric-based scoring
+- pairwise comparison
+- LLM-as-judge
+- benchmark sets of representative prompts
+
+> Prompt quality is not what “feels clever.” It is what survives repeated evaluation.
+
+---
+
+## Prompting in Enterprise Systems
+
+In production settings, prompt design becomes workflow design.
+
+### Deterministic components
+
+- API calls
+- database updates
+- validation rules
+- permissions checks
+
+### Probabilistic components
+
+- summarization
+- classification under ambiguity
+- drafting responses
+- prioritization and planning
+
+### Design principle
+
+Use deterministic systems where correctness must be exact.  
+Use probabilistic systems where flexibility, interpretation, or synthesis is required.
+
+---
+
+## Where Prompting Stops Being Enough
+
+Prompting is powerful, but it has limits.
+
+You usually need additional methods when the task demands:
+
+- **current or proprietary knowledge** → retrieval-augmented generation  
+- **stable domain adaptation** → fine-tuning  
+- **tool use and multi-step execution** → agentic workflows  
+- **reliable long-horizon coordination** → orchestration and evaluation frameworks
+
+### Framing for the course
+
+Prompting is the **first** control layer.  
+It is not the **only** control layer.
+
+---
+
+## In-Class Exercise
+
+Take this weak prompt:
+
+> Summarize this report.
+
+### Redesign it in three versions
+
+1. **zero-shot** for a general audience  
+2. **few-shot** for a policy audience  
+3. **chained workflow** for a risk-analysis team
+
+### Discussion prompts
+
+- What uncertainty does each revision remove?
+- Which design choices improve control?
+- Which parts should remain flexible?
+
+---
+
+## Key Takeaways
+
+- Prompting is best understood as **inference-time system design**.
+- A prompt modifies the model’s **conditional behavior**, not its weights.
+- Few-shot and in-context learning provide **temporary task adaptation**.
+- Chaining improves **control, debugging, and evaluation**.
+- Strong prompt systems require **explicit evaluation**, not intuition alone.
+- Prompting is foundational, but complex applications usually require **RAG, tools, memory, or agents**.
+
+---
+
+## References and Source Inputs
+
+- User-provided lecture transcript from the CS230 deep learning lecture on enhancing LLM applications
+- Course module brief for Module 3: *Prompting and Semantic Geometry*
+- *Fundamentals of Generative AI* (uploaded course text), especially the adaptation and prompt engineering material fileciteturn0file0
+

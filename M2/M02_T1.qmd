@@ -1,0 +1,2288 @@
+---
+title: "Module 2 Assignment: Extracting Strategic Technology Signals from Form 10-K"
+subtitle: "Building a Retrieval-Ready Corpus for LLM Systems"
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: bu
+        name: Boston University
+        city: Boston
+        state: MA
+number-sections: true
+date: "2026-02-01"
+date-modified: today
+date-format: long
+format:
+    html:
+        theme: [cosmo, ../theme/metanalytics.scss]
+        code-overflow: wrap
+        toc: true
+        toc-depth: 3
+        number-sections: true
+        df-print: paged
+    docx: default
+engine: jupyter
+execute:
+  freeze: auto
+---
+
+# Recommended assignment build sequence
+
+In general We need to treat this problem as a data engineering task, not a modeling task. The goal is to build a clean, structured, and reusable corpus of Item 1, Item 1A, and Item 7 sections from the SEC 10-K filings. A standard approach is to build a robust Python pipeline that can handle the messy nature of SEC HTML filings and produce a clean dataset for later LLM-based analysis. We could also relate it back to the analytical pipeline or a software engineering workflow, but the core deliverable is a Python pipeline that extracts the relevant sections and saves them in a structured format. @fig-baysian-modeling shows a recommended build sequence for the assignment, which I think is a good approach to follow.
+
+![Bayesian Modeling](./M02_lecture01_figures/baysian-modeling.png){width=80% fig-align="center" #fig-baysian-modeling fig-alt="Recommended build sequence for the assignment using Bayesian modeling steps"}
+
+Build your understanding on the code here. In most cases the logical structure will remain the same regardless of the type of the dataset/documents you are using. For the SEC Text pipeline, I would structure it like this
+
+- Part 1. Discover and load HTML filings
+- Part 2. Clean HTML into normalized text
+- Part 3. Detect and extract Item 1, Item 1A, and Item 7
+- Part 4. Build a structured corpus dataframe
+- Part 5. Save outputs for later assignments
+
+# Discover and load HTML filings
+
+Let's start by discovering all the HTML files in the data directory and loading them into memory. We will use Python's `pathlib` to find all HTML files and read their contents.
+
+## Importing necessary libraries
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+import os
+import re
+import pandas as pd
+import numpy as np
+from tqdm import tqdm
+from pathlib import Path
+import json
+import unicodedata
+from typing import Optional, Dict, List
+
+from bs4 import BeautifulSoup
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, confusion_matrix
+
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+
+from sentence_transformers import SentenceTransformer
+
+print("PyTorch version:", torch.__version__)
+print("CUDA available:", torch.cuda.is_available())
+
+if torch.cuda.is_available():
+    print("CUDA version:", torch.version.cuda)
+    print("GPU name:", torch.cuda.get_device_name(0))
+    print("GPU count:", torch.cuda.device_count())
+else:
+    print("Running on CPU")
+```
+
+
+## Define the data path and discover HTML files
+
+1. I am using HTML files instead of TXT files because they contain the original formatting and structure, which is crucial for accurate section extraction.
+2. The HTML format allows us to leverage tags and layout cues to identify section headers and boundaries more reliably than plain text.
+3. These files are located in the shared folder below
+   1. [2024 SEC 10-K Filings](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=sharing)
+   2. [2024 SEC 10-K Filings - HTML](https://drive.google.com/drive/folders/1tqqoqDfcOpGKBoRN7PpAtElcmzKcrbGz?usp=sharing)
+
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+DATA_DIR = Path("../data/SEC-10K-2024-HTML")
+OUTPUT_DIR = Path("../data/outputs/sec_10k_sections")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+ALL_HTML_FILES = sorted(DATA_DIR.rglob("*.html")) + sorted(DATA_DIR.rglob("*.htm"))
+print(f"Total HTML files found: {len(ALL_HTML_FILES)}")
+```
+
+**Use following for Google Colab**: 
+
+```{python}
+#| echo: true       
+#| eval: false
+#| code-overflow: wrap
+
+from google.colab import drive
+
+drive.mount("/content/drive")
+
+DATA_DIR = Path("/content/drive/MyDrive/Colab Notebooks/data/SEC-10K-2024-HTML")
+
+assert os.path.exists(DATA_DIR), (
+    "Google Drive is not mounted or the dataset path is incorrect. "
+    "Did you run drive.mount()?"
+)
+
+print("Drive mounted successfully. Data directory found.")
+
+OUTPUT_DIR = Path("/content/drive/MyDrive/Colab Notebooks/data/outputs/sec_10k_sections")
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+assert os.path.exists(OUTPUT_DIR), (
+    "Google Drive is not mounted or the dataset path is incorrect. "
+    "Did you run drive.mount()?"
+)
+
+ALL_HTML_FILES = sorted(DATA_DIR.rglob("*.html")) + sorted(DATA_DIR.rglob("*.htm"))
+```
+
+## Selecting small sample for testing
+
+Number of files selected for processing can be changed by adjusting the `sample_n` parameter. Setting it to `None` will process all files, while a smaller integer will limit the number of files for quicker testing and debugging. [For the assignment please use between 3000-6000 files, but you can start with a smaller sample size like 25 or 100 to iterate faster on your code.]{.uured-bold}.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def select_html_files(
+    files: List[Path],
+    sample_n: Optional[int] = None, # set sample to none
+    random_sample: bool = False,
+    random_state: int = 42
+) -> List[Path]:
+    """
+    Select all files or a smaller subset for debugging and development.
+
+    Parameters
+    ----------
+    files : list[Path]
+        Complete list of HTML filing paths.
+    sample_n : int | None
+        Number of files to process. If None, process all files.
+    random_sample : bool
+        If True, randomly sample files. Otherwise take the first sample_n files.
+    random_state : int
+        Seed for reproducibility when random_sample=True.
+    """
+    if sample_n is None:
+        return files
+
+    sample_n = min(sample_n, len(files))
+
+    if random_sample:
+        rng = random.Random(random_state)
+        selected = rng.sample(files, sample_n)
+        selected = sorted(selected)
+    else:
+        selected = files[:sample_n]
+
+    return selected
+```
+
+```{python}
+#| echo: true
+#| eval: false
+
+# Activate your function here
+html_files = select_html_files(
+    SET_NAME_OF_YOUR_HTML_FILE_LIST,
+    sample_n= SET_YOUR_DESIRED_SAMPLE_SIZE_OR_NONE,
+    random_sample=True
+)
+
+print(f"Files selected for processing: {len(html_files)}")
+
+# Do not show the html_files list use it as a diagnostic feature
+# html_files[:5]
+```
+
+```{python}
+#| echo: false
+#| eval: true
+html_files = select_html_files(
+    ALL_HTML_FILES,
+    sample_n=25,
+    random_sample=False
+)
+
+print(f"Files selected for processing: {len(html_files)}, this should say the number you set in sample_n")
+html_files[:5]
+```
+
+
+# HTML cleaning helpers
+
+The goal here is to turn messy SEC HTML into normalized text before section extraction. So before we can reliably extract sections, we need to clean the HTML and normalize the text. 
+
+In general, we want to process all the HTML files and convert them into clean text. 
+
+1. The first function `normalize_text` will handle Unicode normalization, space cleanup, and line break standardization to make regex matching more stable.
+2. The second function `html_to_text` will use BeautifulSoup to parse the HTML, remove irrelevant tags (like scripts and styles), and extract the plain text content.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def normalize_text(text: str) -> str:
+    """
+    Normalize unicode, spaces, and line breaks for more stable regex matching.
+    """
+    text = unicodedata.normalize("NFKC", text)
+    text = text.replace("\xa0", " ")
+    text = text.replace("&nbsp;", " ")
+    text = re.sub(r"\r", "\n", text)
+    text = re.sub(r"\n{2,}", "\n\n", text)
+    text = re.sub(r"[ \t]+", " ", text)
+    return text.strip()
+
+
+def html_to_text(html: str) -> str:
+    """
+    Parse HTML and return cleaned plain text.
+    Removes script/style content and flattens the document.
+    """
+    soup = BeautifulSoup(html, "lxml")
+
+    for tag in soup(["script", "style", "ix:header", "header", "footer"]):
+        tag.decompose()
+
+    text = soup.get_text(separator="\n")
+    return normalize_text(text)
+```
+
+
+## Section header patterns
+
+We want to extract:
+
+* **Item 1** — Business
+* **Item 1A** — Risk Factors
+* **Item 7** — Management’s Discussion and Analysis
+
+The main challenge is that SEC filings often contain, so we need a reasonably defensive regex design. This is probably the most important part of the assignment, because it directly impacts the quality of the extracted corpus. In general my thinking was to remove everything above and below the target section, and then keep the longest plausible span to avoid TOC matches. There are many edge cases, but this approach works well for most filings. In general the core idea is to find candidate start positions for the target item, find candidate end positions for the next boundary items, and then build valid spans where end > start. Finally, we choose the longest plausible span as the extracted section while keeping following in mind.
+
+* Table of contents duplicates
+* Repeated item headers
+* Formatting inconsistencies
+* Inline XBRL artifacts
+
+[You can use any other patterns you like to make the extraction more robust, but the key is to test and iterate on the regexes to improve coverage and precision. Here are some examples:]{.uured-bold}
+
+- This extracts Item and number
+  - `re.compile(r"Item\s+(1\.|1A\.|2\.)", re.IGNORECASE)`
+  - `regex = re.compile(r'(>Item(\s|&#160;|&nbsp;)(1|1A|1B|2)\.{0,1})|(ITEM\s(1|1A|1B|2)\b)')`
+  - `regex = re.compile(r'(>Item(\s|&#160;|&nbsp;)(1|1A|1B|2)\.{1})|(ITEM\s(1|1A|1B|2)\b)')`
+  - `regex = re.compile(r'(>Item(\s|&#160;|&nbsp;)(1|1A|1B|2)\.{1})|(ITEM(?:\s|&nbsp;)+1[AB]?\.?)|(ITEM(?:\s|&nbsp;)+2\.?)|(ITEM\s(1|1A|1B|2)\b)', re.IGNORECASE)`
+- These extract Part and Part number
+  - `regex = re.compile(r'(>Item(\s|&#160;|&nbsp;)(1|1A)\.{0,1})|(ITEM\s(1|1A)\b)')`
+  - `regex = re.compile(r'(>Item(\s|&#160;|&nbsp;)(1|1A|1B|2)\.{1})|(ITEM\s(1|1A|1B|2)\b)')`
+  - `regex = re.compile(r'(>Part(\s|&#160;|&nbsp;)(I|II|III|IV)\.{0,1})|(PART\s(I|II|III|IV)\b)',re.IGNORECASE)`
+  - `regex = re.compile(r'([\'"]?>Part(\s|&#160;|&nbsp;)(I|II|III|IV)\.{0,1}[\'"]?)|([\'"]?PART\s(I|II|III|IV)\b[\'"]?)', re.IGNORECASE)`
+  - `regex = re.compile(r'(>Part(\s|&#160;|&nbsp;)(I|II|III|IV))|(PART\s(I|II|III|IV)\b)|(Table of Content[s]?)|(TABLE OF CONTENT[S]?)', re.IGNORECASE)`
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+ITEM_PATTERNS = {
+    "item_1": re.compile(
+        r"(?im)^\s*item\s*1[\.\-:\s]*\b(?!a\b)(?:business\b)?",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_1a": re.compile(
+        r"(?im)^\s*item\s*1a[\.\-:\s]*\b(?:risk\s+factors\b)?",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_1b": re.compile(
+        r"(?im)^\s*item\s*1b[\.\-:\s]*\b",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_2": re.compile(
+        r"(?im)^\s*item\s*2[\.\-:\s]*\b",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_7": re.compile(
+        r"(?im)^\s*item\s*7[\.\-:\s]*\b(?!a\b)(?:management'?s?\s+discussion\b|md&a\b)?",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_7a": re.compile(
+        r"(?im)^\s*item\s*7a[\.\-:\s]*\b",
+        re.IGNORECASE | re.MULTILINE
+    ),
+    "item_8": re.compile(
+        r"(?im)^\s*item\s*8[\.\-:\s]*\b",
+        re.IGNORECASE | re.MULTILINE
+    ),
+}
+```
+
+
+## Find all candidate header positions
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def find_item_positions(text: str, pattern: re.Pattern) -> List[int]:
+    """
+    Return all candidate start positions for a given item header.
+    """
+    return [m.start() for m in pattern.finditer(text)]
+```
+
+
+## Choose the best section span
+
+This is the most important part. A filing may mention “Item 1A” in the table of contents and later again in the real body. We usually want the **body occurrence**, not the first appearance. A practical strategy is:
+
+* Find all candidate starts for the target item
+* Find all candidate starts for the next boundary item
+* Build all valid spans where end > start
+* Keep a plausible span
+* Choose the **longest plausible span**, for now we can say each section can span from 500 characters to 2 million characters. That works surprisingly well for SEC filings. But adjust it a bit before you are running it on a new dataset.
+
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def extract_section_by_bounds(
+    text: str,
+    start_pattern: re.Pattern,
+    end_patterns: List[re.Pattern],
+    min_chars: int = 500,
+    max_chars: int = 2_000_000
+) -> Optional[str]:
+    start_positions = [m.start() for m in start_pattern.finditer(text)]
+    if not start_positions:
+        return None
+
+    end_positions = []
+    for pat in end_patterns:
+        end_positions.extend([m.start() for m in pat.finditer(text)])
+    end_positions = sorted(set(end_positions))
+
+    candidates = []
+
+    for start in start_positions:
+        valid_ends = [end for end in end_positions if end > start]
+        if not valid_ends:
+            continue
+
+        end = valid_ends[0]
+        span_len = end - start
+
+        if min_chars <= span_len <= max_chars:
+            candidates.append((start, end, span_len))
+
+    if not candidates:
+        return None
+
+    best_start, best_end, _ = max(candidates, key=lambda x: x[2])
+    section = text[best_start:best_end].strip()
+    return section if section else None
+```
+
+
+## Extract Item 1, Item 1A, and Item 7
+
+We define section boundaries as:
+
+* **Item 1** ends at Item 1A, Item 1B, or Item 2
+* **Item 1A** ends at Item 1B or Item 2
+* **Item 7** ends at Item 7A or Item 8
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def extract_target_sections(text: str) -> Dict[str, Optional[str]]:
+    item_1 = extract_section_by_bounds(
+        text=text,
+        start_pattern=ITEM_PATTERNS["item_1"],
+        end_patterns=[ITEM_PATTERNS["item_1a"], ITEM_PATTERNS["item_1b"], ITEM_PATTERNS["item_2"]],
+        min_chars=1000
+    )
+
+    item_1a = extract_section_by_bounds(
+        text=text,
+        start_pattern=ITEM_PATTERNS["item_1a"],
+        end_patterns=[ITEM_PATTERNS["item_1b"], ITEM_PATTERNS["item_2"]],
+        min_chars=1000
+    )
+
+    item_7 = extract_section_by_bounds(
+        text=text,
+        start_pattern=ITEM_PATTERNS["item_7"],
+        end_patterns=[ITEM_PATTERNS["item_7a"], ITEM_PATTERNS["item_8"]],
+        min_chars=1000
+    )
+
+    return {
+        "item_1": item_1,
+        "item_1a": item_1a,
+        "item_7": item_7,
+    }
+```
+
+## Metadata extraction
+
+If filenames contain useful metadata, we can parse that.
+Otherwise, a simple fallback is to store the filename and derive metadata later.
+
+If you want, later we can add extraction for fields like, company name, CIK, filing date, accession number from the SEC filing header.
+
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def extract_basic_metadata(file_path: Path, text: str) -> Dict[str, str]:
+    """
+    Minimal metadata extractor.
+    You can later extend this using SEC header fields.
+    """
+    return {
+        "file_name": file_path.name,
+        "file_path": str(file_path),
+    }
+```
+
+
+# Process all HTML files
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def process_html_files(
+    html_files: List[Path],
+    save_outputs: bool = True
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Process HTML filings and return:
+    1. main extracted corpus
+    2. recheck table for files needing manual review or second-pass regex
+
+    A file is sent to recheck if:
+    - parsing fails
+    - Item 1 is missing
+    - Item 1A is missing
+    - Item 7 is missing
+    """
+    records = []
+    recheck_records = []
+
+    for i, file_path in enumerate(html_files, start=1):
+        try:
+            html = file_path.read_text(encoding="utf-8", errors="ignore")
+            text = html_to_text(html)
+
+            metadata = extract_basic_metadata(file_path, text)
+            sections = extract_target_sections(text)
+
+            item_1 = sections["item_1"]
+            item_1a = sections["item_1a"]
+            item_7 = sections["item_7"]
+
+            missing_item_1 = item_1 is None
+            missing_item_1a = item_1a is None
+            missing_item_7 = item_7 is None
+
+            status = "ok"
+            if missing_item_1 or missing_item_1a or missing_item_7:
+                status = "recheck"
+
+            record = {
+                **metadata,
+                "raw_text_length": len(text),
+                "item_1": item_1,
+                "item_1a": item_1a,
+                "item_7": item_7,
+                "item_1_len": len(item_1) if item_1 else 0,
+                "item_1a_len": len(item_1a) if item_1a else 0,
+                "item_7_len": len(item_7) if item_7 else 0,
+                "missing_item_1": missing_item_1,
+                "missing_item_1a": missing_item_1a,
+                "missing_item_7": missing_item_7,
+                "status": status,
+                "error": None,
+            }
+            records.append(record)
+
+            if status == "recheck":
+                recheck_records.append({
+                    **metadata,
+                    "raw_text_length": len(text),
+                    "missing_item_1": missing_item_1,
+                    "missing_item_1a": missing_item_1a,
+                    "missing_item_7": missing_item_7,
+                    "status": status,
+                    "error": None,
+                    "recheck_reason": "; ".join(
+                        reason for reason, flag in [
+                            ("missing Item 1", missing_item_1),
+                            ("missing Item 1A", missing_item_1a),
+                            ("missing Item 7", missing_item_7),
+                        ] if flag
+                    )
+                })
+
+        except Exception as e:
+            metadata = extract_basic_metadata(file_path)
+
+            error_record = {
+                **metadata,
+                "raw_text_length": None,
+                "item_1": None,
+                "item_1a": None,
+                "item_7": None,
+                "item_1_len": 0,
+                "item_1a_len": 0,
+                "item_7_len": 0,
+                "missing_item_1": True,
+                "missing_item_1a": True,
+                "missing_item_7": True,
+                "status": "error",
+                "error": str(e),
+            }
+            records.append(error_record)
+
+            recheck_records.append({
+                **metadata,
+                "raw_text_length": None,
+                "missing_item_1": True,
+                "missing_item_1a": True,
+                "missing_item_7": True,
+                "status": "error",
+                "error": str(e),
+                "recheck_reason": "parser/runtime error",
+            })
+
+        if i % 50 == 0 or i == len(html_files):
+            print(f"Processed {i}/{len(html_files)} files")
+
+    df_sections = pd.DataFrame(records)
+    df_recheck = pd.DataFrame(recheck_records)
+
+    if save_outputs:
+        df_sections.to_csv(OUTPUT_DIR / "sec_10k_2024_sections.csv", index=False)
+        df_sections.to_json(
+            OUTPUT_DIR / "sec_10k_2024_sections.json",
+            orient="records",
+            force_ascii=False,
+            indent=2
+        )
+
+        if not df_recheck.empty:
+            df_recheck.to_csv(OUTPUT_DIR / "sec_10k_2024_recheck.csv", index=False)
+            df_recheck.to_json(
+                OUTPUT_DIR / "sec_10k_2024_recheck.json",
+                orient="records",
+                force_ascii=False,
+                indent=2
+            )
+
+    return df_sections, df_recheck
+```
+
+
+## Build the corpus dataframe
+
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+# use the process_html_files function to build the corpus dataframe in a tuple of df_sections and df_recheck
+df_sections, df_recheck = process_html_files(Add_the_name_of_your_html_file_list_variable_here)
+
+# print the shapes of the resulting dataframes to check how many files were processed and how many need recheck
+print("Main corpus shape:", df_sections.shape)
+print("Recheck shape:", df_recheck.shape)
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+df_sections, df_recheck = process_html_files(html_files)
+
+print("Main corpus shape:", df_sections.shape)
+print("Recheck shape:", df_recheck.shape)
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+# Use this as diagnostic to check the df. Uncomment it for final run
+df_sections.head().style.hide(axis="index")
+```
+
+## Quick extraction diagnostics
+
+Let's check how many files we processed, and how many had each section successfully extracted. This will give us a sense of the extraction quality and coverage.
+
+### Summery table
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+# get the values for total files, item 1 extracted, item 1a extracted, and item 7 extracted from the df_sections dataframe and create a summary dataframe to display these metrics in a nice format
+
+summary = pd.DataFrame({
+    "metric": [
+
+    ],
+    "value": [
+
+    ]
+})
+
+summary.style.hide(axis="index")
+```
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+summary = pd.DataFrame({
+    "metric": [
+        "total_files",
+        "item_1_extracted",
+        "item_1a_extracted",
+        "item_7_extracted",
+    ],
+    "value": [
+        len(df_sections),
+        df_sections["item_1"].notna().sum(),
+        df_sections["item_1a"].notna().sum(),
+        df_sections["item_7"].notna().sum(),
+    ]
+})
+
+summary.style.hide(axis="index")
+```
+
+### Section length summaries:
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+df_sections[[" ", " ", " "]].describe()
+```
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+df_sections[["item_1_len", "item_1a_len", "item_7_len"]].describe()
+```
+
+
+##  Save the corpus
+
+1. Save the main corpus dataframe with extracted sections to CSV (`sec_10k_2024_sections.csv`) and JSON (`sec_10k_2024_sections.json`) 
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+df_sections.to_csv(OUTPUT_DIR / "sec_10k_2024_sections.csv", index=False)
+
+with open(OUTPUT_DIR / "sec_10k_2024_sections.json", "w", encoding="utf-8") as f:
+    json.dump(df_sections.to_dict(orient="records"), f, ensure_ascii=False, indent=2)
+
+print("Saved outputs to:", OUTPUT_DIR.resolve())
+```
+
+
+## Convert to long format
+
+After we extract the three sections, the next notebook block should reshape the corpus into **long format**, because that is much easier to use later for chunking and retrieval.
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+section_rows = []
+
+for _, row in df_sections.iterrows():
+    for section_name in [" ", " ", " "]: # add item names here
+        section_text = row[section_name]
+        if isinstance(section_text, str) and section_text.strip():
+            section_rows.append({
+                "file_name": row["file_name"],
+                "file_path": row["file_path"],
+                "section_name": section_name,
+                "section_text": section_text,
+                "section_length": len(section_text),
+            })
+
+df_long = pd.DataFrame(section_rows)
+df_long.head().style.hide(axis="index")
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+section_rows = []
+
+for _, row in df_sections.iterrows():
+    for section_name in ["item_1", "item_1a", "item_7"]:
+        section_text = row[section_name]
+        if isinstance(section_text, str) and section_text.strip():
+            section_rows.append({
+                "file_name": row["file_name"],
+                "file_path": row["file_path"],
+                "section_name": section_name,
+                "section_text": section_text,
+                "section_length": len(section_text),
+            })
+
+df_long = pd.DataFrame(section_rows)
+df_long.head().style.hide(axis="index")
+```
+
+Save it:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_long.to_csv(OUTPUT_DIR / "sec_10k_2024_sections_long.csv", index=False)
+```
+
+# Sentence splitting and chunking
+
+For SEC filings, I would avoid overly naive splitting like `text.split('.')` because it breaks badly on abbreviations, dollar amounts, and formatting. A good practical option is `nltk.sent_tokenize`.
+
+
+## Sentence splitting
+
+We still split into sentences first, because sentences are the best building blocks for rolling retrieval windows.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+import nltk
+import re
+
+nltk.download("punkt")
+nltk.download("punkt_tab")
+
+from nltk.tokenize import sent_tokenize
+
+def clean_sentence(text: str) -> str:
+    """
+    Light cleanup for sentence text extracted from SEC filings.
+    """
+    text = str(text)
+    text = text.replace("\xa0", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+```
+
+While we are extracting the sentences lets also check for Sentence quality. We can filter out very short sentences and obvious noise like "Table of Contents" or "Item 1". This will help improve the quality of our later chunks and embeddings.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+def is_valid_sentence(text: str, min_chars: int = 25) -> bool:
+    """
+    Filter obvious noise and very short artifacts.
+    """
+    text = str(text).strip()
+
+    if len(text) < min_chars:
+        return False
+
+    lowered = text.lower()
+    bad_values = {
+        "table of contents",
+        "item 1",
+        "item 1a",
+        "item 7",
+    }
+
+    if lowered in bad_values:
+        return False
+
+    return True
+```
+
+### Build sentence-level dataframe
+
+- Define the function signature: Create a function that takes the long‑form dataframe as input and returns a sentence‑level dataframe.
+  - Name it something like `extract_sentences(df_long)`.
+  - The function should return a new DataFrame with one row per sentence.
+- Initialize a list to collect sentence rows. Inside the function:
+    - Create an empty list: `sentence_rows = []`
+  - This will store dictionaries, one per sentence.
+- Loop over each row of the long dataframe. For each row in `df_long`:
+    - Access:
+      - `file_name`
+      - `file_path`
+      - `section_name`
+      - `section_text`
+    - Use `iterrows()` or `itertuples()`.
+
+- Split the section text into sentences. For each row:
+  - Use `sent_tokenize(row["section_text"])`  
+  - Store the result in a list called `sentences`.
+- Initialize a sentence counter. Before looping through sentences:
+    - Set `sent_num = 0`  
+    - This will track sentence order within the section.
+- Loop through each sentence. For each sentence in `sentences`:
+  - Clean the sentence
+    - Call `clean_sentence(sent)`  
+    - This should remove whitespace, normalize characters, etc.
+  - Validate the cleaned sentence
+    - Call `is_valid_sentence(sent_clean)`  
+    - Skip the sentence if it fails validation.
+  - Increment the sentence counter
+    - `sent_num += 1`
+- Build a dictionary for each valid sentence. Append a dictionary with the following keys:
+  - `"file_name"`
+  - `"file_path"`
+  - `"section_name"`
+  - `"sentence_number"` → the counter
+  - `"sentence_id"` → formatted as `"{file_name}::{section_name}::s{sent_num}"`
+  - `"sentence_text"` → the cleaned sentence
+  - `"sentence_length_chars"` → `len(sent_clean)`
+  - Add this dictionary to `sentence_rows`.
+- Convert the list of dictionaries into a DataFrame. After the loops finish:
+    - `df_sentences = pd.DataFrame(sentence_rows)`
+- Return the final DataFrame. The last line of the function should be:
+    - `return df_sentences`
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+sentence_rows = []
+
+for _, row in df_long.iterrows():
+    sentences = sent_tokenize(row[" "])
+
+    sent_num = 0
+    for sent in sentences:
+        sent_clean = clean_sentence(sent)
+
+        if not is_valid_sentence(sent_clean):
+            continue
+
+        sent_num += 1
+
+        sentence_rows.append({
+        ## Fill the dictionary with the appropriate values from row and the cleaned sentence
+        })
+
+df_sentences = pd.DataFrame(sentence_rows)
+
+print(df_sentences.shape)
+df_sentences.head().style.hide(axis="index")
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+sentence_rows = []
+
+for _, row in df_long.iterrows():
+    sentences = sent_tokenize(row["section_text"])
+
+    sent_num = 0
+    for sent in sentences:
+        sent_clean = clean_sentence(sent)
+
+        if not is_valid_sentence(sent_clean):
+            continue
+
+        sent_num += 1
+
+        sentence_rows.append({
+            "file_name": row["file_name"],
+            "file_path": row["file_path"],
+            "section_name": row["section_name"],
+            "sentence_number": sent_num,
+            "sentence_id": f"{row['file_name']}::{row['section_name']}::s{sent_num}",
+            "sentence_text": sent_clean,
+            "sentence_length_chars": len(sent_clean),
+        })
+
+df_sentences = pd.DataFrame(sentence_rows)
+
+print(df_sentences.shape)
+df_sentences.head().style.hide(axis="index")
+```
+
+Save the sentence-level file for diagnostics and later reuse:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_sentences.to_csv(OUTPUT_DIR / "sec_10k_2024_sentences.csv", index=False)
+```
+
+## Approximate token counting
+
+For later RAG, character count is not enough. We want approximate token counts. A practical, lightweight approximation is:
+
+* split on whitespace and punctuation
+* count resulting text units
+
+This is not identical to a transformer tokenizer, but it is enough for chunk control in this assignment.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def approximate_token_count(text: str) -> int:
+    """
+    Approximate token count using regex-based word/punctuation splitting.
+    This is a lightweight stand-in for a model tokenizer.
+    """
+    text = str(text)
+    tokens = re.findall(r"\w+|[^\w\s]", text, flags=re.UNICODE)
+    return len(tokens)
+```
+
+Apply it to the sentence table:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_sentences["approx_token_count"] = df_sentences["sentence_text"].apply(approximate_token_count)
+
+df_sentences[["sentence_text", "approx_token_count"]].head().style.hide(axis="index")
+```
+
+- [Check the first few words, if you see something unusual like 'Description of Business' it suggests that you might have to adjust processing. You can also remove these words later in processing.]{.uured-bold}
+- [Check the token counts, if you see a lot of sentences with 0 or 1 tokens, you might want to adjust the sentence filtering or cleaning steps.]{.uured-bold}
+- [Check dates and months in the sentences, if you see a lot of them, you might want to add a regex filter to remove sentences that are just dates or table of contents entries.]{.uured-bold}
+
+## Build rolling sentence chunks with approximate token control
+
+This is the key part. We will build chunks by:
+
+* Moving through each section sentence by sentence
+* Collecting adjacent sentences
+* Stopping when we approach a token budget
+* using overlap between chunks
+This creates chunks that are better for retrieval than single sentences.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+from typing import List, Dict
+
+def build_sentence_window_chunks(
+    df_sentences: pd.DataFrame,
+    target_tokens: int = 250,
+    max_tokens: int = 320,
+    overlap_sentences: int = 2,
+    min_chunk_tokens: int = 40
+) -> pd.DataFrame:
+    """
+    Build overlapping multi-sentence chunks from a sentence-level dataframe.
+
+    Parameters
+    ----------
+    df_sentences : pd.DataFrame
+        Sentence-level dataframe with columns:
+        file_name, file_path, section_name, sentence_number, sentence_text, approx_token_count
+
+    target_tokens : int
+        Preferred chunk size in approximate tokens.
+
+    max_tokens : int
+        Hard upper bound for chunk size.
+
+    overlap_sentences : int
+        Number of trailing sentences to carry into the next chunk.
+
+    min_chunk_tokens : int
+        Minimum approximate token count required to keep a chunk.
+    """
+    chunk_rows: List[Dict] = []
+
+    grouped = (
+        df_sentences
+        .sort_values(["file_name", "section_name", "sentence_number"])
+        .groupby(["file_name", "file_path", "section_name"], as_index=False)
+    )
+
+    for (file_name, file_path, section_name), group in grouped:
+        group = group.sort_values("sentence_number").reset_index(drop=True)
+
+        n = len(group)
+        start_idx = 0
+        chunk_counter = 1
+
+        while start_idx < n:
+            current_sentences = []
+            current_token_total = 0
+            end_idx = start_idx
+
+            while end_idx < n:
+                sent_text = group.loc[end_idx, "sentence_text"]
+                sent_tokens = int(group.loc[end_idx, "approx_token_count"])
+
+                # always allow at least one sentence
+                if current_token_total == 0:
+                    current_sentences.append(sent_text)
+                    current_token_total += sent_tokens
+                    end_idx += 1
+                    continue
+
+                # stop if adding another sentence would exceed max_tokens
+                if current_token_total + sent_tokens > max_tokens:
+                    break
+
+                current_sentences.append(sent_text)
+                current_token_total += sent_tokens
+                end_idx += 1
+
+                # if target_tokens reached, we can stop this chunk
+                if current_token_total >= target_tokens:
+                    break
+
+            chunk_text = " ".join(current_sentences).strip()
+
+            if chunk_text and current_token_total >= min_chunk_tokens:
+                start_sentence_num = int(group.loc[start_idx, "sentence_number"])
+                end_sentence_num = int(group.loc[end_idx - 1, "sentence_number"])
+
+                chunk_rows.append({
+                    "chunk_id": f"{file_name}::{section_name}::c{chunk_counter}",
+                    "file_name": file_name,
+                    "file_path": file_path,
+                    "section_name": section_name,
+                    "start_sentence": start_sentence_num,
+                    "end_sentence": end_sentence_num,
+                    "n_sentences": end_idx - start_idx,
+                    "chunk_text": chunk_text,
+                    "chunk_length_chars": len(chunk_text),
+                    "approx_token_count": current_token_total,
+                })
+
+                chunk_counter += 1
+
+            # move forward with overlap
+            if end_idx >= n:
+                break
+
+            next_start_idx = max(start_idx + 1, end_idx - overlap_sentences)
+            if next_start_idx <= start_idx:
+                next_start_idx = start_idx + 1
+
+            start_idx = next_start_idx
+
+    return pd.DataFrame(chunk_rows)
+```
+
+
+## Generate the rolling chunk corpus
+
+Enforce the following parameters:
+
+- target_tokens
+  - Must be less than or equal to `max_tokens`
+  - Should be a reasonable mid‑range (e.g., 150–500)
+- max_tokens
+  - Must be greater than target_tokens
+  - Represents the absolute ceiling (e.g., 200–500)
+- min_chunk_tokens
+  - Must be less than target_tokens
+  - Ensures we don’t create tiny, useless chunks
+- overlap_sentences
+  - Must be $\geq 0$
+  - Should be small (1–5 sentences)
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+df_chunks = build_sentence_window_chunks(
+    df_sentences=df_sentences,
+    target_tokens=add_your_target_token_value_here,
+    max_tokens=add_your_max_token_value_here,
+    overlap_sentences=add_your_overlap_sentences_value_here,
+    min_chunk_tokens=add_your_min_chunk_tokens_value_here
+)
+
+print(df_chunks.shape)
+df_chunks.head().style.hide(axis="index")
+```
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+df_chunks = build_sentence_window_chunks(
+    df_sentences=df_sentences,
+    target_tokens=250,
+    max_tokens=320,
+    overlap_sentences=2,
+    min_chunk_tokens=40
+)
+
+print(df_chunks.shape)
+df_chunks.head().style.hide(axis="index")
+```
+
+
+## Save the retrieval-ready chunk dataset
+
+This is the main dataset you will likely use in later assignments.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_chunks.to_csv(OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv", index=False)
+
+df_chunks.to_json(
+    OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.json",
+    orient="records",
+    force_ascii=False,
+    indent=2
+)
+
+print("Saved rolling chunk corpus.")
+```
+
+#  Diagnostics and sample exploration
+
+##  Diagnostics Chunks by section
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_chunks["section_name"].value_counts()
+```
+
+## Token count summary
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+df_chunks["approx_token_count"].describe()
+```
+
+## Sentences per chunk
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_chunks["n_sentences"].describe()
+```
+
+## Sample chunks
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_chunks.sample(10, random_state=42)[
+    ["file_name", "section_name", "start_sentence", "end_sentence", "approx_token_count", "chunk_text"]
+].style.hide(axis="index")
+```
+
+
+# Defining Subject Matter
+
+Now that the corpus is in **rolling chunk format**, the next two sections should do help us get closer to our target signal extraction by:
+
+1. **defining one target signal clearly**
+2. **extracting candidate evidence programmatically from the chunk corpus**
+
+This should stay lightweight and reproducible. For this assignment, I recommend you choose **AI Investment** of these:
+
+* AI investment
+* technology infrastructure spending
+* datacenter / compute infrastructure expansion
+* digital transformation initiatives
+
+The helper code below will build the section so that the code works for **any one chosen signal**, with a clean dictionary-driven design.
+
+# Target Signal Definition
+
+In general, the goal of this section is to take a high-level business concept and turn it into a clear set of signal definitions that can be operationalized in code. This involves: 
+
+## Load the rolling chunk corpus
+
+We already have this built in the memory but in case it's not, you can load it from the saved CSV file. This is the main dataset we will be working with for signal extraction in the next steps. 
+
+```{python}
+#| echo: true
+#| eval: false
+
+from pathlib import Path
+import pandas as pd
+import re
+from collections import Counter
+
+OUTPUT_DIR = Path("./outputs/sec_10k_sections")
+CHUNKS_FILE = OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv"
+
+df_chunks = pd.read_csv(CHUNKS_FILE)
+print(df_chunks.shape)
+df_chunks.head()
+```
+
+
+## Choose one signal
+
+For the assignment, choose one signal that you are interested in analyzing.
+We can represent that as a variable. Comment and uncomment the one you want to work with. This will allow the rest of the code to be reusable for any of the defined signals.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+
+TARGET_SIGNAL = "ai_investment"
+# TARGET_SIGNAL = "technology_infrastructure"
+# TARGET_SIGNAL = "datacenter_compute"
+# TARGET_SIGNAL = "digital_transformation"
+```
+
+
+## Define signal dictionaries
+
+The cleanest design is to use a dictionary of dictionaries.
+
+Each signal can have:
+
+* `core_terms`: direct signal words
+* `support_terms`: contextual words that strengthen interpretation
+* `exclude_terms`: words that may create false positives
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+SIGNAL_DEFINITIONS = {
+    "ai_investment": {
+        "label": "Artificial Intelligence Investment",
+        "description": "Language indicating spending, deployment, development, or strategic investment related to AI, machine learning, generative AI, or related systems.",
+        "core_terms": [
+            "artificial intelligence",
+            "machine learning",
+            "generative ai",
+            "genai",
+            "foundation model",
+            "large language model",
+            "llm",
+            "ai model",
+            "ai capability",
+            "ai system",
+            "automated decision",
+            "intelligent automation"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "infrastructure",
+            "platform",
+            "development",
+            "deployment",
+            "training",
+            "compute",
+            "data center",
+            "datacenter",
+            "cloud",
+            "model development",
+            "technology investment"
+        ],
+        "exclude_terms": [
+            "artificial flavors",
+            "machine shop"
+        ]
+    },
+
+    "technology_infrastructure": {
+        "label": "Technology Infrastructure Spending",
+        "description": "Language describing spending or strategic allocation toward enterprise systems, cloud, platforms, networks, compute, storage, or other digital infrastructure.",
+        "core_terms": [
+            "technology infrastructure",
+            "information technology infrastructure",
+            "cloud infrastructure",
+            "platform infrastructure",
+            "network infrastructure",
+            "compute infrastructure",
+            "digital infrastructure",
+            "technology platform",
+            "enterprise platform"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "upgrade",
+            "expansion",
+            "modernization",
+            "migration",
+            "implementation",
+            "deployment",
+            "storage",
+            "servers",
+            "compute",
+            "systems"
+        ],
+        "exclude_terms": []
+    },
+
+    "datacenter_compute": {
+        "label": "Datacenter / Compute Infrastructure Expansion",
+        "description": "Language related to datacenter growth, compute capacity, server expansion, storage systems, and related infrastructure buildout.",
+        "core_terms": [
+            "data center",
+            "datacenter",
+            "compute capacity",
+            "compute infrastructure",
+            "server capacity",
+            "gpu",
+            "processing capacity",
+            "storage infrastructure",
+            "server infrastructure",
+            "compute cluster"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "expense",
+            "capital expenditure",
+            "capex",
+            "expansion",
+            "construction",
+            "lease",
+            "facility",
+            "capacity",
+            "hardware",
+            "cloud",
+            "power",
+            "cooling"
+        ],
+        "exclude_terms": []
+    },
+
+    "digital_transformation": {
+        "label": "Digital Transformation Initiatives",
+        "description": "Language describing digital modernization, enterprise transformation, platform change, automation, or technology-enabled business process redesign.",
+        "core_terms": [
+            "digital transformation",
+            "technology transformation",
+            "business transformation",
+            "platform modernization",
+            "enterprise modernization",
+            "digital platform",
+            "automation initiative",
+            "systems modernization"
+        ],
+        "support_terms": [
+            "investment",
+            "spending",
+            "initiative",
+            "program",
+            "implementation",
+            "deployment",
+            "upgrade",
+            "migration",
+            "modernization",
+            "efficiency",
+            "transformation"
+        ],
+        "exclude_terms": []
+    }
+}
+```
+
+
+## Inspect the chosen signal definition
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+signal_config = SIGNAL_DEFINITIONS[TARGET_SIGNAL]
+
+print("Target signal:", TARGET_SIGNAL)
+print("Label:", signal_config["label"])
+print("Description:", signal_config["description"])
+print("\nCore terms:")
+print(signal_config["core_terms"])
+print("\nSupport terms:")
+print(signal_config["support_terms"])
+```
+
+
+## Create regex patterns
+
+We will compile patterns once and reuse them.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def build_phrase_pattern(terms):
+    """
+    Build a case-insensitive regex pattern from a list of phrases.
+    """
+    escaped_terms = [re.escape(term) for term in terms]
+    pattern = r"\b(?:%s)\b" % "|".join(escaped_terms)
+    return re.compile(pattern, flags=re.IGNORECASE)
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+core_pattern = build_phrase_pattern(signal_config["core_terms"])
+support_pattern = build_phrase_pattern(signal_config["support_terms"])
+
+exclude_terms = signal_config.get("exclude_terms", [])
+exclude_pattern = build_phrase_pattern(exclude_terms) if exclude_terms else None
+```
+
+
+## Programmatic Extraction
+
+Now we move from definition to actual extraction on the chunk corpus.
+
+The design below is intentionally simple and transparent:
+
+* flag chunks with at least one core term
+* count support terms
+* filter excluded cases
+* generate a lightweight confidence tier
+
+This gives you a clean weak-labeling pipeline before later RAG.
+
+## Match helper functions
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def find_matches(pattern, text):
+    """
+    Return all matched phrases for a compiled regex pattern.
+    """
+    if pattern is None:
+        return []
+    return pattern.findall(str(text))
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+def unique_lower(items):
+    """
+    Normalize matched items to lowercase unique values while preserving order.
+    """
+    seen = set()
+    result = []
+    for item in items:
+        item_l = str(item).lower().strip()
+        if item_l not in seen:
+            seen.add(item_l)
+            result.append(item_l)
+    return result
+```
+
+
+## Score each chunk against the target signal
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def score_chunk_for_signal(text, core_pattern, support_pattern, exclude_pattern=None):
+    """
+    Compute weak-label signal features for a single chunk.
+    """
+    text = str(text)
+
+    core_matches = unique_lower(find_matches(core_pattern, text))
+    support_matches = unique_lower(find_matches(support_pattern, text))
+    exclude_matches = unique_lower(find_matches(exclude_pattern, text)) if exclude_pattern else []
+
+    n_core = len(core_matches)
+    n_support = len(support_matches)
+    n_exclude = len(exclude_matches)
+
+    has_signal = n_core > 0 and n_exclude == 0
+
+    # simple confidence heuristic
+    if has_signal and n_core >= 1 and n_support >= 2:
+        confidence = "high"
+    elif has_signal and n_core >= 1 and n_support >= 1:
+        confidence = "medium"
+    elif has_signal:
+        confidence = "low"
+    else:
+        confidence = "none"
+
+    return {
+        "has_signal": has_signal,
+        "core_matches": core_matches,
+        "support_matches": support_matches,
+        "exclude_matches": exclude_matches,
+        "n_core_matches": n_core,
+        "n_support_matches": n_support,
+        "n_exclude_matches": n_exclude,
+        "signal_confidence": confidence
+    }
+```
+
+
+## Apply the scoring function to all chunks
+
+You will need to define **all parameters** for this step of the pipeline — the part where they score each chunk using `score_chunk_for_signal()`. You will need to understand **two groups** of parameters:
+
+1. **Inputs coming from `df_chunks`**  
+
+| Parameter | Meaning |
+|----------|---------|
+| `chunk_id` | Unique identifier for the chunk |
+| `file_name` | Original file name |
+| `file_path` | Original file path |
+| `section_name` | Section the chunk came from |
+| `start_sentence` | First sentence number in the chunk |
+| `end_sentence` | Last sentence number in the chunk |
+| `n_sentences` | Number of sentences in the chunk |
+| `chunk_length_chars` | Character length of the chunk |
+| `approx_token_count` | Approximate token count |
+| `chunk_text` | The actual text of the chunk |
+
+2. **Inputs required by `score_chunk_for_signal()`**
+
+| Parameter | Description |
+|----------|-------------|
+| `text` | The chunk text to evaluate |
+| `core_pattern` | The main required pattern (regex or keyword) |
+| `support_pattern` | Optional supporting pattern(s) |
+| `exclude_pattern` | Pattern(s) that disqualify a chunk |
+
+These patterns should be defined **outside** the loop and passed in.
+
+3. Additional metadata added to each output row
+
+| Parameter | Description |
+|----------|-------------|
+| `signal_type` | A label for the type of signal being scored (e.g., `"RISK_SIGNAL"` or `"TARGET_SIGNAL"`) |
+| `**score` | The dictionary returned by `score_chunk_for_signal()` (e.g., booleans, counts, confidence scores) |
+
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+signal_rows = []
+
+for _, row in df_chunks.iterrows():
+    score = score_chunk_for_signal(
+    # add the appropriate parameters here based on the function definition and the variables you have defined
+    )
+
+    signal_rows.append({
+        # add the appropriate values from row for the chunk metadata
+    })
+
+df_signal = pd.DataFrame(signal_rows)
+
+print(df_signal.shape)
+df_signal.head().style.hide(axis="index")
+```
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+signal_rows = []
+
+for _, row in df_chunks.iterrows():
+    score = score_chunk_for_signal(
+        text=row["chunk_text"],
+        core_pattern=core_pattern,
+        support_pattern=support_pattern,
+        exclude_pattern=exclude_pattern
+    )
+
+    signal_rows.append({
+        "chunk_id": row["chunk_id"],
+        "file_name": row["file_name"],
+        "file_path": row["file_path"],
+        "section_name": row["section_name"],
+        "start_sentence": row["start_sentence"],
+        "end_sentence": row["end_sentence"],
+        "n_sentences": row["n_sentences"],
+        "chunk_length_chars": row["chunk_length_chars"],
+        "approx_token_count": row["approx_token_count"],
+        "signal_type": TARGET_SIGNAL,
+        "chunk_text": row["chunk_text"],
+        **score
+    })
+
+df_signal = pd.DataFrame(signal_rows)
+
+print(df_signal.shape)
+df_signal.head().style.hide(axis="index")
+```
+
+## Keep only candidate evidence chunks
+
+These are the chunks that actually triggered the signal logic. This could be a large number based on the number of files you have chosen.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates = df_signal[df_signal["has_signal"]].copy()
+
+print(df_signal_candidates.shape)
+df_signal_candidates.head().style.hide(axis="index")
+```
+
+## Inspect extraction quality
+
+### Count by confidence
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates["signal_confidence"].value_counts(dropna=False)
+```
+
+### Count by section
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates["section_name"].value_counts(dropna=False)
+```
+
+### Sample extracted chunks
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_signal_candidates.sample(
+    n=min(10, len(df_signal_candidates)),
+    random_state=42
+)[[
+    "chunk_id",
+    "file_name",
+    "section_name",
+    "signal_confidence",
+    "core_matches",
+    "support_matches",
+    "chunk_text"
+]].style.hide(axis="index")
+```
+
+
+## Create a cleaner evidence dataset
+
+For later retrieval and reporting, it helps to flatten the match lists into strings. You will need this function for flattening the `core_matches`, `support_matches`, and `exclude_matches` lists into readable strings in the final evidence dataset. You will get the following parameters:
+
+- `"chunk_id",`
+- `"file_name",`
+- `"file_path",`
+- `"section_name",`
+- `"signal_type",`
+- `"signal_confidence",`
+- `"start_sentence",`
+- `"end_sentence",`
+- `"n_sentences",`
+- `"chunk_length_chars",`
+- `"approx_token_count",`
+- `"n_core_matches",`
+- `"n_support_matches",`
+- `"core_matches_str",`
+- `"support_matches_str",`
+- `"exclude_matches_str",`
+- `"chunk_text"`
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+def collapse_matches(values):
+    if not values:
+        return ""
+    return "; ".join(values)
+```
+
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+
+df_evidence = df_signal_candidates.copy()
+
+df_evidence["core_matches_str"] =  apply(collapse_matches)
+df_evidence["support_matches_str"] = apply(collapse_matches)
+df_evidence["exclude_matches_str"] = apply(collapse_matches)
+
+df_evidence = df_evidence[[
+    # fill the columns names you need for the final evidence dataset, including the new *_matches_str columns
+]].copy()
+
+print(df_evidence.shape)
+df_evidence.head().style.hide(axis="index")
+```
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-overflow: wrap
+
+df_evidence = df_signal_candidates.copy()
+
+df_evidence["core_matches_str"] = df_evidence["core_matches"].apply(collapse_matches)
+df_evidence["support_matches_str"] = df_evidence["support_matches"].apply(collapse_matches)
+df_evidence["exclude_matches_str"] = df_evidence["exclude_matches"].apply(collapse_matches)
+
+df_evidence = df_evidence[[
+    "chunk_id",
+    "file_name",
+    "file_path",
+    "section_name",
+    "signal_type",
+    "signal_confidence",
+    "start_sentence",
+    "end_sentence",
+    "n_sentences",
+    "chunk_length_chars",
+    "approx_token_count",
+    "n_core_matches",
+    "n_support_matches",
+    "core_matches_str",
+    "support_matches_str",
+    "exclude_matches_str",
+    "chunk_text"
+]].copy()
+
+print(df_evidence.shape)
+df_evidence.head().style.hide(axis="index")
+```
+
+
+## Save the extracted evidence corpus
+
+This is the main output of the target-signal extraction stage.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+EVIDENCE_FILE = OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.csv"
+df_evidence.to_csv(EVIDENCE_FILE, index=False)
+
+print("Saved evidence file to:", EVIDENCE_FILE)
+```
+
+Optional JSON export:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_evidence.to_json(
+    OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.json",
+    orient="records",
+    force_ascii=False,
+    indent=2
+)
+```
+
+
+
+# Optional Enhancement: company-level summary table
+
+Since we want to aggregate **company/sector-based RAG**, it is useful to aggregate evidence counts by filing.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_company_signal_summary = (
+    df_evidence
+    .groupby(["file_name", "signal_type", "section_name"], as_index=False)
+    .agg(
+        n_signal_chunks=("chunk_id", "count"),
+        avg_chunk_tokens=("approx_token_count", "mean"),
+        high_conf_chunks=("signal_confidence", lambda x: (x == "high").sum())
+    )
+)
+
+df_company_signal_summary.head().style.hide(axis="index")
+```
+
+Save:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_company_signal_summary.to_csv(
+    OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_company_summary.csv",
+    index=False
+)
+```
+
+
+# Build the Direct Retrieval-Ready Dataset
+
+This section assumes you already have:
+
+* `df_chunks` from the rolling sentence-window chunking step
+* optionally `df_sections` from the extracted section corpus
+* optionally `df_signal_candidates` or `df_evidence` from the signal extraction step
+
+The goal here is to create a **single clean chunk dataset** that can later be embedded and indexed. Since we have created **target signal definition**
+and **programmatic extraction**. The next logical step is to **annotate the chunk corpus with the extracted signal labels** and then **finalize the retrieval-ready dataset**.
+
+So this next section should do following:
+
+1. add and normalize **metadata**
+2. export a **clean retrieval-ready corpus** for Assignment 3
+
+In most cases these could be separate notebook sections and the only final deliverable is the csv file that is used to create the vector database.
+
+
+## Load the chunk corpus
+
+If not already in memory, load the chunk corpus from the saved CSV file. This is the main dataset we will be working with for retrieval preparation.
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+from pathlib import Path
+import pandas as pd
+import re
+
+OUTPUT_DIR = Path("./outputs/sec_10k_sections")
+
+CHUNKS_FILE = OUTPUT_DIR / "sec_10k_2024_sentence_window_chunks.csv"
+SECTIONS_FILE = OUTPUT_DIR / "sec_10k_2024_sections.csv"
+
+df_chunks = pd.read_csv(CHUNKS_FILE)
+df_sections = pd.read_csv(SECTIONS_FILE)
+
+print("Chunks shape:", df_chunks.shape)
+print("Sections shape:", df_sections.shape)
+```
+
+
+## Inspect available columns
+
+This helps confirm what metadata is already present.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+print("Chunk columns:")
+print(df_chunks.columns.tolist())
+
+print("\nSection columns:")
+print(df_sections.columns.tolist())
+```
+
+
+## Create minimal filing-level metadata
+
+If the current extraction pipeline only preserved `file_name` and `file_path`, we can still build a useful retrieval table with those.
+
+If later you add richer metadata such as `company_name`, `cik`, `filing_date`, `accession_number`, or `sic`, this merge step can be extended.
+
+For now, we will derive a minimal metadata table from `df_sections`.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+metadata_cols = [col for col in [
+    "file_name",
+    "file_path",
+    "company_name",
+    "cik",
+    "filing_date",
+    "accession_number",
+    "sic",
+    "sector"
+] if col in df_sections.columns]
+
+df_metadata = df_sections[metadata_cols].drop_duplicates().copy()
+
+print(df_metadata.shape)
+df_metadata.head().style.hide(axis="index")
+```
+
+If only `file_name` and `file_path` exist, that is fine.
+
+
+## Merge metadata into chunk corpus
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+merge_keys = [col for col in ["file_name", "file_path"] if col in df_chunks.columns and col in df_metadata.columns]
+
+df_retrieval = df_chunks.merge(
+    df_metadata,
+    on=merge_keys,
+    how="left"
+)
+
+print(df_retrieval.shape)
+df_retrieval.head().style.hide(axis="index")
+```
+
+## Add retrieval-friendly metadata fields
+
+Now we create a few standardized fields that will be useful later for vector search and RAG filtering.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+df_retrieval["document_type"] = "10-K"
+df_retrieval["filing_year"] = 2024
+df_retrieval["source_type"] = "sec_html_extracted"
+df_retrieval["retrieval_unit"] = "sentence_window_chunk"
+```
+
+If `section_name` exists, normalize it:
+
+```{python}
+SECTION_LABELS = {
+    "item_1": "Item 1 - Business",
+    "item_1a": "Item 1A - Risk Factors",
+    "item_7": "Item 7 - MD&A"
+}
+
+df_retrieval["section_label"] = df_retrieval["section_name"].map(SECTION_LABELS).fillna(df_retrieval["section_name"])
+```
+
+
+## Clean and standardize chunk text
+
+We want the final retrieval text to be consistently formatted.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+def clean_chunk_text(text: str) -> str:
+    text = str(text)
+    text = text.replace("\xa0", " ")
+    text = re.sub(r"\s+", " ", text)
+    return text.strip()
+```
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval["chunk_text"] = df_retrieval["chunk_text"].apply(clean_chunk_text)
+```
+
+Remove empty chunks if any slipped through:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval = df_retrieval[df_retrieval["chunk_text"].str.len() > 0].copy()
+print(df_retrieval.shape)
+```
+
+
+## Optional signal flags
+
+If you want the retrieval corpus to remember whether a chunk was flagged in the earlier extraction step, merge that in as a lightweight flag.
+
+This is optional but useful.
+
+### If you saved the signal evidence file
+
+Example:
+
+```{python}
+#| echo: true
+#| eval: false
+#| code-overflow: wrap
+TARGET_SIGNAL = "ai_investment"
+EVIDENCE_FILE = OUTPUT_DIR / f"sec_10k_2024_{TARGET_SIGNAL}_evidence_chunks.csv"
+```
+
+```{python}
+if EVIDENCE_FILE.exists():
+    df_evidence = pd.read_csv(EVIDENCE_FILE)
+
+    signal_cols = [col for col in [
+        "chunk_id",
+        "signal_type",
+        "signal_confidence",
+        "n_core_matches",
+        "n_support_matches"
+    ] if col in df_evidence.columns]
+
+    df_signal_meta = df_evidence[signal_cols].drop_duplicates().copy()
+
+    df_retrieval = df_retrieval.merge(
+        df_signal_meta,
+        on="chunk_id",
+        how="left"
+    )
+
+    df_retrieval["has_target_signal"] = df_retrieval["signal_type"].notna()
+else:
+    df_retrieval["signal_type"] = None
+    df_retrieval["signal_confidence"] = None
+    df_retrieval["n_core_matches"] = None
+    df_retrieval["n_support_matches"] = None
+    df_retrieval["has_target_signal"] = False
+```
+
+This preserves the full corpus while marking the filtered evidence chunks.
+
+
+## Reorder columns into a clean retrieval schema
+
+This is the main schema students should carry forward.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+preferred_cols = [
+    "chunk_id",
+    "file_name",
+    "file_path",
+    "company_name",
+    "cik",
+    "filing_date",
+    "accession_number",
+    "sic",
+    "sector",
+    "document_type",
+    "filing_year",
+    "source_type",
+    "retrieval_unit",
+    "section_name",
+    "section_label",
+    "start_sentence",
+    "end_sentence",
+    "n_sentences",
+    "approx_token_count",
+    "chunk_length_chars",
+    "has_target_signal",
+    "signal_type",
+    "signal_confidence",
+    "n_core_matches",
+    "n_support_matches",
+    "chunk_text"
+]
+
+final_cols = [col for col in preferred_cols if col in df_retrieval.columns]
+df_retrieval = df_retrieval[final_cols].copy()
+
+print(df_retrieval.shape)
+df_retrieval.head().style.hide(axis="index")
+```
+
+
+## Check chunk quality
+
+These diagnostics are worth saving in the notebook.
+
+### Token count summary
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval["approx_token_count"].describe()
+```
+
+### Chunks by section
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval["section_name"].value_counts(dropna=False)
+```
+
+### Chunks flagged with target signal
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+if "has_target_signal" in df_retrieval.columns:
+    print(df_retrieval["has_target_signal"].value_counts(dropna=False))
+```
+
+### Random chunk sample
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval.sample(
+    n=min(10, len(df_retrieval)),
+    random_state=42
+)[[
+    col for col in [
+        "chunk_id",
+        "file_name",
+        "section_name",
+        "approx_token_count",
+        "has_target_signal",
+        "signal_confidence",
+        "chunk_text"
+    ] if col in df_retrieval.columns
+]].style.hide(axis="index")
+```
+
+
+## Save the direct retrieval-ready dataset
+
+This is the main output for Assignment 3.
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+RETRIEVAL_FILE = OUTPUT_DIR / "sec_10k_2024_retrieval_ready_chunks.csv"
+
+df_retrieval.to_csv(RETRIEVAL_FILE, index=False)
+print("Saved retrieval-ready dataset to:", RETRIEVAL_FILE)
+```
+
+Optional JSON export:
+
+```{python}
+#| echo: true
+#| eval: true
+#| code-overflow: wrap
+
+df_retrieval.to_json(
+    OUTPUT_DIR / "sec_10k_2024_retrieval_ready_chunks.json",
+    orient="records",
+    force_ascii=False,
+    indent=2
+)
+```
