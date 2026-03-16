@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Retrieval-Augmented Generation (RAG) & Vector Search"
+subtitle: "Text Generation with Large Language Models"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -12,9 +12,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -329,9 +326,7 @@ $$
 
 ::: {.column width="45%"}
 - A GRU modifies the standard recurrent update with gating.
-
 - These gates regulate how much past information is preserved and how much new information is incorporated.
-
 - In compact form, we treat the whole gated update as:
 
   $$
@@ -476,27 +471,245 @@ $$
 :::
 ::::
 
+## More Complex Attention Patterns
+
+:::{.callout-note}
+We will cover these in video lectures in Module 8
+:::
+
+
+
+
+# Prompt Engineering as System Design
+
+## Two Sea Changes in NLP
+
+- **Fully supervised learning**  
+  Models trained only on task-specific labeled data  
+  → heavy reliance on **feature engineering**  
+  (e.g., \cite{kotsiantis2007supervised,Lafferty2001ConditionalRF})
+
+- **Neural supervised learning**  
+  Features learned jointly through **architecture engineering**  
+  (e.g., CNNs, RNNs, attention models)  
+  (e.g., \cite{hochreiter1997long,kalchbrenner-etal-2014-convolutional,vaswani2017attention})
+
+- **Pre-train → Fine-tune paradigm (2017–2019)**  
+  Large language models trained on massive corpora, then adapted via  
+  **objective engineering**  
+  (e.g., \cite{Radford2018ImprovingLU,peters-etal-2018-deep,lewis-etal-2020-bart})
+
+- **Pre-train → Prompt → Predict (current paradigm)**  
+  Tasks reformulated as language modeling problems using **textual prompts**  
+  (e.g., \cite{brown2020language,petroni-etal-2019-language,schick2021its})
+
 ---
 
-## Prompt Engineering as System Design
+## Four Paradigms in NLP
 
-Prompting is not merely instruction writing.
+![](./M03_lecture01_figures/4paradigms.png){width=90% fig-align=center fig-alt="Diagram showing the four paradigms in NLP"}
 
-It involves:
-
-- task decomposition
-- context structuring
-- output specification
-- reasoning orchestration
-- workflow design
-
-Modern AI systems are increasingly:
-
-> Prompt-orchestrated systems rather than purely trained systems.
 
 ---
 
-```markdown
+## Typology of Prompting Methods
+
+![Typology of prompting methods](./M03_lecture01_figures/typology-ofprompting-methods.png){width=80% fig-align=center fig-alt="Diagram showing the typology of prompting methods" #fig-prompt-typology}
+
+
+---
+
+## Language Modeling Perspective
+
+Instead of modeling:
+
+$$
+P(\mathbf{y} \mid \mathbf{x})
+$$
+
+we train a model to learn:
+
+$$
+P(\mathbf{x})
+$$
+
+over large text corpora.
+
+This allows models to learn:
+
+- syntax
+- semantics
+- discourse structure
+- world knowledge
+
+Prompting uses this learned distribution to solve tasks.
+
+---
+
+## Prompting Concept
+
+- Prompt-based learning reformulates tasks as language modeling.
+- Instead of:
+  - training a task-specific model
+- we:
+  - Convert input into a structured textual form  
+  - Ask the language model to complete it  
+- This reduces dependence on supervised data.
+
+
+## Prompting Terminology
+
+| Concept | Notation | Example | Description |
+|--------|----------|---------|------------|
+| Input | $\mathbf{x}$ | I love this movie. | Raw input text |
+| Output | $\mathbf{y}$ | ++ | Final task output |
+| Prompting Function | $f_{\text{prompt}}(\mathbf{x})$ | [X] Overall it was a [Z] movie | Converts input into prompt form |
+| Prompt | $\mathbf{x'}$ | I love this movie. Overall it was a [Z] movie | Input inserted, answer slot open |
+| Filled Prompt | $f_{\text{fill}}(\mathbf{x'}, \mathbf{z})$ | Overall it was a bad movie | Candidate answer inserted |
+| Answered Prompt | $f_{\text{fill}}(\mathbf{x'}, \mathbf{z^*})$ | Overall it was a good movie | True answer inserted |
+| Answer | $\mathbf{z}$ | good / bad / fantastic | Token or phrase used to solve task |
+
+
+## Prompt Construction
+
+Prompting transforms input:
+
+$$
+\mathbf{x'} = f_{\text{prompt}}(\mathbf{x})
+$$
+
+Typical template structure:
+
+- input slot: [X]
+- answer slot: [Z]
+
+Example (sentiment):
+
+$$
+[X] \; \text{Overall it was a [Z] movie}
+$$
+
+Example (translation):
+
+$$
+\text{Finnish: [X] English: [Z]}
+$$
+
+---
+
+
+## Types of Prompts
+
+Two common forms:
+
+**Cloze prompts**
+- answer slot inside sentence  
+
+Example:
+
+```
+
+The movie was [Z].
+
+```
+
+**Prefix prompts**
+- answer follows entire input  
+
+Example:
+
+```
+
+Translate: [X]
+
+```
+
+Prompts may also:
+
+- use virtual tokens  
+- use continuous embeddings  
+- contain multiple input or output slots
+
+
+--
+
+## Answer Search
+
+We define:
+
+$$
+\mathcal{Z} = \text{set of possible answers}
+$$
+
+Then compute:
+
+$$
+\hat{\mathbf{z}} =
+\arg\max_{\mathbf{z} \in \mathcal{Z}}
+P(f_{\text{fill}}(\mathbf{x'}, \mathbf{z}); \theta)
+$$
+
+Search strategies:
+
+- argmax decoding
+- probabilistic sampling
+
+
+---
+
+
+## Mapping Answers to Outputs
+
+In some tasks:
+
+$$
+\hat{\mathbf{y}} = \hat{\mathbf{z}}
+$$
+
+In others:
+
+- multiple answers correspond to same label  
+
+Example:
+
+excellent, amazing → positive  
+
+Thus we define:
+
+$$
+g: \mathbf{z} \rightarrow \mathbf{y}
+$$
+
+
+---
+
+
+## Design Considerations in Prompting
+
+Key dimensions:
+
+- Choice of pre-trained model
+- Prompt engineering
+- Answer engineering
+- Multi-prompt learning
+- Prompt-based training strategies
+
+Prompting is not just inference —  
+it is a full modeling paradigm.
+
+## Prompting Design Space
+
+Prompting methods vary across:
+
+- Pre-trained model type  
+- Prompt construction method  
+- Answer representation  
+- Training strategy  
+- Multi-prompt composition  
+
+This defines a rich design space for LLM control.
+
+
 ## Implications for AI Engineering
 
 The shift to prompt-based approaches enables:
@@ -510,52 +723,5 @@ The shift to prompt-based approaches enables:
 This marks a transition from:
 
 > **Static Models → Interactive Generative Systems**
-```
 
----
-
-```markdown
-## Transition
-
-Having established prompting as inference-time control, we now examine:
-
-- structured prompt design
-- in-context learning mechanisms
-- reasoning-oriented prompting strategies
-```
-
-```
-
----
-
-# Next Recommended Slide Block
-
-We should now build:
-
-### → Zero-shot, Few-shot, In-context learning  
-(This is the natural continuation)
-
-After that:
-
-### → Chain-of-thought + prompt pipelines
-
-Then:
-
-### → Mechanistic interpretability insertion (induction heads)
-
----
-
-If you want, I can next produce:
-
-- full **Lecture 3.1 complete slide deck**
-- or next **ICL slide block**
-- or **visual diagram slides**
-- or **math-heavier version**
-
-Tell me:
-
-> **Build next: In-context learning slides**  
-or  
-> **Build full L3.1 now**
-```
 
