@@ -39,3 +39,42 @@ csl: ../mis-quarterly.csl
 ---
 
 # M03 Presentation 02
+
+## 
+
+```{ojs}
+svg = {
+  const w = 200, h = 300;
+  const svg = d3.create("svg")
+      .attr("width", w)
+      .attr("height", h);
+
+  // embedding
+  svg.append("rect")
+     .attr("x", 80).attr("y", 200)
+     .attr("width", 40).attr("height", 20)
+     .attr("fill", "#ffc080").attr("stroke", "black");
+
+  // RNN
+  svg.append("rect")
+     .attr("x", 80).attr("y", 150)
+     .attr("width", 40).attr("height", 30)
+     .attr("fill", "#8080ff").attr("stroke", "black");
+
+  // output
+  svg.append("rect")
+     .attr("x", 80).attr("y", 80)
+     .attr("width", 40).attr("height", 30)
+     .attr("fill", "#80ff80").attr("stroke", "black");
+
+  // arrows
+  svg.append("line")
+     .attr("x1", 100).attr("y1", 200)
+     .attr("x2", 100).attr("y2", 180)
+     .attr("stroke", "black")
+     .attr("marker-end", "url(#arrow)");
+
+  return svg.node();
+}
+
+```
