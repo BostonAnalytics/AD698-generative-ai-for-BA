@@ -1,6 +1,6 @@
 ---
-title: "M03: Lecture Notes"
-subtitle: "Retrieval-Augmented Generation (RAG) & Vector Search"
+title: "AD698 - Applied Generative AI"
+subtitle: "Text Generation with Large Language Models"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -8,5 +8,303 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['Lecture', 'M03:', 'Notes']
-description: "Lecture covering Retrieval-Augmented Generation (RAG) & Vector Search."
+description: "Lecture covering Text Generation with Large Language Models."
 ---
+
+# The Shift to Prompt‑Based Approaches
+
+## Introduction: From Training-Centric to Inference-Centric AI
+
+For most of the history of machine learning, the behavior of a model was determined almost entirely during [training]{.uublue-bold}. Once deployed, a model was effectively *frozen*: its parameters encoded everything it knew, and any change in behavior required a new round of training, fine‑tuning, or feature engineering. This paradigm made sense when models were small, tasks were narrow, and data distributions were relatively stable.
+
+Large Language Models (LLMs) fundamentally alter this workflow. Their behavior is no longer fixed at deployment. Instead, they can be **steered, adapted, and repurposed at inference time** through prompts, context, and task specifications. This shift represents not just a new technique, but a new *architecture* for building AI systems — one where **control moves from weight updates to inference‑time conditioning**.
+
+
+## Classical Learning vs. Generative Conditioning
+
+### Classical Supervised Learning
+In the classical paradigm, we model a deterministic or probabilistic mapping:
+
+$$
+\begin{align}
+y = f_\theta(x)
+\end{align}
+$$
+
+Here:
+
+- $\theta$ encodes all learned knowledge.
+- Changing the model’s behavior requires modifying $\theta$.
+- Training is the primary locus of intelligence.
+
+This creates a rigid workflow:
+
+- **Training phase:** expensive, offline, compute‑heavy  
+- **Deployment phase:** static, brittle, slow to adapt
+
+### Generative Language Models
+Generative models instead define a conditional distribution:
+
+$$
+\begin{align}
+P(Y \mid X, \theta)
+\end{align}
+$$
+
+The model does not output a single deterministic label; it samples from a probability distribution over sequences. This opens the door to a new control variable:
+
+$$
+\begin{align}
+P(Y \mid X, p, \theta)
+\end{align}
+$$
+
+where $p$ is a **prompt** — an inference‑time input that shapes the distribution without modifying the parameters.
+
+### Why This Matters
+Prompts act as *soft constraints* on the model’s generative process. Instead of retraining, we can:
+
+- specify tasks,
+- provide examples,
+- impose structure,
+- inject domain knowledge,
+- or shape style and behavior
+
+all **without touching the weights**.
+
+This is the essence of **generative conditioning**: the model’s behavior is governed not only by its parameters but by the *context* supplied at inference.
+
+
+## Prompt as an Inference-Time Control Signal
+
+Prompts are not merely instructions. They function as a **control interface** for a probabilistic model.
+
+### Prompt as Conditioning Signal
+A prompt provides additional context that shifts the model’s posterior distribution. It is analogous to conditioning in Bayesian inference: the prompt narrows the space of plausible outputs.
+
+### Prompt as Soft Constraint
+Unlike hard-coded rules, prompts influence behavior *probabilistically*. They bias the model toward certain trajectories without enforcing deterministic outcomes.
+
+### Prompt as Semantic Policy
+Prompts encode *policies* for how the model should behave:
+
+- "Be concise."
+- "Explain step-by-step."
+- "Act as a SQL expert."
+- "Follow this schema."
+
+These policies are expressed in natural language rather than code.
+
+### Prompt as Steering Mechanism
+Prompts steer the model’s sampling process by altering token likelihoods. This enables:
+
+- **rapid task adaptation**  
+- **interactive workflows**  
+- **dynamic behavior shaping**  
+- **domain-specific reasoning without retraining**
+
+In effect, prompting turns inference into a programmable interface.
+
+
+## Why Prompting Represents an Architectural Shift
+
+The move from training-centric to inference-centric control changes how we design AI systems:
+
+### Adaptation Without Retraining
+Instead of updating weights, we update *context*. This reduces:
+
+- compute cost  
+- data requirements  
+- iteration time  
+- operational complexity  
+
+### AI as a Configurable Component
+LLMs become general-purpose engines whose behavior is configured through:
+
+- prompts  
+- examples  
+- instructions  
+- retrieved documents  
+- structured templates  
+
+This mirrors how operating systems or databases are configured: through interfaces, not recompilation.
+
+### Human-AI Interaction as a First-Class Design Space
+Because prompts are written in natural language, **users participate directly in system design**. This democratizes control and shifts power from ML engineers to domain experts.
+
+
+## Prompt Engineering, Fine-Tuning, and RAG: A Comparative View
+
+Prompting, fine‑tuning, and retrieval‑augmented generation (RAG) are not competing techniques but complementary **axes of control**.
+
+
+![Venn Diagram of Prompt Engineering, Fine-tuning, and RAG](./M03_lecture01_figures/Prompt_Engineering_vs_RAG-tuning_Venn_Diagram.jpg){width=60% fig-align=center fig-alt="Venn diagram showing the relationship between prompt engineering, fine-tuning, and RAG" #fig-venn-diagram}
+
+
+### Prompt Engineering
+- No weight updates  
+- Fastest iteration cycle  
+- Best for: task specification, style control, reasoning scaffolds  
+- Limitations: brittle, sensitive to phrasing, limited by model’s latent knowledge  
+
+### Fine-Tuning
+- Updates model parameters  
+- Best for: domain adaptation, new skills, safety alignment  
+- Limitations: expensive, requires data, risk of overfitting or catastrophic forgetting  
+
+### Retrieval-Augmented Generation (RAG)
+- Injects external knowledge at inference  
+- Best for: factual accuracy, up-to-date information, domain grounding  
+- Limitations: requires retrieval infrastructure, depends on document quality  
+
+### How They Interact
+- Prompting + RAG = controlled reasoning over external knowledge  
+- Prompting + fine-tuning = stable, specialized behavior with flexible interfaces  
+- RAG + fine-tuning = domain-specific systems with strong grounding  
+
+Together, they form a **toolbox for inference-time system design**.
+
+```{dot}
+
+digraph InferenceConditioning {
+    rankdir=TB;
+    node [shape=rectangle, style=rounded, fontsize=12];
+
+    subgraph cluster_input {
+        label="Inputs";
+        style=dashed;
+        X [label="User Input\nX"];
+        P [label="Prompt / Context\np"];
+    }
+
+    Theta [label="Model Parameters\nθ (frozen)", shape=rectangle, style="rounded,filled", fillcolor=lightgray];
+
+    subgraph cluster_inference {
+        label="Inference Process";
+        style=dashed;
+        Combine [label="Conditioning:\n[X, p]"];
+        LM [label="Generative Model\nP(Y | X, p, θ)"];
+    }
+
+    Y [label="Output Distribution\nY"];
+
+    X -> Combine;
+    P -> Combine;
+    Theta -> LM;
+    Combine -> LM;
+    LM -> Y;
+}
+
+```
+
+
+
+## Worked Example: How a Prompt Changes Token Probabilities
+
+We’ll use a tiny vocabulary to illustrate the idea:
+
+Vocabulary = {"cat", "dog", "runs", "sleeps", "."}
+
+
+### Without a Prompt
+
+Input:  
+```
+"Complete the sentence: The cat"
+```
+
+The model’s next‑token distribution might look like:
+
+| Token | Probability |
+|:-------|:-------------:|
+| runs  | 0.40 |
+| sleeps | 0.35 |
+| . | 0.15 |
+| dog | 0.05 |
+| cat | 0.05 |
+
+The model is relying on its **pretrained priors** about typical continuations.
+
+
+## With a Prompt That Acts as a Soft Constraint
+
+Prompt:  
+```
+"Write a dramatic action scene. Complete the sentence: The cat"
+```
+
+Now the model conditions on the *semantic policy* "dramatic action scene."
+
+New distribution:
+
+| Token | Probability |
+|:-------|:-------------:|
+| runs | 0.55 |
+| leaps | 0.25 (new token from extended vocab) |
+| attacks | 0.10 |
+| sleeps | 0.03 |
+| . | 0.02 |
+| dog | 0.02 |
+| cat | 0.01 |
+
+### What changed?
+
+- The prompt **reshaped the distribution** toward high‑energy verbs.  
+- "sleeps" collapses from 0.35 → 0.03.  
+- "leaps" and "attacks" become viable high‑probability tokens.  
+- No weights changed — only the **conditioning context** changed.
+
+
+## With a Prompt That Specifies Style + Role
+
+Prompt:  
+```
+"You are a veterinarian writing a calm, factual report.
+Complete the sentence: The cat"
+```
+
+Distribution:
+
+| Token | Probability |
+|:-------|:-------------:|
+| sleeps | 0.50 |
+| rests | 0.20 |
+| is | 0.15 |
+| runs | 0.05 |
+| . | 0.05 |
+| dog | 0.03 |
+| cat | 0.02 |
+
+
+- The prompt now acts as a **semantic policy** ("calm, factual report").  
+- The model shifts toward clinical, low‑emotion verbs.  
+- "runs" becomes unlikely because it violates the style constraint.
+
+
+## Summary and Implications for System Builders
+
+The shift to prompt-based approaches is not a superficial change in interface — it is a rethinking of how intelligence is deployed:
+
+- **Models are no longer static artifacts**; they are dynamic, programmable components.  
+- **Inference becomes the primary site of adaptation**, not training.  
+- **Prompts act as probabilistic control signals**, shaping behavior without modifying weights.  
+- **Prompting, fine-tuning, and RAG form a unified design space** for building modern AI systems.  
+
+This new paradigm enables faster iteration, more flexible systems, and a more direct alignment between user intent and model behavior.
+
+# Transformers and the Attention Mechanism
+
+We will cover transformers in the next lecture, but it’s important to understand the historical context of how we got here. The transformer architecture, introduced in the seminal paper "Attention is All You Need" [@vaswani2017attention], revolutionized natural language processing and laid the groundwork for the development of large language models.
+
+## The Transformers Timeline
+
+![Timeline of transformer-based models](./M03_lecture01_figures/02-13.png){width=80% fig-align=center fig-alt="Timeline of transformer-based models" #fig-timeline}
+
+
+## Transformer Models
+
+![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
+
+# Recurrent Neural Networks (RNNs)
+
+{{< ./m03_l01_content/index.qmd >}}
