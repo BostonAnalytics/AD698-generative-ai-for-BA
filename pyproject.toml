@@ -36,11 +36,13 @@ dependencies = [
     # "torchvision>=0.25.0+cu130",
     "torch>=2.10.0",
     "torchaudio>=2.10.0",
+    "torchtext>=0.18.0",
     "torchvision>=0.25.0",
     "tqdm>=4.67.3",
     "transformers>=5.0.0",
     "wheel>=0.46.3",
     "xgboost>=3.1.3",
+    "yfinance>=1.2.0",
 ]
 
 # Specific versions of torch, torchvision, and torchaudio are installed based on the extra feature
