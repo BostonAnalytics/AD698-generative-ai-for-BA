@@ -1022,3 +1022,320 @@ $$
 :::
 ::::
 
+---
+
+
+# Prompt Engineering and Prompt-Based Learning
+
+## Why Prompt Engineering Matters
+
+Prompt-based learning reframes downstream tasks as language modeling problems.
+This means performance depends not only on:
+
+- the pre-trained model
+- the data
+- the decoding strategy
+
+but also on:
+
+- how the prompt is structured
+- how the answer space is designed
+- how prompts are combined or tuned
+
+
+---
+
+
+## Prompt Shape
+
+Two major prompt shapes are commonly used:
+
+**Cloze prompt**
+- the answer slot appears inside the text
+
+Example:
+
+```text
+I love this movie. Overall, it was a [Z] movie.
+````
+
+**Prefix prompt**
+
+* the input appears before the answer slot
+
+Example:
+
+```text
+French: Je vous aime.
+English: [Z]
+```
+
+Prompt shape affects:
+
+* what the model is asked to do
+* how naturally the task aligns with pretraining
+* which model families work best. 
+
+
+## Manual Template Engineering
+
+A manually designed prompt template specifies:
+
+- where the input is inserted
+- what linguistic context surrounds it
+- what kind of answer is expected
+
+Examples:
+
+- Sentiment:
+  ```text
+  [X] The movie is [Z].
+  ```
+
+* Topic classification:
+
+  ```text
+  [X] The text is about [Z].
+  ```
+
+* Translation:
+
+  ```text
+  French: [X] English: [Z]
+  ```
+
+Manual template design is intuitive and interpretable, but it is often brittle and task-sensitive. 
+
+---
+
+
+## Automated Template Learning
+
+Instead of hand-writing prompts, we can learn them.
+
+Two major approaches:
+
+- **Discrete prompt learning**
+- **Continuous prompt learning**
+
+This shifts prompting from:
+
+> prompt writing
+
+to
+
+> prompt optimization
+
+The central idea is that the prompt itself can become an object of search or training.
+
+---
+
+
+## Discrete Prompts
+
+Discrete prompt learning searches over actual tokens or phrases.
+
+Examples:
+
+- selecting better trigger words
+- searching candidate templates
+- optimizing label words
+
+Advantages:
+
+- interpretable
+- human-readable
+- easy to inspect
+
+Limitations:
+
+- combinatorial search space
+- token-level optimization is difficult
+- may remain brittle across tasks.
+
+---
+
+
+## Continuous Prompts
+
+Continuous prompts replace natural-language templates with learnable vectors.
+
+Instead of writing:
+
+```text
+The movie is [Z].
+```
+
+we learn soft prompt embeddings that steer the model.
+
+Advantages:
+
+* highly flexible
+* easier to optimize than discrete token search
+* often performs well with frozen language models
+
+Limitations:
+
+* less interpretable
+* not directly human-readable
+* can behave like hidden task-specific parameters. 
+
+---
+
+
+## Answer Engineering
+
+Prompting does not end with the prompt itself.
+
+We must also decide:
+
+- what form the answer takes
+- what answer space is allowed
+- how answers map back to task outputs
+
+Examples:
+
+- token answer
+- span answer
+- sentence answer
+
+Answer engineering is especially important in classification-style prompting, where many different words may correspond to the same label.
+
+---
+
+
+## Answer Shape and Answer Space Design
+
+Three common answer shapes:
+
+- **Token**
+- **Span**
+- **Sentence**
+
+Answer space design can be:
+
+**Manual**
+- choose verbalizers such as:
+  - positive → great
+  - neutral → okay
+  - negative → terrible
+
+**Discrete search**
+- search over candidate answer tokens
+
+**Continuous search**
+- learn answer representations in embedding space
+
+This choice strongly affects accuracy, calibration, and task fit. 
+
+
+---
+
+
+## Multi-Prompt Learning
+
+A single prompt is rarely sufficient.
+
+Multi-prompt learning extends the framework through:
+
+- [Prompt ensembling]{.uublue-bold}
+- [Prompt augmentation]{.uublue-bold}
+- [Prompt composition]{.uublue-bold}
+- [Prompt decomposition]{.uublue-bold}
+
+This helps reduce prompt sensitivity and improve robustness across tasks.
+
+---
+
+
+## Multi-Prompt Strategies
+
+- [Prompt ensembling]{.uublue-bold}
+  - combine predictions from multiple prompts
+- [Prompt augmentation]{.uublue-bold}
+  - vary demonstrations or examples
+  - generate multiple contextual prompt versions
+- [Prompt composition]{.uublue-bold}
+  - combine multiple sub-prompts into a larger task structure
+- [Prompt decomposition]{.uublue-bold}
+  - break a complex task into simpler prompted subtasks
+- These strategies move prompting from a single-template method to a small inference system.
+
+---
+
+
+## Training Strategies for Prompting
+
+Prompt-based learning can be used with different training regimes.
+
+Common settings include:
+
+- zero-shot or few-shot prompting
+- full-data prompting
+- instruction tuning
+- prompt tuning
+
+The important question is:
+
+> Which parameters are actually updated?
+
+---
+
+
+## Parameter Update Methods
+
+Five major strategies:
+
+1. **Promptless fine-tuning**
+   - fine-tune the model directly without prompts
+
+2. **Tuning-free prompting**
+   - use prompts only at inference time
+
+3. **Fixed-LM prompt tuning**
+   - freeze the model, learn the prompt
+
+4. **Fixed-prompt LM tuning**
+   - keep prompt fixed, update model parameters
+
+5. **Prompt + LM tuning**
+   - jointly optimize both prompt and model
+
+These strategies differ in:
+
+- cost
+- interpretability
+- flexibility
+- performance.
+
+---
+
+
+## Big Picture
+
+Prompt-based learning is not one method.
+
+It is a family of design choices involving:
+
+- prompt structure
+- answer structure
+- multiple prompt coordination
+- parameter update strategy
+
+So when we say “prompt engineering,” we are really talking about a broader **inference and adaptation framework** for large language models.
+
+---
+
+
+## Transition
+
+We now have a richer picture of prompting:
+
+- prompts specify tasks
+- answers define decision spaces
+- multiple prompts improve robustness
+- tuning strategies determine what adapts
+
+The next question is:
+
+> How do these prompt-based methods connect to transformer computation, in-context learning, and alignment?
