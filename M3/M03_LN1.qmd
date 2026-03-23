@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Text Generation with Large Language Models"
+subtitle: "Prompting as System Design"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -8,7 +8,7 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['Lecture', 'M03:', 'Notes']
-description: "Lecture covering Text Generation with Large Language Models."
+description: "Lecture covering Prompting as System Design."
 ---
 
 ```{python}
@@ -350,6 +350,16 @@ The shift to prompt-based approaches is not a superficial change in interface �
 
 This new paradigm enables faster iteration, more flexible systems, and a more direct alignment between user intent and model behavior.
 
+
+{{< include ./m03_l01_content/index.qmd >}}
+
+{{< include ./m03_l01_content/sequence.qmd >}}
+
+{{< include ./m03_l01_content/text-sequence.qmd >}}
+
+<!-- {{< include ./m03_l01_content/language-model.qmd >}} -->
+
+
 # Transformers and the Attention Mechanism
 
 We will cover transformers in the next lecture, but it’s important to understand the historical context of how we got here. The transformer architecture, introduced in the seminal paper "Attention is All You Need" [@vaswani2017attention], revolutionized natural language processing and laid the groundwork for the development of large language models.
@@ -357,13 +367,6 @@ We will cover transformers in the next lecture, but it’s important to understa
 ## The Transformers Timeline
 
 ![Timeline of transformer-based models](./M03_lecture01_figures/02-13.png){width=80% fig-align=center fig-alt="Timeline of transformer-based models" #fig-timeline}
-
-
-{{< include ./m03_l01_content/index.qmd >}}
-
-{{< include ./m03_l01_content/sequence.qmd >}}
-
-<!-- {{< include ./m03_l01_content/sequence.qmd >}} -->
 
 
 ## Transformer Models
