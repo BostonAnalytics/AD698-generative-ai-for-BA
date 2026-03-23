@@ -95,8 +95,8 @@ Language generation is therefore a probabilistic unfolding of tokens through con
 
 ## Supervised NLP vs Language Modeling
 
-:::: {.columns}
-::: {.column width="50%"}
+::::{.columns}
+:::{.column width="50%"}
 ### Supervised NLP
 
 $$
@@ -108,7 +108,7 @@ $$
 - separate model or head for each task
 :::
 
-::: {.column width="50%"}
+:::{.column width="50%"}
 ### Language Modeling
 
 $$
@@ -147,7 +147,7 @@ This is the conceptual bridge from **language models** to **large language model
 
 A good language model should assign high probability to the **actual next token**.
 
-For a sequence of length \(n\), the average cross-entropy is:
+For a sequence of length $n$, the average cross-entropy is:
 
 $$
 \frac{1}{n}\sum_{t=1}^{n} -\log P(x_t \mid x_{<t})
@@ -222,15 +222,16 @@ That is why later LLM systems require additional control layers such as instruct
 ## Fixed-size inputs in earlier models
 
 :::{.columns}
-::: {.column width="50%"}
+:::{.column width="50%"}
 
 ![](M03_lecture02_figures/mnist_cnn_digit_3.png){width=90% .fragment}
 
 :::
-::: {.column width="50%" .incremental}
+:::{.column width="50%" .incremental}
 
 - In feedforward and convolutional neural networks the size of the input was always fixed.
 
+:::
 :::
 
 :::{.columns}
@@ -245,6 +246,7 @@ That is why later LLM systems require additional control layers such as instruct
 - Similarly in word2vec, we fed a fixed window ($k$) of words to the network.
 
 :::
+:::
 
 :::{.columns}
 ::: {.column width="50%"}
@@ -256,6 +258,7 @@ That is why later LLM systems require additional control layers such as instruct
 
 - Further, each input to the network was independent of the previous or future inputs.
 
+:::
 :::
 
 :::{.columns}
@@ -269,6 +272,7 @@ That is why later LLM systems require additional control layers such as instruct
 - For example, the computations, outputs and decisions for two successive images are completely independent of each other.
 
 :::
+:::
 
 ---
 
@@ -276,8 +280,99 @@ That is why later LLM systems require additional control layers such as instruct
 
 :::{.columns}
 ::: {.column width="50%"}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig-alt: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
+#| fig-cap: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
+#| label: "fig-autocomplete-sequence"
 
-![](images/autocomplete-seq-placeholder-1.svg){width=80%}
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, FancyArrowPatch
+import numpy as np
+
+COLOR_IN   = np.array([1.0, 0.6, 0.2])   # orange
+COLOR_CELL = np.array([0.2, 0.4, 1.0])   # blue
+COLOR_OUT  = np.array([0.2, 0.8, 0.4])   # green
+
+def draw_box(ax, x, y, w, h, color, text, valign="center", pad=0.30):
+    rect = Rectangle((x, y), w, h, facecolor=color, edgecolor='black')
+    ax.add_patch(rect)
+
+    cx = x + w/2
+
+    if valign == "center":
+        cy = y + h/2
+    elif valign == "top":
+        cy = y + h - pad*h
+    elif valign == "bottom":
+        cy = y + pad*h
+    elif valign == "above":
+        cy = y + h + pad*h
+    elif valign == "below":
+        cy = y - pad*h
+    else:
+        cy = y + h/2
+
+    ax.text(cx, cy, text, ha='center', va='center', fontsize=12)
+    return rect
+
+def arrow_down(ax, top_rect, bottom_rect):
+    x_mid = top_rect.get_x() + top_rect.get_width()/2
+    y_start = top_rect.get_y()
+    y_end = bottom_rect.get_y() + bottom_rect.get_height()
+
+    arrow = FancyArrowPatch(
+        (x_mid, y_start),
+        (x_mid, y_end),
+        arrowstyle='<-',
+        mutation_scale=12,
+        color='black',
+        linewidth=1.2
+    )
+    ax.add_patch(arrow)
+
+def draw_vertical_column(ax, x, inp, out):
+    w, h = 0.25, 1.50
+    gap = 0.75
+
+    top_y = 0
+    top_box = draw_box(ax, x, top_y, w, h, COLOR_OUT, out, valign="above")
+
+    mid_y = top_y - h - gap
+    mid_box = draw_box(ax, x, mid_y, w, h, COLOR_CELL, "", valign="center")
+
+    bot_y = mid_y - h - gap
+    bot_box = draw_box(ax, x, bot_y, w, h, COLOR_IN, inp, valign="below")
+
+    arrow_down(ax, top_box, mid_box)
+    arrow_down(ax, mid_box, bot_box)
+
+def draw_sequence_vertical(inputs, outputs, column_spacing=2.0,
+                           save_svg=False, svg_path="diagram.svg"):
+    fig, ax = plt.subplots(figsize=(len(inputs)*1.5, 5))
+
+    for i, (inp, out) in enumerate(zip(inputs, outputs)):
+        draw_vertical_column(ax, x=i*column_spacing, inp=inp, out=out)
+
+    ax.set_xlim(-1, len(inputs)*column_spacing + 1)
+    ax.set_ylim(-6, 2)
+    ax.axis('off')
+
+    if save_svg:
+        fig.savefig(svg_path, format="svg", bbox_inches="tight")
+        # print(f"Saved SVG to {svg_path}")
+
+    plt.show()
+
+# Example usage
+inputs = ["d", "e", "e", "p"]
+outputs = ["e", "e", "p", "<stop>"]
+column_spacing = 1.25
+output_loc = "./M03_lecture02_figures/rnn_sequence.svg"
+draw_sequence_vertical(inputs, outputs, column_spacing=column_spacing, save_svg=True, svg_path=output_loc)
+```
 
 :::
 ::: {.column width="50%"}
@@ -288,6 +383,7 @@ That is why later LLM systems require additional control layers such as instruct
 - Given the first character `d` you want to predict the next character `e` and so on.
 
 :::
+:::
 
 ---
 
@@ -296,40 +392,20 @@ That is why later LLM systems require additional control layers such as instruct
 :::{.columns}
 ::: {.column width="50%"}
 
-![](images/autocomplete-seq-placeholder-2.svg){width=80%}
+!["Diagram showing a sequence of inputs and outputs for an auto-completion task."](./M03_lecture02_figures/rnn_sequence.svg){width=80% fig-align="center" fig-alt="Diagram showing a sequence of inputs and outputs for an auto-completion task." fig-cap="Diagram showing a sequence of inputs and outputs for an auto-completion task." #fig-autocomplete-sequence}
 
 :::
 ::: {.column width="50%"}
-
-::: incremental
-- Notice a few things.
-- First, successive inputs are no longer independent (while predicting `e` you would want to know what the previous input was in addition to the current input).
-- Second, the length of the inputs and the number of predictions you need to make is not fixed (for example, “learn”, “deep”, “machine” have different number of characters).
-- Third, each network (orange–blue–green structure) is performing the same task (**input**: character, **output**: character).
-:::
-
-:::
-
----
-
-## Sequence learning problems
-
-:::{.columns}
-::: {.column width="50%"}
-
-![](images/sequence-learning-placeholder-1.svg){width=80%}
-
-:::
-::: {.column width="50%"}
-
-::: incremental
+- Successive inputs are no longer independent (while predicting `e` you would want to know what the previous input was in addition to the current input).
+- The length of the inputs and the number of predictions you need to make is not fixed (for example, “learn”, “deep”, “machine” have different number of characters).
+- Each network (orange–blue–green structure) is performing the same task (**input**: character, **output**: character).
 - These are known as sequence learning problems.
 - We need to look at a sequence of (dependent) inputs and produce an output (or outputs).
 - Each input corresponds to one time step.
-- Let us look at some more examples of such problems.
 :::
 
 :::
+
 ---
 
 ## Part-of-speech tagging as a sequence task
@@ -337,12 +413,106 @@ That is why later LLM systems require additional control layers such as instruct
 :::{.columns}
 ::: {.column width="50%"}
 
-![](images/noun-tagging-placeholder-1.svg){width=80%}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig-alt: "Diagram showing a sequence of inputs and outputs for a part-of-speech tagging task."
+#| fig-cap: "Diagram showing a sequence of inputs and outputs for a part-of-speech tagging task."
+#| label: "fig-pos-tagging-sequence"
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, FancyArrowPatch
+import numpy as np
+
+COLOR_IN   = np.array([1.0, 0.6, 0.2])   # orange
+COLOR_CELL = np.array([0.2, 0.4, 1.0])   # blue
+COLOR_OUT  = np.array([0.2, 0.8, 0.4])   # green
+
+def draw_box(ax, x, y, w, h, color, text, valign="center", pad=0.30):
+    rect = Rectangle((x, y), w, h, facecolor=color, edgecolor='black')
+    ax.add_patch(rect)
+
+    cx = x + w/2
+
+    if valign == "center":
+        cy = y + h/2
+    elif valign == "top":
+        cy = y + h - pad*h
+    elif valign == "bottom":
+        cy = y + pad*h
+    elif valign == "above":
+        cy = y + h + pad*h
+    elif valign == "below":
+        cy = y - pad*h
+    else:
+        cy = y + h/2
+
+    ax.text(cx, cy, text, ha='center', va='center', fontsize=12)
+    return rect
+
+def arrow_down(ax, top_rect, bottom_rect):
+    x_mid = top_rect.get_x() + top_rect.get_width()/2
+    y_start = top_rect.get_y()
+    y_end = bottom_rect.get_y() + bottom_rect.get_height()
+
+    arrow = FancyArrowPatch(
+        (x_mid, y_start),
+        (x_mid, y_end),
+        arrowstyle='<-',
+        mutation_scale=12,
+        color='black',
+        linewidth=1.2
+    )
+    ax.add_patch(arrow)
+
+def draw_vertical_column(ax, x, inp, out):
+    w, h = 0.25, 1.50
+    gap = 0.75
+
+    top_y = 0
+    top_box = draw_box(ax, x, top_y, w, h, COLOR_OUT, out, valign="above")
+
+    mid_y = top_y - h - gap
+    mid_box = draw_box(ax, x, mid_y, w, h, COLOR_CELL, "", valign="center")
+
+    bot_y = mid_y - h - gap
+    bot_box = draw_box(ax, x, bot_y, w, h, COLOR_IN, inp, valign="below")
+
+    arrow_down(ax, top_box, mid_box)
+    arrow_down(ax, mid_box, bot_box)
+
+def draw_sequence_vertical(inputs, outputs, column_spacing=2.0,
+                           save_svg=False, svg_path="diagram.svg"):
+    fig, ax = plt.subplots(figsize=(len(inputs)*1.5, 5))
+
+    for i, (inp, out) in enumerate(zip(inputs, outputs)):
+        draw_vertical_column(ax, x=i*column_spacing, inp=inp, out=out)
+
+    ax.set_xlim(-1, len(inputs)*column_spacing + 1)
+    ax.set_ylim(-6, 2)
+    ax.axis('off')
+
+    if save_svg:
+        fig.savefig(svg_path, format="svg", bbox_inches="tight")
+        # print(f"Saved SVG to {svg_path}")
+
+    plt.show()
+
+# Example usage
+inputs = ["man", "is", "a", "social", "animal"]
+outputs = ["NOUN", "VERB", "ARTICLE", "ADJECTIVE", "NOUN"]
+column_spacing = 1.25
+output_loc = "./M03_lecture02_figures/rnn_pos_tagging.svg"
+draw_sequence_vertical(inputs, outputs, column_spacing=column_spacing, save_svg=True, svg_path=output_loc)
+```
+
 
 :::
+
 ::: {.column width="50%"}
 
-::: incremental
+
 - Consider the task of predicting the part of speech tag (noun, adverb, adjective, verb) of each word in a sentence.
 - Once we see an adjective (social) we are _almost_ sure that the next word should be a noun (man).
 - Thus the current output (noun) depends on the current input as well as the previous input.
@@ -358,17 +528,497 @@ That is why later LLM systems require additional control layers such as instruct
 
 :::{.columns}
 ::: {.column width="50%"}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig-alt: "Diagram showing a sentiment as a sequence to label problem"
+#| fig-cap: "Diagram showing a sentiment as a sequence to label problem"
+#| label: "fig-sentiment-sequence"
 
-![](images/sentiment-seq-placeholder-1.svg){width=80%}
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, FancyArrowPatch
+import numpy as np
+
+COLOR_IN   = np.array([1.0, 0.6, 0.2])   # orange
+COLOR_CELL = np.array([0.2, 0.4, 1.0])   # blue
+COLOR_OUT  = np.array([0.2, 0.8, 0.4])   # green
+
+def draw_box(ax, x, y, w, h, color, text, valign="center", pad=0.30):
+    rect = Rectangle((x, y), w, h, facecolor=color, edgecolor='black')
+    ax.add_patch(rect)
+
+    cx = x + w/2
+
+    if valign == "center":
+        cy = y + h/2
+    elif valign == "top":
+        cy = y + h - pad*h
+    elif valign == "bottom":
+        cy = y + pad*h
+    elif valign == "above":
+        cy = y + h + pad*h
+    elif valign == "below":
+        cy = y - pad*h
+    else:
+        cy = y + h/2
+
+    ax.text(cx, cy, text, ha='center', va='center', fontsize=12)
+    return rect
+
+def arrow_down(ax, top_rect, bottom_rect):
+    x_mid = top_rect.get_x() + top_rect.get_width()/2
+    y_start = top_rect.get_y()
+    y_end = bottom_rect.get_y() + bottom_rect.get_height()
+
+    arrow = FancyArrowPatch(
+        (x_mid, y_start),
+        (x_mid, y_end),
+        arrowstyle='<-',
+        mutation_scale=12,
+        color='black',
+        linewidth=1.2
+    )
+    ax.add_patch(arrow)
+
+def draw_vertical_column(ax, x, inp, out):
+    w, h = 0.25, 1.50
+    gap = 0.75
+
+    top_y = 0
+    top_box = draw_box(ax, x, top_y, w, h, COLOR_OUT, out, valign="above")
+
+    mid_y = top_y - h - gap
+    mid_box = draw_box(ax, x, mid_y, w, h, COLOR_CELL, "", valign="center")
+
+    bot_y = mid_y - h - gap
+    bot_box = draw_box(ax, x, bot_y, w, h, COLOR_IN, inp, valign="below")
+
+    arrow_down(ax, top_box, mid_box)
+    arrow_down(ax, mid_box, bot_box)
+
+def draw_sequence_vertical(inputs, outputs, column_spacing=2.0,
+                           save_svg=False, svg_path="diagram.svg"):
+    fig, ax = plt.subplots(figsize=(len(inputs)*1.5, 5))
+
+    for i, (inp, out) in enumerate(zip(inputs, outputs)):
+        draw_vertical_column(ax, x=i*column_spacing, inp=inp, out=out)
+
+    ax.set_xlim(-1, len(inputs)*column_spacing + 1)
+    ax.set_ylim(-6, 2)
+    ax.axis('off')
+
+    if save_svg:
+        fig.savefig(svg_path, format="svg", bbox_inches="tight")
+        # print(f"Saved SVG to {svg_path}")
+
+    plt.show()
+
+# Example usage
+inputs = ["the", "movie", "was", "long", "and", ""]
+outputs = ["don't\ncare", "don't\ncare", "don't\ncare", "don't\ncare", "boring"]
+column_spacing = 1.25
+output_loc = "./M03_lecture02_figures/rnn_sequence-to-label.svg"
+draw_sequence_vertical(inputs, outputs, column_spacing=column_spacing, save_svg=True, svg_path=output_loc)
+```
 
 :::
 ::: {.column width="50%"}
 
-::: incremental
+
 - Consider sentiment classification for a sentence like “The movie was boring and …”.
 - The final sentiment depends on the entire sequence of words.
 - Intermediate words like “boring” strongly influence the final decision.
 - Again, the input length is variable, but we may only need a single output label at the end.
+- Sequences could be composed of anything (not just words)
+- For example, a video could be treated as a sequence of images
+- We may want to look at the entire sequence and detect the activity being performed
 :::
 
 :::
+
+
+# Recurrent Neural Networks
+
+## Modeling sequences with recurrent neural networks
+
+:::{.callout-important}
+How do we model such tasks involving sequences?
+:::
+
+- Account for dependence between inputs
+- Account for variable number of inputs
+- Make sure that the function executed at each time step is the same
+- We will focus on each of these to arrive at a model for dealing with sequences
+
+---
+
+## Functional Model of Sequence
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| fig-alt: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
+#| fig-cap: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
+
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle, FancyArrowPatch
+import numpy as np
+
+# ---------------------------------------------------------
+# COLORS
+# ---------------------------------------------------------
+COLOR_IN   = np.array([1.0, 0.6, 0.2])   # orange
+COLOR_CELL = np.array([0.2, 0.4, 1.0])   # blue
+COLOR_OUT  = np.array([0.2, 0.8, 0.4])   # green
+
+
+# ---------------------------------------------------------
+# BOX DRAWING (with inside labels + side labels + edge styles)
+# ---------------------------------------------------------
+def draw_box(ax, x, y, w, h, color, text,
+             valign="center", pad=0.30,
+             side_label=None, side="left", side_pad=0.25,
+             edge_style="solid"):
+
+    rect = Rectangle(
+        (x, y), w, h,
+        facecolor=color,
+        edgecolor='black',
+        linestyle=edge_style,
+        linewidth=1.2
+    )
+    ax.add_patch(rect)
+
+    # Inside label vertical placement
+    cx = x + w/2
+    if valign == "center":
+        cy = y + h/2
+    elif valign == "top":
+        cy = y + h - pad*h
+    elif valign == "bottom":
+        cy = y + pad*h
+    elif valign == "above":
+        cy = y + h + pad*h
+    elif valign == "below":
+        cy = y - pad*h
+    else:
+        cy = y + h/2
+
+    # Draw inside label
+    ax.text(cx, cy, text, ha='center', va='center', fontsize=10)
+
+    # Side label (left or right)
+    if side_label:
+        sx = x - side_pad if side == "left" else x + w + side_pad
+        sy = y + h/2
+        ax.text(
+            sx, sy, side_label,
+            ha='right' if side == "left" else 'left',
+            va='center',
+            fontsize=10
+        )
+
+    return rect
+
+
+# ---------------------------------------------------------
+# ARROWS (with labels)
+# ---------------------------------------------------------
+def arrow_down(ax, top_rect, bottom_rect,
+               label=None, label_side="right", label_pad=0.30):
+
+    x_mid = top_rect.get_x() + top_rect.get_width()/2
+    y_start = top_rect.get_y()
+    y_end = bottom_rect.get_y() + bottom_rect.get_height()
+
+    # Arrow patch
+    arrow = FancyArrowPatch(
+        (x_mid, y_start),
+        (x_mid, y_end),
+        arrowstyle='<-',
+        mutation_scale=12,
+        color='black',
+        linewidth=1.2
+    )
+    ax.add_patch(arrow)
+
+    # Arrow label
+    if label:
+        lx = x_mid + (label_pad if label_side == "right" else -label_pad)
+        ly = (y_start + y_end) / 2
+        ax.text(
+            lx, ly, label,
+            fontsize=10,
+            ha='left' if label_side == "right" else 'right',
+            va='center'
+        )
+
+
+# ---------------------------------------------------------
+# ONE VERTICAL COLUMN (top → mid → bottom)
+# ---------------------------------------------------------
+def draw_vertical_column(ax, x, inp, out,
+                         w=0.50, h=1.50, gap=0.75,
+                         top_edge="solid", mid_edge="solid", bot_edge="solid",
+                         arrow_labels=("V", "U")):
+
+    # TOP (green)
+    top_box = draw_box(
+        ax, x, 0, w, h, COLOR_OUT, out,
+        valign="above",
+        side_label=None,
+        edge_style=top_edge
+    )
+
+    # MIDDLE (blue)
+    mid_y = 0 - h - gap
+    mid_box = draw_box(
+        ax, x, mid_y, w, h, COLOR_CELL, "",
+        valign="center",
+        side_label=None,
+        edge_style=mid_edge
+    )
+
+    # BOTTOM (orange)
+    bot_y = mid_y - h - gap
+    bot_box = draw_box(
+        ax, x, bot_y, w, h, COLOR_IN, inp,
+        valign="below",
+        side_label=None,
+        edge_style=bot_edge
+    )
+
+    # Arrows with labels
+    arrow_down(ax, top_box, mid_box, label=arrow_labels[0], label_side="right")
+    arrow_down(ax, mid_box, bot_box, label=arrow_labels[1], label_side="right")
+
+
+# ---------------------------------------------------------
+# MULTI‑COLUMN SEQUENCE
+# ---------------------------------------------------------
+def draw_sequence_vertical(inputs, outputs,
+                           column_spacing=1.5,
+                           save_svg=False, svg_path="diagram.svg",
+                           **kwargs):
+
+    fig, ax = plt.subplots(figsize=(len(inputs)*1.2, 6))
+
+    for i, (inp, out) in enumerate(zip(inputs, outputs)):
+        draw_vertical_column(
+            ax,
+            x=i * column_spacing,
+            inp=inp,
+            out=out,
+            **kwargs
+        )
+
+    ax.set_xlim(-1, len(inputs)*column_spacing + 1)
+    ax.set_ylim(-6, 2)
+    ax.axis('off')
+
+    # if save_svg:
+    #     fig.savefig(svg_path, format="svg", bbox_inches="tight")
+    #     print(f"Saved SVG to {svg_path}")
+
+    plt.show()
+
+inputs = ["$x_1$", "$x_2$", "$x_3$"]
+outputs = ["$y_1$", "$y_2$", "$y_3$"]
+column_spacing = 1.25
+output_loc = "./M03_lecture02_figures/rnn_sequence-function.svg"
+draw_sequence_vertical(inputs, outputs, column_spacing=column_spacing, save_svg=True, svg_path=output_loc, top_edge="solid",
+    mid_edge="solid",
+    bot_edge="solid",
+    arrow_labels=("V", "U"))
+```
+
+:::
+
+::: {.column width="50%"}
+- What is the function being executed at each time step ($i$)?
+
+$$
+\begin{align}
+s_i = \sigma(Ux_i + b)\\
+y_i = \mathcal{O}(Vs_i + c)
+\end{align}
+$$
+
+- Since we want the **same function** to be executed at each time step, we should share the same network parameters across time
+:::
+::::
+
+---
+
+## Parameter Sharing Across Time
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_parameter_sharing.svg){width=95%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- Parameter sharing ensures that the network becomes agnostic to the length of the input sequence
+- Since we compute the same function with the same parameters at every time step, the number of time steps does not change the model definition
+- We can view this as creating multiple copies of the same network and applying them across the sequence
+:::
+::::
+
+
+---
+
+## A First Attempt at Modeling Dependence
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_all_previous_inputs.svg){width=90%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- How do we account for dependence between inputs?
+
+- A first, but infeasible, idea is to feed all previous inputs into the network at each time step
+
+- At time step $i$, the model would receive:
+  - $x_1$
+  - $x_2$
+  - $\dots$
+  - $x_i$
+
+- Is this a good solution?
+
+- No, because it violates the other requirements in our wishlist
+:::
+::::
+
+
+---
+
+## Why the Naive Dependence Strategy Fails
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_naive_dependence_problem.svg){width=90%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- The function being computed at each time step is now different
+
+$$
+\begin{align}
+y_1 = f_1(x_1) \\
+y_2 = f_2(x_1, x_2)\\
+y_3 = f_3(x_1, x_2, x_3)
+\end{align}
+$$
+
+- The network becomes sensitive to sequence length
+- A sequence of length 10 would require $f_1, \dots, f_{10}$, while a sequence of length 100 would require $f_1, \dots, f_{100}$
+:::
+::::
+
+
+---
+
+## The Recurrent Solution
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_recurrent_solution.svg){width=95%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- The solution is to add a **recurrent connection** to the network
+
+$$
+s_i = \sigma(Ux_i + Ws_{i-1} + b)
+$$
+
+$$
+y_i = \mathcal{O}(Vs_i + c)
+$$
+
+or more generally,
+
+$$
+y_i = f(x_i, s_{i-1}, W, U, V, b, c)
+$$
+
+- $s_i$ is the **state** of the network at time step $i$
+
+- The parameters $W, U, V, b, c$ are shared across time steps
+
+- The same model can process sequences of length 10, 100, or more
+:::
+::::
+
+
+---
+
+## A More Compact View of Recurrence
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_compact_rnn.svg){width=70%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- We can represent recurrence more compactly
+
+- The hidden state is updated by combining:
+  - the current input $x_i$
+  - the previous state $s_{i-1}$
+
+- This compact view emphasizes that the network carries information forward through time
+:::
+::::
+
+
+---
+
+## Revisiting Sequence Learning Problems
+
+:::: {.columns}
+::: {.column width="50%"}
+<div style="text-align:center; margin-top: 1.0em;">
+
+![](modules/Module14/svg/module14_2_sequence_learning_problems.svg){width=92%}
+
+</div>
+:::
+
+::: {.column width="50%"}
+- Let us revisit the sequence learning problems that we saw earlier
+
+- We now have recurrent connections between time steps, which account for dependence between inputs
+
+- This gives us a principled architecture for modeling sequential data
+:::
+::::
+
