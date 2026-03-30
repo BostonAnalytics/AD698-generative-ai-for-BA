@@ -31,6 +31,7 @@ dependencies = [
     "sentence-transformers>=5.2.2",
     "setuptools>=80.10.2",
     "spacy>=3.8.11",
+    "svgwrite>=1.4.3",
     "tensorflow>=2.20.0",
     # "torch>=2.10.0+cu130",
     # "torchaudio>=2.10.0+cu130",
