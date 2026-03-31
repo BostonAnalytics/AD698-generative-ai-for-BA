@@ -205,6 +205,8 @@ This mechanism has several powerful properties:
 
 ##  The Bridge to Transformers
 
+::: {.columns}
+::: {.column}
 - Once we have queries, keys, and values, we can drop recurrence entirely.  
 - @Vaswani2017Attention showed that **attention alone** can model all relationships in a sequence.  
 - This leads directly to the Transformer architecture.  
@@ -214,7 +216,8 @@ This mechanism has several powerful properties:
   - masked language modeling (BERT),  
   - vision transformers,  
   - speech, RL, and graph models.
-
+:::
+::: {.column}
 ```{python}
 #| echo: false
 #| eval: true
@@ -242,6 +245,10 @@ plt.colorbar()
 plt.show()
 
 ```
+:::
+:::
+
+
 
 # Attention Pooling by Similarity
 
