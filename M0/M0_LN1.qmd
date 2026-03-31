@@ -781,7 +781,7 @@ User suggestions are triggered by typing the "@" character and issue suggestions
 
 The issues that appear in the suggestion can be configured with the **GitHub Issues: Queries** (`setting(githubIssues.queries)`) setting. The queries use the [GitHub search syntax](https://docs.github.com/search-github/getting-started-with-searching-on-github/understanding-the-search-syntax).
 
-You can also configure which file types show these suggestions by using the settings **GitHub Issues: Ignore Completion Trigger** (`setting(githubIssues.ignoreCompletionTrigger)`) and **GitHub Issues: Ignore User Completion Trigger** (`setting(githubIssues.ignoreUserCompletionTrigger)`). These settings take an array of [language identifiers](/docs/languages/identifiers.md) to specify the file types.
+You can also configure which file types show these suggestions by using the settings **GitHub Issues: Ignore Completion Trigger** (`setting(githubIssues.ignoreCompletionTrigger)`) and **GitHub Issues: Ignore User Completion Trigger** (`setting(githubIssues.ignoreUserCompletionTrigger)`). These settings take an array of [language identifiers]{.uured-bold} to specify the file types.
 
 ```jsonc
 // Languages that the '#' character should not be used to trigger issue completion suggestions.
@@ -836,7 +836,7 @@ Pull requests can be reviewed from the **Pull Requests** view. You can assign re
 
 ![Pull Request Description editor](./M0_lecture01_figures/github/pull-request-description-editor.png){width="80%" fig-align="center"}
 
-From the **Description** page, you can also easily checkout the pull request locally using the **Checkout** button. This will switch VS Code to open the fork and branch of the pull request (visible in the Status Bar) in Review Mode and add a new **Changes in Pull Request** view from which you can view diffs of the current changes as well as all commits and the changes within these commits. Files that have been commented on are decorated with a diamond icon. To view the file on disk, you can use the **Open File** inline action.
+From the **Description** page, you can also easily checkout the pull request locally using the **Checkout** button. This will switch VS Code to open the fork and branch of the pull request (visible in the Status Bar) in Review Mode and adds a new **Changes in Pull Request** view from which you can view diffs of the current changes as well as all commits and the changes within these commits. Files that have been commented on are decorated with a diamond icon. To view the file on disk, you can use the **Open File** inline action.
 
 ![Changes in Pull Request view](./M0_lecture01_figures/github/changes-view.png){width="80%" fig-align="center"}
 
