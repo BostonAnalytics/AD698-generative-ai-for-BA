@@ -1,0 +1,12 @@
+{
+  "hash": "023a131c1a95d07a049f9a08f4fa4fbd",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"M00: Lab 1\"\nsubtitle: \"GitHub, VS Code, and Jupyter Setup\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['Lab', 'M00:', '1']\ndescription: \"Hands-on lab activity: GitHub, VS Code, and Jupyter Setup.\"\n---\n\n## How to print Revealjs slides\n\n![](../syllabus-images/Printing_Revealjs_Slides.png){width=\"80%\" fig-align=\"center\"}\n\n",
+    "supporting": [
+      "M0_P2_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

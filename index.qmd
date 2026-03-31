@@ -7,7 +7,7 @@ format:
       toc: false
     docx: default
 bibliography: references.bib
-csl: chicago-syllabus.csl
+csl: mis-quarterly.csl
 execute: 
   freeze: false
   cache: true

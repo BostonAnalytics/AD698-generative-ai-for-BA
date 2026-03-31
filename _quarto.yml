@@ -13,14 +13,14 @@ project:
     - "!deliverables-solutions/"
 
 editor:  
-  render-on-save: true
   preview: true
   markdown:
     wrap: 72
 
-
 execute:
   fig-align: center
+  enable: true
+  freeze: auto
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"

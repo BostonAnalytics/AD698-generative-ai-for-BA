@@ -1,33 +1,29 @@
 {
-    "version": "3.0.0",
-    "tasks": [
-        {
-            "label": "Render and Zip Quarto Site",
-            "type": "shell",
-            "command": "powershell",
-            "args": [
-                "-ExecutionPolicy", "Bypass",
-                "-Command",
-                "\"",
-                "$ErrorActionPreference = 'Stop';",
-                "uv lock;",
-                "uv sync --refresh;",
-                "uv sync --upgrade;",
-                "uv lock;",
-                "uv run quarto render --execute --cache-refresh;",
-                "Compress-Archive -Force -Path _site -DestinationPath _site.zip;",
-                "\""
-            ],
-            "problemMatcher": [],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            }
-        }
-
-    ]
+  "version": "3.0.0",
+  "tasks": [
+    {
+      "label": "Render and Zip Quarto Site",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-ExecutionPolicy", "Bypass",
+        "-Command",
+        "\"",
+        "$ErrorActionPreference = 'Stop';",
+        "uv run quarto render --execute &&",
+        "Compress-Archive -Force -Path _site -DestinationPath _site.zip &&",
+        "Get-ChildItem -Recurse -Include *.quarto_ipynb* | Remove-Item -Force",
+        "\""
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false
+      }
+    }
+  ]
 }
