@@ -329,7 +329,7 @@ CT-RAG [@CT-RAG] & Synthesized dataset& Text& Item-base& Tuning&Once\\
 
 Atlas [@Atlas] &  Wikipedia, Common Crawl&Text& Chunk& Pre-training&Iterative\\ 
 RAVEN [@RAVEN] & Wikipedia& Text& Chunk& Pre-training&Once\\
-RETRO++ [@RETRO++] & Pre-training Corpus& Text& Chunk& Pre-training&Iterative\\
+RETRO++ [@RETROpp] & Pre-training Corpus& Text& Chunk& Pre-training&Iterative\\
 INSTRUCTRETRO [@InstructRetro] &Pre-training corpus& Text& Chunk & Pre-training&Iterative\\
 RRR [@RRR] & Search Engine& Text& Chunk& Tuning&Once\\
 RA-e2e [@RAG-e2e] & Dataset-base& Text& Chunk& Tuning&Once\\
@@ -638,7 +638,7 @@ The core task of RAG remains Question Answering (QA), including traditional sing
 | Dataset | Methods |
 |---|---|
 |Natural Questions (NQ) [@NQ] | [@DenseX;@BGM;@KALMV;@token-elimination;@CoN;@FILCO;@Atlas;@ICRALM;@InstructRetro;@ITRG]<br/>[@LLM-boundary;@LLM-Indexer;@NoiseRAG;@RA-DIT;@RAG;@RAG-Integration;@RAVEN;@REALM;@RECITE;@RECOMP]<br/>[@Replug;@RETROpp;@UPRISE] |
-| TriviaQA (TQA) [@TQA] | [@DenseX;@CoN;@FILCO;@GenRead;@ICRALM;@InstructRetro]<br/>[@ITRG;@LLM-boundary;@RA-DIT;@RAG;@RAG-Integration]<br/>[@RAVEN;@RECITE;@RECOMP;@Replug;@RETRO++;@self-rag] |
+| TriviaQA (TQA) [@TQA] | [@DenseX;@CoN;@FILCO;@GenRead;@ICRALM;@InstructRetro]<br/>[@ITRG;@LLM-boundary;@RA-DIT;@RAG;@RAG-Integration]<br/>[@RAVEN;@RECITE;@RECOMP;@Replug;@RETROpp;@self-rag] |
 | SQuAD [@SQuAD] | [@DenseX;@DSP;@InstructRetro;@PRCA;@RAG-Integration;@RAST;@UPRISE] |
 | Web Questions (WebQ) [@webQA] | [@DenseX;@1-PAGER;@CoN;@GenRead;@RAG;@REALM] |
 | PopQA [@PopQA] | [@CRAG;@RRR;@self-rag] |
@@ -854,7 +854,7 @@ The presence of noise or contradictory information during retrieval can detrimen
 Combining RAG with fine-tuning is emerging as a leading strategy. Determining the optimal integration of RAG and fine-tuning whether sequential, alternating, or through end-to-end joint training—and how to harness both parameterized and non-parameterized advantages are areas ripe for exploration [@RA-DIT] . Another trend is to introduce SLMs with specific functionalities into RAG and fine-tuned by the results of RAG system. For example, CRAG [@CRAG]  trains a lightweight retrieval evaluator to assess the overall quality of the retrieved documents for a query and triggers different knowledge retrieval actions based on confidence levels. 
 
 ## Scaling laws of RAG
-End-to-end RAG models and pre-trained models based on RAG are still one of the focuses of current researchers [@RAFT] .The parameters of these models are one of the key factors.While scaling laws [@kaplan2020scaling]  are established for LLMs, their applicability to RAG remains uncertain. Initial studies like RETRO++ [@RETRO++]  have begun to address this, yet the parameter count in RAG models still lags behind that of LLMs. The possibility of an Inverse Scaling Law~\footnote{\url{https://github.com/inverse-scaling/prize}}, where smaller models outperform larger ones, is particularly intriguing and merits further investigation.
+End-to-end RAG models and pre-trained models based on RAG are still one of the focuses of current researchers [@RAFT] .The parameters of these models are one of the key factors.While scaling laws [@kaplan2020scaling]  are established for LLMs, their applicability to RAG remains uncertain. Initial studies like RETRO++ [@RETROpp]  have begun to address this, yet the parameter count in RAG models still lags behind that of LLMs. The possibility of an Inverse Scaling Law~\footnote{\url{https://github.com/inverse-scaling/prize}}, where smaller models outperform larger ones, is particularly intriguing and merits further investigation.
 
 
 ## Production-Ready RAG
@@ -897,7 +897,7 @@ Beyond generating final answers, LLMs are leveraged for retrieval and evaluation
 ### Scaling Laws
 
 
-While scaling laws [@kaplan2020scaling]  are established for LLMs, their applicability to RAG remains uncertain. Initial studies [@RETRO++]  have begun to address this, yet the parameter count in RAG models still lags behind that of LLMs. The possibility of an Inverse Scaling Law\footnote{\url{https://github.com/inverse-scaling/prize}}, where smaller models outperform larger ones, is particularly intriguing and merits further investigation.
+While scaling laws [@kaplan2020scaling]  are established for LLMs, their applicability to RAG remains uncertain. Initial studies [@RETROpp]  have begun to address this, yet the parameter count in RAG models still lags behind that of LLMs. The possibility of an Inverse Scaling Law\footnote{\url{https://github.com/inverse-scaling/prize}}, where smaller models outperform larger ones, is particularly intriguing and merits further investigation.
 
 
 ## Ecosystem of RAG

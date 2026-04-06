@@ -13,7 +13,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -53,15 +52,7 @@ csl: ../mis-quarterly.csl
 
 ## Why Hallucinations Happen
 
-![](./M05_lecture01_figures/llm-memory.png){width=80% fig-align="center" fig-alt="Parametric memory vs external knowledge"}
-
-- LLMs rely on **parametric memory**  
-- Training data is **finite**, **static**, and **opaque**  
-- They cannot access:  
-  - private data  
-  - enterprise knowledge  
-  - real-time information  
-
+![](./M05_lecture01_figures/llm-memory.png){width=75% fig-align="center" fig-alt="Parametric memory vs external knowledge"}
 
 ---
 
@@ -80,10 +71,8 @@ RAG augments LLMs with **retrieval from external knowledge bases** using semanti
 
 ## RAG Pipeline
 
-![](./M05_lecture01_figures/RAG_case.png){width=80% fig-align="center" fig-alt="RAG pipeline: query → retrieve → generate"}
+![](./M05_lecture01_figures/RAG_case.png){width=75% fig-align="center" fig-alt="RAG pipeline: query → retrieve → generate"}
 
-
----
 
 # The Evolution of RAG
 
@@ -152,25 +141,23 @@ finetune --> infer
 
 ## Three Core Paradigms
 
-![](./M05_lecture01_figures/RAG_FrameCompre_eng.png){width=80% fig-align="center" fig-alt="Three RAG paradigms: Native RAG, Advanced RAG, Modular RAG"}
+![](./M05_lecture01_figures/RAG_FrameCompre_eng.png){width=75% fig-align="center" fig-alt="Three RAG paradigms: Native RAG, Advanced RAG, Modular RAG"}
 
 ---
 
 ## Three Core Stages
 
-![](./M05_lecture01_figures/RAGModel.jpg){width=80% fig-align="center" fig-alt="RAG stages: Retrieval, Augmentation, Generation"}
+![](./M05_lecture01_figures/RAGModel.jpg){width=75% fig-align="center" fig-alt="RAG stages: Retrieval, Augmentation, Generation"}
 
-
----
 
 # Evaluation Landscape
 
-## **Slide 12 — Evaluation Metrics**
+## Evaluation Metrics
 
 ---
 
 
-## **Slide 13 — Why Evaluation Is Hard**
+## Why Evaluation Is Hard
 - Retrieval quality ≠ answer quality  
 - Context length constraints  
 - Noise sensitivity  
@@ -185,40 +172,115 @@ Spider/radar chart showing metric coverage.
 
 # Hands-On: Building a Local RAG System
 
-This is where your teaching style shines.
+*"Let's build a RAG system from scratch."*
 
-## **Slide 14 — From Theory to Practice**
-Transition slide:  
-*“Let’s build a RAG system from scratch.”*
+## Architecture of a RAG System
 
----
-
-## **Slide 15 — Architecture of a Local RAG System**
-- Document ingestion  
-- Chunking  
-- Embedding  
-- Vector store  
-- Retrieval  
-- Augmented generation  
-
-**Visual:**  
-Your modular SVG diagram.
+![RAG Langscape Architecture](./M05_lecture01_figures/RAG_langchain.png){width=75% fig-align="center" fig-alt="RAG Langchain architecture: retriever, generator, and optional reranker"}
 
 ---
 
-## **Slide 16 — Notebook 1: Minimal RAG**
-- SentenceTransformers  
-- FAISS  
-- OpenAI API  
-- Simple retriever  
-- Prompt template  
+## Langchain Ecosystem - LangChain-Core
 
-**Code snippet:**  
-Short version of your RAG function.
+:::{.columns}
+:::{.column width="50%"}
+
+- **Foundational Interfaces** for LLM components (LLMs, document loaders, embeddings, vector stores, retrievers, metrics, monitoring)
+- **Common APIs**  
+  - Shared interface layer for vendors (OpenAI, Google, Meta).  
+  - Implementation optional for vendors.
+- **Document Loaders**  
+  - Load data from files (PDF, CSV, text), DBs, websites, S3, cloud storage.
+- **Embedding Models**
+  - Convert raw text → numerical vectors for semantic search, clustering, QA, etc.
+:::
+:::{.column width="50%"}
+
+![](./M05_lecture01_figures/langchain_ecosystem.png){width=95% fig-align="center" fig-alt="Langchain ecosystem"}
+
+:::
+:::
+
+
+## Langchain Ecosystem - LangChain-Core
+
+:::{.columns}
+:::{.column width="50%"}
+- **Vector Store Interfaces**  
+  - Standardized access to Pinecone, FAISS, Annoy, Kendra, etc.
+- **Retrievers**  
+  - Query‑driven document selection; Core provides interfaces for custom retrievers.
+- **Metrics & Monitoring**  
+  - Track performance and health of LLM applications.
+- **Pre/Post‑Processing Interfaces**  
+  - Cleaning, normalization, output shaping.
+- **LCEL (LangChain Expression Language)**  
+  - Declarative way to define chains and pipelines.
+
+:::
+:::{.column width="50%"}
+
+![](./M05_lecture01_figures/langchain_ecosystem.png){width=95% fig-align="center" fig-alt="Langchain ecosystem"}
+
+:::
+:::
 
 ---
 
-## **Slide 17 — Notebook 2: Hugging Face + W&B**
+## LangChain-Community
+
+:::{.columns}
+:::{.column width="50%"}
+
+
+- Historically, LangChain bundled **~700 integrations** inside core.
+- This created maintenance and versioning complexity.
+- Integrations are now moved to **langchain-community**:
+  - Document loaders  
+  - Vector stores  
+  - Embedding wrappers  
+  - Tools, APIs, connectors  
+- Clear separation between **core abstractions** and **optional integrations**
+- Better maintainability
+- Cleaner developer experience
+- Combine **Core (interfaces + LCEL)** with **Community (integrations)**  
+  to build full LLM applications.
+
+:::
+:::{.column width="50%"}
+
+![](./M05_lecture01_figures/langchain_ecosystem.png){width=95% fig-align="center" fig-alt="Langchain ecosystem"}
+
+:::
+:::
+---
+
+## LangChain (Full Ecosystem)
+
+:::{.columns}
+:::{.column width="50%"}
+
+A modular, extensible, developer‑friendly platform for building robust LLM applications with clean separation between **core logic** and **external integrations**:
+
+- **LangChain-Core** → foundational abstractions + LCEL  
+- **LangChain-Community** → integrations with external tools  
+- **Chains** - The processing pipeline: load → preprocess → retrieve → LLM → postprocess.
+- **Agents** - Decision‑making components that choose next actions dynamically.
+- **Executors** - Ensure agent decisions are executed correctly and sequentially.
+
+:::
+:::{.column width="50%"}
+
+![](./M05_lecture01_figures/langchain_ecosystem.png){width=95% fig-align="center" fig-alt="Langchain ecosystem"}
+
+:::
+:::
+
+---
+
+## Langchain + Hugging Face + W&B
+
+- **LangChain** for RAG orchestration - [Langchain Docs](https://docs.langchain.com/oss/python/learn)
 - HF embeddings + generation  
 - W&B logging:  
   - recall@k  
@@ -226,34 +288,262 @@ Short version of your RAG function.
   - embedding drift  
   - reranker performance  
 
-**Visual:**  
-W&B dashboard screenshot placeholder.
+
+# Hierarchical Navigable Small World Graphs (HNSW) And Vector Databases
+
+## What Is Vector Indexing?
+
+:::{.callout-tip}
+Vector indexing is a data‑structure strategy for organizing embeddings so that similarity search becomes fast and scalable.  
+The attached document explains that vector indexing ["significantly increases the speed of similarity search with only a minimal tradeoff in accuracy"]{.uublue-bold}.
+:::
+
+:::{.columns}
+:::{.column}
+
+- Embeddings = coordinates in high‑dimensional space  
+- Similar items cluster together  
+- Indexing reduces the number of comparisons needed  
+- Essential for semantic search, retrieval, and RAG
+
+:::
+
+:::{.column}
+
+:::{.r-stack}
+![](./M05_lecture01_figures/supermarket-layout.svg){width=90% fig-align="center" fig-alt="Supermarket layout analogy for vector indexing" .fragment .fade-out}
+
+![](./M05_lecture01_figures/supermarket_representation.png){width=90% fig-align="center" fig-alt="Supermarket layout analogy for vector indexing" .fragment .fade-in-then-out}
+:::
+:::
+:::
 
 ---
 
-## **Slide 18 — Notebook 3: Advanced RAG**
-- Query rewriting  
-- Multi-query  
-- Reranking (BGE, ColBERT)  
-- Context compression  
-- Long-context models  
+## Why Indexing Matters for RAG
 
-**Visual:**  
-Diagram comparing naive vs advanced RAG.
+:::{.callout-tip}
+
+RAG systems rely on **fast nearest‑neighbor search** to retrieve relevant chunks. Without indexing, search is linear and too slow at scale. Indexing Enables:
+
+- Low‑latency retrieval  
+- High throughput  
+- Efficient memory usage  
+- Scalability to millions/billions of vectors
+
+:::
+
+:::{.callout-tip}
+["Vector databases efficiently measure semantic similarity… using a vectorized version of the query to find objects… similar to the query vector."]{.uublue-bold}
+:::
+
+
 
 ---
+
+## Types of Vector Indexes
+
+:::{.columns}
+:::{.column}
+
+### Graph Indexes (e.g., HNSW)
+- Multi‑layer graph  
+- Fast traversal  
+- Great for high‑dimensional vectors  
+- Scales extremely well  
+- Default choice for large RAG systems  
+
+
+### Tree‑Based Indexes (e.g., ANNOY)
+- Binary tree partitions  
+- Good for low‑dimensional vectors  
+- Updates can be expensive  
+
+:::
+
+:::{.column}
+
+### Cluster‑Based Indexes (e.g., IVF, HFresh‑style)
+- Partition vectors into clusters  
+- Search only relevant clusters  
+- Memory‑efficient  
+- Slightly lower recall  
+
+
+### Flat Index
+
+- Stores all vectors in a list  
+- Exact search  
+- Linear time  
+- Best for small datasets  
+:::
+
+:::
+
+
+---
+
+## Hierarchical Navigable Small World Graphs (HNSW)
+
+
+- RAG needs fast nearest‑neighbor search over millions of embeddings.
+- Brute‑force search is too slow.
+- HNSW gives log‑like search time with high recall, using a multi‑layer graph.
+- Inspired by skip lists and navigable small‑world graphs .
+
+
+## HNSW: How It Works
+
+:::{.callout-tip}
+Search starts at the top, greedily moves toward closer nodes, and descends layer by layer until reaching the best neighbors.
+:::
+
+::: {.columns}
+::: {.column}
+- Top layers:
+  - Very sparse
+  - Long‑range links
+  - Quickly jump across the vector space
+- Lower layers:
+  - Dense
+  - Short‑range links
+  - Precisely refine the nearest neighbors
+:::
+::: {.column}
+![](./M05_lecture01_figures/hnsw_1_explained.png){width=90% fig-align="center" fig-alt="HNSW graph structure"}
+:::
+:::
+
+
+---
+
+
+
+## HNSW Search Process
+
+::: {.columns}
+::: {.column}
+- “Zoomed‑out map → zoomed‑in streets”  
+- High layers = highways  
+- Bottom layer = local roads
+
+:::
+::: {.column}
+![](./M05_lecture01_figures/hnsw_2_search.png){width=90% fig-align="center" fig-alt="HNSW graph structure"}
+
+:::
+:::
+
+
+---
+
+# **Slide 6 — HNSW Insertions**  
+
+::: {.columns}
+::: {.column}
+
+- Find nearest neighbors at top  
+- Descend  
+- Insert at appropriate location  
+- Connect to neighbors  
+
+:::
+::: {.column}
+
+![](./M05_lecture01_figures/hnsw_3_insertion.png){width=90% fig-align="center" fig-alt="HNSW insertion process"}
+:::
+:::
+
+
+---
+
+## HNSW: How It Works
+
+:::{.r-stack}
+
+![&nbsp;](./M05_lecture01_figures/HNSW.png){width=90% fig-align="center" fig-alt="HNSW graph structure" .fragment}
+
+![&nbsp;](./M05_lecture01_figures/HNSW_Dune.png){width=90% fig-align="center" fig-alt="HNSW search process" .fragment}
+
+:::
+
+---
+
+## Memory & Performance Considerations0
+
+
+- Node size: 2–12 KB per vector  
+- Edge size: ~200 bytes per vector  
+- Memory grows with number of vectors and connections  
+
+
+
+---
+
+# Tuning Search Quality vs Speed
+
+
+- Higher `ef` → more accurate, slower  
+- Lower `ef` → faster, less accurate  
+
+Dynamic `ef` formula:
+
+```
+ef = min(max(dynamicEfMin, queryLimit * dynamicEfFactor), dynamicEfMax)
+```
+
+
+---
+
+## Dynamic Indexing (Flat → HNSW)
+
+- Starts as flat  
+- Automatically switches to HNSW when data grows  
+
+
+
+---
+
+## Cluster‑Based Indexing (HFresh‑style)
+
+- Partitions vectors into clusters  
+- Uses HNSW for centroid search  
+- Searches only relevant clusters  
+
+---
+
+## Choosing the Right Index  
+
+The document provides a comparison table.  
+Here is a vendor‑neutral version:
+
+| Feature | Flat | HNSW | Cluster‑Based |
+|--------|------|------|----------------|
+| Memory usage | Very low | High | Low |
+| Speed (small data) | Fast | Very fast | Moderate |
+| Speed (large data) | Slow | Very fast | Fast |
+| Best for | Small datasets | Large, high‑QPS | Large, memory‑constrained |
+
+
+
+---
+
+## How This Connects to RAG
+
+1. Embed query  
+2. Use vector index (HNSW, flat, cluster)  
+3. Retrieve top‑k neighbors  
+4. Feed into LLM  
+5. Generate grounded answer
+
+**Why indexing matters:**  
+   - Latency  
+   - Recall  
+   - Scalability  
+   - Cost
+
+
+---
+
 
 # Future Directions
-
-### **Slide 19 — Where RAG Is Going**
-- Agentic retrieval  
-- Tool-augmented retrieval  
-- Multi-modal retrieval  
-- Retrieval-aware pre-training  
-- Memory-augmented LLMs  
-
----
-
-### **Slide 20 — Closing Slide**
-**“RAG is not a feature.  
-RAG is the memory system LLMs were missing.”**
