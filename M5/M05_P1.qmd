@@ -1,6 +1,7 @@
 ---
-title: "M05: Presentation"
-subtitle: "AI for Workflow Automation & API Integration"
+title: "AD698 - Applied Generative AI"
+
+subtitle: "Retrieval Augmented Generation Introduction"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -12,9 +13,7 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
+
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -38,3 +37,223 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
+
+# The Problem: Why RAG Exists
+
+## LLMs Are Powerful, But…
+
+- LLMs excel at language understanding and generation  
+- But they struggle with **domain-specific**, **knowledge-intensive**, and **time-sensitive** tasks  
+- They hallucinate when asked about:  
+  - long-tail knowledge [@longtail]  
+  - out-of-distribution facts  
+  - recent events [@hallucination]
+
+---
+
+## Why Hallucinations Happen
+
+![](./M05_lecture01_figures/llm-memory.png){width=80% fig-align="center" fig-alt="Parametric memory vs external knowledge"}
+
+- LLMs rely on **parametric memory**  
+- Training data is **finite**, **static**, and **opaque**  
+- They cannot access:  
+  - private data  
+  - enterprise knowledge  
+  - real-time information  
+
+
+---
+
+## Enter RAG
+
+:::{.callout-tip}
+RAG augments LLMs with **retrieval from external knowledge bases** using semantic similarity.
+:::
+
+- Reduces hallucinations  
+- Enables up-to-date answers  
+- Supports domain-specific tasks  
+- Improves factual grounding  
+
+---
+
+## RAG Pipeline
+
+![](./M05_lecture01_figures/RAG_case.png){width=80% fig-align="center" fig-alt="RAG pipeline: query → retrieve → generate"}
+
+
+---
+
+# The Evolution of RAG
+
+## RAG Has Evolved Rapidly
+
+
+- Early RAG emerged alongside Transformers  
+- Initial focus: **pre-training augmentation** (REALM, RAG, RETRO)  
+- ChatGPT era shifted focus to **inference-time augmentation**  
+- Modern RAG integrates with **fine-tuning** and **pre-training**
+
+
+```{mermaid}
+%%| fig-align: center
+
+stateDiagram-v2
+direction TB
+
+state "Pre-training Stage" as pretrain {
+    state "Retrieval-Augmented Pre-training" as PT1
+    state "Document-aware LM" as PT2
+    state "Long-context Pre-training" as PT3
+}
+
+state "Fine-tuning Stage" as finetune {
+    state "Retrieval-aware Fine-tuning" as FT1
+    state "End-to-end RAG Training" as FT2
+    state "Self-refinement / Feedback Loops" as FT3
+    state "Task-specific RAG" as FT4
+}
+
+state "Inference Stage" as infer {
+    state "Query Rewriting / Decomposition" as IF1
+    state "Multi-step Retrieval" as IF2
+    state "Reranking / Filtering" as IF3
+    state "Context Optimization" as IF4
+}
+
+pretrain --> finetune
+finetune --> infer
+
+
+```
+
+---
+
+## Three Eras of RAG
+1. **Pre-training era**  
+   - Retrieval-augmented pre-training  
+   - Document-aware LMs  
+   - Long-context pre-training  
+
+2. **Inference era**  
+   - Query rewriting  
+   - Multi-step retrieval  
+   - Reranking & filtering  
+   - Context optimization  
+
+3. **Fine-tuning era**  
+   - Retrieval-aware fine-tuning  
+   - End-to-end RAG  
+   - Self-refinement loops  
+
+
+---
+
+## Three Core Paradigms
+
+![](./M05_lecture01_figures/RAG_FrameCompre_eng.png){width=80% fig-align="center" fig-alt="Three RAG paradigms: Native RAG, Advanced RAG, Modular RAG"}
+
+---
+
+## Three Core Stages
+
+![](./M05_lecture01_figures/RAGModel.jpg){width=80% fig-align="center" fig-alt="RAG stages: Retrieval, Augmentation, Generation"}
+
+
+---
+
+# Evaluation Landscape
+
+## **Slide 12 — Evaluation Metrics**
+
+---
+
+
+## **Slide 13 — Why Evaluation Is Hard**
+- Retrieval quality ≠ answer quality  
+- Context length constraints  
+- Noise sensitivity  
+- Multi-hop reasoning  
+- Negative rejection  
+- Counterfactual robustness  
+
+**Visual:**  
+Spider/radar chart showing metric coverage.
+
+---
+
+# Hands-On: Building a Local RAG System
+
+This is where your teaching style shines.
+
+## **Slide 14 — From Theory to Practice**
+Transition slide:  
+*“Let’s build a RAG system from scratch.”*
+
+---
+
+## **Slide 15 — Architecture of a Local RAG System**
+- Document ingestion  
+- Chunking  
+- Embedding  
+- Vector store  
+- Retrieval  
+- Augmented generation  
+
+**Visual:**  
+Your modular SVG diagram.
+
+---
+
+## **Slide 16 — Notebook 1: Minimal RAG**
+- SentenceTransformers  
+- FAISS  
+- OpenAI API  
+- Simple retriever  
+- Prompt template  
+
+**Code snippet:**  
+Short version of your RAG function.
+
+---
+
+## **Slide 17 — Notebook 2: Hugging Face + W&B**
+- HF embeddings + generation  
+- W&B logging:  
+  - recall@k  
+  - latency  
+  - embedding drift  
+  - reranker performance  
+
+**Visual:**  
+W&B dashboard screenshot placeholder.
+
+---
+
+## **Slide 18 — Notebook 3: Advanced RAG**
+- Query rewriting  
+- Multi-query  
+- Reranking (BGE, ColBERT)  
+- Context compression  
+- Long-context models  
+
+**Visual:**  
+Diagram comparing naive vs advanced RAG.
+
+---
+
+# Future Directions
+
+### **Slide 19 — Where RAG Is Going**
+- Agentic retrieval  
+- Tool-augmented retrieval  
+- Multi-modal retrieval  
+- Retrieval-aware pre-training  
+- Memory-augmented LLMs  
+
+---
+
+### **Slide 20 — Closing Slide**
+**“RAG is not a feature.  
+RAG is the memory system LLMs were missing.”**
