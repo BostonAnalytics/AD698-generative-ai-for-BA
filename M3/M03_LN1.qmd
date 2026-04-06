@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Text Generation with Large Language Models"
+subtitle: "Prompting as System Design"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -8,8 +8,50 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['Lecture', 'M03:', 'Notes']
-description: "Lecture covering Text Generation with Large Language Models."
+description: "Lecture covering Prompting as System Design."
 ---
+
+```{python}
+#| echo: false
+#| eval: true
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def set_economist_theme():
+    sns.set_theme(
+        context="talk",
+        style="whitegrid",
+        rc={
+            # Fonts
+            "font.family": "serif",
+            "axes.titlesize": 14,
+            "axes.titleweight": "bold",
+            "axes.labelsize": 12,
+            "axes.labelweight": "bold",
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+
+            # Grid + Spines
+            "grid.color": "#d9d9d9",
+            "grid.linewidth": 0.6,
+            "axes.edgecolor": "#333333",
+            "axes.linewidth": 0.8,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+
+            # Lines
+            "lines.linewidth": 1.0,
+
+            # Figure
+            "figure.figsize": (8, 4),
+            "figure.dpi": 120,
+
+            # Legend
+            "legend.frameon": False,
+        }
+    )
+set_economist_theme()
+```
 
 # The Shift to Prompt‑Based Approaches
 
@@ -201,9 +243,22 @@ digraph InferenceConditioning {
 
 ## Worked Example: How a Prompt Changes Token Probabilities
 
+```
+sentence 1 = "The cat runs."
+sentence 2 = "The cat sleeps."
+sentence 3 = "The dog runs."
+```
+$$
+\begin{align}
+P{Y=The} = 1 \\
+P{Y=cat | Y_{t-1}=The} = 2/3 \\
+P{Y=runs | Y_{t-1}=cat, Y_{t-2}=The} = 0.40 \\
+\end{align}
+$$
+
 We’ll use a tiny vocabulary to illustrate the idea:
 
-Vocabulary = {"cat", "dog", "runs", "sleeps", "."}
+Vocabulary = {"the", "cat", "dog", "runs", "sleeps", "."}
 
 
 ### Without a Prompt
@@ -231,6 +286,8 @@ The model is relying on its **pretrained priors** about typical continuations.
 Prompt:  
 ```
 "Write a dramatic action scene. Complete the sentence: The cat"
+
+dramatic $\in$ {action, suspense, conflict} $\implies$ high-energy verbs like "runs", "leaps", "attacks"
 ```
 
 Now the model conditions on the *semantic policy* "dramatic action scene."
@@ -263,6 +320,7 @@ Prompt:
 Complete the sentence: The cat"
 ```
 
+
 Distribution:
 
 | Token | Probability |
@@ -292,6 +350,16 @@ The shift to prompt-based approaches is not a superficial change in interface �
 
 This new paradigm enables faster iteration, more flexible systems, and a more direct alignment between user intent and model behavior.
 
+
+{{< include ./m03_l01_content/index.qmd >}}
+
+{{< include ./m03_l01_content/sequence.qmd >}}
+
+{{< include ./m03_l01_content/text-sequence.qmd >}}
+
+<!-- {{< include ./m03_l01_content/language-model.qmd >}} -->
+
+
 # Transformers and the Attention Mechanism
 
 We will cover transformers in the next lecture, but it’s important to understand the historical context of how we got here. The transformer architecture, introduced in the seminal paper "Attention is All You Need" [@vaswani2017attention], revolutionized natural language processing and laid the groundwork for the development of large language models.
@@ -304,7 +372,3 @@ We will cover transformers in the next lecture, but it’s important to understa
 ## Transformer Models
 
 ![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
-
-# Recurrent Neural Networks (RNNs)
-
-{{< ./m03_l01_content/index.qmd >}}

@@ -1,6 +1,6 @@
 ---
-title: "M04: Presentation"
-subtitle: "AI-Powered Data Analytics & SQL Automation"
+title: "AD698 - Applied Generative AI"
+subtitle: "Transformers Attention and Context"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -12,9 +12,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -38,3 +35,581 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
+
+```{python}
+#| echo: false
+#| eval: true
+from IPython.display import SVG, display
+
+%load_ext autoreload
+%autoreload 2
+
+```
+
+# Attention Mechanism and Transformers
+
+## From Classic Deep Learning to the Edge of Its Limits
+
+- The 2010s: Deep Learning’s First Boom
+  - Breakthroughs driven by **MLPs, CNNs, and RNN/LSTMs**  
+  - Architectures changed little from their 1980s–1990s origins  
+  - Gains came mostly from:
+    - **GPUs + parallel computing**
+    - **Massive datasets + cheap storage**
+    - **Training innovations** (ReLU, batch norm, dropout, residuals, Adam)
+- Why These Models Plateaued
+  - CNNs dominated vision; LSTMs dominated NLP  
+  - Thousands of alternative architectures proposed, but few displaced the classics  
+  - Progress felt like **scaling**, not **rethinking**  
+  - By mid‑2010s, the field was primed for a **new architectural paradigm**
+
+---
+
+## The Transformer Era
+
+- Originally added to encoder–decoder RNNs for machine translation  
+- Allowed models to [focus selectively]{.uugreen-bold} on different input tokens  
+- Replaced the “single compressed vector” bottleneck  
+- Enabled differentiable, learnable weighting over the entire input sequence
+- Transformers: The Architectural Breakthrough
+  - @Vaswani2017Attention: [no recurrence, all attention]{.uublue-bold}  
+  - Rapidly outperformed RNNs across NLP tasks  
+  - Became the foundation for [large-scale pretraining]{.uured-bold} (BERT, RoBERTa, GPT‑2/3)  
+  - Expanded beyond NLP:
+    - [**Vision Transformers**]{.uublue-bold} (image recognition, detection, segmentation)
+    - [**Speech**]{.uublue-bold}, [**reinforcement learning**]{.uublue-bold}, [**graph neural networks**]{.uublue-bold}
+
+### The New Landscape
+- Transformers + large-scale pretraining → [foundation models]{.uured-bold}  
+- Default approach: start with a pretrained Transformer, fine‑tune for downstream tasks  
+- Represents a true [architectural shift]{.uured-bold}, not just bigger models
+
+---
+
+# Why Attention? A Human Translation Story
+
+## Why Attention? A Human Translation Story
+
+- When we translate a sentence, we don’t memorize the entire thNew chating at once.  
+- We **look back and forth**, focusing on the specific words we need at each moment.  
+- Early sequence‑to‑sequence models [@Sutskever.Vinyals.Le.2014] didn’t do this.  
+- The encoder read the whole sentence **once**, compressed it into a single vector, and handed that to the decoder.  
+- The decoder then tried to generate the entire translation from that one vector.
+
+```{python}
+#| echo: false
+#| label: fig-encoder-01
+#| fig-align: center
+
+from m4code.attention_diagrams import DiagramBuilder
+d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
+image = d.encoder_only(label="encoder01")
+display(SVG(image))
+```
+
+---
+
+## The Problem With Single‑Vector Encodings
+
+- Compressing a long, information‑rich sentence into one vector is a bottleneck.  
+- RNNs struggle to retain all details, especially for long sequences.  
+- Even improved architectures (Kalchbrenner et al., 2014; Yang et al., 2016) only partially help.  
+- The decoder has no way to “look back” at specific words.  
+- This mismatch between human translation and RNN translation motivates a new idea.
+
+```{python}
+#| echo: false
+#| label: fig-bottleneck-01
+#| fig-align: center
+
+from m4code.attention_diagrams import DiagramBuilder
+d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
+image = d.bottleneck(label="bottleneck01")
+display(SVG(image))
+```
+
+---
+
+## The Key Insight: Focus Selectively
+
+- Humans translate by **focusing on different input words at different times**.  
+- At each decoding step, we implicitly form a [distribution]{.uured-bold} over the input words:  
+  - some words matter a lot,  
+  - some matter a little,  
+  - some don’t matter at all.  
+- Ideally, the decoder should receive [only the relevant information]{.uugblue-bold} for the word it is about to produce.
+
+```{python}
+#| echo: false
+
+from m4code.attention_diagrams import DiagramBuilder
+d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
+image = d.focus_sequence(label="bottleneck01");
+
+```
+
+:::{.r-stack}
+
+![](M04_lecture01_figures/focus_step1_bottleneck01.svg){.fragment}
+
+![](M04_lecture01_figures/focus_step2_bottleneck01.svg){.fragment}
+
+![](M04_lecture01_figures/focus_step3_bottleneck01.svg){.fragment}
+
+![](M04_lecture01_figures/focus_step4_bottleneck01.svg){.fragment}
+
+:::
+
+---
+
+## From Human Intuition to a Formal Mechanism
+
+- @Bahdanau.Cho.Bengio.2014 formalized this intuition:
+  - Treat the encoder outputs as a **set of key–value pairs**  
+    $(\mathbf{k}_i, \mathbf{v}_i)$.  
+  - At each decoding step, compute a **query** $\mathbf{q}$.  
+  - Compare the query to each key to produce **attention weights**  
+    $\alpha(\mathbf{q}, \mathbf{k}_i)$.  
+  - Use these weights to form a **weighted sum of values**:  
+    $$
+    \text{Attention}(\mathbf{q}, \mathcal{D}) = \sum_i \alpha(\mathbf{q}, \mathbf{k}_i)\mathbf{v}_i.
+    $$
+
+```{python}
+#| echo: false
+
+from m4code.attention_diagrams import DiagramBuilder
+d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
+image = d.qkv_dictionary(label="qkv01", blockstyle="c");
+display(SVG(image))
+```
+
+---
+
+##  Why Queries, Keys, and Values Work So Well
+
+This mechanism has several powerful properties:
+
+- Works for **any input length** — no architectural changes needed.  
+- The “program” (the query) is **small**, but it operates over a **large state space**.  
+- The model learns **what to retrieve** and **how strongly**.  
+- Special cases include:  
+  - exact lookup (one weight = 1),  
+  - uniform averaging,  
+  - convex combinations (soft attention).  
+- Softmax normalization ensures weights are nonnegative and sum to 1.
+
+
+
+---
+
+##  The Bridge to Transformers
+
+::: {.columns}
+::: {.column}
+- Once we have queries, keys, and values, we can drop recurrence entirely.  
+- @Vaswani2017Attention showed that **attention alone** can model all relationships in a sequence.  
+- This leads directly to the Transformer architecture.  
+- Q/K/V attention becomes the fundamental building block for:  
+  - machine translation,  
+  - language modeling (GPT‑2/3),  
+  - masked language modeling (BERT),  
+  - vision transformers,  
+  - speech, RL, and graph models.
+:::
+::: {.column}
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| label: fig-transformer-01
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+from m4code.attention_pooling_figures import *
+
+input_tokens = ["this", "movie", "was", "great", "I", "happy"]
+query_tokens = ["I", "am", "happy", "this", "movie", "great"]
+
+emb = load_embeddings("./data/reviews-word2vec.tiny.txt")
+weights = d.compute_attention_weights_cosine(
+    query_tokens = ["I", "am", "happy", "this", "movie", "great"],
+    input_tokens = ["this", "movie", "was", "great", "I", "happy"],
+    embeddings=emb
+)
+plt.imshow(weights, cmap="Reds", origin="lower")
+plt.xticks(range(len(input_tokens)), input_tokens, rotation=45)
+plt.yticks(range(len(query_tokens)), query_tokens)
+plt.colorbar()
+plt.show()
+
+```
+:::
+:::
+
+
+
+# Attention Pooling by Similarity
+
+## Motivation: Why Attention Pooling?
+
+- Before Transformers, attention already existed in classical statistics  
+- Nadaraya–Watson regression is one of the earliest “attention‑like” mechanisms  
+- It uses [similarity]{.uured-bold} between a query and keys to compute a weighted average of values  
+- This gives us a clean bridge from classical kernels → modern attention  
+
+```{python}
+#| echo: false
+#| eval: false
+
+from m4code.attention_pooling_figures import *
+
+fig_kernels_svg()
+# fig_regression_svg()
+# fig_attention_kernels_svg()
+# fig_regression_sigmas_svg()
+# fig_attention_sigmas_svg()
+
+```
+
+
+---
+
+## The Core Idea
+
+::: {.columns}
+::: {.column}
+- This is attention pooling in its purest form  
+- No training, no parameters, no deep nets  
+- Just:  
+  1. Compute similarity  
+  2. Normalize  
+  3. Weighted sum  
+
+:::
+::: {.column}
+$$
+f(q) = \sum_i v_i \frac{\alpha(q, k_i)}{\sum_j \alpha(q, k_j)}
+$$
+
+:::
+:::
+
+
+---
+
+## Kernels as Similarity Functions
+
+$$
+\alpha(q, k) = 
+\begin{cases}
+\exp(-\|q-k\|^2/2) & \text{Gaussian} \\
+1 & \text{if } |q-k| < 1 \\
+\max(0, 1 - |q-k|) & \text{Epanechikov}
+\end{cases}
+$$
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| label: fig-kernels-01
+#| fig-cap: "Common kernels used in Nadaraya–Watson regression."
+#| fig-alt: "Line plots of Gaussian, Boxcar, and Epanechikov kernels."
+
+from m4code.attention_pooling_figures import *
+
+fig_kernels_svg()
+# fig_regression_svg()
+# fig_attention_kernels_svg()
+# fig_regression_sigmas_svg()
+# fig_attention_sigmas_svg()
+
+```
+
+
+
+---
+
+## Generating Synthetic Data
+
+- A simple nonlinear function  
+- Add noise to simulate real data  
+- We’ll use kernel regression to approximate it  
+
+```{python}
+#| echo: false
+#| eval: true
+
+def f(x):
+    return 2 * torch.sin(x) + x
+
+n = 40
+x_train = torch.sort(torch.rand(n) * 5)[0]
+y_train = f(x_train) + torch.randn(n)
+
+x_val = torch.arange(0, 5, 0.1)
+y_val = f(x_val)
+```
+
+### Nadaraya–Watson Attention Pooling
+
+- Each validation point is a [query]{.uured-bold}  
+- Each training point is a [key–value pair]{.uured-bold}  
+- The normalized kernel weights are [attention weights]{.uured-bold}  
+
+```{python}
+#| echo: false
+#| eval: true
+
+def nadaraya_watson(x_train, y_train, x_val, kernel):
+    dists = x_train[:, None] - x_val[None, :]
+    k = kernel(dists)
+    weights = k / k.sum(dim=0, keepdim=True)
+    y_hat = y_train @ weights
+    return y_hat, weights
+```
+
+---
+
+## Regression Results
+
+- All kernels except “constant” produce reasonable fits  
+- Gaussian is smoothest  
+- Boxcar is sharpest  
+
+```{python}
+#| echo: false
+#| eval: true
+
+kernels = [constant, boxcar, gaussian, epanechikov]
+names = ["Constant","Boxcar", "Gaussian", "Epanechikov"]
+
+fig, axes = plt.subplots(1, 3, figsize=(12, 3))
+for ax, kernel, name in zip(axes, kernels, names):
+    y_hat, _ = nadaraya_watson(x_train, y_train, x_val, kernel)
+    ax.plot(x_val, y_val, "k--", label="true")
+    ax.plot(x_val, y_hat, label="estimate")
+    ax.scatter(x_train, y_train, alpha=0.5)
+    ax.set_title(name)
+    ax.legend()
+plt.show()
+```
+
+
+---
+
+## Attention Weights as Heatmaps
+
+- Each column = a query  
+- Each row = a training point  
+- Bright = high attention weight  
+- Gaussian, Boxcar, Epanechikov → very similar patterns  
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| label: fig-attention-kernels
+
+from m4code.attention_pooling_figures import *
+
+# fig_kernels_svg()
+# fig_regression_svg()
+fig_attention_kernels_svg()
+# fig_regression_sigmas_svg()
+# fig_attention_sigmas_svg()
+```
+
+
+---
+
+## Kernel Width Matters
+
+- Narrow kernels → sharp, local attention  
+- Wide kernels → smooth, global attention  
+- Small $\sigma$ → attention collapses to nearest neighbors  
+- Large $\sigma$ → attention spreads across many points  
+
+
+```{python}
+#| echo: false
+#| eval: true
+#| fig-align: center
+#| label: fig-attention-sigmas
+
+from m4code.attention_pooling_figures import *
+
+# fig_kernels_svg()
+# fig_regression_svg()
+# fig_attention_kernels_svg()
+fig_regression_sigmas_svg()
+# fig_attention_sigmas_svg()
+```
+
+
+---
+
+## Why This Matters for Transformers
+
+- Nadaraya–Watson is a **precursor** to modern attention  
+- Same structure:  
+  - similarity → softmax → weighted sum  
+- But:  
+  - kernels are hand‑crafted  
+  - representations are fixed  
+  - no learning  
+- Transformers replace kernels with **learned Q/K/V projections**  
+
+---
+
+## Motivation for Attention Scoring Functions
+
+[Goal:]{.uured-bold} Understand how we compute the *compatibility* between a query and a set of keys.
+
+- Attention pooling requires a score $a(q, k_i)$ for each key.  
+- These scores determine how much each value contributes to the output.  
+- We want scoring functions that are:
+  - computationally efficient  
+  - numerically stable  
+  - expressive enough to model interactions  
+- Two dominant families:
+  - [Dot‑product attention]{.uublue-bold}
+  - [Additive attention]{.uublue-bold}
+
+---
+
+## From Distance Kernels to Learnable Scoring
+
+- [Context:]{.uured-bold} Earlier, we used Gaussian kernels to model similarity.  
+- [Issue:]{.uured-bold} Distance computations are more expensive than dot products.
+    - Terms depending only on $q$ cancel out after softmax normalization.  
+    - Layer normalization often keeps $\|k_i\|$ roughly constant.  
+    - This motivates dropping norm‑dependent terms and focusing on dot products.
+
+---
+
+## Dot‑Product Attention
+
+
+::: {.columns}
+::: {.column}
+- Measures alignment between query and key.  
+- Works best when $q$ and $k_i$ have similar scale.
+- If $q, k_i \in \mathbb{R}^d$ with i.i.d. components, $\mathrm{Var}(q^\top k_i) = d$.  
+- Large $d$ → large variance → unstable softmax.
+
+:::
+::: {.column}
+$$
+a(q, k_i) = q^\top k_i
+$$
+
+:::
+:::
+
+---
+
+## Scaled Dot‑Product Attention
+
+::: {.columns}
+::: {.column}
+- **Fix:** Rescale by $1/\sqrt{d}$.
+- Keeps logits in a stable range.  
+- Prevents softmax from saturating.  
+- Used in Transformers and nearly all modern architectures.
+
+:::
+::: {.column}
+$$
+\begin{align}
+a(q, k_i) = \frac{q^\top k_i}{\sqrt{d}}\\
+\alpha(q, k_i) = \mathrm{softmax}(a(q, k_i))
+\end{align}
+$$
+
+:::
+:::
+
+---
+
+## Batched Scaled Dot‑Product Attention
+
+- For queries $Q \in \mathbb{R}^{n \times d}$, keys $K \in \mathbb{R}^{m \times d}$, values $V \in \mathbb{R}^{m \times v}$:
+
+$$
+\begin{align}
+\mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right)V
+\end{align}
+$$
+
+---
+
+## Masked Softmax
+
+- NLP sequences have variable lengths.  
+- Padding tokens should not contribute to attention.
+- Mechanism:
+  - Replace padded positions with a large negative value (e.g., $-10^6$).  
+  - After softmax, these positions contribute zero.
+
+---
+
+## Additive Attention
+
+- Dot‑product attention requires $q$ and $k_i$ to have the same dimension.  
+- Additive attention handles mismatched dimensions naturally.
+- A small MLP computes compatibility.  
+- Often used in early seq2seq models (Bahdanau attention).
+
+$$
+\begin{align}
+a(q, k_i) = w_v^\top \tanh(W_q q + W_k k_i)
+\end{align}
+$$
+
+
+---
+
+## Comparing Dot‑Product and Additive Attention
+
+-- Dot‑Product Attention
+  - Fast (matrix multiplications)  
+  - Scales well to large models  
+  - Standard in Transformers  
+- Additive Attention
+  - More flexible with dimensionality  
+  - Slightly more expensive  
+  - Historically important in seq2seq models  
+
+
+---
+
+## When to Use Which Scoring Function
+- dot‑product attention when:
+  - Query and key dimensions match  
+  - You need speed and scalability  
+  - You’re building Transformer‑style models  
+- additive attention when:
+  - Query and key dimensions differ  
+  - You want a more expressive scoring function  
+  - Model size is small enough that cost is negligible  
+
+---
+
+## Summary
+
+- Attention scoring functions compute compatibility between queries and keys.  
+- Scaled dot‑product attention is the default in modern architectures.  
+- Additive attention is more flexible but slower.  
+- Masked softmax is essential for variable‑length sequences.  
+- Efficient implementations rely on batch matrix multiplication.
+
+
+
+## References
+
+::: {#refs}
+
+:::

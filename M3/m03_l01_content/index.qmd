@@ -69,7 +69,7 @@ where each layer's parameters (both conventional and recurrent)
 are shared across time steps.
 
 
-![On the left recurrent connections are depicted via cyclic edges. On the right, we unfold the RNN over time steps. Here, recurrent edges span adjacent time steps, while conventional connections are computed synchronously.](./img/unfolded-rnn.svg){width=80% fig-align=center fig-alt="Diagram showing the recurrent connections in an RNN and how they are unrolled across time steps" #fig_unfolded-rnn}
+![On the left recurrent connections are depicted via cyclic edges. On the right, we unfold the RNN over time steps. Here, recurrent edges span adjacent time steps, while conventional connections are computed synchronously.](./m03_l01_content/img/unfolded-rnn.svg){width=80% fig-align=center fig-alt="Diagram showing the recurrent connections in an RNN and how they are unrolled across time steps" #fig_unfolded-rnn}
 
 
 Like neural networks more broadly,

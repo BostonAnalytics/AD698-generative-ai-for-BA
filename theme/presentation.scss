@@ -272,7 +272,7 @@ $button-text: #000000; // Button text color
 // Level 2 (nested ul inside li)
 .reveal ul li>ul>li,
 .reveal ol li>ol>li {
-  font-size: 16pt;
+  font-size: 18pt;
   margin-bottom: 0.3em;
   font-family: "Source Sans 3", sans-serif;
   color: $dark-gray;
@@ -281,7 +281,7 @@ $button-text: #000000; // Button text color
 // Level 3
 .reveal ul li ul li>ul>li,
 .reveal ol li ol li>ol>li {
-  font-size: 16pt;
+  font-size: 18pt;
   margin-bottom: 0.2em;
   font-style: italic;
   font-family: "Source Sans 3", sans-serif;

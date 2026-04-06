@@ -118,7 +118,7 @@ git push
 
 Open your repo → **Settings → Pages** and confirm **Source** is **`gh-pages`** with **/ (root)**.
 
-![](M0_LN02_figures/gh-pages-user-site.png){.border}
+![](./M0_lecture02_figures/gh-pages-user-site.png){.border}
 
 ## Add the **GitHub Actions** workflow (automatic build & deploy)
 
@@ -224,7 +224,7 @@ If your tutorial also describes the other two (non‑CI) routes, keep these sect
   ```
 * Set **Settings → Pages** to **Branch: main / Folder: /docs**.
 
-![](M0_LN02_figures/gh-pages-docs-dir.png){.border}
+![](./M0_lecture02_figures/gh-pages-docs-dir.png){.border}
 
 ### Publish command (manual deploy from local)
 
@@ -318,8 +318,8 @@ Re-render/publish so the `CNAME` is present on `gh-pages`.
 * **User site URL wrong** → Must be `https://yourusername.github.io` (no repo name suffix).
 * **Images not showing** → Ensure you committed the `images/` folder and paths match:
 
-  * `![](M0_LN02_figures/gh-pages-user-site.png){.border}`
-  * `![](M0_LN02_figures/gh-pages-docs-dir.png){.border}`
+  * `![](./M0_lecture02_figures/gh-pages-user-site.png){.border}`
+  * `![](./M0_lecture02_figures/gh-pages-docs-dir.png){.border}`
 
 
 ## Student one‑page checklist

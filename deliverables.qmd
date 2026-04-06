@@ -7,11 +7,8 @@ format:
       toc: false
     docx: default
 bibliography: references.bib
-csl: chicago-syllabus.csl
+csl: mis-quarterly.csl
 # html-table-processing: none
-execute: 
-  freeze: false
-  cache: true
 ---
 
 ## Course Schedule 
@@ -23,11 +20,11 @@ execute:
 from datetime import datetime, timedelta
 import pandas as pd
 from IPython.display import display, Markdown
+import quarto
 
 semester = "Spring"
 
 # Function to generate the Day 1 - Day 7 list based on a start date
-
 
 def generate_days(start_date):
     days = ["Monday", "Tuesday", "Wednesday",
@@ -69,21 +66,12 @@ combined_table.style.hide(axis="index")
 
 ```
 
-- **Section {{< var first_section >}}**
-  - The first day of the week (Day 1) for section **{{< var first_section >}}** is {{< first_day >}}{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section **{{< var first_section >}}** is {{< last_day_first_section >}}{.uured-bold}.
-
-- **Section {{< var second_section >}}**
-  - The first day of the week (Day 1) for section **{{< var second_section >}}** is {{< second_day >}}{.uugreen-bold}, this is the day we will conduct our live classroom sessions.
-  - The last day of the week (Day 7) for section **{{< var second_section >}}** is {{< last_day_second_section >}}{.uured-bold}.
-
 Please adhere to the due dates posted on the course website. [Late work is not accepted]{.bloodred-bold}.
 
 - All assignments (for on campus) will open **one to two weeks before the due date**.
 - All assignments (for online) will open **in the first two weeks**.
 - All Labs (for on campus) will open **one week before the due date**.
 - All Labs (for online) will open **in the first two weeks** and are ungraded.
-
 
 
 ## Online (O1) Spring
