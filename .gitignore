@@ -8,3 +8,7 @@ docs/**/*
 _site.zip
 data/SEC-10K-2024/*.*
 data/SEC-10K-2024-HTML/*.*
+.env
+help-code/3-neural-nlp/data/corpora/aclImdb_v1.tar.gz
+help-code/3-neural-nlp/data/corpora/imdb-reviews/*
+help-code/3-neural-nlp/data/corpora/imdb-reviews/*.*
