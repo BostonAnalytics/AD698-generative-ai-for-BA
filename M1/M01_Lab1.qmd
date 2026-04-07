@@ -163,14 +163,18 @@ Each stage produces **artifacts** that help you answer analytical questions.
 
 ### Mount Drive in Colab {.unnumbered}
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from google.colab import drive
 drive.mount('/content/drive')
 ```
 
 ### Verify Files {.unnumbered}
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 import os
 os.listdir("/content/drive/MyDrive")
 ```
@@ -179,7 +183,9 @@ Adjust paths as needed.
 
 ### For Local Drive (Optional) {.unnumbered}
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from pathlib import Path
 
 DATA_DIR = Path("../data/SEC-10K-2024")
@@ -196,7 +202,9 @@ print(sample_text[:1500])
 
 This will help you understand the structure of the document and identify key areas for analysis (e.g., risk factors, management discussion). We first start with Sentence Segmentation
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 import nltk
 nltk.download("punkt")
 
@@ -210,7 +218,9 @@ sentences[:5]
 ## Are sentences in 10-Ks longer or shorter than typical news or social media text?
 
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from nltk.tokenize import word_tokenize
 
 tokens = word_tokenize(sample_text)
@@ -219,7 +229,9 @@ tokens[:30]
 
 ## What kinds of tokens appear that are not “words” (e.g., symbols, numbers, legal references)?
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 nltk.download("averaged_perceptron_tagger")
 
 from nltk import pos_tag
@@ -231,7 +243,9 @@ pos_tags
 ## Which POS categories dominate risk-related sections (nouns, verbs, adjectives)?
 
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from nltk.corpus import stopwords
 nltk.download("stopwords")
 
@@ -247,7 +261,9 @@ filtered_tokens[:30]
 
 ## Which important business terms survive stop-word removal?
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from nltk.stem import PorterStemmer, WordNetLemmatizer
 nltk.download("wordnet")
 
@@ -263,7 +279,9 @@ list(zip(filtered_tokens[:20], stems, lemmas))
 ## Which transformation preserves interpretability better for financial text?
 
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 import spacy
 nlp = spacy.load("en_core_web_sm")
 
@@ -273,7 +291,9 @@ doc = nlp(sentences[0])
 
 ## How might dependency relationships help identify risk statements or obligations?
 
-```python
+```{python}
+#| echo: true
+#| eval: false
 from difflib import SequenceMatcher
 
 def similarity(a, b):
