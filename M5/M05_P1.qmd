@@ -20,11 +20,8 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
 fig-align: center
-monofont: Roboto
 title-slide-attributes:
     data-background-image: "../theme/blank_red.png"
     data-background-size: 103% auto
@@ -86,7 +83,9 @@ RAG augments LLMs with **retrieval from external knowledge bases** using semanti
 
 
 ```{mermaid}
+%%| label: "RAG Evolution Timeline"
 %%| fig-align: center
+
 
 stateDiagram-v2
 direction TB

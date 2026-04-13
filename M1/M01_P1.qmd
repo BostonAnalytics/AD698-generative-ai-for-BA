@@ -20,7 +20,6 @@ format:
         toc-depth: 1
         auto-stretch: false
         from: markdown+emoji
-
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
@@ -47,7 +46,7 @@ csl: ../mis-quarterly.csl
 - Explore core generative model architectures
 - Gain insights into practical applications
 
-![](./M01_lecture01_figures/ad698path.png){width="95%"}
+![](./M01_lecture01_figures/ad698path.png){width="80%"}
 
 ## How to print Revealjs slides
 
@@ -58,8 +57,7 @@ csl: ../mis-quarterly.csl
 ##  Course Schedule (tentative)
 
 ```{python}
-# | echo: false
-# | output: html
+#| echo: false
 
 import pandas as pd
 from IPython.display import display, HTML
@@ -78,6 +76,8 @@ course_schedule = (
 # remove last two rows
 course_schedule.drop(course_schedule.index[-2:], inplace=True)
 
+# remove description column
+course_schedule.drop("Description", axis=1, inplace=True)
 
 def restrict_width(_):
     return [
@@ -102,7 +102,7 @@ styled_table = (
     ])
 )
 
-display(HTML(styled_table.to_html()))
+styled_table
 
 ```
 
@@ -111,8 +111,7 @@ display(HTML(styled_table.to_html()))
 ##  Course Schedule (tentative)
 
 ```{python}
-# | echo: false
-# | output: html
+#| echo: false
 
 import pandas as pd
 from IPython.display import display, HTML
@@ -131,14 +130,8 @@ course_schedule = (
 # remove last two rows
 course_schedule.drop(course_schedule.index[-2:], inplace=True)
 
-
-def restrict_width(_):
-    return [
-        ("max-width", "275px"),
-        ("overflow", "hidden"),
-        ("text-overflow", "ellipsis")
-    ]
-
+# remove description column
+course_schedule.drop("Description", axis=1, inplace=True)
 
 # drop online and On-campus columns
 course_schedule.drop(["Online", "On-Campus"], axis=1, inplace=True)
@@ -155,19 +148,19 @@ styled_table = (
     ])
 )
 
-display(HTML(styled_table.to_html()))
+styled_table
 
 ```
 
 ## Course Grading
 
-::: {.columns}
-::: {.column width="60%"}
+:::{.columns}
+:::{.column width="60%"}
 
 ```{python}
-# | echo: false
-# | eval: true
-# | auto-stretch: false
+#| echo: false
+#| eval: true
+#| auto-stretch: false
 
 from pywaffle import Waffle
 import pandas as pd
@@ -194,12 +187,10 @@ plt.show()
 ```
 
 :::
-::: {.column width="40%"}
+:::{.column width="40%"}
 ```{python}
-# | echo: false
-# | output: html
-# |
-
+#| echo: false
+#| eval: true
 import pandas as pd
 from IPython.display import display, Markdown, HTML
 
@@ -234,7 +225,7 @@ styled = (
     ])
 )
 
-display(HTML(styled.to_html()))
+styled
 ```
 
 :::
@@ -353,8 +344,8 @@ display(HTML(styled.to_html()))
 
 ## Key Generative Model Architectures
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 - Foundation Models and Algorithms
   -  Convolutional Neural Networks (CNNs)
   -  Recurrent Neural Networks (RNNs)
@@ -364,7 +355,7 @@ display(HTML(styled.to_html()))
   - GPT (Generative Pre-trained Transformer)
   - BERT (Bidirectional Encoder Representations)
 :::
-::: {.column}
+:::{.column}
 - Image Generation Models
   - DALL-E
   - Stable Diffusion
@@ -409,30 +400,31 @@ display(HTML(styled.to_html()))
 
 ## 1958 - Perceptron by Rosenblatt at Cornell
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 
 - [The perceptron]{.uured-bold}, introduced by Frank Rosenblatt in 1958, was an early artificial neuron model inspired by the brain and helped launch modern neural networks.  
 - Despite its impact, it couldn't handle non–linearly separable problems like **XOR**, a limitation that shaped future AI research.
 :::
-::: {.column}
+:::{.column}
 ![](./M01_lecture01_figures/0925_rosenblatt4.jpg){width="75%" fig-align="center"}
 :::
 :::
 
-
+---
 
 ## 1969 - Analysis of Perceptrons Minsky \& Papert
-
-::: {.columns}
-::: {.column}
 
 - [Minsky and Papert’s book *Perceptrons*]{.uured-bold} analyzed the strengths and limits of Rosenblatt’s perceptron, emphasizing its inability to solve non‑linearly separable problems like [XOR]{.uured-bold}.  
 - Their critique slowed neural‑network research and contributed to the [AI Winter]{.uured-bold}.  
 - The work also paved the way for later breakthroughs, including [backpropagation]{.uured-bold} in the 1980s, which enabled training multilayer networks and revived interest in neural nets.
-:::
-::: {.column}
+
 ```{python}
+#| echo: false
+#| eval: true
+#| label: fig-XOR-Problem
+#| output-location: slide
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -455,29 +447,29 @@ gates = {
     "XOR": XOR(X),
 }
 
-fig, axes = plt.subplots(2, 2, figsize=(6, 6))
+fig, axes = plt.subplots(2, 2, figsize=(5,5))
 axes = axes.ravel()
 
 for ax, (name, y) in zip(axes, gates.items()):
     # Plot points: 0 = blue circle, 1 = red diamond
     for (x1, x2), label in zip(X, y):
         if label == 0:
-            ax.scatter(x1, x2, c="blue", marker="o", s=80)
+            ax.scatter(x1, x2, c="#766100", marker="o", s=80)
         else:
-            ax.scatter(x1, x2, c="red", marker="D", s=80)
+            ax.scatter(x1, x2, c="#3e4587", marker="D", s=80)
 
     # Add (optional) linear boundary for linearly separable ones
     if name in ["AND", "NAND", "OR"]:
         xs = np.linspace(-0.2, 1.2, 100)
         if name == "AND":
             # Example separating line: x1 + x2 = 1.5
-            ax.plot(xs, 1.5 - xs, color="blue")
+            ax.plot(xs, 1.5 - xs, color="#766100")
         elif name == "NAND":
             # Example: x1 + x2 = 0.5
-            ax.plot(xs, 0.5 - xs, color="blue")
+            ax.plot(xs, 0.5 - xs, color="#766100")
         elif name == "OR":
             # Example: x1 + x2 = 0.5
-            ax.plot(xs, 0.5 - xs, color="blue")
+            ax.plot(xs, 0.5 - xs, color="#3e4587")
 
     ax.set_title(name)
     ax.set_xlim(-0.2, 1.2)
@@ -492,9 +484,9 @@ plt.show()
 
 ```
 
-:::
-:::
 
+
+---
 
 ## 1974-1980 - $1^{\text {st }}$ AI Winter
 
@@ -518,8 +510,6 @@ plt.show()
 
 [Backpropagation]{.uured-bold} is a general algorithm for training neural networks by computing gradients of a loss function with respect to model parameters efficiently.
 
-:::{.columns}
-::: {.column width="50%"}
 - Core ideas
   - Uses the **chain rule** to propagate error signals backward through layers
   - Computes partial derivatives for each weight in the network
@@ -530,13 +520,13 @@ plt.show()
   - Shifted neural networks from theoretical constructs to trainable systems
   - Backpropagation unified learning across arbitrary network depth
 
-:::
-::: {.column width="50%"}
+---
+
+
+## 1980s — Backpropagation Popularized
 
 ![](./M01_lecture01_figures/backprop.png){width="75%" fig-align="center"}
 
-:::
-:::
 
 ---
 
@@ -583,7 +573,7 @@ The [Universal Approximation Theorem]{.uured-bold} provided a formal theoretical
 ## Why Didn’t Neural Networks Take Over Immediately?
 
 :::{.columns}
-::: {.column width="60%"}
+:::{.column width="60%"}
 
 Despite strong theoretical foundations, neural networks did **not** dominate AI in the late 1980s and 1990s.
 
@@ -597,7 +587,7 @@ Despite strong theoretical foundations, neural networks did **not** dominate AI 
   - But **difficult to train, scale, and deploy** in practice
 
 :::
-::: {.column width="40%"}
+:::{.column width="40%"}
 
 ### Theory vs Reality
 
@@ -812,8 +802,8 @@ It integrates technical controls, organizational governance, and ethical commitm
 
 ## Information Backbone
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 
 All Information is stored in the form of data. Data is the backbone of information systems.
 
@@ -824,7 +814,7 @@ All Information is stored in the form of data. Data is the backbone of informati
   - Data Layer
 
 :::
-::: {.column}
+:::{.column}
 
 ![Web Architecture](./M01_lecture01_figures/web_architecture.png){width="90%" fig-align="center" #fig-web-architecture fig-alt="Web Architecture Diagram"}
 
@@ -838,31 +828,31 @@ All Information is stored in the form of data. Data is the backbone of informati
 Massive Data Analytics is the process of analyzing large data sets generated by social, business, operations, or technical activities to uncover hidden patterns, unknown correlations, market trends, customer preferences, and other useful business information [@shroff2010enterprise].
 :::
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 - Behavioral data on people's interactions with websites, mobile apps, and other physical and digital experiences
 - Transactional data
 - Social media data
 - Metadata about interactions
 - Data/Metadata related to the events, clicks
 :::
-::: {.column}
+:::{.column}
 - Assists companies in creating value by [improving revenue]{.uured-bold} or [reducing cost]{.uured-bold}.
 - Assists companies in gaining a [deeper understanding of their customers]{.uured-bold} by analyzing their online behavior.
 - Provides insights for [making decisions]{.uured-bold} related to business planning, performance and strategy
 - Informs [predictive modeling]{.uured-bold}, [testing]{.uured-bold}, [optimization]{.uured-bold}, [market research]{.uured-bold}, etc.
 :::
-::: 
+:::
 
 ---
 
 ## Big Data Analytics Process
 
-::: {.columns}
-::: {.column width="50%"}
+:::{.columns}
+:::{.column width="50%"}
 ![](./M01_lecture01_figures/analytics-funnel.png){width="90%" fig-align="center"}
 :::
-::: {.column width="50%"}
+:::{.column width="50%"}
 - [Data Collection]{.uured-bold}: Data is collected from various sources such as websites, social media, mobile apps, etc. by web scraping or using APIs. 
 - [Data Exploration]{.uured-bold}: Data is explored to identify patterns, trends, and relationships. It is processed and analyzed to generate meaningful insights
 - [Analysis & Visualization]{.uured-bold}: Exploring the data and variables will provide us with characteristics of the data.
@@ -880,14 +870,14 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 # Data Collection and Acquisition
 
 ## Data Collection and Acquisition
-::: {.columns}
-::: {.column width="30%"}
+:::{.columns}
+:::{.column width="30%"}
 
 ![](./M01_lecture01_figures/analytics-funnel-big-data.png){width="75%" fig-align="center"}
 
 :::
 
-::: {.column width="70%"}
+:::{.column width="70%"}
 
 - [Early Web Analytics]{.uured-bold}:
   - Initial tools analyzed server logs, which tracked details such as the host requesting a webpage.
@@ -904,17 +894,18 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 
 :::
 :::
+
 ---
 
 ## Cloud Platforms
 
-::: {.columns}
+:::{.columns}
 
-::: {.column}
+:::{.column}
 ![](./M01_lecture01_figures/cloud-platforms.jpeg){width="75%" fig-align="center"}
 
 :::
-::: {.column}
+:::{.column}
 - [Amazon Web Services (AWS)]{.uured-bold}: Provides scalable cloud solutions for data storage, analytics, and AI services.
 - [Google Cloud Platform (GCP)]{.uured-bold}: Offers services like BigQuery and AI-based analytics for large-scale data analysis.
 - [Microsoft Azure]{.uured-bold}: Features cloud-based data solutions, including Azure Data Lake and machine learning tools.
@@ -923,6 +914,7 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 
 :::
 :::
+
 ---
 
 ## Data Collection Methods  
@@ -947,16 +939,20 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 | Precaution to use | Not Necessary | Quite necessary |
 | | | |
 
+---
+
 ## Structured and Unstructured Data
 
 ![](./M01_lecture01_figures/data-types-applications.jpeg){width="90%" fig-align="center"}
 
+---
+
 ## Data Organization and Management
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 
-::: {.callout-important}
+:::{.callout-important}
 
   A [Database Management System]{.uured-bold} (DBMS) is a centralized software program that connects the database to various applications and displays data to the user or customer.
 
@@ -969,7 +965,7 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 - And [Spark SQL]{.uured-bold} for Big Data processing.
 
 :::
-::: {.column}
+:::{.column}
 - Examples of relational DBMS systems:
   - [Oracle]{.uured-bold}
   - [MySQL]{.uured-bold}
@@ -987,11 +983,11 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 
 ## HTTP protocol
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 ![](./M01_lecture01_figures/fetching-a-page.svg){width=95% fig-align="center"}
 :::
-::: {.column}
+:::{.column}
 ![](./M01_lecture01_figures/DOM-model.png){width=85% fig-align="center"}
 :::
 :::
@@ -1015,6 +1011,7 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 - [Link]{.uured-bold} Hyperlinks points from one URL to another.    
 
 ![](./M01_lecture01_figures/graph-analytics-for-cluster-marketing.png){width=55% fig-align="center"}
+
 ---
 
 ## Web Crawlers  
@@ -1030,9 +1027,9 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 
 ## How web crawlers work  
 
-:::: {.columns}
+:::{.columns}
 
-::: {.column width="50%"}
+:::{.column width="50%"}
 
 - The basic concept of a crawler is simple: a [breadth-first]{.uured-bold} traversal of the Web graph, as in the [BFS]{.uured-bold} algorithm
 - Start from a set of high-quality [seed]{.uured-bold} pages, recursively extracts the links within them to fetch more pages
@@ -1042,12 +1039,13 @@ Massive Data Analytics is the process of analyzing large data sets generated by 
 - [Devil in the details]{.uured-bold}: complications due to scalability, page revisit scheduling, spider traps, canonical URLs, robust HTML parsing, and the server ethics
 :::
 
-::: {.column width="50%"}
+:::{.column width="50%"}
 
 ![](./M01_lecture01_figures/webcrowlers.gif){width=85% fig-align="center"}
 :::
 
-:::: 
+:::
+
 ---
 
 ## Web and Cloud Data Sources 
@@ -1192,8 +1190,9 @@ Think of these as Project examples
 ---
 
 ## Fred API in python    
-::: {.columns}
-::: {.column}
+
+:::{.columns}
+:::{.column}
 ```{python}
 #| code-fold: false
 #| echo: true
@@ -1233,7 +1232,7 @@ else:
 ```
 
 :::
-::: {.column}
+:::{.column}
 ```{python}
 #| code-fold: false
 #| echo: false
@@ -1404,6 +1403,6 @@ From **text as documents** $\to$ **text as representations**
 
 # References 
 
-::: {.refs}
+:::{.refs}
 
 :::

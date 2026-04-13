@@ -19,8 +19,6 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
 fig-align: center
 monofont: Roboto

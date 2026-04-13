@@ -1,10 +1,322 @@
 ---
-title: "Initial Project Setup"
-subtitle: "M02 Project Milestone"
+title: "Token-Aware Chunking and Metadata Engineering for SEC 10-K RAG"
+subtitle: "Transforming Cleaned Section Data into Retrieval-Ready Computational Units"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-21"
 date-modified: today
 date-format: long
-categories: ['Setup', 'Initial', 'Project']
-description: "Project milestone: Initial Project Setup."
+engine: jupyter
+categories: ["Project", "RAG", "Chunking", "Metadata", "Vector Search", "SEC 10-K"]
 ---
+
+# Overview
+
+In this milestone, you will transform your **cleaned SEC 10-K sections (Milestone 1)** into a **retrieval-ready corpus**.
+
+This involves:
+
+- Token-aware chunking
+- Metadata engineering
+- Structural validation
+- Exploratory analysis
+
+This notebook serves as both:
+- your **engineering pipeline**
+- your **submission report**
+
+---
+
+# 1. Setup
+
+```{python}
+#| echo: fenced
+#| eval: false
+import pandas as pd
+import numpy as np
+from transformers import AutoTokenizer
+import uuid
+from tqdm import tqdm
+import matplotlib.pyplot as plt
+```
+
+---
+
+# 2. Load Cleaned Dataset (From Milestone 1)
+
+```{python}
+#| echo: fenced
+#| eval: false
+INPUT_PATH = "../data/sec_10k_2024_clean_sections.csv"
+
+df = pd.read_csv(INPUT_PATH)
+df.head()
+```
+
+---
+
+# 3. Tokenizer Setup
+
+We use a tokenizer aligned with embedding models.
+
+```{python}
+#| echo: fenced
+#| eval: false
+MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+```
+
+---
+
+# 4. Chunking Design
+
+## ✍️ Required Justification
+
+**Chunk Size:**
+Explain why this size balances:
+
+* context retention
+* retrieval precision
+* cost
+
+**Overlap:**
+Explain why overlap is necessary for:
+
+* semantic continuity
+* avoiding boundary loss
+
+---
+
+```{python}
+#| echo: fenced
+#| eval: false
+MAX_TOKENS = 350
+OVERLAP = 50
+MIN_TOKENS = 80
+```
+
+---
+
+# 5. Chunking Function
+
+```{python}
+#| echo: fenced
+#| eval: false
+def chunk_text(text, tokenizer, max_tokens=350, overlap=50):
+    tokens = tokenizer.encode(text, add_special_tokens=False)
+    chunks = []
+
+    start = 0
+    while start < len(tokens):
+        end = start + max_tokens
+        chunk_tokens = tokens[start:end]
+
+        if len(chunk_tokens) < MIN_TOKENS:
+            break
+
+        chunk_text = tokenizer.decode(chunk_tokens)
+        chunks.append((chunk_text, len(chunk_tokens)))
+
+        start += max_tokens - overlap
+
+    return chunks
+```
+
+---
+
+# 6. Chunking Pipeline
+
+```{python}
+#| echo: fenced
+#| eval: false
+records = []
+
+for _, row in tqdm(df.iterrows(), total=len(df)):
+    chunks = chunk_text(row['text'], tokenizer)
+
+    for i, (chunk, token_count) in enumerate(chunks):
+        records.append({
+            "chunk_id": str(uuid.uuid4()),
+            "cik": row["cik"],
+            "company_name": row["company_name"],
+            "filing_year": 2024,
+            "section_id": row["section_id"],
+            "chunk_index": i,
+            "chunk_text": chunk,
+            "token_count": token_count
+        })
+
+chunk_df = pd.DataFrame(records)
+chunk_df.head()
+```
+
+---
+
+# 7. Structural Validation
+
+## Required Checks
+
+```{python}
+#| echo: fenced
+#| eval: false
+print("Empty chunks:", chunk_df['chunk_text'].isna().sum())
+
+duplicates = chunk_df.duplicated(subset=['chunk_text']).sum()
+print("Duplicate chunks:", duplicates)
+
+short_chunks = (chunk_df['token_count'] < MIN_TOKENS).sum()
+print("Too small chunks:", short_chunks)
+```
+
+---
+
+## ✍️ Interpretation
+
+* Are duplicates present?
+* Are chunks too small?
+* Any structural anomalies?
+
+---
+
+# 8. Exploratory Analysis
+
+## Token Distribution
+
+```{python}
+#| echo: fenced
+#| eval: false
+plt.hist(chunk_df['token_count'], bins=50)
+plt.title("Token Count Distribution")
+plt.xlabel("Tokens")
+plt.ylabel("Frequency")
+plt.show()
+```
+
+---
+
+## Chunks per Company
+
+```{python}
+#| echo: fenced
+#| eval: false
+chunk_df.groupby("company_name").size().sort_values().plot(kind="barh", figsize=(8,10))
+plt.title("Chunks per Company")
+plt.show()
+```
+
+---
+
+## Chunks per Section
+
+```{python}
+#| echo: fenced
+#| eval: false
+chunk_df.groupby("section_id").size().plot(kind="bar")
+plt.title("Chunks per SEC Section")
+plt.show()
+```
+
+---
+
+## ✍️ Interpretation (REQUIRED)
+
+Discuss:
+
+* Are chunks balanced across sections?
+* Are some sections too fragmented?
+* Are long narratives preserved properly?
+
+---
+
+# 9. Metadata Design
+
+## Required Fields
+
+| Field        | Purpose                     |
+| ------------ | --------------------------- |
+| chunk_id     | Unique tracking             |
+| section_id   | Enforces retrieval boundary |
+| cik          | Company identifier          |
+| company_name | Human readable              |
+| token_count  | Efficiency control          |
+
+---
+
+## ✍️ Justification
+
+Explain:
+
+* Why metadata is critical for RAG
+* How it prevents hallucination
+* How it enables filtering
+
+---
+
+# 10. Save Output Dataset
+
+```{python}
+#| echo: fenced
+#| eval: false
+OUTPUT_PATH = "../data/sec_10k_2024_chunked.parquet"
+chunk_df.to_parquet(OUTPUT_PATH, index=False)
+
+print("Saved to:", OUTPUT_PATH)
+```
+
+---
+
+# 11. Sample Inspection (Critical Step)
+
+```{python}
+#| echo: fenced
+#| eval: false
+sample = chunk_df.sample(5)
+for i, row in sample.iterrows():
+    print("\n---")
+    print("Section:", row['section_id'])
+    print("Tokens:", row['token_count'])
+    print(row['chunk_text'][:500])
+```
+
+---
+
+## ✍️ Reflection
+
+* Do chunks preserve meaning?
+* Are boundaries clean?
+* Any broken sentences?
+
+---
+
+# 12. Final Reflection (Required)
+
+## Answer the following:
+
+### Chunking Design
+
+* Why did you choose this token size?
+* What trade-offs did you consider?
+
+### Metadata
+
+* How does metadata enforce retrieval control?
+
+### Structural Integrity
+
+* Did any issues arise?
+* How did you fix them?
+
+### Observations
+
+* What patterns did you observe in SEC filings?
+
+---
+
+# 13. Deliverables Checklist
+
+* [ ] Chunking pipeline implemented
+* [ ] Metadata structured correctly
+* [ ] Validation performed
+* [ ] Visualizations included
+* [ ] Interpretations written
+* [ ] Dataset saved
+

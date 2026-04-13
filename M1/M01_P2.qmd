@@ -46,7 +46,6 @@ csl: ../mis-quarterly.csl
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
 
-
 # Text Analytics and Mining
 
 ## Text Analytics
@@ -56,6 +55,10 @@ csl: ../mis-quarterly.csl
 ## Text Mining Process
 
 ```{dot}
+//| label: "Text Mining Process"
+//| fig-align: center
+//| fig-alt: "Text Mining Process, describes the steps of text mining process such as data collection, preprocessing, feature extraction, model building, evaluation and deployment"
+//| fig-cap: "Text Mining Process, describes the steps of text mining process such as data collection, preprocessing, feature extraction, model building, evaluation and deployment"
 digraph NLP_Pipeline {
 
     /* =========================
