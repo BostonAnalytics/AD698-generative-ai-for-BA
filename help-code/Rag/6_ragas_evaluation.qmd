@@ -1,0 +1,520 @@
+---
+jupyter: python3
+---
+
+![Redis](https://redis.io/wp-content/uploads/2024/04/Logotype.svg?auto=webp&quality=85,75&width=120)
+# Evaluating RAG
+
+This notebook uses the [ragas library](https://docs.ragas.io/en/stable/getstarted/index.html) and [Redis](https://redis.com) to evaluate the performance of sample RAG application. Also see the original [source paper](https://arxiv.org/pdf/2309.15217) to build a more detailed understanding.
+
+## Let's Begin!
+<a href="https://colab.research.google.com/github/redis-developer/redis-ai-resources/blob/main/python-recipes/RAG/06_ragas_evaluation.ipynb" target="_parent"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/></a>
+
+To start, we need a RAG app to evaluate. Let's create one using LangChain and connect it with Redis as the vector DB.
+
+## Init redis, data prep, and populating the vector DB
+
+```{python}
+%pip install -q redis "unstructured[pdf]" sentence-transformers langchain "langchain-redis>=0.2.0" langchain-huggingface langchain-openai ragas datasets
+```
+
+#### Running Redis in Colab
+Use the shell script below to download, extract, and install [Redis Stack](https://redis.io/docs/getting-started/install-stack/) directly from the Redis package archive.
+
+```{python}
+# NBVAL_SKIP
+%%sh
+curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
+sudo apt-get update  > /dev/null 2>&1
+sudo apt-get install redis-stack-server  > /dev/null 2>&1
+redis-stack-server --daemonize yes
+```
+
+#### For Alternative Environments
+There are many ways to get the necessary redis-stack instance running
+1. On cloud, deploy a [FREE instance of Redis in the cloud](https://redis.com/try-free/). Or, if you have your
+own version of Redis Enterprise running, that works too!
+2. Per OS, [see the docs](https://redis.io/docs/latest/operate/oss_and_stack/install/install-stack/)
+3. With docker: `docker run -d --name redis-stack-server -p 6379:6379 redis/redis-stack-server:latest`
+
+```{python}
+import os
+import warnings
+warnings.filterwarnings('ignore')
+
+# Replace values below with your own if using Redis Cloud instance
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost") # ex: "redis-18374.c253.us-central1-1.gce.cloud.redislabs.com"
+REDIS_PORT = os.getenv("REDIS_PORT", "6379")      # ex: 18374
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "")  # ex: "1TNxTEdYRDgIDKM2gDfasupCADXXXX"
+
+# If SSL is enabled on the endpoint, use rediss:// as the URL prefix
+REDIS_URL = f"redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}"
+```
+
+```{python}
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
+
+CHUNK_SIZE = 2500
+CHUNK_OVERLAP = 0
+
+# pdf to load
+path = 'resources/nke-10k-2023.pdf'
+assert os.path.exists(path), f"File not found: {path}"
+
+# load and split
+loader = PyPDFLoader(path)
+pages = loader.load()
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP)
+chunks = text_splitter.split_documents(pages)
+
+print("Done preprocessing. Created", len(chunks), "chunks of the original pdf", path)
+```
+
+```{python}
+chunks[0]
+```
+
+```{python}
+from langchain_huggingface import HuggingFaceEmbeddings
+
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+```
+
+```{python}
+from langchain_redis import RedisVectorStore
+
+# set the index name for this example
+index_name = "ragas_ex"
+
+# construct the vector store class from texts and metadata
+rds = RedisVectorStore.from_documents(
+    chunks,
+    embeddings,
+    index_name=index_name,
+    redis_url=REDIS_URL,
+    metadata_schema=[
+        {
+            "name": "source",
+            "type": "text"
+        },
+    ]
+)
+```
+
+## Test the vector store
+
+```{python}
+rds.similarity_search("What was nike's revenue last year?")[0].page_content
+```
+
+## Setup RAG
+
+Now that the vector db is populated let's initialize our RAG app.
+
+```{python}
+import getpass
+from langchain_openai import ChatOpenAI
+
+if "OPENAI_API_KEY" not in os.environ:
+    os.environ["OPENAI_API_KEY"] = getpass.getpass("OPENAI_API_KEY")
+
+llm = ChatOpenAI(
+    openai_api_key=os.environ["OPENAI_API_KEY"],
+    model="gpt-3.5-turbo-16k",
+    max_tokens=None
+)
+```
+
+```{python}
+from langchain_core.prompts import ChatPromptTemplate
+
+system_prompt = """
+    Use the following pieces of context from financial 10k filings data to answer the user question at the end.
+    If you don't know the answer, say that you don't know, don't try to make up an answer.
+
+    Context:
+    ---------
+    {context}
+"""
+
+def format_docs(docs):
+    return "\n\n".join(doc.page_content for doc in docs)
+
+prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system_prompt),
+        ("human", "{input}")
+    ]
+)
+```
+
+## Test it out
+
+```{python}
+from langchain.chains import create_retrieval_chain
+from langchain.chains.combine_documents import create_stuff_documents_chain
+
+question_answer_chain = create_stuff_documents_chain(llm, prompt)
+rag_chain = create_retrieval_chain(rds.as_retriever(), question_answer_chain)
+
+rag_chain.invoke({"input": "What was nike's revenue last year?"})
+```
+
+## (Optional) Creating a test set
+
+Now that our setup is complete and we have our RAG app to evaluate we need a test set to evaluate against. The ragas library provides a helpful class for generating a synthetic test set given our data as input that we will use here. The output of this generation is a set of `questions`, `contexts`, and `ground_truth`.
+
+The questions are generated by an LLM based on slices of context from the provided doc and the ground_truth is determined via a critic LLM. Note there is nothing special about this data itself and you can provide your own `questions` and `ground_truth` for evaluation purposes. When starting a project however, there is often a lack of quality human labeled data to be used for evaluation and a synthetic dataset is a valuable place to start if pre live user/process data (which should be incorporated as an ultimate goal).
+
+For more detail see [the docs](https://docs.ragas.io/en/stable/concepts/testset_generation.html)
+
+```{python}
+# NBVAL_SKIP
+# source: https://docs.ragas.io/en/latest/getstarted/testset_generation.html
+from ragas.testset.generator import TestsetGenerator
+from ragas.testset.evolutions import simple, reasoning, multi_context
+from ragas.run_config import RunConfig
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
+run_config = RunConfig(
+    timeout=200,
+    max_wait=160,
+    max_retries=3,
+)
+
+# generator with openai models
+generator_llm = ChatOpenAI(model="gpt-3.5-turbo-16k")
+critic_llm = ChatOpenAI(model="gpt-4o-mini")
+embeddings = OpenAIEmbeddings()
+
+generator = TestsetGenerator.from_langchain(
+    generator_llm,
+    critic_llm,
+    embeddings,
+    run_config=run_config,
+)
+
+testset = generator.generate_with_langchain_docs(
+    chunks,
+    test_size=10,
+    distributions={
+        simple: 0.5,
+        reasoning: 0.25,
+        multi_context: 0.25
+    },
+    run_config=run_config
+)
+
+# save to csv since this can be a time consuming process
+testset.to_pandas().to_csv("resources/new_testset.csv", index=False)
+```
+
+## Evaluation helper functions
+
+The following code takes a RetrievalQA chain, testset dataframe, and the metrics to be evaluated and returns a dataframe including the metrics calculated.
+
+```{python}
+import pandas as pd
+from datasets import Dataset
+from ragas import evaluate
+from ragas.run_config import RunConfig
+
+def parse_contexts(source_docs):
+    return [doc.page_content for doc in source_docs]
+
+def create_evaluation_dataset(chain, testset):
+    res_set = {
+        "question": [],
+        "answer": [],
+        "contexts": [],
+        "ground_truth": []
+    }
+
+    for _, row in testset.iterrows():
+        result = chain.invoke({"input": row["question"]})
+
+        res_set["question"].append(row["question"])
+        res_set["answer"].append(result["answer"])
+
+        contexts = parse_contexts(result["context"])
+
+        if not len(contexts):
+            print(f"no contexts found for question: {row['question']}")
+        res_set["contexts"].append(contexts)
+        res_set["ground_truth"].append(str(row["ground_truth"]))
+
+    return Dataset.from_dict(res_set)
+
+def evaluate_dataset(eval_dataset, metrics, llm, embeddings):
+
+    run_config = RunConfig(max_retries=1) # see ragas docs for more run_config options
+
+    eval_result = evaluate(
+        eval_dataset,
+        metrics=metrics,
+        run_config=run_config,
+        llm=llm,
+        embeddings=embeddings
+    )
+
+    eval_df = eval_result.to_pandas()
+    return eval_df
+```
+
+# Create the evaluation data
+
+Input: chain to be evaluated and a pregenerated test set<br>
+Output: dataset formatted for use with ragas evaluation function
+
+```{python}
+testset_df = pd.read_csv("resources/testset_15.csv")
+testset_df.head()
+```
+
+```{python}
+eval_dataset = create_evaluation_dataset(rag_chain, testset_df)
+eval_dataset.to_pandas().shape
+```
+
+# Evaluate generation metrics
+Generation metrics quantify how well the RAG app did creating answers to the provided questions (i.e. the G in **R**etrival **A**ugments **G**eneration). We will calculate the generation metrics **faithfulness** and **answer relevancy** for this example.
+
+The ragas libary conveniently abstracts the calculation of these metrics so we don't have to write redundant code but please review the following definitions in order to build intuition around what these metrics actually measure.
+
+Note: the following examples are paraphrased from the [ragas docs](https://docs.ragas.io/en/stable/concepts/metrics/index.html)
+
+------
+
+### Faithfulness
+
+An answer to a question can be said to be "faithful" if the **claims** that are made in the answer **can be inferred** from the **context**.
+
+#### Mathematically:
+
+$$
+Faithfullness\ score = \frac{Number\ of\ claims\ in\ the\ generated\ answer\ that\ can\ be\ inferred\ from\ the\ given\ context}{Total\ number\ of\ claim\ in\ the\ generated\ answer}
+$$
+
+#### Example process:
+
+> Question: Where and when was Einstein born?
+>
+> Context: Albert Einstein (born 14 March 1879) was a German-born theoretical physicist, widely held to be one of the greatest and most influential scientists of all time
+>
+> answer: Einstein was born in Germany on 20th March 1879.
+
+Step 1: Use LLM to break generated answer into individual statements.
+- “Einstein was born in Germany.”
+- “Einstein was born on 20th March 1879.”
+
+Step 2: For each statement use LLM to verify if it can be inferred from the context.
+- “Einstein was born in Germany.” => yes.
+- “Einstein was born on 20th March 1879.” => no.
+
+Step 3: plug into formula
+
+Number of claims inferred from context = 1
+Total number of claims = 2
+Faithfulness = 1/2
+
+### Answer Relevance
+
+An answer can be said to be relevant if it directly addresses the question (intuitively).
+
+#### Example process:
+
+1. Use an LLM to generate "hypothetical" questions to a given answer with the following prompt:
+
+    > Generate a question for the given answer.
+    > answer: [answer]
+
+2. Embed the generated "hypothetical" questions as vectors.
+3. Calculate the cosine similarity of the hypothetical questions and the original question, sum those similarities, and divide by n.
+
+With data:
+
+> Question: Where is France and what is it’s capital?
+>
+> answer: France is in western Europe.
+
+Step 1 - use LLM to create 'n' variants of question from the generated answer.
+
+- “In which part of Europe is France located?”
+- “What is the geographical location of France within Europe?”
+- “Can you identify the region of Europe where France is situated?”
+
+Step 2 - Calculate the mean cosine similarity between the generated questions and the actual question.
+
+## Now let's implement using our helper functions
+
+
+```{python}
+#| colab: {referenced_widgets: [dd9cabb4b0c448b08cad96d2ef3391a2]}
+from ragas.metrics import faithfulness, answer_relevancy
+
+faithfulness_metrics = evaluate_dataset(eval_dataset, [faithfulness], llm, embeddings)
+```
+
+```{python}
+#| colab: {referenced_widgets: [72432636d3a44519b57329c66ded9c8c]}
+answer_relevancy_metrics = evaluate_dataset(eval_dataset, [answer_relevancy], llm, embeddings)
+```
+
+```{python}
+gen_metrics_default = faithfulness_metrics
+gen_metrics_default["answer_relevancy"] = answer_relevancy_metrics["answer_relevancy"]
+
+gen_metrics_default.describe()
+```
+
+# Evaluating retrieval metrics
+
+Retrieval metrics quantify how well the system performed at fetching the best possible context for generation. Like before please review the definitions below to understand what happens under-the-hood when we execute the evaluation code.
+
+-----
+
+### Context Relevance
+
+"The context is considered relevant to the extent that it exclusively contains information that is needed to answer the question."
+
+#### Example process:
+
+1. Use the following LLM prompt to extract a subset of sentences necessary to answer the question. The context is defined as the formatted search result from the vector database.
+
+    > Please extract relevant sentences from
+    > the provided context that can potentially
+    > help answer the following `{question}`. If no
+    > relevant sentences are found, or if you
+    > believe the question cannot be answered
+    > from the given context, return the phrase
+    > "Insufficient Information". While extracting candidate sentences you’re not allowed to make any changes to sentences
+    > from given `{context}`.
+
+2. Compute the context relevance score = (number of extracted sentences) / (total number of sentences in context)
+
+Moving from the initial paper to the active evaluation library ragas there are a few more insightful metrics to evaluate. From the library [source](https://docs.ragas.io/en/stable/concepts/metrics/index.html) let's introduce `context precision` and `context recall`.
+
+### Context recall
+Context can be said to have high recall if retrieved context aligns with the ground truth answer.
+
+#### Mathematically:
+
+$$
+Context\ recall = \frac{Ground\ Truth\ sentences\ that\ can\ be\ attributed\ to\ context}{Total\ number\ of\ sentences\ in\ the\ ground\ truth}
+$$
+
+#### Example process:
+
+Data:
+> question: Where is France and what is it’s capital?
+> ground truth answer: France is in Western Europe and its capital is Paris.
+> context: France, in Western Europe, encompasses medieval cities, alpine villages and Mediterranean beaches. The country is also renowned for its wines and sophisticated cuisine. Lascaux’s ancient cave drawings, Lyon’s Roman theater and the vast Palace of Versailles attest to its rich history.
+>
+> Note: ground truth answer can be created by critic LLM or with own human labeled data set.
+
+Step 1 - use an LLM to break the ground truth down into individual statements:
+- `France is in Western Europe`
+- `Its capital is Paris`
+
+Step 2 - for each ground truth statement, use an LLM to determine if it can be attributed from the context.
+- `France is in Western Europe` => yes
+- `Its capital is Paris` => no
+
+
+Step 3 - plug in to formula
+
+context recall = (1 + 0) / 2 = 0.5
+
+### Context precision
+
+This metrics relates to how chunks are ranked in a response. Ideally the most relevant chunks are at the top.
+
+#### Mathematically:
+
+$$
+Context\ Precision@k = \frac{precision@k}{total\ number\ relevant\ items\ in\ the\ top\ k\ results}
+$$
+
+$$
+Precision@k = \frac{true\ positive@k}{true\ positives@k + false\ positives@k}
+$$
+
+#### Example process:
+
+Data:
+> Question: Where is France and what is it’s capital?
+>
+> Ground truth: France is in Western Europe and its capital is Paris.
+>
+> Context: [ “The country is also renowned for its wines and sophisticated cuisine. Lascaux’s ancient cave drawings, Lyon’s Roman theater and”, “France, in Western Europe, encompasses medieval cities, alpine villages and Mediterranean beaches. Paris, its capital, is famed for its fashion houses, classical art museums including the Louvre and monuments like the Eiffel Tower”]
+
+Step 1 - for each chunk use the LLM to check if it's relevant or not to the ground truth answer.
+
+Step 2 - for each chunk in the context calculate the precision defined as: ``
+- `“The country is also renowned for its wines and sophisticated cuisine. Lascaux’s ancient cave drawings, Lyon’s Roman theater and”` => precision = 0/1 or 0.
+- `“France, in Western Europe, encompasses medieval cities, alpine villages and Mediterranean beaches. Paris, its capital, is famed for its fashion houses, classical art museums including the Louvre and monuments like the Eiffel Tower”` => the precision would be (1) / (1 true positive + 1 false positive) = 0.5.
+
+
+Step 3 - calculate the overall context precision = (0 + 0.5) / 1 = 0.5
+
+```{python}
+#| colab: {referenced_widgets: [c076c3dc42cf49cf8d768dec225727d5]}
+from ragas.metrics import context_recall, context_precision
+
+context_recall_metrics = evaluate_dataset(eval_dataset, [context_recall], llm, embeddings)
+```
+
+```{python}
+#| colab: {referenced_widgets: [1055dffc473846a3b5f43895485be9a0]}
+context_precision_metrics = evaluate_dataset(eval_dataset, [context_precision], llm, embeddings)
+```
+
+```{python}
+ret_metrics_default = context_recall_metrics
+ret_metrics_default["context_precision"] = context_precision_metrics["context_precision"]
+
+ret_metrics_default.describe()
+```
+
+```{python}
+metrics = ret_metrics_default
+metrics["faithfulness"] = gen_metrics_default["faithfulness"]
+metrics["answer_relevancy"] = gen_metrics_default["answer_relevancy"]
+
+metrics.to_csv(f"resources/metrics_{CHUNK_SIZE}_{CHUNK_OVERLAP}.csv", index=False)
+```
+
+# All together
+
+```{python}
+metrics.describe()
+```
+
+## Analysis
+Overall our RAG app showed pretty good performance. All values indicated above 0.6, which from anecdotal experience, is a reasonable lower-bound for performance however obviously higher values are more ideal. It is worth noting that generation metrics can be a bit more hazy in terms of ideal ranges since the LLM evaluation cannot yet capture the way a response feels to a user. For these metrics it's important to make sure they are not severely low however blind optimization to the top can result in a very uncreative chat experience which may or may not be ideal for the intended use case.
+
+## Review
+
+- we initialized our RAG app with data from a 10k document
+- generated a testset to evaluate
+- calculated both retrieval and generation metrics
+
+## Next steps
+
+Now that we know how to measure our system we can quickly and easily experiment with different techniques with a baseline in place to improve our systems.
+
+## Cleanup
+
+```{python}
+from redisvl.index import SearchIndex
+
+idx = SearchIndex.from_existing(
+    index_name,
+    redis_url=REDIS_URL
+)
+
+idx.delete()
+```
+

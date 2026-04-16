@@ -39,6 +39,12 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
+
+
+## How to print Revealjs slides
+
+![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+
 # Language Modeling
 
 ## Language Modeling as Next-Token Prediction

@@ -1,5 +1,6 @@
 ---
-title: "M05 Presentation 02"
+title: "AD698 - Applied Generative AI"
+subtitle: "Building an Agentic Retrieval Augmented Generation"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -21,11 +22,9 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
+
 self-contained-math: true
 fig-align: center
-monofont: Roboto
 title-slide-attributes:
     data-background-image: "../theme/blank_red.png"
     data-background-size: 103% auto
@@ -38,4 +37,7 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
 
-# M05 Presentation 02
+## How to print Revealjs slides
+
+![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+

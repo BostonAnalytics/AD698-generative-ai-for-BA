@@ -1,6 +1,5 @@
 ---
 title: "AD698 - Applied Generative AI"
-
 subtitle: "Retrieval Augmented Generation Introduction"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
@@ -33,6 +32,11 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
+
+
+## How to print Revealjs slides
+
+![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
 # The Problem: Why RAG Exists
 
