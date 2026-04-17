@@ -1,11 +1,570 @@
 ---
-title: "Project Check-in #1"
-subtitle: "M03 Project Milestone"
+title: "Business Running Case: Building a Section-Scoped RAG System for SEC 10-K (2024)"
+subtitle: "Project Instructions II"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-
-categories: ['Project', 'Check-in', '#1']
-description: "Project milestone: Project Check-in #1."
+categories: ["Project", "RAG", "SEC 10-K", "Embeddings", "LLM Systems"]
+description: "In this project, you will build a simple Retrieval-Augmented Generation (RAG) notebook that works over a small, domain-scoped subset of SEC 10-K data. This is a controlled prototype to help you understand the mechanics of RAG pipelines before building a larger system in Project 3."
+execute:
+  echo: true
+  eval: false
 ---
+
+# Objective and Context
+
+Each team will build a [*simple Retrieval-Augmented Generation (RAG) notebook*]{.uublue-bold} over a [*small, domain-scoped SEC 10-K corpus*]{.uublue-bold}. This is [*not*]{.uublue-bold} yet the full enterprise RAG system. Instead, this project is a [*controlled prototype*]{.uublue-bold} that helps your team learn how a retrieval pipeline works before you build the larger system in Project 3.
+
+Your team will begin from the [*smaller extracted subset*]{.uublue-bold} created in the previous step. Rather than indexing the full 10-K filing, you will work with a focused dataset such as:
+
+- [*AI investment / AI strategy*]{.uublue-bold}
+- [*Human capital / workforce*]{.uublue-bold}
+- [*Data center / infrastructure*]{.uublue-bold}
+- another approved narrow domain extracted from the filing
+
+The goal is to build a notebook that can:
+
+* embed the selected document chunks
+* store them in a vector index
+* retrieve relevant chunks for a question
+* generate an answer using an LLM
+* evaluate the quality of the retrieval and response
+
+You can use the Following 3 notebooks (already shared with you) as references for how to build this prototype:
+
+- [Simple RAG](https://drive.google.com/file/d/16UeBOPyVHFv1sdhioOR2-KiZSJ87fpBO/view?usp=drive_link)
+- [Simple RAG With Reranking](https://drive.google.com/file/d/1xTfyvqNxej_C6nXZvYiVsZI2zSwIyv1X/view?usp=drive_link)
+- [RAG with LangSmith](https://drive.google.com/file/d/1uwQz7JjOUU2xvvXQfKNIht9xO2v6qeRx/view?usp=drive_link)
+
+
+:::{.callout-important}
+This project is intentionally scoped to a [*notebook interface in Google Colab*]{.uublue-bold}. A chatbot interface is [*not required*]{.uublue-bold}. You are being asked to understand the mechanics of a RAG pipeline over a well-scoped financial document subset. The quality of your retrieval logic, grounding discipline, and evaluation matters more than interface complexity.
+:::
+
+# Key Takeaways
+
+By completing this project, your team should understand:
+
+- A RAG pipeline works end-to-end
+- [*small domain-scoped corpora*]{.uublue-bold} often perform better than unfiltered full-document corpora
+- [*Embeddings*]{.uublue-bold} influence retrieval quality
+- [*Compare local/open models and API-based models*]{.uublue-bold}
+- [*Evaluate*]{.uublue-bold} whether an answer is actually grounded in retrieved evidence
+
+
+# Project Scope
+
+## What You Will Build
+
+You will build a [*simple notebook-based RAG pipeline*]{.uublue-bold} that works over a [*small extracted SEC 10-K dataset*]{.uublue-bold}. Your notebook should include:
+
+* loading the extracted domain dataset
+* chunk inspection
+* embedding generation
+* vector storage / similarity search
+* retrieval of top-k chunks
+* answer generation with a selected LLM
+* evaluation of retrieval and grounded response quality
+
+
+# Required Data Input
+
+Your team must use the [*smaller filtered dataset produced earlier*]{.uublue-bold}, not the full filing. This can be exracted from any sec 10-K HTML File.
+
+- AI-related extracted text from [*Item 1, Item 1A, Item 7*]{.uublue-bold}
+- human capital extracted text from [*Item 1, Item 11*]{.uublue-bold}
+- data center / infrastructure extracted text from [*Item 1, Item 7*]{.uublue-bold}
+
+You should already have:
+
+* cleaned text
+* chunked text
+* metadata such as:
+
+  * `chunk_id`
+  * `company_name`
+  * `cik`
+  * `section_id`
+  * `token_count`
+
+If you do not yet have chunked data, you may create it at the start of this project using your Assignment 2 pipeline.
+
+You can use the following startup code.
+
+## Connecting Google Drive to Colab
+
+All the data is available in shared [google drive folder](https://drive.google.com/open?id=1tqqoqDfcOpGKBoRN7PpAtElcmzKcrbGz&usp=drive_fs). You can connect to it using the following code:
+
+```{python}
+#| echo: true
+#| eval: false
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+## Defining the Data Path
+
+```{python}
+#| echo: true
+#| eval: false
+
+from pathlib import Path
+
+INPUT_DIR = Path("/content/drive/MyDrive/SEC-10K-2024-HTML")
+OUTPUT_DIR = Path("/content/drive/MyDrive/SEC-10K-2024-ITEMS")
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+html_files = sorted(INPUT_DIR.glob("*.html"))
+len(html_files), html_files[:5]
+```
+
+## Read Each Filing
+```{python}
+#| echo: true
+#| eval: false
+def read_html_file(file_path):
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+        return f.read()
+```
+
+## Extract Specific SEC Items
+
+You can use the starter function from assignment 2 or from here
+
+```{python}
+#| echo: true
+#| eval: false
+
+import re
+
+def normalize_text_for_matching(text):
+    text = re.sub(r'\xa0', ' ', text)
+    text = re.sub(r'&nbsp;', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+    return text
+
+def extract_item_section(html_text, item_label, next_item_labels):
+    """
+    Extract a section beginning at item_label and ending before the first match
+    of any label in next_item_labels.
+    """
+    text = normalize_text_for_matching(html_text)
+
+    start_pattern = re.compile(rf'item\s*{re.escape(item_label)}[\.\:\-\s]', re.IGNORECASE)
+    start_match = start_pattern.search(text)
+
+    if not start_match:
+        return None
+
+    start_idx = start_match.start()
+
+    end_idx = len(text)
+    for next_label in next_item_labels:
+        next_pattern = re.compile(rf'item\s*{re.escape(next_label)}[\.\:\-\s]', re.IGNORECASE)
+        next_match = next_pattern.search(text, pos=start_match.end())
+        if next_match:
+            end_idx = min(end_idx, next_match.start())
+
+    return text[start_idx:end_idx].strip()
+```
+
+##  Define Item Extraction Map
+```{python}
+#| echo: true
+#| eval: false
+ITEM_BOUNDARIES = {
+    "1": ["1A", "1B", "2"],
+    "1A": ["1B", "2", "3"],
+    "3": ["4", "5"],
+    "7": ["7A", "8", "9"],
+    "7A": ["8", "9"],
+    "10": ["11", "12", "13"],
+    "11": ["12", "13", "14"],
+    "12": ["13", "14", "15"],
+    "13": ["14", "15"],
+}
+```
+
+Choose only the items relevant to your domain.
+
+
+```{python}
+#| echo: true
+#| eval: false
+SELECTED_ITEMS = ["1", "1A", "7"]   # Example for AI strategy domain
+```
+
+## Save Extracted Item Files
+
+This is the part you wanted: save each extracted item with a filename like:
+
+currentfilename_item_1.html
+currentfilename_item_1A.html
+currentfilename_item_7.html
+
+
+You can also choose to save this in a json or an excel file, hwever that copudl become very large and hard to manage, so I suggest saving each item as a separate html file. You can also save the metadata in a separate csv or json file if needed.
+
+```{python}
+#| echo: true
+#| eval: false
+
+def save_extracted_items(file_path, selected_items, output_dir):
+    html_text = read_html_file(file_path)
+    base_name = file_path.stem
+
+    saved_files = []
+
+    for item in selected_items:
+        next_items = ITEM_BOUNDARIES.get(item, [])
+        extracted = extract_item_section(html_text, item, next_items)
+
+        if extracted and len(extracted) > 500:  # avoid saving tiny false matches
+            out_file = output_dir / f"{base_name}_item_{item}.html"
+            with open(out_file, "w", encoding="utf-8") as f:
+                f.write(extracted)
+            saved_files.append(str(out_file))
+
+    return saved_files
+
+Run over all filings:
+
+all_saved = []
+
+for file_path in html_files:
+    saved = save_extracted_items(file_path, SELECTED_ITEMS, OUTPUT_DIR)
+    all_saved.extend(saved)
+
+print(f"Saved {len(all_saved)} extracted item files.")
+all_saved[:10]
+```
+
+
+# Platform and Model Options
+
+You may choose [*one*]{.uublue-bold} of the following generation approaches, You may run these using Hugging Face Transformers, sentence-transformers, or another approved inference method compatible with Colab:
+
+- API-based models (preffered)
+    - OpenAI
+    - Gemini
+    - Claude
+- Local/open models from Hugging Face
+    - Mistral
+    - BAAI
+    - Qwen
+
+
+## Embedding Options
+
+You may choose embedding models:
+
+ - sentence-transformers models
+ - BAAI embedding models
+ - OpenAI embeddings
+ - Gemini-compatible embedding flow if available
+
+## Your team must clearly state:
+
+* which embedding model was used
+* which generation model was used
+* why that choice was appropriate for your domain and compute budget
+
+# Overall Pipeline
+
+```{dot}
+digraph RAGPipeline {
+    rankdir=LR;
+    node [shape=box, style=rounded];
+
+    A [label="Filtered SEC 10-K Domain Corpus"];
+    B [label="Chunked Documents"];
+    C [label="Embedding Model"];
+    D [label="Vector Index"];
+    E [label="User Question"];
+    F [label="Top-k Retrieval"];
+    G [label="Context Assembly"];
+    H [label="LLM Generation"];
+    I [label="Grounded Answer + Evaluation"];
+
+    A -> B -> C -> D;
+    E -> F;
+    D -> F -> G -> H -> I;
+}
+```
+
+
+
+# Create the Project Notebook
+
+Create a notebook in your project folder.
+
+- `project2_rag_notebook.ipynb`
+  - code
+  - outputs
+  - explanation
+  - interpretation
+
+# Load the Small Extracted Domain Corpus
+
+Load the filtered dataset from the previous step.
+
+* `ai_filtered_chunks.csv`
+* `human_capital_chunks.parquet`
+* `datacenter_chunks.csv`
+
+Your notebook should briefly describe:
+
+* what domain was selected
+* which SEC Items were used
+* how the smaller subset was produced
+* why this scope is appropriate for a simple RAG prototype
+
+
+# Inspect the Corpus Before Embedding
+
+Before embedding, inspect the data. At minimum, show:
+
+* number of chunks
+* sections included
+* average token length
+* sample chunks
+
+Discuss:
+
+* whether the chunks look coherent
+* whether the extraction seems too broad or too narrow
+* whether your domain terms are well represented
+
+
+# Build the Embedding Layer
+
+Generate embeddings for your chunked documents. Your notebook must show:
+
+* embedding model selected
+* how the embeddings are created
+* the dimension of the embedding vectors
+* the shape of the resulting embedding matrix
+
+Explain:
+
+* why this embedding model was chosen
+* whether it is local/open or API-based
+* any compute trade-offs
+
+# Build the Vector Store / Retrieval Index
+
+Store the embeddings in a retrieval structure such as:
+
+* FAISS
+* Chroma
+
+You must demonstrate:
+
+* that the index was created successfully
+* that queries can retrieve relevant chunks
+* the value of `top_k` you selected
+
+You should explain:
+
+* why `top_k` was chosen
+* what happens if retrieval returns too few or too many chunks
+
+
+# Implement the Simple RAG Generation Step
+
+Build a simple pipeline:
+
+1. accept a user question
+2. retrieve top-k chunks
+3. assemble context
+4. send that context to the LLM
+5. generate an answer
+
+This can be done with:
+
+* plain Python functions
+* LangChain
+* a simplified RAG workflow inspired by the example notebooks
+
+You do [*not*]{.uublue-bold} need a chatbot. A few notebook query cells are sufficient.
+
+---
+
+# Ask Structured Domain Questions
+
+Your team must test the notebook with [*at least 8–10 questions*]{.uublue-bold} that fit the selected domain.
+
+Examples for AI domain:
+
+* Does the company describe AI as a strategic investment area?
+* Is AI framed as operational efficiency, innovation, or risk?
+* Are AI-related expenditures or R&D activities discussed?
+* Does the company mention AI-related uncertainty or regulatory concerns?
+
+Examples for human capital domain:
+
+* Does the company identify labor shortages as a risk?
+* Is workforce development described as a strategic priority?
+* Are compensation or retention issues mentioned?
+
+Examples for data center / infrastructure domain:
+
+* Does the company discuss investment in data centers or cloud infrastructure?
+* Is infrastructure linked to scaling digital services?
+* Are data center or compute demands framed as cost drivers?
+
+---
+
+# Show Retrieval Outputs Explicitly
+
+For each sample query, show:
+
+* the question
+* retrieved chunks
+* chunk scores if available
+* chunk metadata
+* generated answer
+
+# Evaluate the RAG System
+
+Your notebook must include a simple evaluation section. You do [*not*]{.uublue-bold} need a perfect benchmark, but you must evaluate the system in a structured way.
+
+## Minimum required evaluation dimensions
+
+### Retrieval Relevance
+
+For a small set of test questions:
+
+* Were the retrieved chunks relevant?
+* Did retrieval capture the right domain evidence?
+
+This can be done manually using a small table.
+
+### Grounding
+
+Check whether the answer is actually supported by the retrieved chunks.
+
+Questions to ask:
+
+* Did the answer rely only on retrieved evidence?
+* Did the answer introduce unsupported claims?
+
+### Failure Analysis
+
+Identify at least [*3 failure cases*]{.uublue-bold} such as:
+
+* weak retrieval
+* irrelevant chunk returned
+* answer too vague
+* answer hallucinated beyond retrieved context
+* domain filtering too broad or too narrow
+
+## Optional advanced evaluation
+
+If your team wants, you may use ideas from the example notebooks such as:
+
+* RAGAS-style evaluation
+* faithfulness/relevance checks
+* LangSmith-style tracing
+
+These are optional enhancements, not required for baseline credit.
+
+# Reflect on Design Trade-Offs
+Your notebook must include a discussion of:
+
+
+* why working on a small filtered corpus helped retrieval
+* what limitations remain
+* whether local/open models performed differently from API-based models
+* how this notebook should evolve into a full system in Project 3
+
+
+# Deliverables
+
+Your submission must include:
+
+## Required
+
+* 1 notebook (`.ipynb` or `.qmd`)
+* rendered HTML or PDF if applicable
+* output showing retrieval and answer generation
+* evaluation section
+* references if external methods or models are discussed
+
+## Optional
+
+* GitHub repository
+* GitHub Pages site
+* additional experiment notebook
+* extra evaluation module
+
+GitHub is [*optional*]{.uublue-bold} for this project.
+
+
+# Suggested Notebook Structure {.unnumbered}
+
+```text
+1. Title and project overview
+2. Domain selection and SEC Item scope
+3. Data loading and corpus inspection
+4. Embedding setup
+5. Vector index creation
+6. Simple retrieval function
+7. Simple generation function
+8. Query experiments
+9. Evaluation
+10. Failure analysis
+11. Reflection and next steps
+```
+
+# Recommended Coding Sequence {.unnumbered}
+
+Students should proceed in this order:
+
+1. verify the small filtered corpus
+2. generate embeddings
+3. create vector index
+4. test retrieval only
+5. inspect retrieved chunks manually
+6. add generation step
+7. test multiple questions
+8. evaluate
+9. document limitations
+
+# Important Constraints
+
+## You must
+
+* use the smaller extracted domain corpus
+* show retrieved chunks explicitly
+* evaluate the notebook’s performance
+* explain your design choices
+
+## You may
+
+* use APIs or local/open models
+* use LangChain or plain Python
+* use FAISS or another approved vector store
+* use Colab secrets for API keys if needed
+
+## You should not
+
+* build a full chatbot
+* index the entire raw 10-K corpus
+* skip retrieval inspection
+* treat generation quality as sufficient without checking grounding
+
+
+# Submission Checklist
+
+* [ ] selected one narrow SEC domain
+* [ ] used the filtered chunk dataset from the previous step
+* [ ] generated document embeddings
+* [ ] created a vector retrieval index
+* [ ] implemented a simple RAG pipeline
+* [ ] tested at least 8–10 domain questions
+* [ ] showed retrieved chunks and responses
+* [ ] evaluated retrieval and grounding
+* [ ] documented failures and limitations

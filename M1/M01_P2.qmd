@@ -458,6 +458,7 @@ digraph Sentiment_Approaches {
 ![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
 
 ![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
+
 :::
 
 # Web Mining, personalization, Social Analytics
@@ -1240,7 +1241,6 @@ digraph SentimentAnalysis {
 ```
 
 
-
 # Natural Language Processing Pipeline
 
 ## Natural Language Processing Pipeline
@@ -1453,8 +1453,8 @@ Can we think of solutions for these?
 
 ## Text Cleaning
 
-::: {.columns}
-::: {.column width="50%" .fragment}
+:::{.columns}
+:::{.column width="50%" .fragment}
 :::{.callout}
 Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this .
 :::
@@ -1462,9 +1462,9 @@ Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not d
 :::{.callout}
 despite suffering a sense of humour failure the man who wrote rocky does not deserve to go down with a ship as leaky as this
 :::
-
 :::
-::: {.column width="50%" .fragment}
+
+:::{.column width="50%" .fragment}
 
 - Lowercasing
 - Removing punctuation
@@ -1652,8 +1652,9 @@ plt.show()
 
 ## What BoW Gets Right
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
+
 ### Strengths
 
 - Simple and interpretable
@@ -1663,9 +1664,9 @@ plt.show()
   - topic classification
   - spam detection
 
-
 :::
-::: {.column}
+:::{.column}
+
 ### Limitations
 
 - Ignores word order
@@ -1678,8 +1679,6 @@ plt.show()
 :::
 
 ---
-
-
 
 ## BoW in Practice (Sentiment Analysis)
 
@@ -1791,15 +1790,15 @@ digraph SentimentPipeline {
 
 ## When Should You Use BoW?
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 ### When to Use Bag of Words
 -  Dataset is small to medium
 -  Interpretability matters
 -  You need a fast baseline
 -  Text is short and structured
 :::
-::: {.column}
+:::{.column}
 ### When Not to Use Bag of Words
 - Long documents
 - Semantic nuance matters
@@ -1807,6 +1806,7 @@ digraph SentimentPipeline {
 
 :::
 :::
+
 ---
 
 ## Key Takeaways

@@ -1,13 +1,11 @@
 ---
-title: "Business Running Case: Building a Section-Scoped RAG System for SEC 10-K (2024)"
+title: "Business Running Case - Building a Section-Scoped RAG System for SEC 10-K (2024)"
 subtitle: "Data Cleaning, Retrieval Engineering, and Grounded LLM Development"
 number-sections: true
 date: "2026-02-14"
 date-modified: today
 date-format: long
-engine: jupyter
 categories: ["Project", "LLM Systems", "RAG", "Vector Search", "SEC 10-K", "NLP"]
-
 ---
 
 # Objective and Context
@@ -349,7 +347,7 @@ You must evaluate:
 
 - Retrieval Accuracy
   - Create at least 20 labeled question–chunk pairs.
-  - Compute Recall@k or Hit@k.
+  - Compute `Recall@k` or `Hit\above@k`.
 - Grounding Reliability
     - Measure citation coverage.
     - Estimate hallucination rate.
