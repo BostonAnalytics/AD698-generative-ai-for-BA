@@ -1,6 +1,216 @@
 ---
-title: "M06 Lecture Note 02"
+title: "AD698 - Applied Generative AI"
+subtitle: "Building Agentic AI: A Practical Walkthrough"
+author:
+  - name: Nakul R. Padalkar
+    affiliations:
+      - id: bu
+        name: Boston University
+        city: Boston
+        state: MA
+format:
+  html: 
+    toc: true
+    toc-depth: 4
+    number-sections: true
+    code-overflow: wrap
+bibliography: ../references.bib
 ---
 
-# M06 Lecture Note 02
-<!--  -->
+# Introduction: The Agentic AI Paradigm
+
+Agentic AI marks a significant shift from traditional task-specific AI tools toward autonomous systems capable of acting with agency. As explored in our comprehensive architectural survey, Agentic AI falls into two distinct lineages: the **Symbolic/Classical Paradigm** (rigid, rule-based MDPs) and the **Neural/Generative Paradigm** (stochastic, LLM-orchestrated).
+
+![Conceptual Framework of Agentic AI's Dual Lineages](m06_lecture01_figures/DualParadigmsAI.png)
+
+Unlike the Symbolic paradigm, the Neural paradigm utilizes **prompt-driven orchestration**. To practically demonstrate this paradigm shift, we will construct a Financial Agent from scratch. The following walkthrough maps directly to the 10-part educational curriculum found in the `SEC-notebooks` folder, taking us from basic environment setup to a fully orchestrated multi-agent system.
+
+![Multi-Agent Orchestration](m06_lecture01_figures/Multi-AgentOrchestration.png)
+
+# Agentic Systems in General
+
+Agentic systems—such as AutoGPT, BabyAGI, and enterprise frameworks like Microsoft's Magentic-One—are characterized by their ability to maintain state, plan over long horizons, use tools, and reflect on their own outputs. They are not simply answering queries; they are executing workflows.
+
+## The Modern Agentic Tech Stack
+
+Building these systems requires a modern, specialized tech stack:
+
+1. **Orchestration Frameworks:** Tools like LangChain, LangGraph, or AutoGen manage state, memory, and the routing of LLM calls.
+2. **Reasoning Engines:** Foundation models (GPT-4o, Claude 3.5 Sonnet, Cohere) act as the "brain" making routing and planning decisions.
+3. **Memory & Storage:** Relational databases (PostgreSQL) track deterministic metadata, while Vector Databases (ChromaDB, FAISS, PGVector) enable semantic retrieval (RAG) of unstructured data.
+4. **Environment Managers:** Fast resolvers like `uv` or `poetry` ensure exact dependency replication.
+
+## Team Design for Orchestration
+
+Building an agentic ecosystem is rarely a solo endeavor. It requires a cross-functional team design:
+
+- **AI Engineers:** Build the orchestration logic (LangGraph state machines) and integrate tools.
+- **Data Engineers:** Construct the data pipelines (SEC EDGAR scrapers) and manage the Vector/PostgreSQL databases.
+- **Prompt Engineers:** Specialize in writing deterministic prompts, few-shot examples, and reflection criteria to bound the LLM's stochastic nature.
+- **Domain Experts:** (e.g., Financial Analysts) Define the Pydantic schemas and validate that the extracted information (like SEC Item 1A) is mathematically and contextually accurate.
+
+
+# Foundation & Data Engineering
+
+The foundation of any robust agentic system lies in strict data modeling and the tools the agent uses to interact with the external world.
+
+## Environment and Setup (`01_Environment_and_Setup.ipynb`)
+
+Before building the agent, we establish an isolated and reproducible Python environment. We use `uv` (a fast Python package installer and resolver) to manage our dependencies.
+
+```bash
+# Initialize uv environment and install dependencies
+uv venv
+uv pip install langchain langchain-openai pydantic beautifulsoup4 requests sec-edgar-downloader python-dotenv psycopg2-binary chromadb
+```
+
+We install `langchain` for orchestration, `pydantic` for data schema enforcement, `beautifulsoup4` for HTML cleaning, and our database drivers. API keys are loaded securely via `python-dotenv` to ensure the agent has authenticated access to LLMs and the SEC database without hardcoding secrets.
+
+## Data Modeling (`02_Data_Modeling.ipynb`)
+
+In generative AI, ensuring the LLM's stochastic outputs conform to our expectations is paramount. To prevent hallucination during extraction, we enforce rigid data structures.
+
+```python
+from pydantic import BaseModel, Field
+from typing import List
+
+class TopCompaniesOutput(BaseModel):
+    companies: List[str] = Field(description="List of exactly 5 company tickers in the requested vertical")
+```
+
+By subclassing `BaseModel`, we tell the LangChain output parser exactly what JSON structure to expect. If the LLM generates a paragraph instead of a list of 5 tickers, the parser will throw an error or ask the LLM to self-correct. We also define a `TopicMapping` dataclass, giving the LLM explicit instructions on which SEC 10-K sections to target (e.g., mapping "Cybersecurity" strictly to "Item 1C").
+
+## Data Acquisition Tools (`03_Data_Acquisition_Tools.ipynb`)
+
+An agent requires tools to "perceive" and "act" in its environment. We built the `SECFilingManager` to fetch SEC filings dynamically. 
+
+```python
+def get_10k_filing(self, ticker: str, year: int) -> str:
+    cik = self._get_cik(ticker)
+    local_path = os.path.join(self.local_data_dir, str(year), f"{cik}.html")
+    
+    if os.path.exists(local_path):
+        return f"Found local file at {local_path}"
+        
+    print(f"Downloading 10-K for {ticker}...")
+    self.downloader.get("10-K", ticker, amount=1)
+    return "Download complete."
+```
+
+This function implements fallback logic. Network calls are expensive and slow. The agent first checks the local filesystem (`D:\Research\Human Resource Disclosure\Data\10K`). If missing, it resolves the ticker to a CIK number via the SEC JSON endpoint and downloads it.
+
+## Parsing and Extraction (`04_Parsing_and_Extraction.ipynb`)
+
+SEC 10-K filings are massive, unstructured HTML documents. 
+
+```python
+def parse_text(self, text: str, required_items: List[str]) -> Dict[str, str]:
+    extracted = {}
+    for item in required_items:
+        pattern = re.compile(rf'(?i)({item}\.).*?(?=Item\s+\d+[A-Z]?\.)', re.DOTALL)
+        match = pattern.search(text)
+        extracted[item] = match.group(0).strip() if match else "Not found."
+    return extracted
+```
+
+We use `BeautifulSoup` to strip raw HTML tags. Then, we apply strict regular expressions (as seen above) to isolate specific sections (e.g., everything between "Item 1A." and the next Item). This deterministic preprocessing guarantees the LLM is only fed relevant context, avoiding token-limit exhaustion.
+
+## Database Integration (`05_Database_Integration.ipynb`)
+
+Extracted intelligence must be stored systematically:
+- **Relational Storage (PostgreSQL):** Used to store structured metadata (Company Ticker, Year, Extraction Status) via `psycopg2`.
+- **Vector Storage (ChromaDB):** 
+
+```python
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+# chunks are then embedded and stored in Chroma
+```
+
+Massive 10-K texts cannot fit into an LLM prompt. We use the `RecursiveCharacterTextSplitter` to break the document into 1000-character overlapping chunks. These are embedded and stored in ChromaDB, allowing the agent to perform RAG (Retrieval-Augmented Generation) by semantically searching for concepts.
+
+
+# Agentic Design Patterns
+
+With the foundation built, we implement the core software patterns that grant an LLM its "agency."
+
+## The Tooling Pattern (`06_Pattern_Tooling.ipynb`)
+
+Instead of explicitly executing Python functions, we wrap them using LangChain's `@tool` decorator and bind them to the LLM. 
+
+```python
+from langchain_core.tools import tool
+
+@tool
+def download_sec_filing(ticker: str, year: int) -> str:
+    """Downloads the SEC 10-K filing for a given stock ticker and year. Use this when you need financial data."""
+    return f"Filing text for {ticker} ({year}) saved."
+
+llm_with_tools = llm.bind_tools([download_sec_filing])
+```
+
+The docstring inside the tool is not just for developers; it is literally passed to the LLM. The LLM reads this description and autonomously decides *when* to output a JSON "tool call" to execute the function based on the conversational context.
+
+## The Planning Pattern (`07_Pattern_Planning.ipynb`)
+
+In the planning pattern, the agent breaks an abstract goal down into actionable steps. 
+
+```python
+prompt = PromptTemplate(
+    template="List the top 5 company stock tickers in the {vertical} vertical in the S&P 500.\n{format_instructions}",
+    input_variables=["vertical"],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
+chain = prompt | llm | parser
+```
+
+Rather than hard-coding "NVDA, AMD, INTC", we ask the LLM to dynamically deduce the targets based on a user-defined vertical (e.g., "semiconductor"). The `parser` injects strict formatting instructions into the prompt so the chain returns a clean Python list object.
+
+## The Reflection Pattern (`08_Pattern_Reflection.ipynb`)
+
+To ensure reliability, we implement a "Critic" loop. A Generator prompt extracts the risk factors, and a separate Critic prompt reviews the extraction. If the output contains vague language or fails constraints, the Critic forces a rewrite. This establishes a self-correcting autonomous loop, mimicking human peer-review.
+
+## Multiagent Orchestration (`09_Pattern_Multiagent.ipynb`)
+
+Using LangGraph, we coordinate multiple specialized LLMs.
+
+```python
+class AgentState(TypedDict):
+    messages: Annotated[list, operator.add]
+    current_company: str
+    extracted_data: dict
+```
+
+We define an `AgentState` object that gets passed around our graph. We deploy a **Researcher Agent** (tasked purely with downloading data) and an **Analyst Agent** (tasked with synthesizing the raw data). Passing the state sequentially prevents a single monolithic LLM prompt from becoming confused by competing instructions.
+
+---
+
+# The Capstone Pipeline
+
+## The Final Financial Agent (`10_Final_Financial_Agent.ipynb`)
+
+The final capstone integrates all previous steps into the `MasterFinancialAgent`. 
+
+```python
+class MasterFinancialAgent:
+    def run(self, vertical: str, topic: str):
+        print(f"--- Starting Agentic Workflow for {vertical} ---")
+        
+        # 1. Planning Pattern: Let the agent decide who to target
+        companies = self.identify_top_companies(vertical)
+        
+        for company in companies:
+            # 2. Tooling Pattern: Agent uses tools to download missing data
+            html_path = self.downloader.get_10k_filing(company.ticker, self.year)
+            
+            # 3. Parsing: Deterministic extraction
+            extracted_items = self.parser.parse_text(html_content, required_items)
+            
+            # 4. Storage: Save to PostgreSQL and Vector DB
+            self.store_in_postgres_and_chroma(extracted_items)
+            
+        print("--- Workflow Complete ---")
+```
+
+# Conclusion
+
+By building the Financial Agent, we demonstrated the practical implementation of the **Neural/Generative Paradigm**. The system exhibits true agency through dynamic task formulation, autonomous tool use, and structured multi-agent coordination. This hands-on curriculum solidifies the transition from basic ML scripting to architecting orchestrator-driven, agentic AI ecosystems.

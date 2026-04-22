@@ -1,12 +1,784 @@
 ---
-title: "M06: Lecture Notes"
-subtitle: "Generative AI for Predictive Analytics & Forecasting"
+title: "AD698 - Applied Generative AI"
+subtitle: "Agentic AI: A Theoretical Framework for Building Autonomous Systems"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-engine: jupyter
 bibliography: ../references.bib
 categories: ['Notes', 'Lecture', 'M06:']
-description: "Lecture covering Generative AI for Predictive Analytics & Forecasting."
+description: "This lecture note provides a comprehensive theoretical framework for understanding and building agentic AI systems. It distinguishes between the symbolic and neural paradigms of AI, tracing their historical evolution and analyzing their architectural differences. The note also reviews key frameworks and applications, identifies gaps in current research, and proposes a roadmap for future development in the field of agentic AI."
 ---
+
+
+# Introduction
+
+In this lecture, we begin with a simple but important idea: **AI is no longer only about models that classify, predict, or generate outputs on demand**. Increasingly, the field is moving toward the design of systems that can **act with some degree of autonomy**. These newer systems are often described as **agentic AI systems** [@wissuchek2025exploring; @viswanathan2025agenticframework]. They are distinguished by capabilities such as proactive planning, contextual memory, sophisticated tool use, and the ability to adjust behavior based on feedback from the environment. Rather than behaving like passive solvers, these systems begin to resemble collaborative computational partners that can interpret goals, reason through intermediate steps, and coordinate sequences of actions—either alone or in a larger ecosystem of cooperating agents [@xie2024large; @du2025survey].
+
+To build a strong conceptual foundation, it is useful to separate several terms that are often used interchangeably in casual discussion.
+
+An *AI Agent* (or *Single-Agent System*) is a relatively self-contained autonomous system designed to complete a goal. It usually operates as one main decision-making unit, even if it calls tools, APIs, databases, or external services. What makes it “agentic” is not just that it produces an answer, but that it can show some degree of *autonomy*, *proactivity*, and end-to-end task completion.
+
+For example, imagine a powerful *LLM-based (Large Language Model-based)* system given the instruction: **“Write a full project proposal for a new mobile app.”** A single-agent system would break the task into subtasks, gather information, draft the sections, revise the content, and assemble the final proposal as one coordinated process.
+
+By contrast, *Agentic AI* refers to the broader architectural idea of building systems that exhibit agency. In practice, this often extends beyond a single agent and includes the orchestration of *Multi-Agent Systems (MAS)*, where multiple specialized agents communicate and coordinate to solve problems that are too large, too complex, or too modular for a single agent to handle effectively.
+
+Using the same proposal example, an Agentic AI system might assign different roles to different agents: a *Project Manager Agent* could decompose the task, a *Researcher Agent* could gather market and competitor information, a *Writer Agent* could draft the proposal, and a *Quality Assurance Agent* could review structure, coherence, and completeness. The overall behavior of the system comes not just from one capable model, but from the **organized collaboration among specialized units**.
+
+A useful way to summarize this distinction is the following:
+
+* an *AI Agent* can be thought of as **one sophisticated worker**
+* *Agentic AI* is the broader principle of **designing systems around agency**, often by coordinating an entire team of such workers
+
+This shift has happened quickly, and as a result the literature is not always conceptually consistent. One major problem in current discussions is what we may call *conceptual retrofitting*: the tendency to describe modern LLM-based systems using frameworks inherited from classical symbolic AI, such as Belief--Desire--Intention (BDI) [@archibald2024quantitative] or *perceive--plan--act--reflect (PPAR)* loops [@zeng2024perceive; @erdogan2025plan]. These older frameworks were designed for systems with explicit symbolic representations, persistent internal state, and algorithmic planning. Modern *large language model (LLM)* systems [@plaat2025agentic], however, operate through stochastic generation, prompt-conditioned control, contextual memory, and orchestration over tools and external resources. Treating these two paradigms as if they are continuous obscures the actual operating logic of modern LLM-based agents [@gabison2025inherent; @Wang2024Survey; @Zhao2023Indepth; @Chen2024Survey].
+
+For that reason, this lecture begins by placing agentic AI in historical context. Figure [1](#fig:historical_timeline){reference-type="ref" reference="fig:historical_timeline"} provides a high-level timeline showing how the field evolved through several overlapping eras.
+
+![Historical Evolution of AI Paradigms: This timeline charts the key breakthroughs and eras in AI, from early symbolic systems to the modern agentic era. It highlights the Transformer architecture as the pivotal enabling technology for large language models (LLMs), which in turn powered the generative AI revolution and provided the substrate for contemporary agentic systems.](./M06_lecture01_figures/AI-Evolution.png){#fig-historical-timeline width="80%" fig-align="center" fig-alt="Historical Evolution of AI Paradigms"}
+
+We can use this timeline to organize the development of AI into five broad eras.
+
+The **Symbolic AI Era (1950s--1980s)** [@Liang2025] was built on the assumption that intelligence could be expressed explicitly through logic, rules, and human-crafted knowledge structures. Rule-based systems and expert systems such as MYCIN and DENDRAL [@Swartout1985] were central examples. In this period, intelligence was largely viewed as top-down symbolic reasoning.
+
+The **Machine Learning (ML) Era (1980s--2010s)** [@Thomas2020; @Nithya2023; @Trigka2025] shifted the field away from pure rule specification and toward systems that could learn from data. These models still often relied on hand-crafted features, but they introduced a statistical approach to prediction. Decision trees, support vector machines, and recommendation systems became central tools. This era was transitional: it reduced dependence on symbolic rules, but it still did not fully automate representation learning.
+
+The **Deep Learning Era (2010s--Present)** [@Hatcher2018; @Alom2019; @Dong2021; @Talaei2023; @Chhabra2023] introduced neural architectures capable of learning hierarchical features directly from raw data. Convolutional networks, recurrent networks, and related deep architectures transformed computer vision, speech recognition, and natural language processing. Even so, most systems in this era were still largely designed for perception, recognition, or prediction rather than autonomous action.
+
+The **Generative AI Era (2014--Present)** [@Sakirin2023; @Anandhi2025; @Sengar2024; @Surbakti2025; @Zhang2025] expanded the focus from recognizing patterns to generating new content. Although early generative approaches such as Generative Adversarial Networks were influential, the introduction of the Transformer architecture in 2017 fundamentally changed the field. Large language models such as GPT and BERT demonstrated that a single scalable neural architecture could support strong performance across text generation, code generation, summarization, question answering, and more. These systems became the statistical substrate that made modern agentic systems possible.
+
+Finally, the **Agentic AI Era (2022--Present)** marks the point where the generative power of LLMs is increasingly turned into **goal-directed behavior**. This is the era of systems such as AutoGPT and related frameworks [@Durante2024; @Masterman2024; @Piccialli2025], where models do not simply respond once, but may plan, call tools, maintain state across steps, and iteratively pursue a goal. At the same time, there has been growing interest in multi-agent systems [@Acharya2025; @Viswanathan2025; @Plaat2025; @Schneider2025; @Hosseini2025], including frameworks such as CrewAI and AutoGen, in which different agents take specialized roles and collaborate through orchestrated workflows. This is an important conceptual shift: in contrast to the explicit algorithmic planning of symbolic AI, modern agentic systems often produce agency through the stochastic orchestration of generative models.
+
+This historical progression is useful, but it also reveals an important conceptual break. Agentic AI is **not simply symbolic AI reborn**. Although both symbolic systems and modern agentic systems may appear to involve planning, reasoning, and action, they are built on very different computational foundations. That is why we introduce the conceptual framework shown in @fig-conceptual_framework. The purpose of this figure is to prevent conceptual retrofitting by separating the symbolic and neural lineages of agentic AI.
+
+Rather than treating the field as one continuous line of progress, the framework distinguishes systems along two dimensions:
+
+1. their **Architectural Paradigm** (**Symbolic** vs. **Neural**)
+2. their **Degree of Agency & Coordination** (**Single-Agent** vs. **Multi-Agent**)
+
+This dual-axis view is useful in a teaching setting because it gives students a consistent way to classify systems that may look similar on the surface but work very differently underneath.
+
+![Conceptual Framework of Agentic AI’s Dual Lineages. This taxonomy resolves conceptual retrofitting by distinguishing the Symbolic Classical lineage (left), defined by algorithmic planning and persistent state, from the Neural/Generative lineage (right), defined by stochastic generation and prompt-driven orchestration. While both paradigms target similar applications, their underlying mechanisms are fundamentally incompatible. This framework provides the analytical structure for this survey.](./M06_lecture01_figures/DualParadigmsAI.png){#fig-conceptual_framework width="95%" fig-align="center" fig-alt="Conceptual Framework of Agentic AI’s Dual Lineages. This taxonomy resolves conceptual retrofitting by distinguishing the Symbolic/Classical lineage (left), defined by algorithmic planning and persistent state, from the Neural/Generative lineage (right), defined by stochastic generation and prompt-driven orchestration. While both paradigms target similar applications, their underlying mechanisms are fundamentally incompatible. This framework provides the analytical structure for this survey."}
+
+Using this framework, we can organize the study of agentic AI into three interconnected layers.
+
+The first layer is the **Theoretical Foundations**. Here we examine ideas such as autonomy, agency, and decision-making [@kolt2025governing], along with classical formal tools like Markov Decision Processes (MDPs) and Partially Observable MDPs (POMDPs) [@kaelbling1998planning; @Chades2021-primer]. These models are historically rooted in the symbolic tradition, but they still provide useful conceptual language for describing how systems choose actions under uncertainty.
+
+The second layer is the **Architectural Frameworks** layer. This is where the modern *Neural paradigm* becomes central. Frameworks such as LangChain [@mavroudis2024langchain], AutoGen, and CrewAI do not rely on symbolic planning in the traditional sense. Instead, they achieve agency through mechanisms like prompt chaining, tool invocation, dynamic context management, conversation orchestration, and role-based decomposition.
+
+The third layer is the **Application Domains** layer. Here we study how agentic systems are applied in healthcare [@singh2024revolutionizing], finance [@chandrashekar2025survey], scientific discovery [@gridach2025agentic], and legal reasoning [@magesh2024hallucination]. These domains matter because the right architecture often depends on the problem setting. Different application areas place different demands on explainability, coordination, risk tolerance, and governance.
+
+## Current Survey Gaps and Contributions
+
+At this point, it is useful to ask: **What is still missing in current reviews of agentic AI?**
+
+Many recent surveys correctly identify that agentic AI is important, but they often remain narrow in focus or conceptually inconsistent. In particular, the problem of conceptual retrofitting shown in @fig-conceptual_framework continues to shape the field. Classical AI frameworks such as BDI or perceive--plan--act--reflect loops are often used rhetorically to describe systems that are, in practice, probabilistic, context-driven, and non-symbolic [@archibald2024quantitative]. In addition, many reviews focus on one domain, one framework, or one conceptual angle, without integrating architectural mechanisms, evaluation standards, and governance concerns. Table @tab-prior_surveys summarizes several representative examples.
+
+**Reference**                                   **Focus**                **Key Contributions**                         **Limitations**
+
+---
+
+Plaat et al. (2025) [@plaat2025agentic]         Agentic LLMs             Reasoning-Acting-Interacting taxonomy         Limited empirical validation; no evolutionary context
+Schneider (2025) [@schneider2025generative]     GenAI to Agentic shift   Conceptual framework for autonomy             No performance metrics; ignores architectural mechanisms
+Acharya et al. (2025) [@acharya2025agentic]     Foundational methods     Combined RL with cognitive architectures      Scalability not addressed; overlooks LLM-based paradigms
+Gridach et al. (2025) [@gridach2025agentic]     Scientific discovery     Tools for autonomous research workflows       No governance discussion; isolated application view
+Hosseini & Seilani (2025) [@hosseini2025role]   Enterprise strategy      Agentic design for organizational alignment   Lack of technical depth; no architectural analysis
+Ozman (2025) [@sapkota2025ai]                   Business operations      Systematic review methodology                 Missing benchmark comparisons; no unifying framework
+
+: Summary of Prior Surveys on Agentic AI {#tbl-prior_surveys}
+
+From a teaching perspective, the main value of this comparison is not merely to criticize prior work, but to identify what students should pay attention to when reading the literature.
+
+This review addresses those gaps through four integrated contributions:
+
+1. **A Dual-Paradigm Taxonomy.** We use the framework in @fig-conceptual_framework as the main organizing device for distinguishing symbolic and neural lineages of agentic AI. This helps students classify systems more accurately and avoid conceptual confusion.
+
+2. **Architectural Clarification.** We explain the operating logic of modern neural agent frameworks (see Section [4](#sec:literature){reference-type="ref" reference="sec:literature"}) in terms of prompt chaining, role orchestration, context routing, and tool use, rather than describing them as if they were classical symbolic planners.
+
+3. **Empirical Mapping of the Literature.** Through a PRISMA-based review of 90 studies, we categorize systems using the dual-paradigm framework and examine how research trends differ across paradigms.
+
+4. **Governance Anchoring.** We connect ethical, accountability, alignment, and safety issues to the specific architectures in which they arise, rather than discussing governance in the abstract (see Section [7](#sec:ethics){reference-type="ref" reference="sec:ethics"}).
+
+## How to Read the Rest of These Notes
+
+The rest of the notes are organized so that students first gain a conceptual foundation, then move into architectural analysis, and finally examine applications, evaluation, and future directions.
+
+We begin with theoretical background in @sec-foundations, where we define agency more carefully and introduce the main taxonomic distinctions. @sec-methodology explains the systematic review methodology used to gather and classify the literature.
+
+The next set of sections applies the framework directly. @sec-literature examines major architectural frameworks through the symbolic-versus-neural lens. @sec-applications studies how domain context influences architectural choices. @sec-taxonomy then presents a paradigm-aware taxonomy of the literature, which can serve as a reference map for the field.
+
+After that, the notes move into critical reflection. @sec-ethics explores ethical and governance questions in a paradigm-specific way, and @sec-gaps identifies major open research problems. @sec-future looks ahead to future directions, especially the possibility of hybrid intelligence systems. Finally, @sec-conclusion synthesizes the main lessons.
+
+# Theoretical Foundations: Mapping the Dual Lineages of Agentic Intelligence {#sec-foundations}
+
+In this section, our goal is to build the conceptual foundation needed to understand **why agentic AI cannot be treated as a single, uniform tradition**. A common mistake in current discussions is to describe all agentic systems as if they were simply updated versions of earlier symbolic AI. In reality, the field branches into **two distinct lineages**, as illustrated by our conceptual framework in @fig:conceptual_framework:
+
+* the **Symbolic/Classical lineage**
+* the **Neural/Generative lineage**
+
+Both lineages are concerned with intelligent, goal-directed behavior. However, they differ fundamentally in **how they represent knowledge**, **how they make decisions**, and **how they implement agency**.
+
+This section maps the theoretical foundations of both traditions. We begin with the shared conceptual language of autonomy and agency, then examine how these ideas were implemented in the symbolic paradigm, and finally show how the neural paradigm introduced a fundamentally different computational substrate for agentic behavior.
+
+## Core Principles of Autonomy and Agency
+
+Before comparing architectures, we need a vocabulary for describing what makes a system “agentic.”
+
+Two foundational concepts are especially important:
+
+* **Autonomy**: the ability of a system to operate with limited or no direct human intervention
+* **Agency**: the capacity to pursue goals through context-sensitive decision-making and action
+
+These ideas were first developed more explicitly within the symbolic tradition, but they remain relevant across both paradigms [@patel2020demonstration; @kolt2025governing]. In teaching terms, autonomy tells us **how independently** a system can function, while agency tells us **whether the system behaves in a goal-directed way**.
+
+Modern agentic AI combines these ideas in systems that can:
+
+* initiate tasks
+* rank or prioritize goals
+* monitor progress
+* adjust behavior in response to feedback loops [@trencsenyi2025influence]
+
+These behaviors resemble aspects of human executive functioning, such as planning, inhibition, monitoring, and cognitive flexibility. That does **not** mean AI systems literally reproduce human cognition. Rather, it means that both symbolic and neural systems can be analyzed through a high-level language of intelligent control, even though they achieve it through very different underlying mechanisms.
+
+## The Symbolic Lineage: Algorithmic Decision-Making
+
+The symbolic lineage approaches intelligence through **explicit representations**, **algorithmic planning**, and **structured state models**. In this paradigm, knowledge is represented directly, and behavior is produced through logical inference or formal decision procedures.
+
+Historically, this lineage provided the theoretical foundation for pre-LLM autonomous systems and remains important because many of its conceptual tools—especially in planning and decision theory—still shape how we describe intelligent behavior today.
+
+### Markov Decision Processes (MDPs)
+
+Markov Decision Processes (MDPs) provide one of the most important formal models for reasoning about sequential decision-making in environments where the system has **full access to the current state** [@lu2019general; @lu2023decision].
+
+An MDP is typically defined as a tuple: $(S, A, P, R)$
+where:
+
+* (S) = set of states
+* (A) = set of actions
+* (P) = transition probabilities
+* (R) = reward function
+
+From a teaching perspective, an MDP answers a simple question:
+
+> If an agent knows exactly where it is, what actions are available, and what rewards follow from those actions, how should it choose optimally over time?
+
+This was a powerful model for early symbolic and classical statistical AI, especially in domains where environments were sufficiently structured and state information was explicit. However, that strength is also a limitation. MDPs assume a level of transparency and completeness that is often unrealistic in messy, real-world environments.
+
+### Partially Observable MDPs (POMDPs)
+
+Partially Observable Markov Decision Processes (POMDPs) extend MDPs by addressing the case where the system **does not fully know the true state of the environment** [@rozek2024partially; @lu2024rethinking].
+
+Instead of acting directly on a known state, the agent maintains a **belief state**—a probability distribution over possible hidden states. This allows the system to reason under uncertainty and infer latent conditions from noisy observations.
+
+This is a major conceptual advance because it introduces uncertainty directly into the formal model of decision-making. In practical terms, the system no longer says:
+
+> “I know where I am.”
+
+Instead, it says:
+
+> “Based on what I have observed, I believe I am most likely in one of these states.”
+
+As shown in @fig-mdp_pomdp_comparison, this transition from explicit state access to inferred belief states marks a more sophisticated symbolic treatment of uncertainty. Still, it remains fundamentally algorithmic: the agent is estimating state through formal belief updates rather than through learned representation.
+
+![Classical symbolic reasoning: Comparison between a rule-based MDP scheduler (left) and a belief-based POMDP assistant (right). The MDP agent relies on explicit calendar states and deterministic policies, while the POMDP agent infers hidden user preferences from behavioral feedback. Both represent the symbolic paradigm’s approach to decision-making.](./M06_lecture01_figures/TheRobotScheduler.png){#fig-mdp_pomdp_comparison width="90%" fig-align="center" fig-alt="Classical symbolic reasoning: Comparison between a rule-based MDP scheduler (left) and a belief-based POMDP assistant (right). The MDP agent relies on explicit calendar states and deterministic policies, while the POMDP agent infers hidden user preferences from behavioral feedback. Both represent the symbolic paradigm’s approach to decision-making."}
+
+POMDPs are theoretically elegant, but they can become computationally expensive because maintaining and updating belief states is difficult in large or highly dynamic environments [@frering2025integrating; @gillen2020explicitly]. This limitation illustrates a general pattern in symbolic AI: explicit structure provides clarity and interpretability, but often at the cost of scalability.
+
+### Cognitive Architectures: BDI and SOAR
+
+If MDPs and POMDPs formalize decision-making, then cognitive architectures such as **Belief-Desire-Intention (BDI)** and **SOAR** represent the symbolic tradition’s broader attempt to model intelligent agency itself.
+
+These architectures make internal structure explicit. They define components for representing beliefs, goals, intentions, and monitoring processes. In doing so, they approximate a classical **perceive--plan--act--reflect** cycle through symbolic modules.
+
+@tab-cognitive_mapping is useful because it shows how symbolic AI mapped computational components onto high-level human cognitive functions.
+
+|**Component**     |         **Human Function**           |       **Symbolic AI Parallel**
+|:----------------------------------|:---------------------------------|:--------------------------|
+|**Belief Module**    |      Working Memory                 |     Symbolic Knowledge Base / World Model|
+|**Desire Module**      |    Motivation               |           Goal Stack / Utility Function |
+|**Intention Module**   |    Executive Control    |               Action Policy / Planner |
+|**Meta-cognition Layer**  | Self-reflection, Error Monitoring |  Monitor / Replan Loop |
+
+: Mapping Human Cognitive Functions to Symbolic AI Modules
+{#tab-cognitive_mapping}
+
+The key takeaway is:
+
+> Symbolic architectures attempt to engineer intelligence **top-down**, by explicitly designing the structures that are assumed to produce intelligent behavior.
+
+In highly variable or open-ended real-world settings, symbolic systems struggle because they depend on representations, rules, and state transitions that must be specified or maintained explicitly.
+
+## The Neural Lineage: Statistical Learning and Emergent Reasoning
+
+The neural lineage takes a very different approach. Instead of designing intelligence through explicit logic and symbolic structures, it builds systems that learn from data. In this paradigm, behavior emerges from **statistical learning**, **representation learning**, and eventually **generative modeling**.
+
+This shift is crucial for understanding modern agentic AI. Neural systems do not usually carry explicit symbolic beliefs or intentions in the classical sense. Instead, they produce behavior through learned mappings over high-dimensional representations.
+
+### Deep Reinforcement Learning (DRL)
+
+Deep Reinforcement Learning (DRL) is an important transitional stage between classical decision theory and modern neural systems [@singh2025agentic; @bodepudi2020agentic].
+
+Classical reinforcement learning already dealt with sequential action and reward, but DRL extended that framework by using neural networks to process **high-dimensional inputs** such as images, language, or complex sensor signals. This allowed agents to learn policies directly from data rather than requiring hand-crafted symbolic state descriptions.
+
+In simple terms:
+
+* symbolic systems required the environment and decision space to be structured explicitly
+* DRL systems learned useful internal representations while optimizing behavior through experience
+
+Methods such as PPO (Proximal Policy Optimization) [@kumar2025proximal; @yazid2023autonomous] became important because they allowed more stable and effective policy learning.
+
+@fig-drl_comparison highlights an important transition within DRL itself: the move from single-task optimization to more adaptable meta-learning-oriented approaches.
+
+![The shift toward learned behavior: Architectural contrast between vanilla DRL (single-task optimization) and meta-DRL (dual-loop generalization). The latter improves adaptability across tasks through meta-optimization loops, moving from explicit programming toward learned, emergent capabilities.](./M06_lecture01_figures/ArchitecturalcontrastDRL.png){#fig-drl_comparison width="85%" fig-align="center" fig-alt="The shift toward learned behavior: Architectural contrast between vanilla DRL (single-task optimization) and meta-DRL (dual-loop generalization). The latter improves adaptability across tasks through meta-optimization loops, moving from explicit programming toward learned, emergent capabilities."}
+
+DRL is best understood as a **bridge**. It does not yet give us the modern LLM-based agent, but it does show how neural systems began to replace explicit symbolic design with learned behavioral policies.
+
+### The LLM Substrate and the Paradigm Shift
+
+The emergence of **Large Language Models (LLMs)** created a much more dramatic shift. This was not simply another improvement within the same line of development—it introduced a new computational substrate for intelligent behavior.
+
+LLMs function as general-purpose sequence models trained on massive corpora. In doing so, they become powerful statistical reasoners operating in a learned semantic space. This changes the design problem fundamentally.
+
+Instead of building an agent by explicitly specifying internal symbolic structures, modern developers often build systems by **orchestrating pre-trained generative models**.
+
+That is why frameworks such as LangChain, AutoGen, and CrewAI should not be understood as updated BDI systems or neuralized versions of classical perceive--plan--act loops. They represent a different paradigm: **LLM orchestration**.
+
+In this neural paradigm, agency is produced through mechanisms such as:
+
+* prompt chaining
+* tool invocation
+* context routing
+* role-based coordination
+* external memory access
+* retrieval-augmented generation
+
+The important conceptual shift is this:
+
+> In the symbolic paradigm, intelligent behavior is produced by **internal symbolic structure**.
+> In the neural paradigm, intelligent behavior emerges from **prompt-conditioned orchestration over learned generative models** @fig-assistant_evolution illustrates this progression clearly.
+
+
+![The journey from symbolic to neural agency: The evolution of a personal assistant from a deterministic rule-based (MDP) system, to an uncertainty-aware (POMDP) system, and finally to a modern LLM-orchestrated agent. This journey bridges the two paradigms, ending with a system that exhibits intelligent behavior through entirely different mechanisms.](./M06_lecture01_figures/FromBasicScheduling.png){#fig-assistant_evolution width=80% fig-align="center"}
+
+@tab-orch helps make this concrete by showing how several major frameworks achieve functionality through different orchestration patterns.
+
+| **Framework**                                                                                                                    | **Primary Mechanism**                  | **Functional Paradigm and Representative Applications** |
+|:-------------------------------------------|:--------------------------------|:------------------------------|
+| **LangChain** [@mavroudis2024langchain; @johnson2025langchain; @gupta2024langchain; @topsakal2023creating; @taulli2025building]   |Prompt Chaining                        |Orchestrates linear sequences of LLM calls and API tools. Replaces symbolic planning with stochastic generation of next steps. Applications: Multi-step workflow automations, automated medical reporting [@huh2023breast].|
+| **AutoGen** [@wu2023autogen; @dibia2025multi]                                                                              |Multi-Agent Conversation               |Facilitates structured dialogues between collaborative LLM agents. Replaces monolithic control with emergent problem-solving through conversation. Applications: Collaborative task solving, economic research coordination [@dawid2025agentic].|
+| **CrewAI** [@venkadesh2024unlocking; @duan2024exploration]                                                                        |Role-Based Workflow                    |Assigns roles and goals to a team of agents, managing their interaction workflow. Replaces centralized scheduling with dynamic, role-driven process management. Applications: Market analysis and risk modeling [@chandrashekar2025survey].|
+| **Semantic Kernel** [@kothapalli2024integrating; @meyer2024building; @costea2025microsoft]                                        |Plugin/Function Composition            |Connects LLMs to pre-written code functions ("skills"). Replaces integrated actuation with stochastic planning of plugin sequences. Applications: Breaking down high-level user intents into executable skills.|
+| **LlamaIndex** [@gheorghiu2024building; @ramirez2025accelerating; @mozolevskyi2024comparative; @braunschweiler2025evaluating]     |Retrieval-Augmented Generation (RAG)   |Provides sophisticated data connectors and indexing. Replaces internal symbolic knowledge bases with on-demand, external context retrieval. Applications: Financial sentiment analysis [@konstantinidis2024finllama], enhancing information retrieval for research [@kommineni2025harnessing].|
+
+: Orchestration Mechanisms of Modern Neural Agentic Frameworks {#tab-orch}
+
+@tab-orch shows that the modern ecosystem is not organized around one single “agent architecture.” Instead, it is organized around **different orchestration mechanisms**, each of which structures agency differently.
+
+## Multi-Agent Orchestration: The Pinnacle of the Neural Paradigm
+
+The most advanced expression of the neural lineage appears in **multi-agent orchestration**. In these systems, intelligence is not concentrated in one monolithic model. Instead, it arises through the interaction of multiple specialized agents coordinated through structured communication and shared context.
+
+Frameworks such as AutoGen [@wu2023autogen] and LangGraph [@Wang2024agent] are important examples. As shown in @fig:orchestration, these systems often include a central orchestrator—sometimes an LLM itself—that acts as a router, scheduler, or context manager. It assesses the overall task, delegates subtasks, tracks progress, and coordinates outputs from specialized agents.
+
+![The architecture of the neural paradigm: Multi-Agent Orchestration in modern AI systems. This schematic illustrates the operational paradigm of neural systems. A central orchestrator (e.g., an LLM) manages a dynamic workflow of specialized agents through structured messaging and context management. Functionality emerges from prompt routing and API tool use, explicitly replacing the symbolic perceive-plan-act-reflect loop.](./M06_lecture01_figures/Multi-AgentOrchestration.png){#fig-orchestration width=60% fig-align="center"}
+
+In the symbolic paradigm, system complexity was often concentrated inside the internal logic of one designed agent. In the neural paradigm, complexity is often distributed across:
+
+* multiple agents
+* prompts
+* external tools
+* retrieved knowledge
+* communication flows
+* orchestration logic
+
+So the intelligence of the system is not just in the base model. It is in the **architecture of coordination**.
+
+The main lesson:
+
+> The move from symbolic AI to neural agentic AI is not just a change in model performance.
+> It is a change in **how intelligence is organized computationally**.
+
+The symbolic lineage engineered cognition through explicit internal structures.
+The neural lineage engineers agency through generative models, context management, and orchestration.
+
+That distinction will matter throughout the rest of these notes, especially when we later discuss evaluation, governance, and application-specific design choices.
+
+# Analytical Framework for Comparing Agentic Systems {#sec-methodology}
+
+The purpose of methodology is different from its role in an academic review paper. We are not primarily concerned here with documenting database search procedures or systematic review counts. Instead, our goal is to establish a **clear analytical method** for studying agentic AI.
+
+This section therefore explains **how to read, compare, and interpret agentic systems** using the dual-paradigm framework introduced earlier in @fig-conceptual_framework.
+
+Rather than treating all agentic systems as part of one homogeneous trend, we will study them through a structured lens that distinguishes:
+
+1. **their architectural paradigm**
+   * Symbolic/Classical
+   * Neural/Generative
+2. **their form of agency**
+   * single-agent
+   * multi-agent
+   * orchestrated workflow
+
+This approach is useful because many systems that appear similar at the application level are actually built on very different computational assumptions.
+
+## Why a Comparative Analytical Lens Is Necessary
+
+Agentic AI is often discussed as if it were one unified field. In practice, however, the systems grouped under this label differ in:
+
+* how they represent knowledge
+* how they make decisions
+* how they use memory
+* how they coordinate action
+* how they are evaluated
+* how they fail
+
+A symbolic planning system, a deep reinforcement learning agent, and an LLM-orchestrated multi-agent workflow may all be described as “agentic,” but they do not operate in the same way. If we evaluate them using the same conceptual assumptions, we risk misunderstanding both their strengths and their limitations.
+
+For that reason, this lecture adopts a **comparative and paradigm-aware method** rather than a purely descriptive one.
+
+## Core Analytical Questions
+
+As we move through the rest of the notes, we will repeatedly ask the following questions of each system or framework we study:
+
+### What is the system’s underlying paradigm?
+
+Does the system rely primarily on:
+
+* explicit symbolic representations and algorithmic planning, or
+* neural representations, probabilistic generation, and orchestration?
+
+This is the most basic distinction, because it determines how the system “thinks,” how it acts, and how it should be interpreted.
+
+### Where does agency come from?
+
+In symbolic systems, agency is typically engineered through:
+
+* rules
+* planners
+* state models
+* goal structures
+
+In neural systems, agency often emerges through:
+
+* prompt-driven control
+* learned policies
+* context windows
+* tool use
+* orchestration across components
+
+This means the same outward behavior—such as planning a task—may arise from completely different internal mechanisms.
+
+### How is the system organized?
+
+We will examine whether the system is:
+
+* a **single-agent architecture**
+* a **multi-agent architecture**
+* a **pipeline with orchestration logic**
+* or a **hybrid structure**
+
+This matters because modern agentic AI often distributes functionality across multiple specialized units rather than locating all capability inside one monolithic model.
+
+### What role do memory, tools, and external context play?
+
+Another key analytical dimension is how the system extends beyond its core reasoning unit.
+
+We will pay attention to whether the system depends on:
+
+* internal state
+* explicit world models
+* retrieval mechanisms
+* APIs and tools
+* long-context prompting
+* shared communication channels across agents
+
+This is especially important for distinguishing classical agents from modern LLM-based systems.
+
+### How should the system be evaluated?
+
+Evaluation is not paradigm-neutral.
+
+A symbolic planning system may be evaluated in terms of:
+
+* correctness
+* state tracking
+* planning optimality
+* formal guarantees
+
+A neural agentic system may require evaluation in terms of:
+
+* task completion
+* reasoning coherence
+* tool selection quality
+* retrieval grounding
+* robustness under prompt variation
+* coordination quality in multi-agent settings
+
+One of the key lessons of this course is that **evaluation criteria must match the architecture being evaluated**.
+
+## The Three Layers of Analysis
+
+To keep our analysis structured, the rest of the notes will examine agentic AI across three layers.
+
+### Layer 1: Foundations
+
+At this layer, we ask:
+
+* What is autonomy?
+* What is agency?
+* How do symbolic and neural systems differ conceptually?
+* What decision models help us describe intelligent behavior?
+
+This layer provides the language needed to discuss the field clearly.
+
+### Layer 2: Architectures and Frameworks
+
+At this layer, we shift from concepts to implementations.
+
+We will study frameworks such as:
+
+* symbolic planning architectures
+* reinforcement learning agents
+* LangChain
+* AutoGen
+* CrewAI
+* LangGraph
+* retrieval-augmented systems
+
+The purpose here is to understand **how agency is operationalized** in different systems.
+
+### Layer 3: Applications and Implications
+
+Finally, we examine where these systems are used and what constraints emerge in real settings, including:
+
+* healthcare
+* finance
+* scientific discovery
+* legal reasoning
+* enterprise automation
+
+This layer helps students see that architectural choices are shaped by domain needs, governance concerns, and deployment realities.
+
+## How to Use This Framework
+
+As you read the rest of the lecture notes, try to avoid asking only:
+
+> “What does this system do?”
+
+Instead, ask:
+
+* **How does it do it?**
+* **What assumptions does it make?**
+* **What kind of intelligence is being engineered?**
+* **What kind of failure is likely in this paradigm?**
+
+This shift from description to analysis is important. In a fast-moving field like agentic AI, many systems look impressive at the surface level. The deeper challenge is to understand their architecture, their mechanism of action, and the limits of their claims.
+
+> We are not studying agentic AI as one undifferentiated trend.
+> We are studying it through a **paradigm-aware analytical method**.
+
+That method will help us:
+
+* distinguish symbolic from neural systems
+* compare single-agent and multi-agent architectures
+* connect theory to framework design
+* evaluate applications more rigorously
+* and avoid conceptual confusion as the field continues to evolve
+
+# Literature Review: A Dual-Paradigm Analysis {#sec-literature}
+
+The literature on Agentic AI has expanded rapidly, but it has not developed along a single, coherent path. Instead, the field contains two distinct lineages whose assumptions, mechanisms, and design principles differ in fundamental ways. This section reviews that literature through the dual-paradigm framework introduced in @fig-conceptual_framework, using it to distinguish between the symbolic/classical and neural/generative traditions. Rather than treating agentic AI as one unified category, the discussion traces how each lineage defines intelligence, organizes action, and structures coordination.
+
+## Foundational Studies: The Roots of Two Lineages
+
+The roots of Agentic AI lie in two different intellectual traditions. One tradition developed around explicit reasoning, formal planning, and symbolic representations of knowledge. The other emerged from statistical learning, neural computation, and eventually generative modeling. Foundational studies in these traditions established very different ways of thinking about adaptation, coordination, and intelligent behavior.
+
+The symbolic lineage built its foundations on formal decision-making, symbolic world models, and structured reasoning systems. In this tradition, intelligent behavior was something to be designed directly through logic, rule systems, and planning procedures. The neural lineage, by contrast, developed through representation learning, reinforcement learning, and later large-scale generative models. Here, intelligent behavior was not explicitly programmed in the same way, but emerged from learned statistical structure and increasingly sophisticated inference processes.
+
+Reading the literature through this distinction makes it easier to see that the field did not simply evolve from one version of the same architecture to another. Instead, it split into two lineages that often address similar tasks while relying on fundamentally different operational mechanisms.
+
+## Architectural Paradigms: A Mechanistic Comparison
+
+The rise of large language models (LLMs) has firmly established the neural/generative paradigm as a major force in modern agentic systems. These architectures differ sharply from symbolic predecessors. Rather than relying on explicit internal symbolic models, they use LLMs as generative engines embedded within larger software systems. Their capabilities arise from context management, prompt design, retrieval, tool integration, and orchestration.
+
+This difference is central to understanding modern frameworks. Systems such as LangChain, AutoGen, CrewAI, and related orchestration frameworks do not function as classical cognitive architectures in the symbolic sense. They do not reproduce internal symbolic belief states, formal desire structures, or deterministic planning pipelines. Instead, they generate and coordinate actions through prompt-conditioned reasoning, external tool calls, and staged execution across multiple components. Their strength lies not in symbolic manipulation, but in the flexibility of stochastic generation guided by carefully designed workflows.
+
+Seen in this way, architectural comparison is not just about listing frameworks. It is about identifying the mechanism that gives rise to agency. In symbolic systems, agency is produced by designed internal structure. In neural systems, agency is produced by orchestration over generative models. This distinction remains essential throughout the rest of the literature.
+
+## Domain-Specific Implementations: A Paradigm-Driven Analysis
+
+The choice between paradigms becomes especially visible when agentic systems are studied in their application domains. Different sectors impose different constraints, and those constraints often determine which architectural assumptions are acceptable.
+
+In healthcare, safety, interpretability, and compliance exert strong pressure on system design. Symbolic systems continue to be important in settings where predictable and auditable logic is required, such as clinical decision support and other tightly governed workflows. At the same time, neural frameworks are increasingly being used in tasks such as medical report generation [@huh2023breast] and edge-based clinical agents [@basit2024medaide]. These systems are often embedded inside structured tool pipelines so that the flexibility of neural generation is balanced against the need for reliability in clinical settings.
+
+Finance presents a similar but distinct pattern. Because the domain requires high levels of traceability and precision, neural frameworks are often used where complex synthesis and interpretation are required, while symbolic or rule-based logic remains important where determinism is essential. Role-based frameworks such as CrewAI have been used in market analysis [@chandrashekar2025survey], where the workflow itself helps create an auditable record of intermediate actions. LlamaIndex-based systems for financial sentiment analysis [@konstantinidis2024finllama] illustrate another pattern, in which retrieval-augmented generation grounds outputs in external evidence and helps reduce hallucination. Yet symbolic approaches remain highly relevant in domains such as core compliance logic and high-frequency trading, where formal control cannot easily be replaced.
+
+In scientific research, the contrast between paradigms is especially clear. Neural systems are increasingly used to support exploratory, collaborative, and open-ended knowledge work. AutoGen, for example, has been applied to multi-agent conversations for economic research [@dawid2025agentic], demonstrating how neural systems can simulate collaborative critique and distributed inquiry. Symbolic systems, however, retain their relevance in domains such as theorem proving and formal inference, where deductive rigor is the defining requirement. The literature therefore shows that paradigm choice is rarely arbitrary. It is driven by the kind of reasoning required, the tolerance for uncertainty, and the degree of accountability demanded by the domain.
+
+## Emerging Trends: Toward Hybrid Architectures
+
+Recent work increasingly moves beyond the question of whether symbolic or neural systems are superior. Instead, the field is turning toward hybrid architectures that attempt to combine the strengths of both. This shift reflects a growing recognition that each paradigm solves some problems well while leaving others unresolved.
+
+One major direction is **neuro-symbolic integration**, which aims to unite the dependable reasoning of symbolic systems with the adaptability and generative reach of neural models [@nayak2025neuro]. This line of work reflects the belief that reliable reasoning and flexible learning need not remain separate. By combining symbolic reasoning modules with neural components, researchers hope to produce systems that are both expressive and more verifiable.
+
+A second important direction involves **decentralized agent networks**. In this work, blockchain-style coordination and distributed governance mechanisms are introduced into multi-agent architectures to support trust, accountability, and resilient autonomy [@karim2025ai]. These approaches are especially relevant when systems involve multiple actors, institutions, or incentives. Rather than depending on a single central orchestrator, such architectures explore how coordination can be made transparent, robust, and economically structured.
+
+A third trend focuses on **lifelong learning** and persistent memory [@zheng2025lifelong]. Many current LLM-based agents are effective within a task but remain limited by their largely stateless operation. Research in this area seeks to provide agents with more durable memory, long-term adaptation, and continuity across tasks. This direction is significant because it introduces a concept long associated with symbolic AI—persistent state—back into modern neural systems, but through different mechanisms.
+
+Taken together, these trends suggest that the frontier of Agentic AI lies not in the triumph of one paradigm over the other, but in increasingly sophisticated forms of integration.
+
+## Coordination Protocols: From Algorithmic Contracts to Emergent Conversation {#sec-coordination_protocols}
+
+One of the clearest distinctions between paradigms appears in how multi-agent systems coordinate. Coordination is not a secondary implementation detail; it is one of the defining markers of how a paradigm understands collective intelligence.
+
+In the symbolic paradigm, coordination is achieved through explicit, engineered protocols. These mechanisms were developed through decades of work in distributed AI and were designed to support predictable, reliable, and verifiable interaction. A classic example is the **Contract Net Protocol (CNP)** [@XU2001CNP], in which a manager agent announces a task and potential worker agents submit bids. The manager then selects the most appropriate bid. This model is particularly well suited to structured domains such as manufacturing and logistics. Another foundational coordination strategy is the **Blackboard System** [@Craig1988-Blackboard], where multiple specialist agents share access to a common workspace and contribute incrementally to problem solving. This architecture has been especially useful for problems such as diagnosis and interpretation, where multiple forms of expertise must be integrated. Symbolic work has also explored **market-based approaches**, where coordination is achieved through virtual exchange and distributed allocation of resources.
+
+In the neural paradigm, coordination typically emerges in a very different way. Instead of following hard-coded protocols, coordination is often produced through structured conversation, prompt-mediated role assignment, and context routing [@Borghoff2025Human-artificial; @Wang2025talks; @Brodimas2025Intent]. In these systems, an orchestrator—sometimes itself an LLM—may assign tasks, manage interaction, and synthesize outputs. In conversation-based coordination [@Casella2025performant; @LUO2025Multiagent; @Tran2025Multiagent], as seen in frameworks like AutoGen, agents interact through structured dialogue and shared conversational state. In role-based workflow systems such as CrewAI [@Berti2024rethinking], coordination is organized around specialized responsibilities, but the control logic remains driven by LLM-based reasoning rather than by deterministic algorithms. In frameworks built around dynamic context management [@Cheung2025Conversational; @Wang2024agent], such as LangGraph, the system may use graph structures or state machines to govern possible paths while leaving individual transitions dependent on the model’s generated output.
+
+This difference is not merely stylistic. In the symbolic paradigm, coordination is a matter of explicit protocol design. In the neural paradigm, coordination is often a matter of orchestrated emergence. That contrast remains central to the design, reliability, and risk profile of modern multi-agent systems. The core differences are summarized in Table @tab-mas_coordination.
+
+## Evaluating Agency: Beyond Accuracy {#sec-evaluating-agency}
+
+The literature also makes clear that evaluating agentic systems requires a broader framework than evaluating conventional predictive models. Accuracy alone is not enough. A genuinely agentic system must be assessed in terms of whether it can sustain goal-directed behavior over time, respond to changing conditions, use tools effectively, and remain robust under uncertainty.
+
+In the symbolic paradigm, evaluation has traditionally emphasized verifiability. The relevant questions concern whether the system achieves predefined goals correctly, whether its plans are optimal relative to known criteria, whether its logic remains internally sound, and whether it behaves safely under rare or difficult edge cases. In such systems, the emphasis is on correctness, consistency, and formal accountability.
+
+In the neural paradigm, evaluation becomes more complicated because the systems are stochastic and context-dependent. Benchmarks such as AgentBench [@liu2023agentbench] and GAIA [@Mialon2023GAIA] have helped move the field toward more holistic assessment, but they do not fully resolve the problem. Neural agentic systems must often be evaluated in terms of long-horizon task success, coherence across multiple steps, context and memory management, tool selection, recovery from failure, robustness under varying prompts, vulnerability to injection attacks, and practical considerations such as cost and latency. Because these systems depend on orchestration as much as on model capability, evaluation must account for both outcome quality and process quality.
+
+The broader lesson in the literature is that agency is multi-dimensional. A system is not agentic merely because it can complete a task occasionally. It must also do so in a way that is reliable enough for the domain, adaptive enough for the environment, and transparent enough for the relevant level of accountability. For this reason, evaluation in Agentic AI is necessarily paradigm-aware: symbolic systems are often judged by verifiability, while neural systems are more often judged by robust adaptability.
+
+## Summary of Insights
+
+Viewed through the dual-paradigm framework, the literature points to several consistent conclusions. The first is that the divergence between symbolic and neural systems is fundamental. These are not simply earlier and later versions of the same architecture, but parallel development paths grounded in different assumptions about knowledge, action, and intelligence.
+
+The second is that mechanism strongly shapes application. Symbolic systems remain most appropriate where verifiability, safety, and deterministic behavior are essential. Neural systems are most compelling where adaptability, synthesis, and work over unstructured data are required. Neither paradigm is universally superior; each is better suited to different classes of problems.
+
+The third is that the most significant frontier now lies in hybridization. Much of the most promising work seeks to combine the strengths of symbolic reasoning, structured memory, and formal control with the flexibility and generative power of neural systems. This suggests that the future of Agentic AI is likely to be shaped less by competition between paradigms than by increasingly sophisticated forms of integration.
+
+Taken together, these insights provide a coherent account of the field’s present condition. Agentic AI is best understood not as a loose collection of frameworks, but as a design space structured by distinct computational paradigms, domain requirements, and emerging hybrid architectures.
+
+
+# Applications and Real-World Deployment of Agentic AI {#sec-applications}
+
+Agentic AI has moved well beyond conceptual demonstrations and is now appearing in real deployment settings. Once these systems leave the lab, however, architecture stops being an abstract design preference and becomes a practical engineering decision. Different domains impose different requirements for safety, regulation, accountability, interpretability, and robustness. As a result, the choice between symbolic, neural, and hybrid approaches is not simply a matter of technical fashion. It is shaped by the operational constraints of the domain itself.
+
+This section examines deployment through the dual-paradigm framework. The central idea is that the progression from automation to autonomy is not best understood as a historical ladder, but as a process of selecting the right mechanism for a given task environment. In some settings, symbolic or highly constrained deterministic approaches remain preferable because they support auditability and formal control. In other settings, neural systems are better suited because they can adapt to ambiguity, synthesize unstructured information, and support flexible interaction. In still other cases, the most effective systems are hybrids that deliberately combine both modes of intelligence.
+
+Table @tab-domain_applications provides a comparative overview of major domains, the dominant architectural tendencies in each, the constraints that shape those choices, and illustrative implementations.
+
+| Domain | Dominant Architectural Paradigm | Primary Constraints | Illustrative Implementations |
+|---|---|---|---|
+| Healthcare | Symbolic or tightly constrained neural workflows | Safety, compliance, auditability, reliability | Rule-based clinical decision support; structured medical report generation [@huh2023breast]; on-premise edge agents [@basit2024medaide] |
+| Education | Neural / generative | Personalization, adaptivity, contextual interaction | Adaptive tutoring and feedback systems; conversational learning assistants |
+| Finance | Neural workflows constrained by symbolic safeguards | Accuracy, explainability, audit trails, regulatory compliance | CrewAI for market analysis [@chandrashekar2025survey]; LlamaIndex-based financial sentiment systems [@konstantinidis2024finllama] |
+| Legal | Neural retrieval and orchestration with strong verification layers | Compliance, traceability, evidentiary grounding, hallucination risk | Retrieval-grounded legal analysis and document support systems |
+| Robotics | Hybrid | Real-time control, safety, perception-action coupling | Symbolic low-level control combined with neural high-level coordination |
+| Scientific Research | Split between neural exploratory systems and symbolic formal systems | Epistemic rigor, verifiability, domain correctness | AutoGen for economic research coordination [@dawid2025agentic]; symbolic theorem proving and logic systems |
+
+: Domain-Level Patterns in Agentic AI Deployment {#tab-domain_applications}
+
+A major pattern visible across these domains is that the architectural paradigm is often a response to domain pressure rather than an expression of general technological progress. In healthcare, for example, the dominant concern is not creativity or open-ended generation, but safety. Systems operating in clinical environments must be reliable, traceable, and constrained in ways that make their decisions understandable and reviewable. For that reason, symbolic approaches and highly structured deterministic pipelines remain especially valuable. Neural systems are still used, but they are often enclosed within tightly controlled workflows rather than allowed to operate as unconstrained autonomous agents.
+
+Education presents a different case. Here the challenge is often personalization at scale. Systems must respond to student context, variation in skill level, and evolving interaction. That makes the neural paradigm especially attractive, since adaptive feedback, conversational response generation, and context-sensitive tutoring are difficult to implement with rigid symbolic rules alone. The strength of neural systems in education lies not in formal certainty, but in their flexibility and responsiveness.
+
+Finance and legal domains occupy an important middle ground. These domains benefit from neural systems because of their ability to process large volumes of text, market information, or documents, but they also require strong safeguards against hallucination, opacity, and non-compliance. As a result, many practical systems in these areas rely on neural orchestration frameworks that are constrained by symbolic mechanisms such as role-based workflows, verified retrieval pipelines, or strict tool permissions. This is why finance and legal applications often appear as some of the clearest examples of constrained neural or hybrid design.
+
+Robotics makes the hybrid logic even more explicit. Low-level control, safety procedures, and real-time guarantees still favor symbolic or classical control techniques. At the same time, high-level adaptation, planning under ambiguity, and perception in complex environments increasingly benefit from neural approaches. In these systems, the hybrid division is often functional: symbolic control handles stability and safety, while neural systems support flexibility and broader situational interpretation.
+
+Scientific research reveals another important distinction. Neural systems are especially strong in exploratory settings where the task involves synthesis, pattern discovery, idea generation, or collaborative critique. Symbolic systems remain more appropriate when the task demands formal proof, precise logical inference, or guaranteed correctness. The contrast between these uses shows that the choice of paradigm is often a choice about the nature of reasoning itself.
+
+Across all of these domains, the same broader lesson appears repeatedly: deployment is never just about whether a system is powerful. It is about whether the architecture matches the requirements of the environment in which it operates.
+
+## Cross-Domain Challenges
+
+Looking across domains also makes it easier to identify several recurring challenges that future work must address more directly.
+
+One of the most important is the need for **paradigm-specific governance**. Symbolic systems and neural systems do not fail in the same way, and they should not be governed as if they do. In symbolic systems, governance often centers on validating logical rules, checking formal consistency, and ensuring that explicit control structures do not produce unsafe actions. In neural systems, governance is more likely to involve monitoring prompts, retrieved context, training data, generated outputs, and orchestration pathways. Hybrid systems complicate this further because they inherit risks from both paradigms at once.
+
+A second cross-domain challenge is **security and resilience**. As agentic systems become embedded in critical infrastructure and institutional workflows, they become attractive targets for adversarial manipulation. But again, the attack surface differs by paradigm. Symbolic systems may be vulnerable to rule exploitation, malformed logic, or adversarial interactions with decision policies. Neural systems are vulnerable to prompt injection, retrieval poisoning, adversarial data, and inference-time manipulation. Understanding agentic security therefore requires more than generic AI safety language; it requires attention to architecture-specific failure modes.
+
+A third challenge concerns **human-AI collaboration**. The way people supervise, interpret, and intervene in agentic systems depends heavily on the system’s architecture. Symbolic systems invite oversight through logic, state inspection, and rule analysis. Neural systems require a different interaction model, one based more on prompt steering, confidence assessment, tool monitoring, and interpretation of opaque outputs. This means that interface design, interpretability, and oversight are not neutral layers placed on top of a system. They must be developed in a way that fits the architecture underneath.
+
+## Tool Use and Capabilities: Integration with Real-World Systems
+
+One of the clearest features distinguishing agentic AI from passive generative models is the ability to interact with external tools and services. Tool use connects internal reasoning to external action. Through APIs, databases, execution environments, and software connectors, agentic systems can move beyond producing text and begin operating within real workflows [@Deva2025API; @Ofoeda2019API; @Liu2021API; @Lamothe2021API].
+
+Here again, the distinction between paradigms remains important.
+
+In the **symbolic paradigm**, tool use is usually hard-coded and deterministic. The system knows in advance which function should be called under which conditions, and the parameters are often tightly specified. This is especially common in high-stakes or tightly regulated settings such as healthcare, where Electronic Health Record systems may be accessed through strict and auditable APIs, including standards such as HL7 FHIR [@Saripalle2019API-EHR; @Pedrera-Jimenez2023API-EHR]. In such settings, tool use is not treated as open-ended exploration. It is treated as controlled actuation.
+
+In the **neural paradigm**, tool use is more flexible and more generative. Frameworks such as LangChain and AutoGen often allow the model to select among available tools based on the task context. The model may generate arguments for an API call, formulate a database query, write code for execution, or route tasks across multiple systems [@Zhong2025Approach; @Patil2023Gorilla]. This flexibility is a major source of capability, but it also introduces risk. The more open-ended the orchestration, the greater the chance of malformed calls, brittle reasoning chains, or unintended outputs.
+
+Table @tab-tools_apis summarizes several major categories of tools and APIs now being integrated into agentic systems.
+
+| Tool/API Category | Example Services/APIs | Primary Paradigm | Agent Function and Use Case |
+|---|---|---|---|
+| Data and Database | Google BigQuery, Snowflake, PostgreSQL, Airtable API, Apache Cassandra | Both | Querying structured data for retrieval and analysis, including financial, operational, or customer records |
+| Web and Search | Google Search API, SerpApi, Wikipedia API, Wolfram Alpha API, Brave Search API | Neural | Gathering current external information to ground outputs and overcome knowledge cutoffs |
+| Software and Cloud | GitHub API, AWS S3/SageMaker API, Azure Functions API, Google Cloud Compute API, Docker Engine API | Neural | Automating development workflows, cloud operations, deployment, and infrastructure tasks |
+| Business and Productivity | Slack API, Microsoft Graph, Salesforce REST API, Jira Cloud API, Zoom API | Neural | Summarizing communication, managing workflows, handling customer and organizational processes |
+| Financial | Bloomberg Terminal API (BQL), Stripe API, Plaid API, Alpaca Markets API, Reuters Eikon API | Both | Processing payments, analyzing market data, conducting risk assessment, and supporting decision workflows |
+| Scientific and Academic | PubMed E-Utilities API, IEEE Xplore API, UniProt API, RDKit, PyMol | Hybrid | Literature review, hypothesis development, molecular and scientific workflow support |
+| Code Execution | Python subprocess/REPL, Node.js runtime, Docker API, Jupyter Kernel Gateway API | Neural | Writing, executing, debugging, and validating code for calculations, data analysis, and task automation |
+
+: Examples of Real-World Tools and APIs Integrated with Agentic AI Systems {#tab-tools_apis}
+
+This tool layer is what allows agentic systems to function as operational systems rather than merely as response generators. A neural agent might read an email through the Outlook API, extract tasks from it, run Python code to analyze the underlying data, and then post a result into Slack as part of a single workflow. A symbolic agent, by contrast, may repeatedly call a narrower but highly reliable set of control interfaces, as in manufacturing or logistics. In both cases, the ability to act depends on external integration, but the style of action differs by architectural paradigm.
+
+## Concluding Perspective
+
+Agentic AI should not be understood as one monolithic technological force. It is better understood as a family of architectural approaches whose real-world use depends on the interaction between mechanism and context. Domain constraints such as safety, regulation, and epistemic rigor shape whether symbolic, neural, or hybrid systems are most appropriate. Tool integration then turns those architectures into practical systems that can act within organizations, infrastructures, and workflows.
+
+For that reason, the most important engineering choice in deployment is often not whether to use “AI” in the abstract, but which kind of agentic architecture is appropriate for the domain. That decision shapes everything that follows, including governance, safety, interpretability, and system resilience.
+
+
+# Mapping the Field {#sec-taxonomy}
+
+The literature on Agentic AI is now large enough that simple lists of frameworks or applications are no longer sufficient. What is needed instead is a way to organize the field according to its underlying architectural logic. This section does that by bringing together the main strands of the literature through the dual-paradigm framework developed earlier in these notes. Rather than treating the field as a single, continuous progression, this section maps it according to the symbolic/classical, neural/generative, and hybrid tendencies that structure current research.
+
+Figure @fig-paradigm_taxonomy provides a visual summary of this landscape. It organizes the main components of the field while also showing how particular areas of work align more naturally with one architectural lineage than another. The figure is useful not because it claims that every study fits perfectly into one category, but because it makes visible the broad patterns that would otherwise remain obscured in a conventional literature review.
+
+![A Paradigm-Annotated Taxonomy of Agentic AI Systems. This framework organizes the field’s core components, now visually differentiated by architectural paradigm: <span style="color: blue"><strong>Symbolic/Classical</strong></span> (blue), <span style="color: orange"><strong>Neural/Generative</strong></span> (orange), and <span style="color: purple"><strong>Hybrid/General</strong></span> (purple). The taxonomy reveals how the symbolic paradigm underpins formal decision models and cognitive architectures, while the neural paradigm defines modern frameworks and orchestration patterns. Application domains are colored by their dominant paradigm, illustrating the strategic choice between symbolic safety and neural adaptability. This visualization provides a clear roadmap for navigating the distinct design, governance, and implementation pathways required by each architectural lineage.](./M06_lecture01_figures/AParadigm-Annotated.png){#fig-paradigm_taxonomy width="90%" fig-align="center"}
+
+The table that follows extends that visual overview into a structured map of the literature. Instead of grouping papers only by topic or year, it classifies them by their dominant paradigm, focus area, and major contribution. That makes it possible to see not only what subjects are being studied, but also how those subjects are being approached architecturally.
+
+| Category | Paradigm | Key Papers | Year | Focus Area | Key Contributions |
+|---|---|---|---|---|---|
+| **Foundational Theories** | Hybrid | [@plaat2025agentic; @schneider2025generative; @acharya2025agentic; @gridach2025agentic; @hosseini2025role; @sapkota2025ai] | 2025 | Autonomy frameworks | Theoretical foundations bridging symbolic and neural concepts of agency |
+| **Architectural Frameworks** | Neural | [@wu2023autogen; @venkadesh2024unlocking; @duan2024exploration; @kothapalli2024integrating; @meyer2024building; @costea2025microsoft; @gheorghiu2024building; @mavroudis2024langchain; @johnson2025langchain; @gupta2024langchain; @topsakal2023creating; @taulli2025building; @dibia2025multi] | 2023--2025 | System design | Neural-based multi-agent orchestration, tool integration, and workflow management |
+| **Healthcare Applications** | Symbolic / Hybrid | [@singh2024revolutionizing; @huh2023breast; @basit2024medaide; @cardenas2024development] | 2023--2024 | Medical AI | Clinical decision support using deterministic and constrained neural systems for safety |
+| **Robotics & Automation** | Hybrid | [@bai2025virtual; @zhang2025collaborative; @annanth2021intelligent; @singireddy2018technology; @patel2020demonstration] | 2018--2025 | Autonomous systems | Combines symbolic planners (POMDPs) for safety with neural components for adaptability |
+| **Financial Systems** | Neural | [@roychowdhury2023hallucination; @yang2023investlm; @chandrashekar2025survey; @konstantinidis2024finllama; @alemari2025role] | 2023--2025 | FinTech | Neural agents for fraud detection, algorithmic trading, and risk assessment |
+| **Education Technology** | Neural | [@suh2025investigating; @fisher2020livehint] | 2020--2025 | EdTech | Neural-based adaptive learning systems and intelligent tutoring |
+| **Legal & Compliance** | Neural (RAG) | [@magesh2024hallucination] | 2024 | Legal tech | Neural agents heavily constrained by symbolic retrieval (RAG) for accuracy |
+| **Ethics & Governance** | Neural | [@gabison2025inherent; @raza2025trism; @syros2025saga; @feng2025levels; @tallam2025alignment; @clatterbuck2024risk; @chan2023harms; @toth2022dawn; @baron2025trust; @chan2024visibility; @papagni2023artificial; @singh2025bias; @yadav2024ai; @hellrigel2025misalignment; @zhang2025agentalign; @kasirzadeh2025characterizing; @tiwari2025conceptualising; @costa2025exploring; @lakkamraju2025agentic; @zou2025call; @borghoff2025human; @tennant2023hybrid; @rossi2019building] | 2019--2025 | AI safety | Frameworks addressing neural-specific challenges such as alignment, bias, and opacity |
+| **Evaluation & Benchmarking** | Neural | [@liu2023agentbench; @reuel2024betterbench; @yehudai2025survey; @zhuge2024agent; @moshkovich2025beyond] | 2023--2025 | Performance metrics | Benchmarks focused on neural agent capabilities such as reasoning and tool use |
+| **Emerging Technologies** | Hybrid | [@sultanow2025quantum; @zheng2025lifelong; @yang2025magma; @agashe2024agent; @huang2025agent; @bachrach2020negotiating; @radanliev2025rise; @ma2025agentic; @schmidt2023interacting; @koutra2025towards; @lu2024ai; @cervantes2020toward; @nayak2025neuro; @karim2025ai; @thompson2024autonomous; @bovo2025symbiotic; @samuel2022adaptive; @wu2025agentic; @zhuang2025self; @jeong2025study; @li2025glue; @sumers2023cognitive; @romero2023synergistic; @shapiro2023conceptual; @nong2025transfer; @li2025multi] | 2020--2025 | Innovation frontiers | Research into neuro-symbolic integration, quantum AI, and human-AI collaboration |
+
+: Paradigm-Based Taxonomy of Agentic AI Literature (2018--2025) {#tab-full-taxonomy-landscape}
+
+Several broad patterns become clear once the literature is reorganized in this way. The first is that **domain specialization follows paradigm logic**. High-stakes and tightly regulated domains such as healthcare and legal technology tend to favor symbolic systems or constrained hybrids because those architectures support reliability, auditability, and bounded behavior. By contrast, domains such as finance and education, which depend more heavily on adaptation, unstructured information, and interactive flexibility, show a much stronger alignment with the neural paradigm.
+
+A second pattern is the emergence of what might be called a **governance divide**. A very large share of the literature on ethics, safety, alignment, and governance is concentrated on the neural paradigm. This is understandable, since large language model systems introduce distinctive problems involving opacity, hallucination, prompt sensitivity, and stochastic behavior. At the same time, the taxonomy reveals that governance work on modern symbolic or hybrid systems is much less developed than one might expect. That imbalance suggests an important gap in the field rather than a completed research agenda.
+
+A third pattern is temporal. The literature shows a visible **shift over time**. Earlier work, especially between 2018 and 2021, is more likely to emphasize cognitive architectures, symbolic planners, and hybrid systems that still retain strong connections to earlier traditions of AI. After 2022, however, the literature becomes dominated by orchestration frameworks, multi-agent conversations, retrieval pipelines, and other LLM-centered designs. This does not mean that symbolic approaches have disappeared. Rather, it shows that the center of gravity in agentic AI research has moved decisively toward neural systems.
+
+This reorganization of the literature also helps clarify why hybrid systems now receive so much attention. Across application areas and emerging technologies, the most promising work is often not trying to prove that one paradigm should replace the other. Instead, it is trying to determine how symbolic structure and neural flexibility can be combined in ways that preserve the advantages of each. The hybrid category is therefore not just a residual bucket for hard-to-classify studies. It increasingly marks the frontier of architectural experimentation.
+
+What this section ultimately shows is that the literature is not random or merely diverse. It has a discernible structure. Some paradigms fit certain domains better than others. Some risks appear more intensely in one lineage than another. Some application areas are driving convergence, while others still reward strong specialization. By mapping the field in this way, the taxonomy becomes more than an inventory of papers. It becomes a way of seeing how the research landscape is organized and where future work is likely to emerge.
+
+The value of this section, then, is not simply that it classifies studies. Its real value is that it makes visible the deeper architecture of the field itself. That is why a paradigm-aware taxonomy is useful: it allows the literature to be read not just as a sequence of innovations, but as a structured design space with recurring patterns, tensions, and trajectories.
+
+
+# Ethics and Governance {#sec-ethics}
+
+As agentic AI systems become more autonomous and move into critical real-world settings, ethical and governance questions become much more difficult than they are for ordinary predictive models or passive generative systems [@raza2025trism; @gabison2025inherent; @ranjan2025fairness]. A common mistake in current discussions is to treat these issues as if they were the same across all forms of agentic AI. They are not. The kinds of risks that arise, the forms of oversight that are realistic, and the mechanisms of accountability that are available differ significantly depending on whether the system is symbolic, neural, or hybrid.
+
+This distinction matters because governance is not simply an external layer added after system design. It is shaped by architecture. A symbolic system can often be inspected through its rules, logic, and explicit state transitions. A neural system cannot usually be governed in the same way, because its behavior emerges from learned representations, stochastic generation, and orchestration over prompts, tools, and retrieved context. Hybrid systems are even more challenging, because they combine the governance demands of both paradigms.
+
+Table @tab-ethical_challenges summarizes the major ethical and governance issues raised by agentic systems, along with the ways those issues appear differently across paradigms.
+
+| Ethical Challenge | Symbolic / Classical Manifestation | Neural / Generative Manifestation | Governance Implication |
+|---|---|---|---|
+| Explainability | Often feasible through rule inspection, planners, and state models | Often limited due to opaque learned representations and stochastic outputs | Oversight mechanisms must differ by architecture; one standard of explainability is not realistic for all systems |
+| Accountability | Can often be traced to explicit decision rules and encoded logic | Harder to assign due to distributed training effects, prompts, retrieval, and probabilistic behavior | Liability frameworks may need different standards for symbolic and neural systems |
+| Bias and Fairness | Bias can be embedded in rules, assumptions, or symbolic knowledge structures | Bias may emerge from training data, prompt patterns, retrieval pipelines, or model outputs | Fairness auditing must target different mechanisms in each paradigm |
+| Safety and Reliability | Risks often arise from brittle logic, missing rules, or edge-case failure | Risks often arise from hallucination, prompt injection, stochastic instability, or tool misuse | Safety engineering must be paradigm-specific rather than generic |
+| Human Oversight | Oversight can focus on rule correctness and state interpretation | Oversight often requires monitoring context, prompts, outputs, and orchestration | Human supervision must be tailored to the form of agency being governed |
+| Hybrid Complexity | Less relevant in pure symbolic systems | Less relevant in pure neural systems | Hybrid systems inherit both symbolic and neural governance burdens |
+
+: Paradigm-Specific Ethical and Governance Challenges in Agentic AI {#tab-ethical_challenges}
+
+A major conclusion follows from this comparison: **effective governance cannot be architecturally neutral**. It is not enough to say that all AI systems should be explainable, fair, safe, or accountable in the same way. Those values remain important, but they must be operationalized differently depending on how the system actually works. For a symbolic system, governance may focus on validating logical rules, checking constraints, and ensuring that the internal representation is consistent and safe. For a neural system, the governance burden shifts toward training data, model behavior, prompt pathways, retrieval sources, tool access, and output auditing.
+
+This becomes especially difficult in hybrid systems. A neuro-symbolic architecture may require one layer of oversight to verify symbolic logic and another to monitor generative or stochastic behavior. That makes hybrid systems promising, but it also makes them harder to govern responsibly. Their strength lies in combining complementary capabilities; their governance challenge lies in combining complementary risks.
+
+A particularly difficult issue in the neural paradigm is the **attribution gap**. When a neural agent makes a harmful recommendation, misuses a tool, or produces a faulty output, responsibility is not always easy to assign. The failure may depend on training data, prompt structure, orchestration design, retrieval context, tool execution, or user interaction. Traditional legal ideas such as direct causation and clear intentional action fit awkwardly in such systems. This is one reason why liability debates around neural agents remain unsettled.
+
+Human oversight also changes across paradigms. Supervising a symbolic system is often similar to checking a formal decision process: the supervisor can examine rules, inspect states, and review plans. Supervising a neural system is more like managing an open-ended reasoning process whose internal mechanics are only partially visible. In such cases, oversight depends more heavily on bounding context, validating external evidence, restricting tools, and auditing outputs after the fact.
+
+These differences show why broad, one-size-fits-all governance language is insufficient. Ethical and legal frameworks for agentic AI will need to become more architecture-aware if they are to remain meaningful.
+
+## Toward Agentic AI Policy {#sec-ai_policy}
+
+The governance problem also raises a policy problem. Existing AI policy discussions often focus on models that generate outputs, rank cases, or support decisions. Agentic AI adds another layer because these systems do not merely generate responses; they may initiate actions, coordinate tasks, call tools, and make choices over time. That means policy must account not only for model capability, but also for **degree of agency**.
+
+A useful way to think about this is to distinguish systems by how much autonomy they exercise and what kind of human control remains in place. Some systems are best understood as assistive: they produce recommendations, drafts, or analytic support, but a human remains the active decision-maker. Others operate through shared agency: the human and system interact dynamically, with decision-making distributed across the partnership. Still others approach delegated agency: the system is granted authority to act within bounded domains with only limited human intervention.
+
+Table @tab-agency_policy summarizes these broad levels of agency and the different policy implications they raise.
+
+| Level of Agency | General Characteristics | Typical Human Role | Policy and Governance Implications |
+|---|---|---|---|
+| Assistive Agency | Produces suggestions, analyses, drafts, or recommendations; does not independently execute major actions | Human remains primary decision-maker | Emphasis on transparency, disclosure, and decision support accountability |
+| Shared Agency | System and human jointly shape decisions through iterative interaction | Human supervises and can intervene during execution | Emphasis on meaningful human control, traceability, and bounded autonomy |
+| Delegated Agency | System is allowed to execute actions or workflows within defined constraints | Human oversight becomes supervisory rather than immediate | Stronger requirements for auditing, liability assignment, fail-safes, and domain-specific restrictions |
+
+: A Simple Policy-Oriented Taxonomy of Agency in Agentic AI {#tab-agency_policy}
+
+This way of framing policy is useful because it connects governance to the **degree of autonomy actually exercised**. It also helps clarify why “meaningful human control” [@feng2025levels] cannot be treated as a single uniform requirement. What meaningful control looks like in an assistive writing tool is different from what it should mean in an autonomous research workflow or a semi-delegated enterprise agent. Policy therefore needs to scale with agency.
+
+# Research Gaps {#sec-gaps}
+
+The development of agentic AI is constrained by important unresolved problems, but those problems are not the same across paradigms. One of the weaknesses of current discussion is that it often identifies “gaps” in general terms without asking which architecture those gaps belong to. A more useful roadmap distinguishes between what remains underdeveloped in symbolic systems, what remains underdeveloped in neural systems, and where hybrid systems present new opportunities or new difficulties.
+
+Table @tab-research_gaps summarizes several of the major open problems in a paradigm-aware way.
+
+| Research Theme | Symbolic / Classical Gap | Neural / Generative Gap | Hybrid / Integrative Opportunity |
+|---|---|---|---|
+| Reasoning and Adaptability | Strong formal reasoning but limited flexibility in open environments | Flexible adaptation but weak guarantees of logical consistency | Neuro-symbolic systems may combine structured reasoning with adaptive perception and generation |
+| Evaluation | Mature formal evaluation in narrow settings but limited scalability | Many benchmarks exist, but they often fail to capture long-horizon reliability or coordination quality | Need evaluation suites that can compare integrated systems without collapsing paradigm differences |
+| Governance and Safety | Underexplored governance for modern symbolic complexity | Major open questions in alignment, robustness, prompt security, and accountability | Need mixed governance frameworks that can audit both rule-based and stochastic components |
+| Memory and Continuity | Explicit state is possible but often brittle or difficult to maintain at scale | Many systems remain stateless or weak in long-term memory | Persistent memory architectures may benefit from combining symbolic structure with neural retrieval |
+| Multi-Agent Coordination | Strong protocol design but limited flexibility | Flexible orchestration but weak guarantees | Hybrid coordination models may combine protocol reliability with adaptive collaboration |
+| Benchmarking Methodology | Often too narrow or domain-specific | Often centered on neural tasks only | Need paradigm-aware benchmarks that test architecture-specific failure modes |
+
+: Paradigm-Specific Research Gaps in Agentic AI {#tab-research_gaps}
+
+A major issue running through all of these gaps is the lack of **paradigm-aware research methodology**. Too often, tools developed for one class of systems are treated as if they were naturally appropriate for another. Formal symbolic guarantees do not tell us enough about stochastic neural systems. At the same time, neural-agent benchmarks built around prompt robustness or tool use do not necessarily say much about symbolic planners. This mismatch slows progress because it creates confusion about what success even means.
+
+The most promising path forward is therefore not just deeper work inside each paradigm, but also better work at the boundary between them. The question is no longer only how to improve symbolic systems or how to improve neural systems separately. It is increasingly how to connect them in ways that preserve their strengths without simply combining their weaknesses.
+
+Evaluation is especially urgent. The field needs more than general-purpose leaderboards. It needs benchmark suites that are sensitive to architecture. Symbolic systems should be stress-tested for logical failure, brittleness, and edge-case reasoning breakdown. Neural systems should be stress-tested for hallucination, prompt injection, context instability, and long-horizon drift. Hybrid systems should be evaluated for whether their integration layers genuinely improve reliability rather than merely adding complexity.
+
+Governance is another area where research gaps remain substantial. Policymakers and ethicists increasingly recognize the need for AI oversight, but practical frameworks for agentic AI still lag behind technical development. Symbolic systems and neural systems require different audit strategies, and hybrid systems complicate both. Research on governance therefore cannot remain abstract. It must become architecture-aware in the same way that technical evaluation must.
+
+Taken together, these gaps suggest that the future of the field depends on a dual-track strategy: one track deepens understanding within each paradigm, while the other develops the concepts, tools, and architectures needed to integrate them effectively.
+
+# Future Directions {#sec-future}
+
+The future of agentic AI is unlikely to be defined by one paradigm replacing the other. Instead, the field is moving toward deeper integration, broader coordination, and more deliberate forms of hybrid intelligence [@ma2025agentic]. This future will depend not only on better models, but on better ways of combining reasoning, generation, memory, and control.
+
+Table @tab-future_directions outlines several of the major trajectories now visible in the field.
+
+| Future Direction | Symbolic / Classical Development | Neural / Generative Development | Hybrid Significance |
+|---|---|---|---|
+| Reasoning Integration | More formal planning, verification, and rule consistency | Better long-context reasoning, planning prompts, and tool orchestration | Neuro-symbolic integration remains the clearest route toward reliable and adaptable systems |
+| Multi-Agent Ecosystems | Structured coordination protocols and explicit constraints | LLM-based collaboration, dialogue, and dynamic orchestration | Future ecosystems are likely to mix symbolic and neural specialists within shared workflows |
+| Governance and Safety | Continued development of verifiability and formal assurance | Better alignment, monitoring, red teaming, and output auditing | Governance of hybrid systems will require combining both traditions rather than choosing one |
+| Memory and Lifelong Adaptation | Persistent explicit state and durable knowledge representation | Improved retrieval, long-term memory, and continual adaptation | Hybrid memory systems may become central to durable agentic performance |
+| Integration with Other Technologies | Formal control over sensors, robotics, and structured environments | Real-time perception, multimodal generation, IoT and data-rich adaptation | Technological convergence will likely amplify the need for hybrid intelligence |
+
+: Paradigm-Aware Future Directions in Agentic AI {#tab-future_directions}
+
+The dominant theme here is **architectural integration**. The most important advances are likely to come from systems that can combine symbolic reliability with neural flexibility. Neuro-symbolic integration is therefore not just one trend among many. It is increasingly the central idea around which future agentic research is being organized.
+
+This will matter especially in multi-agent ecosystems [@huang2025agent; @bachrach2020negotiating]. Future systems are unlikely to consist only of homogeneous swarms of similar models. More likely, they will include multiple kinds of agents with different roles. Some may be highly neural, optimized for creativity, synthesis, or interaction with messy environments. Others may be highly symbolic, optimized for validation, regulation, constraint enforcement, or safety-critical reasoning. The challenge will be designing the protocols and orchestration logic that allow these heterogeneous agents to work together effectively.
+
+Safety and governance will also need to evolve on two tracks at once [@gabison2025inherent]. Symbolic systems still benefit from formal methods, explicit verification, and logic-based auditing. Neural systems require stronger work in alignment, monitoring, adversarial testing, and statistical robustness. Hybrid systems will force these strands together, making it impossible to treat safety as if it belonged to only one side of the field.
+
+The integration of agentic AI with other technological infrastructures will accelerate these pressures [@sultanow2025quantum; @radanliev2025rise]. Neural components will increasingly manage large streams of sensor data, multimodal content, and adaptive interactions. Symbolic components will remain important where decisions must satisfy compliance, safety, or formal constraints. In that sense, convergence with IoT, robotics, cloud systems, and even quantum research will not reduce the importance of paradigm distinctions. It will intensify them.
+
+The long-term direction of the field, then, points toward **hybrid intelligence**: systems that are both adaptive and reliable, both creative and constrained, both exploratory and auditable.
+
+# Conclusion {#sec-conclusion}
+
+Agentic AI represents a major shift in how intelligent systems are designed and understood. But this shift has also produced conceptual confusion. Too often, modern systems are described with inherited language from earlier symbolic AI, as if today’s LLM-orchestrated agents were simply updated versions of classical planners. These notes have argued that this is misleading. The field is better understood as containing two distinct lineages: the **Symbolic/Classical** lineage and the **Neural/Generative** lineage.
+
+That distinction matters because the two lineages do not merely differ in age or implementation detail. They differ in their core mechanics. Symbolic systems rely on explicit logic, formal state, and structured planning. Neural systems rely on statistical learning, stochastic generation, and orchestration over context, tools, and external resources. Treating them as if they were the same obscures both their strengths and their risks.
+
+The review across applications, taxonomy, governance, and future directions leads to three major conclusions. First, the architectural divide is real and practically important. Symbolic systems remain especially useful in settings requiring safety, verifiability, and deterministic control, while neural systems are especially powerful in domains requiring adaptability, pattern recognition, and work over unstructured information. Second, governance cannot be one-size-fits-all. The ethical and legal questions raised by symbolic systems and neural systems differ too much for a single framework to capture adequately. Third, the most promising path forward is not strict competition between paradigms, but selective integration of both.
+
+That is why hybrid systems now matter so much. The next important stage of agentic AI is likely to involve architectures that can combine symbolic reliability with neural adaptability without collapsing one into the other. Achieving that will require better evaluation methods, more architecture-aware governance, stronger coordination protocols, and more deliberate system design.
+
+Ultimately, agentic AI is not only a technical development but a sociotechnical one. Its future depends on whether we can build systems that are not just capable, but trustworthy. That means designing agents that are not only powerful, but governable; not only flexible, but accountable; not only intelligent in performance, but sound in deployment. The long-term challenge is therefore not simply to make agents more capable. It is to make them reliable collaborators within the institutions, infrastructures, and domains in which they will operate.
+
+

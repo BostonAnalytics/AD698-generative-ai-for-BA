@@ -1,5 +1,6 @@
 ---
 title: "M06 Presentation 02"
+subtitle: "Building Agentic AI: A Practical Walkthrough"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -41,3 +42,569 @@ csl: ../mis-quarterly.csl
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+
+# From Documents to Agents
+
+## From Documents to Agents
+
+- Traditional AI pipelines often stop at **data extraction or summarization**.
+- Modern agentic systems go further by **planning, retrieving, reasoning, and acting**.
+- SEC 10-K filings provide an ideal testbed because they are:
+  - long and messy,
+  - financially meaningful,
+  - semi-structured,
+  - and rich enough to support real analysis.
+- In this presentation, we move from a simple **SEC downloader** to a full **financial agent**.
+
+---
+
+## Why Build on SEC Filings?
+
+- SEC filings are not toy data; they are **enterprise-grade financial documents**.
+- They contain critical information on:
+  - business models,
+  - risk factors,
+  - cybersecurity disclosures,
+  - financial performance,
+  - and strategic direction.
+- A useful financial agent should do more than summarize text.
+- It should be able to:
+  - find the right filing,
+  - extract the right sections,
+  - retrieve supporting evidence,
+  - and generate a grounded financial interpretation.
+
+---
+
+## The Central Question
+
+- The goal is not just:
+  - “Can an LLM summarize a filing?”
+- The real goal is:
+  - “Can we design a system that knows how to **find, parse, retrieve, and reason** over filings?”
+- That shift turns the project from a simple LLM demo into an **agentic AI system**.
+
+---
+
+## The Narrative of the System
+
+- We start with a user question such as:
+  - “Compare AI-related risk disclosures in the latest semiconductor 10-K filings.”
+- The system then proceeds through a series of stages:
+  - identify relevant firms,
+  - download the correct filings,
+  - isolate the right SEC sections,
+  - index the material,
+  - retrieve relevant evidence,
+  - synthesize a response,
+  - and review the result before returning it.
+- This is a workflow, not a one-shot prompt.
+
+---
+
+## What Makes This an Agent?
+
+- A normal LLM call produces one answer from one prompt.
+- A financial agent instead:
+  - maintains task context,
+  - selects tools,
+  - executes multiple steps,
+  - retrieves external evidence,
+  - and optionally critiques its own output.
+- In other words, the system exhibits **agency through orchestration**.
+
+---
+
+## High-Level Architecture
+
+- The system is best understood as a layered stack.
+- At the bottom is the **data layer**, which acquires and stores SEC filings.
+- Above that is the **parsing and indexing layer**, which converts raw filings into structured and retrievable content.
+- Above that is the **agent layer**, which plans, selects tools, retrieves evidence, and composes responses.
+- At the top is the **user-facing application layer**, where a researcher or analyst poses questions.
+
+---
+
+## The Role of OpenAI, Hugging Face, and LangChain
+
+- Each part of the stack serves a different purpose.
+- **OpenAI** provides strong reasoning, structured extraction, synthesis, and reflection.
+- **Hugging Face** provides embeddings, rerankers, and open-model flexibility for retrieval and experimentation.
+- **LangChain** provides the abstraction layer for prompts, tools, chains, retrievers, and output parsing.
+- **LangGraph** extends this into a true agent runtime with state, loops, branching, and multi-agent coordination.
+
+---
+
+## A Practical Stack Design
+
+- Use **OpenAI** when the task demands:
+  - planning,
+  - structured output,
+  - summarization,
+  - comparison,
+  - critique,
+  - and final synthesis.
+- Use **Hugging Face** when the task demands:
+  - embeddings,
+  - local retrieval infrastructure,
+  - optional reranking,
+  - or experimentation with open models.
+- Use **LangChain/LangGraph** when the task demands:
+  - tool calling,
+  - routing,
+  - memory,
+  - stateful workflows,
+  - and multi-step execution.
+
+---
+
+## The End-to-End Workflow
+
+- The financial agent follows six major stages.
+- It begins by identifying the target company, vertical, or topic.
+- It then downloads or loads the filing using an SEC tool.
+- It parses the filing into meaningful sections such as Item 1A or Item 7.
+- It stores the results in both relational and vector form.
+- It retrieves evidence relevant to the question.
+- Finally, it synthesizes and reviews the answer.
+
+---
+
+## Stage 1: Environment and Setup
+
+- A serious agentic system needs a reproducible environment.
+- The environment should clearly separate:
+  - model libraries,
+  - data engineering dependencies,
+  - vector infrastructure,
+  - and database integration.
+- A lightweight environment manager such as `uv` is a strong choice for repeatability.
+- The environment should also load API keys securely through `.env` files rather than hardcoding secrets.
+
+```bash
+uv venv
+uv pip install langchain langchain-openai pydantic beautifulsoup4 requests \
+  sec-edgar-downloader python-dotenv psycopg2-binary chromadb \
+  sentence-transformers
+```
+
+---
+
+## Why the Environment Matters
+
+* Agentic systems fail easily when environments are inconsistent.
+* A broken dependency can interrupt:
+
+  * tool calling,
+  * SEC downloads,
+  * vector indexing,
+  * or database writes.
+* Reproducibility is especially important when the project spans multiple notebooks and multiple architectural stages.
+* Good agent design begins with good engineering hygiene.
+
+---
+
+## Stage 2: Data Modeling
+
+* Before we let the model generate anything important, we should define what valid output looks like.
+* This is where `pydantic` becomes essential.
+* Structured schemas reduce hallucination by requiring the model to conform to expected fields and types.
+* They also make downstream storage and validation much easier.
+
+```python
+from pydantic import BaseModel, Field
+from typing import List
+
+class TopCompaniesOutput(BaseModel):
+    companies: List[str] = Field(
+        description="List of exactly 5 company tickers in the requested vertical"
+    )
+```
+
+---
+
+## Why Structured Output Matters
+
+* Financial tasks are not tolerant of vague output.
+* If the model returns prose when we need a list, the pipeline becomes brittle.
+* If the model returns the wrong shape, later tools may fail.
+* Schema enforcement lets us turn stochastic text generation into something operationally useful.
+* In practice, structure is one of the main ways we keep agents reliable.
+
+---
+
+## Stage 3: SEC Data Acquisition
+
+* The agent’s first real tool is the ability to obtain the filing.
+* This step should be deterministic and tool-driven.
+* The filing manager should:
+
+  * resolve tickers or CIKs,
+  * check the local cache,
+  * download missing filings,
+  * and return a path or confirmation.
+
+```python
+def get_10k_filing(self, ticker: str, year: int) -> str:
+    cik = self._get_cik(ticker)
+    local_path = os.path.join(self.local_data_dir, str(year), f"{cik}.html")
+
+    if os.path.exists(local_path):
+        return f"Found local file at {local_path}"
+
+    self.downloader.get("10-K", ticker, amount=1)
+    return "Download complete."
+```
+
+---
+
+## Why This Step Should Stay Deterministic
+
+* We do not want the model hallucinating a filing path.
+* We do not want it guessing whether a file exists.
+* The LLM should decide **when** to call the tool, but the tool itself should behave deterministically.
+* This is a core design principle:
+
+  * let the model reason,
+  * but let code handle operational truth.
+
+---
+
+## Stage 4: Parsing and Extraction
+
+* Raw SEC filings are long, noisy HTML documents.
+* They must be cleaned before they become useful to an agent.
+* Parsing should isolate sections that carry financial meaning, such as:
+
+  * Item 1: Business,
+  * Item 1A: Risk Factors,
+  * Item 1C: Cybersecurity,
+  * Item 7: MD&A,
+  * Item 8: Financial Statements.
+* This step is where deterministic preprocessing creates better context for the LLM.
+
+```python
+def parse_text(self, text: str, required_items: list[str]) -> dict[str, str]:
+    extracted = {}
+    for item in required_items:
+        pattern = re.compile(rf'(?i)({item}\.).*?(?=Item\s+\d+[A-Z]?\.)', re.DOTALL)
+        match = pattern.search(text)
+        extracted[item] = match.group(0).strip() if match else "Not found."
+    return extracted
+```
+
+---
+
+## Why Parsing Improves the Agent
+
+* A raw filing is too large and too noisy to send directly to a model.
+* A parsed filing lets the system:
+
+  * search more precisely,
+  * retrieve less irrelevant text,
+  * and reduce context-window waste.
+* Good parsing is not just preprocessing.
+* It is the foundation of good retrieval and good reasoning.
+
+---
+
+## Stage 5: Storage Design
+
+* A strong financial agent should not rely on only one storage mechanism.
+* It needs:
+
+  * **relational storage** for structured metadata,
+  * and **vector storage** for semantic retrieval.
+* PostgreSQL can track:
+
+  * ticker,
+  * year,
+  * filing status,
+  * extraction metadata,
+  * and pipeline lineage.
+* ChromaDB or another vector store can hold chunk embeddings for retrieval.
+
+---
+
+## Why We Need Dual Storage
+
+* Structured storage gives us reproducibility, filtering, and auditability.
+* Vector storage gives us semantic search over long unstructured text.
+* Financial agents need both because users ask questions at multiple levels:
+
+  * sometimes about exact metadata,
+  * and sometimes about concepts hidden inside narrative disclosure.
+* This is why the system is both a database pipeline and a retrieval system.
+
+---
+
+## Chunking for Retrieval
+
+* Long filings must be split before they can be embedded and retrieved efficiently.
+* A practical starting strategy is recursive chunking with overlap.
+* Overlap matters because financial meaning often spans paragraph boundaries.
+* The chunking step is not trivial; it directly affects retrieval quality.
+
+```python
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=200
+)
+```
+
+---
+
+## Where Hugging Face Enters the Pipeline
+
+* Hugging Face is especially valuable at the retrieval layer.
+* A sentence-transformer model can generate embeddings for chunks.
+* A reranker can improve precision after initial retrieval.
+* This allows the system to ground answers in evidence without relying exclusively on the reasoning model.
+
+```python
+from sentence_transformers import SentenceTransformer
+
+embedding_model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+```
+
+---
+
+## Why Retrieval Matters So Much
+
+* Financial agents should not answer from model memory alone.
+* SEC analysis requires evidence tied to actual filings.
+* Retrieval lets the system:
+
+  * ground claims,
+  * cite sections,
+  * compare companies consistently,
+  * and reduce hallucination.
+* In finance, retrieval is not an enhancement.
+* It is a requirement.
+
+---
+
+## Stage 6: Tooling Pattern
+
+* Once the core functions exist, we expose them as tools.
+* In LangChain, tools are how the LLM interacts with the environment.
+* A tool can download a filing, retrieve relevant chunks, or query a database.
+* The model uses tool descriptions to decide when each action is appropriate.
+
+```python
+from langchain_core.tools import tool
+
+@tool
+def download_sec_filing(ticker: str, year: int) -> str:
+    """Downloads the SEC 10-K filing for a given ticker and year."""
+    return f"Filing text for {ticker} ({year}) saved."
+```
+
+---
+
+## Why Tools Create Agency
+
+* A model without tools can only talk.
+* A model with tools can interact with data and systems.
+* The moment the LLM can choose actions like:
+
+  * “download filing,”
+  * “retrieve evidence,”
+  * or “store output,”
+    it becomes part of an agentic loop.
+* Tool use is one of the clearest distinctions between chatbots and agents.
+
+---
+
+## Stage 7: Planning Pattern
+
+* Planning is what turns a user goal into a sequence of actionable steps.
+* The planner should interpret a request such as:
+
+  * “Find the top semiconductor companies and compare AI risk disclosures.”
+* It should then infer:
+
+  * which companies to target,
+  * which SEC sections matter,
+  * and which tools need to be called.
+
+```python
+prompt = PromptTemplate(
+    template="List the top 5 company stock tickers in the {vertical} vertical in the S&P 500.\n{format_instructions}",
+    input_variables=["vertical"],
+    partial_variables={"format_instructions": parser.get_format_instructions()},
+)
+```
+
+---
+
+## Why Planning Matters
+
+* Without planning, every workflow must be hard-coded.
+* With planning, the system can generalize across user goals.
+* This means one architecture can support questions about:
+
+  * sector risk,
+  * thematic comparison,
+  * disclosure quality,
+  * or company-level analysis.
+* Planning is what makes the system flexible.
+
+---
+
+## Stage 8: Reflection Pattern
+
+* Financial outputs should not be accepted at first pass.
+* A reflection step introduces a review process.
+* One prompt generates the analysis.
+* A second prompt critiques it for:
+
+  * unsupported claims,
+  * weak evidence,
+  * vagueness,
+  * or structural errors.
+* If needed, the answer is revised before it is returned.
+
+---
+
+## Why Reflection Is Important in Finance
+
+* Financial language can sound plausible even when it is not grounded.
+* Reflection improves trust by forcing the system to ask:
+
+  * “Did I actually support this claim?”
+  * “Did I answer the question completely?”
+  * “Did I use the correct evidence?”
+* Reflection does not guarantee correctness.
+* But it materially improves reliability in high-stakes domains.
+
+---
+
+## Stage 9: Multi-Agent Orchestration
+
+* At larger scale, the workflow is easier to manage if we separate roles.
+* Instead of one overloaded model prompt, we can define specialized agents.
+* A simple design might include:
+
+  * a **Planner**,
+  * a **Researcher**,
+  * an **Analyst**,
+  * and a **Critic**.
+* LangGraph is particularly well suited for this architecture because it manages state across nodes.
+
+```python
+class AgentState(TypedDict):
+    messages: Annotated[list, operator.add]
+    current_company: str
+    extracted_data: dict
+```
+
+---
+
+## Why Separate Roles?
+
+* A single monolithic prompt often tries to do too much at once.
+* Role separation improves clarity because:
+
+  * the planner focuses on decomposition,
+  * the researcher focuses on data access,
+  * the analyst focuses on synthesis,
+  * and the critic focuses on quality control.
+* This is not multi-agent design for fashion.
+* It is multi-agent design for reliability and modularity.
+
+---
+
+## A Good Financial-Agent Query
+
+* Consider the question:
+
+  * “Compare how top semiconductor firms describe AI-related investment and strategic risk in their latest 10-K filings.”
+* A strong agent should not answer immediately.
+* It should:
+
+  * identify firms,
+  * obtain filings,
+  * isolate Item 1A and Item 7,
+  * retrieve AI-relevant passages,
+  * compare disclosures,
+  * and then write the answer.
+* That workflow is the heart of the capstone.
+
+---
+
+## The Capstone Pipeline
+
+* The final financial agent integrates all prior pieces into one system.
+* A master agent should:
+
+  * interpret the user’s vertical or topic,
+  * identify relevant firms,
+  * download missing filings,
+  * parse the correct sections,
+  * store results in PostgreSQL and Chroma,
+  * retrieve relevant evidence,
+  * and compose a grounded report.
+
+```python
+class MasterFinancialAgent:
+    def run(self, vertical: str, topic: str):
+        companies = self.identify_top_companies(vertical)
+
+        for company in companies:
+            html_path = self.downloader.get_10k_filing(company, self.year)
+            extracted_items = self.parser.parse_text(html_path, required_items)
+            self.store_in_postgres_and_chroma(extracted_items)
+
+        return self.generate_financial_report(vertical, topic)
+```
+
+---
+
+## What the Final Agent Should Demonstrate
+
+* The capstone should show more than downloading and summarizing.
+* It should demonstrate that the system can:
+
+  * reason about targets,
+  * use tools autonomously,
+  * ground outputs in filings,
+  * retrieve semantically relevant evidence,
+  * and review its own conclusions.
+* That is what makes the system a true financial agent.
+
+---
+
+## Key Design Principle
+
+* The most important design principle in this system is simple:
+
+  * keep deterministic steps deterministic,
+  * and use the LLM where reasoning adds value.
+* We should not ask the model to do what code can do reliably.
+* We should ask the model to:
+
+  * interpret,
+  * plan,
+  * synthesize,
+  * and critique.
+* Good agent design depends on that separation.
+
+---
+
+# #Final Takeaway
+
+* A financial agent built on SEC filings is a compelling example of real agentic AI.
+* It works because it combines:
+
+  * solid data engineering,
+  * strong retrieval design,
+  * structured LLM reasoning,
+  * and stateful orchestration.
+* OpenAI gives the system reasoning power.
+* Hugging Face gives it retrieval infrastructure and model flexibility.
+* LangChain and LangGraph give it a workflow architecture.
+* Together, they turn an SEC downloader into an agentic financial intelligence system.
+
