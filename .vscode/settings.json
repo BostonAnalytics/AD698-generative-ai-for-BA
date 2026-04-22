@@ -1,4 +1,5 @@
 {
-    "FSharp.suggestGitignore": false,
-    "typewriterScrollMode.enable": true
+  "FSharp.suggestGitignore": false,
+  "typewriterScrollMode.enable": true,
+  "postman.settings.dotenv-detection-notification-visibility": false
 }
