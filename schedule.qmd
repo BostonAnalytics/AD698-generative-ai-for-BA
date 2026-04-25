@@ -2,9 +2,15 @@
 title: "AD 6698 Generative AI for Business Analytics" 
 subtitle: "Schedule"
 number-sections: true
+sidebar: false
 format:
     html:
       toc: false
+      grid:
+        sidebar-width: 100px
+        body-width: 1100px
+        margin-width: 400px
+        gutter-width: 1.5rem
     docx: default
 html-table-processing: none
 execute: 
@@ -65,8 +71,7 @@ display(combined_table.style.hide(axis="index"))
 
 import pandas as pd
 from IPython.display import display, HTML
-from schedules.build_schedule import build
-from schedules.online_schedule import generate as generate_online
+from schedules.semester_planner import build_section_schedules, get_lecture_catalog
 import sys
 
 # -------------------------------------------------
@@ -76,20 +81,35 @@ for m in list(sys.modules):
     if m.startswith(("schedules", "bu_calendar")):
         del sys.modules[m]
 
-# -------------------------------------------------
-# SECTION CONFIGURATION (single source of truth)
-# -------------------------------------------------
-sections = {
-    "A1": {
-        "mode": "oncampus",
-        "class_days": [0],   # Mon
+# =================================================
+# USER INPUT (only edit this section)
+# =================================================
+semester = "Summer"
+year = 2026
+modalities = ["oncampus", "o1", "o2"]
+
+start_dates_by_semester = {
+    "Spring": {
+        "oncampus": "2026-01-26",
+        "o2": "2026-01-29",
     },
-    "O": {
-        "mode": "online",
-        "start_date": "2026-03-12",
-        "class_days": [3],      # Thu
-    }
+    "Summer": {
+        "oncampus": "2026-05-18",
+        "o1": "2026-05-19",
+        "o2": "2026-05-18",
+    },
+    "Fall": {
+        "oncampus": "2026-09-14",
+        "o1": "2026-09-17",
+    },
 }
+
+section_plan = build_section_schedules(
+    semester=semester,
+    year=year,
+    modalities=modalities,
+    start_dates_by_semester=start_dates_by_semester,
+)
 
 # -------------------------------------------------
 # Load COURSE DESCRIPTION (content only)
@@ -99,57 +119,41 @@ course_table = (
         "data/AD698-Schedule.xlsx",
         sheet_name="Course Details"
     )
-    .drop(columns=["Modules"], errors="ignore")
+    .drop(columns=["Modules", "Module Name"], errors="ignore")
 )
 
-# Keep lecture rows only (drop footer/admin rows)
-course_table = course_table.iloc[:-4].reset_index(drop=True)
-
+# Keep lecture rows only, excluding Module 0
+course_table = get_lecture_catalog(course_table)
+max_lectures = max(p.lecture_count for p in section_plan.values())
+course_table = course_table.head(max_lectures).reset_index(drop=True)
 course_table = course_table[["Lecture", "Title"]]
-n_lectures = len(course_table)
 
 # -------------------------------------------------
 # Generate schedules PER SECTION
 # -------------------------------------------------
-section_dates = {}
-
-for section, meta in sections.items():
-    if meta["mode"] == "oncampus":
-        _, dates = build(
-            return_dates=True,
-            class_days=meta["class_days"]
-        )
-    else:  # online
-        _, dates = generate_online(
-            start_date=meta["start_date"],
-            lecture_count=n_lectures,
-            class_days=meta["class_days"]
-        )
-
-    # Safety check
-    assert len(dates) == n_lectures, (
-        f"{section}: expected {n_lectures} dates, got {len(dates)}"
-    )
-
-    section_dates[section] = dates
+section_dates = {
+    section: plan.lecture_dates for section, plan in section_plan.items()
+}
 
 # -------------------------------------------------
 # Attach section columns (ONLINE LAST)
 # -------------------------------------------------
 oncampus_sections = [
-    s for s in sections if sections[s]["mode"] == "oncampus"
+    s for s, p in section_plan.items() if p.modality == "oncampus"
 ]
 online_sections = [
-    s for s in sections if sections[s]["mode"] == "online"
+    s for s, p in section_plan.items() if p.modality != "oncampus"
 ]
 
 # On-campus first
 for s in oncampus_sections:
-    course_table[s] = section_dates[s]
+    dates = section_dates[s]
+    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
 
-# Online last (single column O)
+# Online last
 for s in online_sections:
-    course_table[s] = section_dates[s]
+    dates = section_dates[s]
+    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
 
 # -------------------------------------------------
 # Date formatting
@@ -163,9 +167,33 @@ def fmt(d):
 for col in course_table.columns[2:]:
     course_table[col] = course_table[col].map(fmt)
 
+module0_table = pd.DataFrame([
+    {
+        "Section": section,
+        "Module 0 Opens": plan.module0_open.strftime("%d-%b (%a)"),
+        "First Lecture": plan.lecture_dates[0].strftime("%d-%b (%a)"),
+    }
+    for section, plan in section_plan.items()
+])
+
 # -------------------------------------------------
 # Presentation
 # -------------------------------------------------
+module0_styled = (
+    module0_table
+    .style
+    .hide(axis="index")
+    .set_caption("Module 0 Release Plan (opens 10 days before first class)")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "nowrap")
+        ]},
+    ])
+)
+
 styled = (
     course_table
     .style
@@ -180,6 +208,7 @@ styled = (
     ])
 )
 
+display(HTML(module0_styled.to_html()))
 display(HTML(styled.to_html()))
 
 ```

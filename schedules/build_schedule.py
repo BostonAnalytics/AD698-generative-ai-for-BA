@@ -5,11 +5,20 @@ from datetime import timedelta
 import pandas as pd
 
 
-def build(return_dates=False, class_days=None):
+def build(
+    return_dates=False,
+    class_days=None,
+    season=None,
+    year=None,
+    lecture_count=14,
+    start_date=None,
+):
     if class_days is None:
         raise ValueError("class_days must be provided")
 
-    season, year = resolve_term()
+    if season is None or year is None:
+        season, year = resolve_term()
+
     calendar_df = load_calendar(season, year)
 
     schedule_mod = importlib.import_module(f"schedules.{season.lower()}")
@@ -19,6 +28,8 @@ def build(return_dates=False, class_days=None):
         output_path=f"data/{season.lower()}_schedule_{year}.xlsx",
         return_dates=return_dates,
         class_days=class_days,
+        lecture_count=lecture_count,
+        start_date=start_date,
     )
 
 

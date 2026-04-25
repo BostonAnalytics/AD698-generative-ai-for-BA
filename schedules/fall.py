@@ -10,7 +10,14 @@ def _first_meeting_on_or_after(start, class_days):
     return cur
 
 
-def generate(calendar_df, output_path=None, return_dates=False, class_days=None):
+def generate(
+    calendar_df,
+    output_path=None,
+    return_dates=False,
+    class_days=None,
+    lecture_count=14,
+    start_date=None,
+):
     if class_days is None:
         raise ValueError("class_days must be provided")
 
@@ -23,7 +30,10 @@ def generate(calendar_df, output_path=None, return_dates=False, class_days=None)
         start_row.iloc[0]["date_raw"], "%B %d"
     ).replace(year=year)
 
-    start_date = _first_meeting_on_or_after(classes_begin, class_days)
+    if start_date is None:
+        first_meeting = _first_meeting_on_or_after(classes_begin, class_days)
+    else:
+        first_meeting = datetime.strptime(start_date, "%Y-%m-%d")
 
     breaks = [
         parse_range(r["date_raw"], year)
@@ -36,10 +46,10 @@ def generate(calendar_df, output_path=None, return_dates=False, class_days=None)
     ]
 
     result = generate_schedule(
-        start_date=start_date,
+        start_date=first_meeting,
         class_days=class_days,
         breaks=breaks,
-        lecture_count=14,
+        lecture_count=lecture_count,
         output_path=output_path,
         return_dates=return_dates
     )

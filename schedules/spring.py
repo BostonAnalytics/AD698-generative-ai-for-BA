@@ -15,6 +15,8 @@ def generate(
     output_path=None,
     return_dates=False,
     class_days=None,
+    lecture_count=14,
+    start_date=None,
 ):
     if class_days is None:
         raise ValueError("class_days must be provided")
@@ -30,9 +32,12 @@ def generate(
     ).replace(year=year)
 
     # 🔑 FIRST ACTUAL MEETING FOR THIS COURSE
-    start_date = first_class_meeting_on_or_after(
-        classes_begin, class_days
-    )
+    if start_date is None:
+        first_meeting = first_class_meeting_on_or_after(
+            classes_begin, class_days
+        )
+    else:
+        first_meeting = datetime.strptime(start_date, "%Y-%m-%d")
 
     # Only real multi-day breaks
     breaks = [
@@ -45,10 +50,10 @@ def generate(
     ]
 
     result = generate_schedule(
-        start_date=start_date,
+        start_date=first_meeting,
         class_days=class_days,
         breaks=breaks,
-        lecture_count=14,
+        lecture_count=lecture_count,
         output_path=output_path,
         return_dates=return_dates
     )

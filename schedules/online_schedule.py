@@ -8,7 +8,7 @@ from schedules.engine import generate_schedule
 def generate(
     *,
     start_date: str,
-    lecture_count: int = 6,
+    lecture_count: int = 7,
     class_days: Optional[List[int]] = None,
 ) -> Tuple[pd.DataFrame, List[datetime]]:
     """

@@ -1,11 +1,21 @@
 ---
 title: "AD 698 Generative AI for Business Analytics"
 subtitle: "Deliverables"
-number-sections: false
+number-sections: true
+sidebar: false
 format:
     html:
       toc: false
+      grid:
+        sidebar-width: 100px
+        body-width: 1100px
+        margin-width: 400px
+        gutter-width: 1.5rem
     docx: default
+html-table-processing: none
+execute: 
+  freeze: false
+  cache: true
 bibliography: references.bib
 csl: mis-quarterly.csl
 # html-table-processing: none
@@ -17,52 +27,77 @@ csl: mis-quarterly.csl
 # | echo: false
 # | output: markdown
 
-from datetime import datetime, timedelta
 import pandas as pd
-from IPython.display import display, Markdown
-import quarto
+from IPython.display import display, HTML
+from schedules.semester_planner import build_section_schedules
+import sys
 
-semester = "Spring"
+# -------------------------------------------------
+# Clear module cache (important for Quarto reruns)
+# -------------------------------------------------
+for m in list(sys.modules):
+    if m.startswith(("schedules", "bu_calendar")):
+        del sys.modules[m]
 
-# Function to generate the Day 1 - Day 7 list based on a start date
+# =================================================
+# USER INPUT (only edit this section)
+# =================================================
+semester = "Summer"
+year = 2026
+modalities = ["oncampus", "o1", "o2"]
 
-def generate_days(start_date):
-    days = ["Monday", "Tuesday", "Wednesday",
-            "Thursday", "Friday", "Saturday", "Sunday"]
-    start_day_index = days.index(start_date)
-    days_shifted = days[start_day_index:] + days[:start_day_index]
-    return days_shifted
-
-
-# Start dates for each section
-start_dates = {
-    "A1": "Monday",
-    "O1": "Tuesday",
+start_dates_by_semester = {
+    "Spring": {
+        "oncampus": "2026-01-26",
+        "o2": "2026-01-29",
+    },
+    "Summer": {
+        "oncampus": "2026-05-18",
+        "o1": "2026-05-19",
+        "o2": "2026-05-18",
+    },
+    "Fall": {
+        "oncampus": "2026-09-14",
+        "o1": "2026-09-17",
+    },
 }
 
+section_plan = build_section_schedules(
+    semester=semester,
+    year=year,
+    modalities=modalities,
+    start_dates_by_semester=start_dates_by_semester,
+)
 
-# Initialize the combined table data
-combined_data = {"Day": [f"Day {i+1}" for i in range(7)]}
+weekday_map = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-# Generate and add columns for each section
-for section, start_date in start_dates.items():
-    combined_data[section] = generate_days(start_date)
+summary = pd.DataFrame([
+    {
+        "Section": section,
+        "Modality": plan.modality,
+        "Class Days": "/".join(weekday_map[d] for d in plan.class_days),
+        "Lectures": plan.lecture_count,
+        "Start Date": pd.to_datetime(plan.start_date).strftime("%d-%b (%a)"),
+        "Module 0 Opens": plan.module0_open.strftime("%d-%b (%a)"),
+    }
+    for section, plan in section_plan.items()
+])
 
-# Create a single DataFrame
-combined_table = pd.DataFrame(combined_data)
+styled = (
+    summary
+    .style
+    .hide(axis="index")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "nowrap")
+        ]},
+    ])
+)
 
-# Precompute inline-safe variables
-first_section = list(start_dates.keys())[0]
-first_day = start_dates[first_section]
-last_day_first_section = combined_table.iloc[6, 1]
-
-second_section = list(start_dates.keys())[1]
-second_day = start_dates[second_section]
-last_day_second_section = combined_table.iloc[6, 2]
-
-# Display the combined table without index
-# display(combined_table.style.hide(axis="index"))
-combined_table.style.hide(axis="index")
+display(HTML(styled.to_html()))
 
 ```
 
