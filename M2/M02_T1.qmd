@@ -108,6 +108,11 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 ALL_HTML_FILES = sorted(DATA_DIR.rglob("*.html")) + sorted(DATA_DIR.rglob("*.htm"))
 print(f"Total HTML files found: {len(ALL_HTML_FILES)}")
+if len(ALL_HTML_FILES) == 0:
+    print(
+        f"Warning: no HTML files found under {DATA_DIR.resolve()}. "
+        "Update DATA_DIR or mount the dataset before running extraction cells."
+    )
 ```
 
 **Use following for Google Colab**: 
@@ -584,6 +589,27 @@ def process_html_files(
     df_sections = pd.DataFrame(records)
     df_recheck = pd.DataFrame(recheck_records)
 
+    # Keep a stable schema even when no files are found.
+    expected_sections_cols = [
+        "file_name", "file_path", "raw_text_length",
+        "item_1", "item_1a", "item_7",
+        "item_1_len", "item_1a_len", "item_7_len",
+        "missing_item_1", "missing_item_1a", "missing_item_7",
+        "status", "error"
+    ]
+    for col in expected_sections_cols:
+        if col not in df_sections.columns:
+            df_sections[col] = pd.NA
+
+    expected_recheck_cols = [
+        "file_name", "file_path", "raw_text_length",
+        "missing_item_1", "missing_item_1a", "missing_item_7",
+        "status", "error", "recheck_reason"
+    ]
+    for col in expected_recheck_cols:
+        if col not in df_recheck.columns:
+            df_recheck[col] = pd.NA
+
     if save_outputs:
         df_sections.to_csv(OUTPUT_DIR / "sec_10k_2024_sections.csv", index=False)
         df_sections.to_json(
@@ -673,6 +699,9 @@ summary.style.hide(axis="index")
 #| eval: true
 #| code-overflow: wrap
 
+def non_null_count(df: pd.DataFrame, col: str) -> int:
+    return int(df[col].notna().sum()) if col in df.columns else 0
+
 summary = pd.DataFrame({
     "metric": [
         "total_files",
@@ -682,9 +711,9 @@ summary = pd.DataFrame({
     ],
     "value": [
         len(df_sections),
-        df_sections["item_1"].notna().sum(),
-        df_sections["item_1a"].notna().sum(),
-        df_sections["item_7"].notna().sum(),
+        non_null_count(df_sections, "item_1"),
+        non_null_count(df_sections, "item_1a"),
+        non_null_count(df_sections, "item_7"),
     ]
 })
 
@@ -707,7 +736,17 @@ df_sections[[" ", " ", " "]].describe()
 #| eval: true
 #| code-overflow: wrap
 
-df_sections[["item_1_len", "item_1a_len", "item_7_len"]].describe()
+length_cols = [
+    col for col in ["item_1_len", "item_1a_len", "item_7_len"]
+    if col in df_sections.columns
+]
+
+if length_cols:
+    df_sections[length_cols].describe()
+else:
+    pd.DataFrame({
+        "message": ["No section length columns available. Check DATA_DIR and extracted files."]
+    })
 ```
 
 
@@ -957,6 +996,16 @@ for _, row in df_long.iterrows():
 
 df_sentences = pd.DataFrame(sentence_rows)
 
+# Keep a stable schema even when no files were processed.
+_expected_sent_cols = [
+    "file_name", "file_path", "section_name",
+    "sentence_number", "sentence_id",
+    "sentence_text", "sentence_length_chars",
+]
+for _col in _expected_sent_cols:
+    if _col not in df_sentences.columns:
+        df_sentences[_col] = pd.NA
+
 print(df_sentences.shape)
 df_sentences.head().style.hide(axis="index")
 ```
@@ -1002,9 +1051,13 @@ Apply it to the sentence table:
 #| eval: true
 #| code-overflow: wrap
 
-df_sentences["approx_token_count"] = df_sentences["sentence_text"].apply(approximate_token_count)
+if not df_sentences.empty and "sentence_text" in df_sentences.columns:
+    df_sentences["approx_token_count"] = df_sentences["sentence_text"].apply(approximate_token_count)
+else:
+    df_sentences["approx_token_count"] = pd.NA
 
-df_sentences[["sentence_text", "approx_token_count"]].head().style.hide(axis="index")
+disp_cols = [c for c in ["sentence_text", "approx_token_count"] if c in df_sentences.columns]
+df_sentences[disp_cols].head().style.hide(axis="index")
 ```
 
 - [Check the first few words, if you see something unusual like 'Description of Business' it suggests that you might have to adjust processing. You can also remove these words later in processing.]{.uured-bold}
@@ -1183,6 +1236,16 @@ df_chunks = build_sentence_window_chunks(
     min_chunk_tokens=40
 )
 
+# Keep a stable schema even when no files were processed.
+_expected_chunk_cols = [
+    "chunk_id", "file_name", "file_path", "section_name",
+    "start_sentence", "end_sentence", "n_sentences",
+    "chunk_text", "chunk_length_chars", "approx_token_count",
+]
+for _col in _expected_chunk_cols:
+    if _col not in df_chunks.columns:
+        df_chunks[_col] = pd.NA
+
 print(df_chunks.shape)
 df_chunks.head().style.hide(axis="index")
 ```
@@ -1218,7 +1281,10 @@ print("Saved rolling chunk corpus.")
 #| eval: true
 #| code-overflow: wrap
 
-df_chunks["section_name"].value_counts()
+if not df_chunks.empty and "section_name" in df_chunks.columns:
+    df_chunks["section_name"].value_counts()
+else:
+    print("No chunk data available — section_name counts skipped.")
 ```
 
 ## Token count summary
@@ -1229,7 +1295,10 @@ df_chunks["section_name"].value_counts()
 #| code-overflow: wrap
 
 
-df_chunks["approx_token_count"].describe()
+if not df_chunks.empty and "approx_token_count" in df_chunks.columns:
+    df_chunks["approx_token_count"].describe()
+else:
+    print("No chunk data available — token count summary skipped.")
 ```
 
 ## Sentences per chunk
@@ -1239,7 +1308,10 @@ df_chunks["approx_token_count"].describe()
 #| eval: true
 #| code-overflow: wrap
 
-df_chunks["n_sentences"].describe()
+if not df_chunks.empty and "n_sentences" in df_chunks.columns:
+    df_chunks["n_sentences"].describe()
+else:
+    print("No chunk data available — sentences-per-chunk summary skipped.")
 ```
 
 ## Sample chunks
@@ -1249,9 +1321,12 @@ df_chunks["n_sentences"].describe()
 #| eval: true
 #| code-overflow: wrap
 
-df_chunks.sample(10, random_state=42)[
-    ["file_name", "section_name", "start_sentence", "end_sentence", "approx_token_count", "chunk_text"]
-].style.hide(axis="index")
+if not df_chunks.empty:
+    _sample_cols = [c for c in ["file_name", "section_name", "start_sentence", "end_sentence", "approx_token_count", "chunk_text"] if c in df_chunks.columns]
+    _n = min(10, len(df_chunks))
+    df_chunks.sample(_n, random_state=42)[_sample_cols].style.hide(axis="index")
+else:
+    print("No chunk data available — sample skipped.")
 ```
 
 
@@ -1709,6 +1784,19 @@ for _, row in df_chunks.iterrows():
 
 df_signal = pd.DataFrame(signal_rows)
 
+# Keep a stable schema even when no files were processed.
+_expected_signal_cols = [
+    "chunk_id", "file_name", "file_path", "section_name",
+    "start_sentence", "end_sentence", "n_sentences",
+    "chunk_length_chars", "approx_token_count", "signal_type",
+    "chunk_text", "has_signal", "core_matches", "support_matches",
+    "exclude_matches", "n_core_matches", "n_support_matches",
+    "n_exclude_matches", "signal_confidence",
+]
+for _col in _expected_signal_cols:
+    if _col not in df_signal.columns:
+        df_signal[_col] = pd.NA
+
 print(df_signal.shape)
 df_signal.head().style.hide(axis="index")
 ```
@@ -1722,7 +1810,10 @@ These are the chunks that actually triggered the signal logic. This could be a l
 #| eval: true
 #| code-overflow: wrap
 
-df_signal_candidates = df_signal[df_signal["has_signal"]].copy()
+if not df_signal.empty and "has_signal" in df_signal.columns:
+    df_signal_candidates = df_signal[df_signal["has_signal"] == True].copy()
+else:
+    df_signal_candidates = df_signal.copy()
 
 print(df_signal_candidates.shape)
 df_signal_candidates.head().style.hide(axis="index")
@@ -1737,7 +1828,10 @@ df_signal_candidates.head().style.hide(axis="index")
 #| eval: true
 #| code-overflow: wrap
 
-df_signal_candidates["signal_confidence"].value_counts(dropna=False)
+if not df_signal_candidates.empty and "signal_confidence" in df_signal_candidates.columns:
+    df_signal_candidates["signal_confidence"].value_counts(dropna=False)
+else:
+    print("No signal candidates — confidence counts skipped.")
 ```
 
 ### Count by section
@@ -1747,7 +1841,10 @@ df_signal_candidates["signal_confidence"].value_counts(dropna=False)
 #| eval: true
 #| code-overflow: wrap
 
-df_signal_candidates["section_name"].value_counts(dropna=False)
+if not df_signal_candidates.empty and "section_name" in df_signal_candidates.columns:
+    df_signal_candidates["section_name"].value_counts(dropna=False)
+else:
+    print("No signal candidates — section counts skipped.")
 ```
 
 ### Sample extracted chunks
@@ -1757,18 +1854,11 @@ df_signal_candidates["section_name"].value_counts(dropna=False)
 #| eval: true
 #| code-overflow: wrap
 
-df_signal_candidates.sample(
-    n=min(10, len(df_signal_candidates)),
-    random_state=42
-)[[
-    "chunk_id",
-    "file_name",
-    "section_name",
-    "signal_confidence",
-    "core_matches",
-    "support_matches",
-    "chunk_text"
-]].style.hide(axis="index")
+if not df_signal_candidates.empty:
+    _sc_cols = [c for c in ["chunk_id", "file_name", "section_name", "signal_confidence", "core_matches", "support_matches", "chunk_text"] if c in df_signal_candidates.columns]
+    df_signal_candidates.sample(n=min(10, len(df_signal_candidates)), random_state=42)[_sc_cols].style.hide(axis="index")
+else:
+    print("No signal candidates — sample skipped.")
 ```
 
 

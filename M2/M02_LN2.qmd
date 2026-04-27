@@ -321,6 +321,7 @@ Once words are represented as vectors, semantic similarity becomes a geometric q
 The Palmer Penguins dataset provides a visually intuitive and statistically clean environment for teaching classification diagnostics. Unlike synthetic datasets, penguins offer natural clusters that help students understand why ROC and PR curves behave the way they do. By framing the task as *Adelie vs Non‑Adelie*, we obtain a binary classification problem with moderate separability, making it ideal for demonstrating threshold‑based metrics.
 
 ```{python}
+#| eval: true
 import seaborn as sns
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -366,6 +367,7 @@ plt.show()
 The ROC curve plots the true positive rate against the false positive rate across thresholds. On the penguins dataset, the ROC curve typically bows strongly toward the top‑left corner, indicating good separability. This provides a concrete example of the attached document’s explanation that ROC curves measure ranking quality. It also connects directly to LLM evaluation, where token probabilities are ranked and evaluated similarly.
 
 ```{python}
+#| eval: true
 model = LogisticRegression()
 model.fit(trainX, trainy)
 

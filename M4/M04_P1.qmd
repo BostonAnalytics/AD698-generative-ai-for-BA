@@ -44,6 +44,15 @@ csl: ../mis-quarterly.csl
 
 # Attention Mechanism and Transformers
 
+```{python}
+#| echo: false
+#| eval: true
+
+import svgwrite
+import os
+from IPython.display import SVG, display
+```
+
 ## From Classic Deep Learning to the Edge of Its Limits
 
 - The 2010s: Deep Learning’s First Boom

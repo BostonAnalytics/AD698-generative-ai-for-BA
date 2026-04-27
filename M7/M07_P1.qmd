@@ -1,6 +1,6 @@
 ---
-title: "M07: Presentation"
-subtitle: "AI-Powered Business Dashboards"
+title: "AD698 - Applied Generative AI"
+subtitle: "LLM Evaluation & Multimodal Large Language Models"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -42,3 +42,506 @@ csl: ../mis-quarterly.csl
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+
+
+# Why Evaluation Matters
+
+## The Central Challenge of LLM Evaluation
+- LLMs generate **open-ended**, probabilistic text — there is rarely a single correct answer.
+- Traditional software testing (pass/fail unit tests) cannot capture whether a response is *useful*, *accurate*, or *safe*.
+- Without systematic evaluation, teams are flying blind: shipping features they cannot verify and missing regressions they cannot detect.
+- [Good evaluation is the foundation of reliable AI.]{.uured-bold}
+
+## The Three Layers of the Problem
+- **Correctness:** Does the model produce factually accurate, on-task outputs?
+- **Quality:** Is the output coherent, well-structured, and appropriate in tone?
+- **Safety & Alignment:** Does the model avoid harmful, biased, or policy-violating outputs?
+- Each layer requires different metrics, benchmarks, and evaluation strategies.
+
+## The Evaluation Landscape
+- Evaluation methods fall on a spectrum from **fully automated** to **fully human**.
+- Automated metrics are fast and cheap but can miss nuance and meaning.
+- Human evaluation is the gold standard but is slow, expensive, and inconsistent at scale.
+- The field is converging on a middle path: [LLM-as-a-Judge]{.uured-bold} — using another LLM to score outputs at scale.
+
+
+# Classical NLP Metrics
+
+## Reference-Based Metrics
+- Early NLP evaluation relied on comparing model output to one or more **reference texts**.
+- The core assumption: a good output should closely resemble a human-written reference.
+- This works well for constrained tasks (translation, summarization) but breaks down for open-ended generation.
+- **Key insight:** two correct answers to the same question can share almost no vocabulary.
+
+## BLEU Score
+- **BLEU** (Bilingual Evaluation Understudy) measures the overlap of $n$-grams between a generated text and reference texts.
+- Computes a geometric mean of $n$-gram precisions ($n = 1, 2, 3, 4$) with a brevity penalty for short outputs.
+$$\text{BLEU} = \text{BP} \cdot \exp\!\left(\sum_{n=1}^{N} w_n \log p_n\right)$$
+- Designed for **machine translation**; widely misapplied to other tasks.
+- **Weakness:** Completely ignores semantics — a paraphrase scores near zero.
+
+## ROUGE
+- **ROUGE** (Recall-Oriented Understudy for Gisting Evaluation) focuses on **recall** of reference content.
+- **ROUGE-N:** Overlap of $n$-grams between generated and reference text.
+- **ROUGE-L:** Longest common subsequence — captures fluency and word order.
+- **ROUGE-S:** Skip-bigram co-occurrence, allowing gaps between matched words.
+- Dominant metric for **summarization** but shares BLEU's semantic blindness.
+
+## METEOR & CIDEr
+- **METEOR** improves on BLEU by incorporating synonymy, stemming, and paraphrase matching via WordNet.
+- Balances precision and recall with a harmonic mean, adding a fragmentation penalty for non-contiguous matches.
+- **CIDEr** (Consensus-based Image Description Evaluation): designed for **image captioning**.
+  - Weights $n$-grams by TF-IDF across the dataset — common phrases count less.
+  - Better correlates with human judgment in vision-language tasks.
+
+## Perplexity
+- **Perplexity** measures how well a language model *predicts* a held-out test corpus.
+$$\text{PPL}(X) = \exp\!\left(-\frac{1}{N}\sum_{i=1}^{N} \log P(x_i \mid x_{<i})\right)$$
+- Lower perplexity = the model is less "surprised" by real text = better language modeling.
+- Useful for comparing models of the same architecture on the same tokenizer.
+- **Not useful** for evaluating *whether* a model gives the *right* answer to a question.
+
+## BERTScore
+- **BERTScore** replaces $n$-gram overlap with **contextual embeddings** from BERT.
+- Computes token-level cosine similarity between generated and reference tokens.
+- Reports Precision, Recall, and F1 in embedding space — semantically aware.
+$$\text{BERTScore}_F = \frac{2 \cdot P_{BERT} \cdot R_{BERT}}{P_{BERT} + R_{BERT}}$$
+- Significantly better correlation with human judgments than BLEU/ROUGE on many benchmarks.
+- Still reference-dependent — requires a gold-standard answer.
+
+
+# LLM Benchmarks
+
+## What is a Benchmark?
+- A **benchmark** is a curated dataset of tasks with known correct answers used to measure model capability on a standardized, reproducible scale.
+- Benchmarks enable [apples-to-apples comparison]{.uured-bold} across models, versions, and providers.
+- They are organized by capability: knowledge, reasoning, coding, instruction-following, safety, etc.
+- **Critical caveat:** A model can score well on a benchmark without being useful in your specific application.
+
+## Knowledge & Reasoning Benchmarks
+- **MMLU** (Massive Multitask Language Understanding): 57 subjects from elementary math to professional law. Tests breadth of world knowledge.
+- **ARC** (AI2 Reasoning Challenge): Grade-school science questions designed to require reasoning beyond pattern matching.
+- **HellaSwag:** Commonsense NLI — pick the most plausible sentence completion from four options. Tests grounded reasoning.
+- **TruthfulQA:** Probes whether a model generates *truthful* answers to questions that humans commonly answer wrongly.
+
+## Coding & Math Benchmarks
+- **HumanEval:** 164 Python programming problems with unit tests. Measures pass@k — the probability that at least one of $k$ samples passes all tests.
+- **MBPP** (Mostly Basic Python Problems): 500 crowd-sourced Python problems spanning data structures, algorithms, and math.
+- **GSM8K:** 8,500 grade-school math word problems requiring multi-step arithmetic. A strong test of chain-of-thought reasoning.
+- **MATH:** Competition-level math problems across 7 subjects; much harder than GSM8K.
+
+## Instruction-Following & Alignment
+- **MT-Bench:** 80 multi-turn conversation questions across writing, roleplay, reasoning, and coding — scored by GPT-4.
+- **AlpacaEval:** Automatic evaluation of instruction-following using win rates against a reference model.
+- **IFEval** (Instruction-Following Evaluation): Tests strict adherence to verifiable formatting and content instructions.
+- **BBH** (BIG-Bench Hard): 23 tasks from BIG-Bench that larger models still find challenging, requiring chain-of-thought.
+
+## The Data Contamination Problem
+- **Contamination** occurs when benchmark test data appears — intentionally or not — in a model's training corpus.
+- A contaminated model memorizes answers rather than generalizing, inflating its benchmark score.
+- Indicators: suspiciously high scores on old benchmarks, performance drops on held-out versions.
+- [Most published SOTA numbers should be treated with healthy skepticism.]{.uured-bold}
+- Mitigation: use **dynamic benchmarks**, held-out evaluation sets, and contamination detection tools.
+
+## Benchmark Saturation
+- As models improve, they saturate benchmarks — GPT-4 class models score >90% on MMLU.
+- A saturated benchmark provides no signal for differentiating frontier models.
+- The field responds by creating harder benchmarks: **GPQA** (expert-level science), **FrontierMath**, **SWE-bench**.
+- **Key takeaway:** benchmark selection must be matched to the capability you are trying to measure.
+
+
+# LLM-as-a-Judge
+
+## The Limits of Automated Metrics
+- Automated metrics (BLEU, ROUGE, BERTScore) require reference texts — expensive to create for every task.
+- They cannot evaluate: tone, helpfulness, factual consistency, reasoning quality, or safety.
+- Human evaluation is the gold standard but costs $10–$50 per annotation and is slow.
+- **Solution:** Use a powerful LLM to act as an automated, scalable human-quality judge.
+
+## How LLM-as-a-Judge Works
+- A **judge LLM** (typically GPT-4o or a fine-tuned evaluator) is given:
+  1. The original prompt / question
+  2. The model's response (and optionally a reference answer)
+  3. A rubric describing what "good" looks like
+- The judge returns a **score** (e.g., 1–5) and an **explanation** for its rating.
+- [Every LLM-as-a-Judge has three components:]{.uured-bold} the LLM, the evaluation prompt, and a reference dataset.
+
+## Evaluation Criteria Taxonomy
+| Criterion | What it Measures |
+|-----------|-----------------|
+| **Correctness** | Factual accuracy against known ground truth |
+| **Helpfulness** | Does the response address the user's actual need? |
+| **Coherence** | Logical flow and internal consistency |
+| **Conciseness** | Avoids unnecessary verbosity |
+| **Safety** | Free of harmful, biased, or policy-violating content |
+| **Groundedness** | Claims are supported by provided context (RAG) |
+
+## Pairwise vs. Pointwise Evaluation
+- **Pointwise:** The judge scores a single response on a scale. Simple and fast.
+- **Pairwise (preference):** The judge is shown two responses (A vs. B) and picks the winner. More reliable for subtle quality differences.
+- Pairwise evaluation underlies **RLHF** (Reinforcement Learning from Human Feedback) and **DPO** training.
+- **Position bias:** LLMs tend to prefer the first response shown. Always randomize order and check for consistency.
+
+## Known Biases in LLM Judges
+- **Verbosity bias:** Longer responses are rated higher even when less accurate.
+- **Self-preference bias:** A judge LLM may favor outputs from the same model family.
+- **Authority bias:** Responses that cite sources or use confident language are favored.
+- **Mitigation:** Use chain-of-thought in the judge prompt, calibrate on human-annotated gold sets, report inter-rater agreement scores.
+
+
+# Eval Engineering
+
+## What is Eval Engineering?
+- [Eval Engineering]{.uured-bold} is the discipline of designing, building, tuning, and operating LLM evaluations as **production-grade software**.
+- Emerged from observing that data science and software engineering are merging in LLM-based systems.
+- LLM features are built as software and tested like ML systems — requiring a new workflow.
+- Goal: create and maintain high-accuracy evaluations that govern AI systems at scale.
+- Source: [Galileo Eval Engineering](https://galileo.ai/evalengineering)
+
+## The 6-Step Eval Engineering Workflow
+Eval Engineering follows the **entire lifecycle** of an evaluation, from the initial LLM-as-a-Judge prompt to deploying it as a production guardrail.
+
+```{=html}
+<ol style="font-size:0.85em; line-height:2em;">
+  <li><strong>Create</strong> — Build the LLM-as-a-Judge prompt</li>
+  <li><strong>Tune</strong> — Achieve >95% agreement with human experts</li>
+  <li><strong>Develop</strong> — Score development traffic; run CI/CD evals</li>
+  <li><strong>Fine-tune SLM</strong> — Distill the judge into a fast, cheap Small Language Model</li>
+  <li><strong>Deploy</strong> — Run as a real-time production guardrail</li>
+  <li><strong>Recycle</strong> — Feed production failures back into the eval dataset</li>
+</ol>
+```
+
+## Step 1 — Creating the LLM-as-a-Judge
+- Start when you identify an eval needed to track a desired behavior from your LLM system.
+- The eval can be: code-based, an off-the-shelf LLM judge, or a fully custom bespoke judge.
+- **Three required components:**
+  - The LLM (e.g., GPT-4o)
+  - The prompt used to perform the evaluation
+  - A reference dataset to test accuracy against
+- Output: a **metric score** measuring performance for a given span according to your criteria (e.g., friendliness, conciseness, groundedness).
+
+## Step 2 — Tuning the Eval
+- An eval is only as good as its tuning. Without tuning, LLM-based evals achieve approximately [66–68% agreement]{.uured-bold} with human subject matter experts at best.
+- **Tuning process:**
+  1. **SME Annotations** — Experts review real LLM outputs and score according to eval criteria, establishing a ground truth reference dataset
+  2. **Prompt Optimization** — Prompt engineers tweak the judge prompt and measure F1 scores against the SME reference
+  3. **Few-Shot Examples** — Difficult edge cases are added as few-shot examples to give the judge more explicit instructions
+- Target: **>95% accuracy** before using the eval in development.
+
+## Step 3 — Developing with Evals
+- Once the judge achieves >95% accuracy, begin scoring **development traffic**.
+- Evals become core engineering tools:
+  - **Benchmark app performance** — Measure specific improvements with A/B tests
+  - **CI/CD integration** — Execute evals on every commit to catch regressions automatically
+  - **Production monitoring** — Run LLM-as-a-judge to score production traffic for daily rollups and casual monitoring
+- [Treat evals like unit tests: they must run automatically and block bad deployments.]{.uured-bold}
+
+## Step 4 — Fine-Tuning the SLM
+- Most LLM judges are **slow and expensive**: 2–4 second latency per eval, costs up to $50k/day for millions of spans.
+- Solution: **fine-tune a Small Language Model (SLM)** on the high-accuracy eval prompt from Step 2.
+- This is where true data science meets engineering — distilling the large judge's behavior into a 1–3B parameter model.
+- Target: eval latency **below 150ms**, enabling 100% production traffic coverage.
+- **Data science and software engineering converge** at this step.
+
+## Step 5 — Deploying the Guardrail
+- With an SLM-as-a-judge running at low cost and latency, deploy it as a **real-time guardrail**.
+- The guardrail scores every production response and can:
+  - Block or flag responses below a safety or quality threshold
+  - Trigger alerts or fallback logic for high-risk outputs
+  - Provide continuous quality dashboards for product teams
+- [Evaluation shifts from a testing artifact to an operational control plane.]{.uured-bold}
+
+## Step 6 — Recycling Learnings
+- Real-world environments will confound even the most meticulous engineers.
+  - Consumer behavior changes
+  - Model drift occurs after updates
+  - Unanticipated failure modes emerge
+- A system observing 100% of production traffic can quickly capture failure modes into reference datasets.
+- These datasets feed back into Step 2, **continuously refining evals** or creating new ones.
+- Eval Engineering is a **flywheel** — not a one-time setup.
+
+## Eval Engineering vs. Traditional Testing
+
+| Dimension | Traditional Software Testing | Eval Engineering |
+|-----------|------------------------------|-----------------|
+| Output type | Deterministic (pass/fail) | Probabilistic (score distribution) |
+| Test creation | Engineer writes assertions | SME annotates + LLM judges |
+| Speed | Milliseconds | Seconds (LLM) → ms (SLM) |
+| Cost at scale | Negligible | Must be optimized via SLM |
+| Maintenance | Fix broken tests | Recycle learnings from prod |
+| CI/CD role | Standard | Emerging best practice |
+
+
+# Introduction to Multimodal LLMs
+
+## From Text to the Real World
+- Standard LLMs process only text. But the world communicates through **multiple modalities simultaneously**: a doctor reads a scan *and* a patient report; a factory sensor emits vibration *and* a maintenance log entry.
+- Combining modalities gives AI systems a richer, more accurate understanding of context.
+- [Multimodal LLMs (MLLMs)]{.uured-bold} are AI systems designed to process and integrate diverse data types — text, images, video, audio, and structured signals — in a single unified model.
+
+## What is a Multimodal LLM?
+- An **MLLM** is a sophisticated AI system engineered to handle and decode multimodal data concurrently.
+- The core principle: **integration and interplay of varied modalities** amplifies model effectiveness.
+- By synthesizing data from multiple sources, MLLMs achieve more comprehensive and precise understanding than any single-modality system.
+- Examples: GPT-4o (text + images + audio), Gemini 1.5 Pro (text + images + video + audio), Llama 3.2 Vision (text + images).
+
+## Why Multimodal? The World Sends Rich Signals
+- **Healthcare:** Analyze MRI scans + clinical notes to improve diagnostic accuracy.
+- **Manufacturing:** Combine machine sensor readings + maintenance logs + visual inspection images.
+- **Business Intelligence:** Interpret charts, tables, and text from reports simultaneously.
+- **Customer Service:** Understand screenshots, voice recordings, and typed messages together.
+- Single-modality systems require multiple separate pipelines; MLLMs offer a unified interface.
+
+## LLMs vs. MLLMs at a Glance
+
+| Dimension | Standard LLM | Multimodal LLM |
+|-----------|-------------|----------------|
+| Input | Text only | Text + Images + Audio + Video |
+| Architecture | Transformer decoder | Encoder(s) + Fusion + LLM backbone |
+| Training data | Text corpora | Paired multimodal datasets |
+| Task scope | Language tasks | Vision-language, VQA, captioning, audio QA |
+| Complexity | High | Very High |
+| Example models | GPT-3, LLaMA 2 | GPT-4o, Gemini, LLaVA, NVLM |
+
+
+# MLLM Architecture
+
+## The Three-Component Architecture
+Every MLLM is built from three fundamental blocks:
+
+1. **Multimodal Input Encoders** — Convert raw modality data (pixels, waveforms, tokens) into feature vectors
+2. **Feature Fusion Mechanism** — Integrate features from all modalities into a shared representation
+3. **LLM Backbone + Output Decoder** — Reason over the fused representation and generate a response
+
+Understanding these components clarifies both the *capabilities* and *limitations* of any MLLM.
+
+## Multimodal Input Encoders
+- **Text:** Embedding layers + transformer encoders (BERT, RoBERTa). Map tokens to continuous vector space.
+- **Images:** Vision Transformer (ViT) treats image patches as sequences; ResNet learns hierarchical spatial features.
+- **Audio:** C-Former, HuBERT, BEATs, or Whisper capture temporal acoustic patterns — from basic tones to complex speech.
+- **Sequential/Physiological:** 1D-CNN + LSTM captures temporal and spatial patterns in EEG, ECG, and sensor streams.
+- **Universal Encoders:** ImageBind and similar models encode audio, video, depth, thermal, and IMU into a single embedding space.
+
+## Feature Fusion Mechanisms
+Each encoder produces feature vectors $V_{\text{image}}$, $V_{\text{text}}$, $V_{\text{audio}}$, etc. These must be combined:
+
+- **Early Fusion:** Concatenate raw or low-level features before encoding. Captures low-level cross-modal correlations.
+- **Intermediate Fusion:** Merge features during the extraction phase — each modality contributes its unique properties to a unified representation. *(Most common approach)*
+- **Late Fusion:** Combine final per-modality outputs at the decision stage. Good for tasks requiring independent modality reasoning.
+- **Joint (Hybrid) Fusion:** Merges early, intermediate, and late stages to maximize data utilization.
+
+## Feeding Multimodal Features into an LLM
+- Pre-trained LLMs accept text sequences, not raw image or audio tensors.
+- **Projection:** A linear layer or small MLP maps visual/audio feature vectors into the LLM's token embedding space.
+$$[V_{\text{image}}, V_{\text{text}}, \ldots, V_{\text{audio}}] \xrightarrow{\text{project}} \text{Token Sequence} \rightarrow \text{LLM}$$
+- **Serialization:** Multimodal features are arranged as a sequence alongside text tokens and fed into the transformer.
+- The LLM then reasons over this combined token stream using its standard self-attention mechanism.
+
+## The Output Decoder
+- Most MLLMs generate **text output** — captions, answers, summaries, reasoning chains.
+- **Image generation models** (DALL-E 3, Stable Diffusion) add a visual decoder (e.g., vector-quantized VAE, diffusion model).
+- **Any-to-any models** (NExT-GPT, Emu3) support generation across all modalities from a single model.
+- The decoder is selected for the target task: text generation, image synthesis, audio output, or multi-modal combinations.
+
+
+# Building MLLMs: Two Architectures
+
+## Method A — Unified Embedding Decoder
+- All modalities are **projected into the same embedding space** as text tokens before being fed into the LLM.
+- The LLM sees a single, unified token sequence containing both text and visual tokens.
+- **How it works:** A lightweight connector (linear projection or Q-Former) maps vision encoder outputs to token embeddings.
+- **Examples:** LLaVA, MiniGPT-4, InstructBLIP, Llama 3.2 Vision, Qwen2-VL.
+- [Advantage:]{.uured-bold} Simple architecture; leverages the full power of pre-trained LLMs with minimal modification.
+
+## Method B — Cross-Modality Attention
+- Visual and text features remain in **separate streams**. Cross-attention layers allow the text stream to "attend to" visual features.
+- The LLM backbone is modified to include cross-attention gates at every transformer layer.
+- **How it works:** Visual tokens are keys and values; text tokens are queries — the model selectively pulls visual information where relevant.
+- **Examples:** Flamingo, NVLM-X, Idefics.
+- [Advantage:]{.uured-bold} Better at precise visual localization; scales well to high-resolution and video inputs.
+
+## Training: What Gets Frozen?
+- Training from scratch on multimodal data is prohibitively expensive.
+- Standard approach: **freeze the pre-trained LLM** and train only the connector layers initially.
+
+| Training Stage | LLM Backbone | Vision Encoder | Connector |
+|----------------|:-----------:|:--------------:|:---------:|
+| Stage 1: Alignment | Frozen | Frozen | **Trained** |
+| Stage 2: Instruction tuning | **Trained** | Frozen | **Trained** |
+| Full fine-tuning | **Trained** | **Trained** | **Trained** |
+
+## Method A vs. Method B Trade-offs
+
+| Dimension | Method A: Unified Embedding | Method B: Cross-Attention |
+|-----------|----------------------------|--------------------------|
+| Architecture complexity | Low | High |
+| LLM modification needed | Minimal | Significant (new layers) |
+| Visual grounding precision | Moderate | High |
+| High-res / video support | Harder | Natural |
+| Training efficiency | High | Lower |
+| Representative models | LLaVA, Llama 3.2 | Flamingo, NVLM-X |
+
+
+# Evolution of MLLMs: A Timeline
+
+## The Foundations (Pre-2021)
+- **Word2Vec (2013):** Demonstrated that semantic meaning could be encoded in dense vector spaces — the conceptual precursor to multimodal embeddings.
+- **ResNet (2015):** Enabled deep visual feature learning without vanishing gradients.
+- **Transformers (2017):** Replaced RNNs with self-attention, enabling parallelizable sequence modeling for text.
+- **BERT (2018) / GPT-2 (2019):** Pre-trained LLMs showed transfer learning was possible at scale.
+- The stage was set: powerful vision and language models existed separately — the question was how to connect them.
+
+## The Connector Era (2021–2022)
+- **CLIP (OpenAI, 2021):** Trained on 400M image-text pairs using contrastive learning; unified image and text into a shared embedding space. Became the standard vision encoder for MLLMs.
+- **DALL-E (2021):** First large-scale text-to-image model using transformers over discrete image tokens.
+- **Flamingo (DeepMind, 2022):** Pioneered the cross-attention architecture for MLLMs; few-shot visual QA.
+- **BLIP / BLIP-2 (2022–2023):** Introduced Q-Former as an efficient bridge between vision encoders and LLMs.
+
+## The Open-Source Explosion (2023)
+- **LLaVA (2023):** Simple, open-source MLLM using CLIP + LLaMA with a linear projection connector. Demonstrated that a small dataset of GPT-4-generated instruction data was highly effective.
+- **MiniGPT-4 (2023):** Aligned frozen ViT + BLIP-2 with Vicuna using a single projection layer.
+- **InstructBLIP (2023):** Instruction-tuned BLIP-2; introduced instruction-aware visual feature extraction via Q-Former.
+- **GPT-4V (OpenAI, 2023):** Brought vision capabilities to GPT-4; sparked widespread adoption of vision-language AI.
+
+## The Proliferation Era (2024)
+- **Llama 3.2 Vision (Meta, 2024):** First open-weights multimodal Llama; Method A unified embedding with cross-attention variant.
+- **NVLM (NVIDIA, 2024):** Three-in-one architecture family (decoder-only, cross-attention, hybrid) for frontier performance.
+- **Qwen2-VL (Alibaba, 2024):** Native dynamic resolution with Naive Dynamic Resolution and M-ROPE; state-of-the-art on OCR benchmarks.
+- **Molmo (Allen AI, 2024):** Fully open weights and training data (PixMo dataset); strong pointing and grounding capability.
+- **Pixtral 12B (Mistral, 2024):** Native variable-resolution vision encoder trained from scratch alongside the LLM.
+
+## Representative MLLM Timeline
+
+![A timeline of representative Multimodal Large Language Models (Wang et al., 2024).](M07_lecture01_figures/mllm_timeline_overview.png){#fig-mllm-timeline width=95% fig-align=center}
+
+
+# Landmark Models
+
+## NVIDIA NVLM: Three-in-One
+- NVIDIA's NVLM (2024) uniquely provides **three architecture variants** in one model family:
+  - **NVLM-D** (Decoder-only): Unified embedding — vision tokens fed directly into the LLM. Maximum training efficiency.
+  - **NVLM-X** (Cross-attention): Visual features via cross-attention. Fewer vision tokens consumed by LLM; better high-res scaling.
+  - **NVLM-H** (Hybrid): Combines both — global cross-attention for context + local embedding tokens for detail.
+- NVLM-72B matched or exceeded GPT-4V on key benchmarks while maintaining strong text-only performance.
+
+## Llama 3.2 Vision
+- Meta's first open-weights multimodal model; 11B and 90B parameter variants.
+- Uses a **pre-trained Llama 3.1 text backbone** (frozen initially) with cross-attention layers inserted at regular intervals.
+- Vision encoder: pre-trained ViT adapted for Llama's embedding space.
+- Training: first align the cross-attention layers, then do full instruction tuning.
+- **Significance:** Brought frontier multimodal capability to the open-source community.
+
+## Qwen2-VL: Native Resolution
+- Alibaba's Qwen2-VL introduces [Naive Dynamic Resolution (NDR)]{.uured-bold}: the model processes images at their **native resolution** rather than resizing to a fixed grid.
+- **M-ROPE** (Multi-dimensional Rotary Position Embedding): encodes 2D spatial position and temporal position for video, enabling the model to reason about spatial layout and time simultaneously.
+- Achieves state-of-the-art on document understanding, OCR, and mathematical reasoning benchmarks.
+- Handles videos up to 20 minutes natively.
+
+## Molmo: Fully Open
+- Allen AI's Molmo (2024) stands out for being [fully open]{.uured-bold}: open weights, open training code, and open data.
+- **PixMo dataset:** 700k+ detailed image descriptions collected via human speech — avoids GPT-4 annotation bias.
+- Supports **pointing**: the model can point to specific regions in an image as part of its response.
+- Molmo-72B matches GPT-4V; Molmo-7B outperforms many closed models many times its size.
+- Demonstrates that open data + careful curation can rival proprietary annotation pipelines.
+
+## Pixtral 12B: Native Vision Encoder
+- Mistral's Pixtral 12B (2024) trains its vision encoder **from scratch alongside the LLM**, rather than using CLIP.
+- Supports **variable-resolution images**: images are encoded at native resolution; no fixed grid needed.
+- Handles multiple images per prompt natively.
+- Achieves strong performance on multi-image reasoning and document understanding tasks.
+- Highlights a trend: moving away from CLIP as the universal vision encoder.
+
+
+# MLLM Applications
+
+## Healthcare & Life Sciences
+- **Medical imaging analysis:** MLLMs interpret chest X-rays, pathology slides, and MRI scans alongside clinical notes.
+- **Clinical decision support:** Cross-referencing patient-reported symptoms (text) with diagnostic images.
+- **Drug discovery:** Analyzing molecular structure images alongside scientific literature.
+- [Key benefit:]{.uured-bold} Reduces the siloing of image-reading specialists from text-based clinical reasoning systems.
+
+## Enterprise Productivity
+- **Document intelligence:** Extract, summarize, and answer questions from PDFs containing charts, tables, and mixed layouts.
+- **Automated report generation:** Narrate dashboards and data visualizations into executive summaries.
+- **Manufacturing QA:** Compare reference product images against production photos to detect defects automatically.
+- **Code + diagram understanding:** Parse architecture diagrams, flowcharts, and annotated screenshots as part of code review.
+
+## Disaster Response & Critical Infrastructure
+- **Satellite imagery analysis:** Identify flood extent, fire perimeter, or structural damage from aerial images combined with situation reports.
+- **Energy grid monitoring:** Combine sensor time-series data with visual inspection footage to predict equipment failure.
+- **Fraud detection:** Cross-reference document images (receipts, IDs) with transaction text records for multi-signal anomaly detection.
+
+
+# Evaluating MLLMs
+
+## Why MLLM Evaluation is Harder
+- Text LLM evaluation is already difficult. MLLMs add:
+  - **Cross-modal alignment:** Does the model correctly ground its text response in the image/audio content?
+  - **Visual hallucination:** Does the model describe objects, text, or relationships not present in the image?
+  - **Modality imbalance:** Does the model over-rely on language priors and ignore the visual input?
+- Standard NLP metrics (BLEU, ROUGE) are insufficient — they cannot measure visual grounding at all.
+
+## MLLM Benchmark Categories
+| Category | What it Tests | Example Benchmarks |
+|----------|--------------|-------------------|
+| **Visual QA** | Image understanding + reasoning | VQAv2, OK-VQA, ScienceQA |
+| **OCR & Document** | Text recognition in images | TextVQA, DocVQA, ChartQA |
+| **Hallucination** | Faithfulness to visual content | POPE, HallusionBench |
+| **Video Understanding** | Temporal reasoning in video | EgoSchema, MVBench |
+| **Multimodal Reasoning** | Cross-modal chain-of-thought | MMMU, MMStar, MMBench |
+| **Embodied / Grounding** | Spatial localization | RefCOCO, GQA |
+
+## Visual Hallucination: The Core MLLM Challenge
+- **Object hallucination:** The model describes objects not present in the image (e.g., "there is a cat" when there is none).
+- **Attribute hallucination:** Incorrect color, shape, count, or relationship between real objects.
+- **Causes:** Language priors dominate visual input; insufficient visual grounding in training.
+- [POPE benchmark]{.uured-bold} (Polling-based Object Probing Evaluation): asks Yes/No questions about object existence; compares adversarial vs. random sampling to expose hallucination patterns.
+
+## Key MLLM Benchmarks in Detail
+- **MMMU** (Massive Multidiscipline Multimodal Understanding): 11,500 college-level questions across 183 subfields requiring both image understanding and disciplinary knowledge.
+- **MMBench:** Bilingual (EN/CN) structured benchmark with 20 capability dimensions including object localization, social reasoning, and image quality assessment.
+- **ScienceQA:** Multi-hop reasoning questions from science curricula with diagrams; tests visual + factual reasoning together.
+- **DocVQA:** 50,000 questions on scanned documents — tests OCR, layout understanding, and information retrieval.
+
+## Applying Eval Engineering to MLLMs
+- The same 6-step Eval Engineering workflow applies to MLLMs — with an added visual dimension.
+- **LLM-as-a-Judge for MLLMs:** The judge receives the image, the prompt, the model response, and a rubric that explicitly scores visual grounding.
+- **Key MLLM eval criteria to add to rubric:**
+  - *Visual Faithfulness:* Does the response accurately reflect what is in the image?
+  - *Hallucination Score:* Are any claims made that cannot be verified from the image?
+  - *Modality Integration:* Does the response synthesize visual and textual context, or ignore one?
+- Production guardrails for MLLMs should flag responses with low visual grounding scores.
+
+
+# Challenges & Future Directions
+
+## Hallucination & Trustworthiness
+- Hallucination is more severe in MLLMs than text-only LLMs — two modalities can independently mislead.
+- **Mitigation strategies:**
+  - Contrastive decoding: penalize tokens likely under a "vision-blind" version of the model
+  - Visual instruction tuning with negative examples
+  - Post-hoc verification via a separate grounding model
+- [Eval Engineering plays a critical role:]{.uured-bold} deploy hallucination-specific LLM judges in production to catch failures before users do.
+
+## Computational Cost & Efficiency
+- A single high-resolution image can consume **thousands of tokens** in the LLM context.
+- Video inputs at even modest frame rates are prohibitively expensive for standard context windows.
+- **Active research directions:**
+  - Efficient visual encoders (fewer tokens per image)
+  - Dynamic resolution (only attend to high-detail regions)
+  - Quantized vision encoders
+  - Long-context architectures (Mamba, sliding window attention)
+
+## Modality Imbalance & Data Quality
+- Most MLLM training data is **text-heavy** — models develop strong language priors that can dominate visual reasoning.
+- High-quality paired multimodal datasets are expensive to curate (Molmo's PixMo is a notable exception).
+- **Cross-modal misalignment:** image-text pairs from the web are noisy — captions often describe adjacent, not depicted, content.
+- Improving data quality (Molmo's speech-annotation approach) consistently outperforms scale alone.
+
+## The Road Ahead: Omni-Modal Models
+- The frontier is shifting from **vision-language** models to **omni-modal** models handling all modalities natively:
+  - Text ↔ Image ↔ Audio ↔ Video ↔ Sensor data
+- **GPT-4o** demonstrated real-time voice + vision interaction; **Gemini 1.5 Pro** handles million-token contexts with video.
+- **Emu3 and Janus** explore unified generation: one model that both *understands* and *generates* across modalities.
+- The boundary between perception, reasoning, and generation is dissolving — MLLMs are becoming the substrate of general-purpose AI.

@@ -5,7 +5,9 @@ description = "698 Generative AI for Business Analytics"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
+    "accelerate>=1.13.0",
     "beautifulsoup4>=4.14.3",
+    "faiss-cpu>=1.13.2",
     "fastai>=2.1.10",
     "google-genai>=1.61.0",
     "jupyter>=1.1.1",
@@ -13,12 +15,16 @@ dependencies = [
     "jupyterlab>=4.5.3",
     "kaleido>=1.2.0",
     "keras>=3.13.2",
+    "langchain>=0.3.28",
+    "langchain-community>=0.3.31",
+    "langchain-core>=0.3.84",
+    "langchain-openai>=0.2.13",
     "lxml>=6.0.2",
     "manim>=0.20.1",
     "matplotlib>=3.10.8",
     "nltk>=3.9.2",
     "numpy>=2.4.2",
-    "openai>=2.16.0",
+    "openai>1.56.2",
     "openpyxl>=3.1.5",
     "plotly>=6.5.2",
     "pywaffle>=1.1.1",
