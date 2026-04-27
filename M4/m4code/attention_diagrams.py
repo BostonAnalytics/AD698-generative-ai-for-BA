@@ -1,5 +1,6 @@
 import svgwrite
 import os
+from IPython.display import SVG, display
 
 # ---------------------------------------------------------
 # Transformer-style color palette
