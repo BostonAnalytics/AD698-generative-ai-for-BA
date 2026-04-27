@@ -1,39 +1,32 @@
 ---
-title: "M04 Presentation 02"
+title: "M04: Lecture 2"
+subtitle: "Training Paradigms and Fine-Tuning Pipelines"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
-date: 03/12/2024
+date: "2026-03-12"
 date-modified: today
 date-format: long
-author:
-  - name: Nakul R. Padalkar
-    affiliations:
-      - id: BU
-        name: Boston University
-        city: Boston
-        state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
-format: 
+from: markdown+emoji
+format:
     revealjs:
         theme: [../theme/presentation.scss]
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
+        auto-stretch: false
     pptx:
         reference-doc: ../theme/presentation_template.pptx
-self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
     data-background-image: "../theme/blank_red.png"
     data-background-size: 103% auto
     data-background-opacity: "0.95"
-execute: 
-  echo: false
-  warning: false
-  message: false
+execute:
+    echo: false
+    eval: false
+    warning: false
+    message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 ---
@@ -41,3 +34,204 @@ csl: ../mis-quarterly.csl
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+
+# From Pretraining to Deployment
+
+## The Modern AI Development Lifecycle
+
+Most production AI systems today are built in two stages:
+
+::: {.incremental}
+1. **Pretraining** — learn general language representations from a massive corpus
+2. **Adaptation** — specialise the pretrained model for a target task or domain
+:::
+
+The adaptation stage can take many forms: full fine-tuning, instruction tuning, RLHF, or PEFT.
+
+## Pretraining Objectives
+
+| Objective | Architecture | Example |
+|-----------|-------------|---------|
+| Masked Language Modeling (MLM) | Encoder | BERT |
+| Causal Language Modeling (CLM) | Decoder | GPT |
+| Sequence-to-Sequence (Span Corruption) | Encoder-Decoder | T5, BART |
+
+The objective shapes what the model learns to *do*: fill gaps (BERT) vs predict continuations (GPT).
+
+## Masked Language Modeling (MLM)
+
+BERT randomly masks 15% of tokens and trains the model to predict the missing words.
+
+```
+Input:  "The company reported strong [MASK] growth in Q3."
+Target:              ↑ "revenue"
+```
+
+::: {.callout-note}
+MLM forces **bidirectional** context — the model sees tokens on both sides of each mask.
+This makes BERT excellent for classification, NER, and QA but not text generation.
+:::
+
+## Causal Language Modeling (CLM)
+
+GPT-style models predict the next token, seeing only past context (autoregressive).
+
+```
+Input:   "The company reported strong"
+Predict: "revenue" → "growth" → "in" → "Q3"
+```
+
+::: {.callout-note}
+CLM enables **open-ended text generation** but limits direct use of future context during encoding.
+:::
+
+# Transfer Learning Paradigm
+
+## Why Transfer Learning Works
+
+Pretraining on large text corpora gives the model:
+
+- **Syntactic knowledge** — sentence structure and grammar
+- **Semantic knowledge** — word meaning and relationships
+- **World knowledge** — facts encoded in training text
+- **Task-adjacent skills** — reading comprehension, reasoning patterns
+
+Fine-tuning on a small labelled dataset then *steers* this knowledge toward the target task.
+
+## The Fine-Tuning Spectrum
+
+```
+← Less compute                          More compute →
+
+Zero-shot    Few-shot    Prompt     PEFT      Full Fine-Tune
+             prompting   Tuning    (LoRA)
+
+← Less data needed                      More data needed →
+```
+
+The right approach depends on: data availability, compute budget, and task difficulty.
+
+# Full Fine-Tuning
+
+## What is Full Fine-Tuning?
+
+Update **all** model parameters on labelled task data.
+
+Procedure:
+
+::: {.incremental}
+1. Start from a pretrained checkpoint (e.g., `bert-base-uncased`)
+2. Add a task-specific head (e.g., linear classifier)
+3. Train on labelled data with a small learning rate
+4. Evaluate on held-out test set
+:::
+
+## PyTorch: Classification Head
+
+```{python}
+#| eval: false
+#| echo: true
+import torch.nn as nn
+
+class BertClassifier(nn.Module):
+    def __init__(self, bert_hidden: int = 768, num_classes: int = 3):
+        super().__init__()
+        # In practice: load from transformers.BertModel
+        self.encoder = nn.Identity()          # placeholder
+        self.dropout = nn.Dropout(0.1)
+        self.classifier = nn.Linear(bert_hidden, num_classes)
+
+    def forward(self, cls_embedding):
+        return self.classifier(self.dropout(cls_embedding))
+```
+
+## Challenges of Full Fine-Tuning
+
+::: {.incremental}
+- **Catastrophic forgetting** — model loses general capabilities
+- **Compute cost** — updating billions of parameters is expensive
+- **Data requirements** — needs thousands of labelled examples
+- **Storage** — one full copy of weights per fine-tuned task
+:::
+
+# Instruction Tuning
+
+## What is Instruction Tuning?
+
+Fine-tune on **(instruction, response)** pairs to teach the model to follow natural language commands.
+
+```
+Instruction: "Classify the sentiment of the following review as POSITIVE or NEGATIVE."
+Input:       "The product broke after two days of use."
+Response:    "NEGATIVE"
+```
+
+Examples: FLAN-T5, InstructGPT, Alpaca.
+
+## Why Instruction Tuning Matters
+
+::: {.incremental}
+- Models become far more useful for end users without programming
+- A single model can handle hundreds of tasks (zero-shot generalisation)
+- Enables natural language as the interface to AI systems
+:::
+
+# RLHF: Reinforcement Learning from Human Feedback
+
+## The RLHF Pipeline
+
+RLHF (Ouyang et al., 2022 — InstructGPT) aligns models with human preferences:
+
+::: {.incremental}
+1. **Supervised Fine-Tuning (SFT)** — fine-tune on human-written demonstrations
+2. **Reward Model Training** — train a model to predict human preference scores
+3. **PPO Optimisation** — use RL to maximise reward while staying close to the SFT baseline
+:::
+
+## Why RLHF is Hard
+
+- Human labellers must rank thousands of output pairs
+- Reward models can be gamed (reward hacking)
+- PPO is computationally expensive and unstable
+- Alternative: **Direct Preference Optimization (DPO)** — simpler, no reward model needed
+
+# Parameter-Efficient Fine-Tuning (PEFT)
+
+## The Key Idea
+
+Instead of updating all parameters, inject a small number of **trainable adapter** parameters.
+The pretrained weights are **frozen**.
+
+::: {.incremental}
+- **LoRA** — learn low-rank updates to weight matrices: $W' = W + \Delta W = W + BA$
+- **Prefix Tuning** — prepend learnable tokens to the input sequence
+- **Prompt Tuning** — learn soft prompt embeddings only
+:::
+
+## LoRA: Low-Rank Adaptation
+
+$$\Delta W = B \cdot A \quad \text{where } B \in \mathbb{R}^{d \times r},\; A \in \mathbb{R}^{r \times k},\; r \ll \min(d,k)$$
+
+::: {.incremental}
+- Rank $r$ controls the number of trainable parameters
+- Typical $r \in \{4, 8, 16\}$ — reduces parameters by 100–10,000×
+- At inference: merge $\Delta W$ back into $W$ — **no latency overhead**
+:::
+
+# Summary
+
+## Key Takeaways
+
+::: {.incremental}
+- Pretraining objectives (MLM, CLM, seq2seq) determine model strengths and weaknesses
+- Transfer learning = leverage pretrained representations for downstream tasks
+- Full fine-tuning is powerful but expensive; instruction tuning improves usability
+- RLHF aligns models with human preferences — but at significant cost
+- PEFT methods (LoRA, adapters) offer 90%+ of the fine-tuning benefit at 1–10% of the compute
+:::
+
+## What's Next?
+
+- **Lab**: Implement a fine-tuning training loop in PyTorch with a classification head
+- **Tutorial**: Build a LoRA-style adapter from scratch
+- **Assignment**: Fine-tune a model on SEC 10-K risk classification

@@ -1,14 +1,27 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Language Modeling Foundations, Transformer Mechanics, and Semantic Geometry"
+title: "M03: Lecture Note 2"
+subtitle: "Tokenization, Embeddings, and Semantic Geometry"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
 engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['Lecture', 'M03:', 'Notes']
-description: "Lecture covering Language Modeling Foundations, Transformer Mechanics, and Semantic Geometry."
+description: "Language modeling foundations, transformer self-attention, contextual embeddings, and semantic geometry."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 ```{python}
@@ -158,3 +171,121 @@ Faced with both opportunities and challenges, it needs more  attention on the re
 # Recurrent Neural Networks {#sec-rnn}
 
 {{< include ./m03_l02_content/rnn.qmd >}}
+
+# Self-Attention: Code Demonstrations
+
+## Scaled Dot-Product Attention in PyTorch
+
+The core attention operation: each token queries every other token for relevant information.
+
+```{python}
+#| eval: false
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+import numpy as np
+
+def scaled_dot_product_attention(Q, K, V):
+    """
+    Q, K, V: (batch, seq_len, d_k)
+    Returns: output (batch, seq_len, d_k), weights (batch, seq_len, seq_len)
+    """
+    d_k = Q.shape[-1]
+    scores = torch.bmm(Q, K.transpose(1, 2)) / (d_k ** 0.5)  # (B, T, T)
+    weights = F.softmax(scores, dim=-1)
+    output = torch.bmm(weights, V)                              # (B, T, d_k)
+    return output, weights
+
+# Demo: 1 batch, 6 tokens, d_k=8
+torch.manual_seed(0)
+B, T, d_k = 1, 6, 8
+Q = torch.randn(B, T, d_k)
+K = torch.randn(B, T, d_k)
+V = torch.randn(B, T, d_k)
+
+output, attn_weights = scaled_dot_product_attention(Q, K, V)
+print(f"Input  shape: {Q.shape}")
+print(f"Output shape: {output.shape}")
+print(f"Attention weights shape: {attn_weights.shape}")
+
+# Visualise the attention map
+tokens = ["The", "model", "attends", "to", "each", "token"]
+fig, ax = plt.subplots(figsize=(6, 5))
+im = ax.imshow(attn_weights[0].detach().numpy(), cmap="Blues", vmin=0, vmax=1)
+ax.set_xticks(range(T)); ax.set_xticklabels(tokens, rotation=45, ha="right")
+ax.set_yticks(range(T)); ax.set_yticklabels(tokens)
+ax.set_title("Attention Weight Matrix (single head)")
+plt.colorbar(im, ax=ax)
+plt.tight_layout()
+plt.show()
+```
+
+## Multi-Head Attention with nn.MultiheadAttention
+
+PyTorch's built-in MHA lets us quickly explore how multiple attention heads learn different patterns in a sequence.
+
+```{python}
+#| eval: false
+# Toy sequence: 6 tokens of dimension 16, 2 heads
+embed_dim = 16
+num_heads  = 2
+seq_len    = 6
+
+mha = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=num_heads, batch_first=True)
+
+torch.manual_seed(42)
+x = torch.randn(1, seq_len, embed_dim)           # (batch=1, seq, embed)
+attn_out, attn_wt = mha(x, x, x)                  # self-attention: Q=K=V=x
+
+print(f"Output:          {attn_out.shape}")         # (1, 6, 16)
+print(f"Attention weight: {attn_wt.shape}")         # (1, 6, 6) averaged over heads
+
+# Heatmap of averaged attention weights
+fig, ax = plt.subplots(figsize=(5, 4))
+ax.imshow(attn_wt[0].detach().numpy(), cmap="Oranges")
+ax.set_title("MultiheadAttention (heads averaged)")
+ax.set_xlabel("Key position"); ax.set_ylabel("Query position")
+plt.tight_layout()
+plt.show()
+```
+
+## Semantic Similarity with Cosine Distance
+
+Contextual embeddings encode meaning as geometry — semantically similar inputs produce similar vectors.
+
+```{python}
+#| eval: false
+import torch.nn.functional as F
+
+# Simulate contextual embeddings (e.g. from a transformer encoder last layer)
+torch.manual_seed(7)
+embed_dim = 64
+
+# Three pairs: similar, partially similar, unrelated
+phrases = {
+    "revenue growth":       torch.randn(embed_dim),
+    "sales increase":       None,   # will be constructed as near-copy
+    "net income":           torch.randn(embed_dim),
+    "operating profit":     None,
+    "regulatory risk":      torch.randn(embed_dim),
+    "weather forecast":     torch.randn(embed_dim),  # unrelated
+}
+
+# Make "sales increase" close to "revenue growth"
+phrases["sales increase"]   = phrases["revenue growth"] + 0.1 * torch.randn(embed_dim)
+phrases["operating profit"] = phrases["net income"]     + 0.15 * torch.randn(embed_dim)
+
+keys   = list(phrases.keys())
+embeds = torch.stack(list(phrases.values()))           # (6, 64)
+embeds = F.normalize(embeds, dim=-1)                   # unit-norm
+
+sim_matrix = embeds @ embeds.T                         # cosine similarity matrix
+
+print(f"{'Pair':<40} {'Cosine Sim':>12}")
+print("-" * 55)
+for i in range(len(keys)):
+    for j in range(i + 1, len(keys)):
+        sim = sim_matrix[i, j].item()
+        print(f"{keys[i]:<18} ↔  {keys[j]:<18} {sim:>8.3f}")
+```

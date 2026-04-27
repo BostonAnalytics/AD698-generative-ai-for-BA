@@ -19,10 +19,10 @@ format:
         toc: true
         toc-depth: 1
         auto-stretch: false
-        from: markdown+emoji
         code-line-numbers: true
     pptx:
         reference-doc: ../theme/presentation_template.pptx
+from: markdown+emoji
 self-contained-math: true
 code-annotations: below
 fig-align: center

@@ -1,24 +1,27 @@
 ---
-title: "AD698 - Applied Generative AI"
+title: "M02: Lecture Note 2"
 subtitle: "From Words to Structured Text"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-format: 
-    html: 
-        html-math-method: mathjax
-        include-in-header:
-          text: |
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
     docx:
-        reference-doc: ../theme/APA7.docx   
+        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['Notes', 'Lecture', 'M02:']
-description: "Lecture covering Prompt Engineering & In-Context Learning (ICL)."
-filters:
-  - pseudocode
+description: "Types vs tokens, Naïve Bayes classifier, MLP bridge, word embeddings, and text evaluation metrics."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 # Defining the Word
@@ -59,6 +62,111 @@ An alternative but equivalent perspective is to model the document as a sequence
 ## Why the Two Models Are Equivalent
 
 The equivalence between the multinomial and token‑level models arises from the fact that the multinomial distribution is the result of summing over all possible token sequences that share the same type‑count vector. Under the Naïve Bayes independence assumption, the probability of a sequence factorizes into a product of token probabilities, and summing over all permutations yields the multinomial coefficient $B(x)$. This means that the multinomial model is simply a more compact representation of the same generative assumptions. Importantly, because $B(x)$ does not depend on the class label, it cancels out when comparing classes, ensuring that both models yield identical predictions. This insight clarifies why Naïve Bayes is insensitive to word order: the model’s assumptions render order irrelevant, and the multinomial form is the natural consequence of marginalizing over all possible orderings.
+
+## Naïve Bayes in Practice: Sklearn on SEC 10-K Text
+
+The theory above translates directly to a text classifier. Below we load a sample of SEC 10-K filings, build TF-IDF features, and train a Multinomial Naïve Bayes classifier to distinguish filing sections.
+
+```{python}
+#| eval: false
+import pathlib, re
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+
+# Load SEC 10-K texts (first 300 chars shown as preview)
+sec_dir = pathlib.Path("../data/SEC-10K-2024")
+texts, labels = [], []
+for f in sorted(sec_dir.glob("*.txt"))[:40]:
+    text = f.read_text(errors="replace")
+    texts.append(text)
+    # Label: 0 = risk factors mention dominant, 1 = revenue/sales dominant
+    label = 1 if re.search(r'\brevenue\b|\bsales\b', text[:3000], re.I) else 0
+    labels.append(label)
+
+print(f"Loaded {len(texts)} documents, label balance: {sum(labels)}/{len(labels)-sum(labels)}")
+
+# TF-IDF features
+vectorizer = TfidfVectorizer(max_features=5000, stop_words="english", ngram_range=(1, 2))
+X = vectorizer.fit_transform(texts)
+y = np.array(labels)
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+# Multinomial Naïve Bayes
+nb = MultinomialNB(alpha=1.0)  # Laplace smoothing
+nb.fit(X_train, y_train)
+y_pred = nb.predict(X_test)
+
+print(classification_report(y_test, y_pred, target_names=["risk-dominant", "revenue-dominant"]))
+
+# Confusion matrix
+ConfusionMatrixDisplay.from_predictions(y_test, y_pred,
+    display_labels=["risk-dominant", "revenue-dominant"])
+plt.title("Naïve Bayes — SEC 10-K")
+plt.tight_layout()
+plt.show()
+```
+
+### From NB to MLP: Same Task, Neural Approach
+
+The NB model above uses exact word probability estimates. A PyTorch MLP replaces the closed-form NB parameters with learned weights, enabling non-linear decision boundaries.
+
+```{python}
+#| eval: false
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+from scipy.sparse import issparse
+
+# Convert sparse TF-IDF to dense tensors
+def to_dense_tensor(X_sp):
+    if issparse(X_sp):
+        return torch.tensor(X_sp.toarray(), dtype=torch.float32)
+    return torch.tensor(X_sp, dtype=torch.float32)
+
+X_tr = to_dense_tensor(X_train)
+X_te = to_dense_tensor(X_test)
+y_tr = torch.tensor(y_train, dtype=torch.long)
+y_te = torch.tensor(y_test, dtype=torch.long)
+
+train_dl = DataLoader(TensorDataset(X_tr, y_tr), batch_size=8, shuffle=True)
+
+class TextMLP(nn.Module):
+    def __init__(self, vocab_size: int, hidden: int = 256, n_classes: int = 2):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(vocab_size, hidden),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(hidden, n_classes),
+        )
+    def forward(self, x):
+        return self.net(x)
+
+model = TextMLP(vocab_size=X_tr.shape[1])
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+loss_fn = nn.CrossEntropyLoss()
+
+for epoch in range(10):
+    model.train()
+    total_loss = 0.0
+    for xb, yb in train_dl:
+        optimizer.zero_grad()
+        loss = loss_fn(model(xb), yb)
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    if (epoch + 1) % 5 == 0:
+        model.eval()
+        with torch.no_grad():
+            acc = (model(X_te).argmax(1) == y_te).float().mean().item()
+        print(f"Epoch {epoch+1:>3} | loss={total_loss/len(train_dl):.4f} | val_acc={acc:.3f}")
+```
 
 ## Tokenization
 

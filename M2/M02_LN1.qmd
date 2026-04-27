@@ -1,24 +1,27 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Language Modeling, Structured Prediction, & Evaluation"
+title: "M02: Lecture Note 1"
+subtitle: "Mathematical Foundations Through Language Modeling"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
-format: 
-    html: 
-        html-math-method: mathjax
-        include-in-header:
-          text: |
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css" />
-            <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.js"></script>
+engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
     docx:
-        reference-doc: ../theme/APA7.docx   
+        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['Notes', 'Lecture', 'M02:']
-description: "Lecture covering Prompt Engineering & In-Context Learning (ICL)."
-filters:
-  - pseudocode
+description: "Language as a probability distribution, chain rule, tokenization, n-gram models, and perplexity."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 Natural language is rich, ambiguous, creative, and endlessly variable. Yet one of the most powerful ideas in modern NLP is that language can be treated as a **probability distribution over sequences of tokens**. This perspective—simple in form but profound in consequence—underlies everything from classical n‑gram models to today's large language models (LLMs). It provides a unified mathematical framework for prediction, generation, scoring, and understanding.
@@ -219,3 +222,110 @@ An important consequence is that tokenization becomes context‑sensitive. The s
 Although both linguistic and computational tokens serve as "units" of text, they belong to different conceptual frameworks. Linguistic tokens reflect human‑interpretable structure; LLM tokens reflect the internal mechanics of a probabilistic model. When we say that a language model assigns a probability to a sequence of tokens, we are referring to these computational units, not to words in the linguistic sense. The probabilistic model is defined over the tokenizer's vocabulary, and the granularity of these units shapes the model's behavior, its efficiency, and its ability to generalize.
 
 Understanding this distinction is essential for interpreting model outputs, estimating token counts, managing context windows, and reasoning about the statistical foundations of language modeling. It also clarifies why token counts do not align neatly with word counts, why different languages behave differently under the same tokenizer, and why the same sentence may produce different tokenizations depending on subtle formatting differences.
+
+# Computational Language Modeling: Code Demonstrations
+
+## N-gram Language Model
+
+N-gram models estimate the probability of the next word given the previous $n-1$ words. The bigram model uses just the immediately preceding word. Below we build bigram counts from a short text corpus and use them to estimate conditional probabilities.
+
+```{python}
+#| eval: false
+from collections import Counter, defaultdict
+import numpy as np
+
+# Sample text — replace with real corpus for production
+corpus = (
+    "the market for artificial intelligence is growing rapidly . "
+    "companies that invest in machine learning gain a competitive advantage . "
+    "the technology sector shows strong revenue growth in artificial intelligence . "
+    "machine learning models require large amounts of training data . "
+    "the stock price reflects investor confidence in the technology sector ."
+)
+
+tokens = corpus.split()
+print(f"Corpus: {len(tokens)} tokens, {len(set(tokens))} types\n")
+
+# Bigram counts
+bigrams = Counter(zip(tokens[:-1], tokens[1:]))
+unigrams = Counter(tokens)
+
+# Conditional probability: P(w2 | w1) with Laplace smoothing
+V = len(unigrams)  # vocabulary size
+
+def bigram_prob(w1: str, w2: str, alpha: float = 1.0) -> float:
+    """P(w2 | w1) with add-alpha smoothing."""
+    return (bigrams[(w1, w2)] + alpha) / (unigrams[w1] + alpha * V)
+
+# Show top bigrams starting with "the"
+print("Top bigrams starting with 'the':")
+for (w1, w2), cnt in sorted(bigrams.items(), key=lambda x: -x[1]):
+    if w1 == "the":
+        p = bigram_prob(w1, w2)
+        print(f"  P({w2!r:<18} | 'the') = {p:.4f}  (count={cnt})")
+```
+
+## Perplexity: Evaluating Language Model Quality
+
+Perplexity measures how surprised a model is by a held-out test sentence. Lower perplexity means the model assigns higher probability to the test data — i.e., it has learned a better distribution.
+
+$$\text{PPL}(W) = \exp\!\left(-\frac{1}{N}\sum_{i=1}^{N}\log P(w_i \mid w_{i-1})\right)$$
+
+```{python}
+#| eval: false
+import math
+
+def sentence_perplexity(sentence: str, alpha: float = 1.0) -> float:
+    """Compute bigram perplexity of a sentence."""
+    words = sentence.split()
+    log_prob = 0.0
+    for i in range(1, len(words)):
+        p = bigram_prob(words[i-1], words[i], alpha)
+        log_prob += math.log(p)
+    N = len(words) - 1
+    return math.exp(-log_prob / N)
+
+test_sentences = [
+    "the market is growing rapidly",       # in-distribution
+    "machine learning shows strong growth", # partially in-distribution
+    "purple elephants dance underwater",    # out-of-distribution
+]
+
+print(f"{'Sentence':<45} {'Perplexity':>12}")
+print("-" * 60)
+for sent in test_sentences:
+    ppl = sentence_perplexity(sent)
+    print(f"{sent:<45} {ppl:>12.1f}")
+```
+
+## Bigram Sampling: Generating Text
+
+Once we have a bigram model, we can generate new text by sampling from the conditional distribution at each step — the core idea behind autoregressive language generation.
+
+```{python}
+#| eval: false
+import random
+
+def sample_next_word(current_word: str, alpha: float = 1.0) -> str:
+    """Sample the next word given the current word."""
+    vocab = list(unigrams.keys())
+    probs = np.array([bigram_prob(current_word, w, alpha) for w in vocab])
+    probs /= probs.sum()  # normalize (smoothing may break exact sum=1)
+    return random.choices(vocab, weights=probs, k=1)[0]
+
+def generate_text(start_word: str, n_words: int = 15, seed: int = 42) -> str:
+    """Generate text using bigram sampling."""
+    random.seed(seed)
+    tokens_gen = [start_word]
+    for _ in range(n_words - 1):
+        next_word = sample_next_word(tokens_gen[-1])
+        tokens_gen.append(next_word)
+        if next_word == ".":
+            break
+    return " ".join(tokens_gen)
+
+print("Generated text samples:")
+for start in ["the", "machine", "companies"]:
+    print(f"  [{start}] → {generate_text(start)}")
+```
+

@@ -1,13 +1,7 @@
 ---
-title: "Module 2 Assignment: Extracting Strategic Technology Signals from Form 10-K"
-subtitle: "Building a Retrieval-Ready Corpus for LLM Systems"
-author:
-  - name: Nakul R. Padalkar
-    affiliations:
-      - id: bu
-        name: Boston University
-        city: Boston
-        state: MA
+title: "M02: Tutorial 1"
+subtitle: "Extracting Strategic Technology Signals from Form 10-K"
+description: "Build a retrieval-ready corpus from SEC 10-K HTML filings by extracting Item 1, 1A, and Item 7 sections for downstream LLM pipelines."
 number-sections: true
 date: "2026-02-01"
 date-modified: today
@@ -20,10 +14,17 @@ format:
         toc-depth: 3
         number-sections: true
         df-print: paged
-    docx: default
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+categories: ['M02:', 'Tutorial']
 engine: jupyter
 execute:
-  freeze: auto
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 # Recommended assignment build sequence

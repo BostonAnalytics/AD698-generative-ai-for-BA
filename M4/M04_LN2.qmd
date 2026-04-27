@@ -1,5 +1,312 @@
 ---
-title: "M04 Lecture Note 02"
+title: "M04: Lecture Note 2"
+subtitle: "Training Paradigms and Fine-Tuning Pipelines"
+description: "From pretraining objectives through full fine-tuning, instruction tuning, RLHF, and parameter-efficient methods (LoRA / adapters)."
+number-sections: true
+date: "2026-03-12"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
-# M04 Lecture Note 02
+## Overview
+
+The dominant paradigm for modern NLP is **pretrain → adapt**. A model is first trained
+on a massive unlabelled corpus using a self-supervised objective, then adapted for a target
+task with far less labelled data.
+This lecture maps the landscape of pretraining objectives and adaptation strategies, from
+full fine-tuning through the parameter-efficient methods that make large-model adaptation
+practical on modest hardware.
+
+## Pretraining Objectives
+
+### Masked Language Modeling (MLM) — BERT
+
+BERT randomly replaces 15 % of input tokens with `[MASK]` (80 %), a random token (10 %),
+or the unchanged token (10 %), then trains a cross-entropy loss on the masked positions.
+
+```{python}
+def mlm_mask(tokens: list[str], mask_prob: float = 0.15,
+             mask_token: str = "[MASK]", vocab: list[str] = None):
+    """Simulate BERT-style masking; return (masked_tokens, labels)."""
+    import random, copy
+    labels = copy.copy(tokens)
+    masked = copy.copy(tokens)
+    for i, tok in enumerate(tokens):
+        if random.random() < mask_prob:
+            r = random.random()
+            if r < 0.80:
+                masked[i] = mask_token
+            elif r < 0.90 and vocab:
+                masked[i] = random.choice(vocab)
+            # else: keep original
+    return masked, labels
+
+sample = "the company reported strong revenue growth in q3".split()
+masked, labels = mlm_mask(sample)
+print("Original:", sample)
+print("Masked  :", masked)
+```
+
+**Key property**: MLM uses *bidirectional* context — both left and right tokens are visible
+during encoding. This makes BERT encoders excellent for classification, NER, and extractive QA.
+
+### Causal Language Modeling (CLM) — GPT
+
+GPT models are trained to predict the next token given all previous tokens:
+
+$$\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1})$$
+
+The causal (triangular) attention mask enforces this left-to-right constraint.
+
+```{python}
+import torch
+import torch.nn.functional as F
+
+def causal_mask(seq_len: int) -> torch.Tensor:
+    """Upper-triangular mask: True where attention is BLOCKED."""
+    return torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool), diagonal=1)
+
+print(causal_mask(5).int())
+```
+
+### Sequence-to-Sequence Span Corruption — T5
+
+T5 corrupts 15 % of token spans (replacing each span with a single sentinel token) and
+trains the decoder to reconstruct them.
+
+```
+Input:  "The company <X> strong revenue in <Y> quarter."
+Target: "<X> reported <Y> Q3 </s>"
+```
+
+This objective is well-suited for generation tasks (summarisation, translation, QA).
+
+## The Transfer Learning Paradigm
+
+Transfer learning consists of two stages:
+
+1. **Pretraining** — self-supervised learning on a large unlabelled corpus.
+2. **Fine-tuning** — supervised learning on a small labelled dataset, starting from the
+   pretrained weights.
+
+The pretrained model has already learned grammar, syntax, world knowledge, and reasoning
+patterns. Fine-tuning steers those representations toward the target task.
+
+## Full Fine-Tuning
+
+All model parameters are updated during training on labelled task data.
+
+### Classification Head
+
+```{python}
+import torch.nn as nn
+
+class TransformerClassifier(nn.Module):
+    """
+    Wrap a frozen (or partially frozen) transformer encoder with a classification head.
+    In practice, replace `encoder` with a HuggingFace model.
+    """
+    def __init__(self, encoder: nn.Module, hidden_dim: int, num_classes: int,
+                 dropout: float = 0.1):
+        super().__init__()
+        self.encoder    = encoder
+        self.dropout    = nn.Dropout(dropout)
+        self.classifier = nn.Linear(hidden_dim, num_classes)
+
+    def forward(self, x):
+        # x: (B, T) token ids → (B, T, H) hidden states
+        hidden = self.encoder(x)          # placeholder call
+        cls    = hidden[:, 0, :]          # take [CLS] representation
+        return self.classifier(self.dropout(cls))
+```
+
+### Fine-Tuning Training Loop
+
+```{python}
+import torch
+
+def fine_tune(model, train_loader, val_loader, epochs: int = 3, lr: float = 2e-5):
+    device    = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model     = model.to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
+    criterion = nn.CrossEntropyLoss()
+
+    for epoch in range(1, epochs + 1):
+        model.train()
+        total_loss = correct = total = 0
+        for x, y in train_loader:
+            x, y = x.to(device), y.to(device)
+            optimizer.zero_grad()
+            logits = model(x)
+            loss   = criterion(logits, y)
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            optimizer.step()
+            total_loss += loss.item()
+            correct    += (logits.argmax(-1) == y).sum().item()
+            total      += len(y)
+        train_acc = correct / total
+
+        model.eval()
+        correct = total = 0
+        with torch.no_grad():
+            for x, y in val_loader:
+                x, y = x.to(device), y.to(device)
+                correct += (model(x).argmax(-1) == y).sum().item()
+                total   += len(y)
+        print(f"Epoch {epoch}  loss={total_loss/len(train_loader):.4f}  "
+              f"train_acc={train_acc:.3f}  val_acc={correct/total:.3f}")
+```
+
+**Practical tips**: Use a small learning rate (1e-5 – 5e-5), warm up the learning rate for
+the first 6–10% of steps, and apply weight decay to all parameters except biases and
+LayerNorm weights.
+
+## Instruction Tuning
+
+Instruction tuning fine-tunes a model on **(instruction, response)** pairs drawn from a wide
+variety of tasks, teaching the model to follow natural language commands zero-shot.
+
+### Prompt Format
+
+```{python}
+def format_instruction_prompt(instruction: str, input_text: str = "",
+                               response: str = "") -> str:
+    parts = [f"### Instruction:\n{instruction}"]
+    if input_text:
+        parts.append(f"### Input:\n{input_text}")
+    parts.append(f"### Response:\n{response}")
+    return "\n\n".join(parts)
+
+
+example = format_instruction_prompt(
+    instruction="Classify the sentiment of the following financial headline.",
+    input_text="Apple reports record-breaking Q4 revenue.",
+    response="POSITIVE",
+)
+print(example)
+```
+
+Key datasets: FLAN (1,800 tasks), Alpaca (52k GPT-4-generated examples), Dolly, OpenAssistant.
+
+## RLHF: Reinforcement Learning from Human Feedback
+
+RLHF (Ouyang et al., 2022) aligns a language model with human preferences through three stages:
+
+1. **Supervised Fine-Tuning (SFT)**: Fine-tune on demonstrations of the desired behaviour.
+2. **Reward Model**: Train a model to predict human preference scores from ranked output pairs.
+3. **PPO Optimisation**: Use Proximal Policy Optimization to maximise reward while a KL
+   penalty keeps the policy close to the SFT baseline.
+
+$$\mathcal{L}_\text{PPO} = \mathbb{E}\!\left[r(x,y) - \beta \cdot D_\text{KL}(\pi_\theta \,\|\, \pi_\text{SFT})\right]$$
+
+**Alternative — DPO** (Rafailov et al., 2023): directly optimises a preference objective
+without a separate reward model, dramatically simplifying the training pipeline.
+
+## Parameter-Efficient Fine-Tuning (PEFT)
+
+### The Problem
+
+Full fine-tuning of a 7B-parameter model requires ~56 GB of GPU memory (fp16 + Adam states).
+PEFT methods freeze the pretrained weights and add a small number of trainable parameters.
+
+### LoRA: Low-Rank Adaptation
+
+LoRA (Hu et al., 2021) decomposes weight updates into low-rank matrices:
+
+$$W' = W + \Delta W = W + B A$$
+
+where $B \in \mathbb{R}^{d \times r}$, $A \in \mathbb{R}^{r \times k}$, and $r \ll \min(d, k)$.
+
+```{python}
+class LoRALinear(nn.Module):
+    """Drop-in replacement for nn.Linear with LoRA adaptation."""
+    def __init__(self, in_features: int, out_features: int,
+                 rank: int = 8, alpha: float = 16.0, dropout: float = 0.0):
+        super().__init__()
+        self.rank    = rank
+        self.alpha   = alpha
+        self.scaling = alpha / rank
+
+        # Frozen pretrained weight (no gradient)
+        self.weight  = nn.Parameter(torch.randn(out_features, in_features), requires_grad=False)
+        self.bias    = nn.Parameter(torch.zeros(out_features), requires_grad=False)
+
+        # Trainable low-rank matrices
+        self.lora_A  = nn.Parameter(torch.randn(rank, in_features)  * (1 / rank)**0.5)
+        self.lora_B  = nn.Parameter(torch.zeros(out_features, rank))
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        base = F.linear(x, self.weight, self.bias)
+        lora = F.linear(self.dropout(x), self.lora_A)   # (B, T, rank)
+        lora = F.linear(lora, self.lora_B)               # (B, T, out)
+        return base + lora * self.scaling
+
+    def merge_weights(self) -> nn.Linear:
+        """Fuse LoRA into the base weight for zero-latency inference."""
+        merged = self.weight + (self.lora_B @ self.lora_A) * self.scaling
+        layer  = nn.Linear(self.weight.size(1), self.weight.size(0), bias=True)
+        layer.weight.data = merged
+        layer.bias.data   = self.bias.clone()
+        return layer
+
+
+# Parameter count comparison
+d, k, r = 768, 768, 8
+full_params = d * k
+lora_params = r * (d + k)
+print(f"Full weight: {full_params:,} params")
+print(f"LoRA (r={r}):  {lora_params:,} params  ({lora_params/full_params*100:.1f}%)")
+```
+
+### Adapter Modules
+
+Adapters (Houlsby et al., 2019) insert small feed-forward bottleneck layers *inside* each
+transformer block.
+
+```{python}
+class AdapterModule(nn.Module):
+    """Bottleneck adapter inserted after attention and FFN sub-layers."""
+    def __init__(self, hidden_dim: int, bottleneck_dim: int, dropout: float = 0.1):
+        super().__init__()
+        self.down   = nn.Linear(hidden_dim, bottleneck_dim)
+        self.act    = nn.GELU()
+        self.up     = nn.Linear(bottleneck_dim, hidden_dim)
+        self.dropout= nn.Dropout(dropout)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return x + self.up(self.dropout(self.act(self.down(x))))   # residual
+
+
+adapter = AdapterModule(hidden_dim=768, bottleneck_dim=64)
+x = torch.randn(2, 10, 768)
+print(f"Adapter output: {adapter(x).shape}")
+total = sum(p.numel() for p in adapter.parameters())
+print(f"Trainable params: {total:,}  vs  768×768 = {768*768:,}")
+```
+
+## Summary
+
+| Method | Updates | Params (7B) | Use When |
+|--------|---------|-------------|----------|
+| Full fine-tuning | All | ~14 GB (fp16) | Large data, max accuracy |
+| Instruction tuning | All | ~14 GB | Multi-task generalisation |
+| LoRA (r=8) | A, B matrices | ~20 MB | Limited VRAM, fast iteration |
+| Adapters | Bottleneck layers | ~50 MB | Modular task plug-ins |
+| Prompt tuning | Soft prompt only | ~1 MB | Very limited compute |

@@ -1,11 +1,246 @@
 ---
 title: "M03: Lab 1"
-subtitle: "Using FAISS, ChromaDB in Jupyter"
+subtitle: "Retrieval-Augmented Generation with FAISS and ChromaDB"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-15"
 date-modified: today
 date-format: long
 engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['M03:', '1', 'Lab']
-description: "Hands-on lab activity: Using FAISS, ChromaDB in Jupyter."
+description: "Build a retrieval pipeline over SEC 10-K filings using FAISS and ChromaDB vector stores, then wire it into a minimal RAG prompt formatter."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
+
+## Overview
+
+Retrieval-Augmented Generation (RAG) grounds LLM responses in external documents.
+In this lab you will:
+
+1. Load SEC 10-K plain-text filings and chunk them into passages.
+2. Encode passages with `sentence-transformers`.
+3. Build a **FAISS** flat-index and perform semantic search.
+4. Build a **ChromaDB** persistent collection and run the same queries.
+5. Compare the two stores and assemble a minimal RAG prompt formatter.
+
+::: {.callout-note}
+All cells have `eval: false`. Run them interactively in a Jupyter kernel after installing the required packages.
+:::
+
+## Setup and Dependencies
+
+```{python}
+#| eval: false
+# !pip install faiss-cpu chromadb sentence-transformers
+```
+
+```{python}
+#| eval: false
+import os, re, pathlib, textwrap
+from pathlib import Path
+import numpy as np
+import faiss
+import chromadb
+from sentence_transformers import SentenceTransformer
+
+EMBED_MODEL = "all-MiniLM-L6-v2"
+embedder    = SentenceTransformer(EMBED_MODEL)
+print(f"Embedding model: {EMBED_MODEL}")
+print(f"Output dimension: {embedder.get_sentence_embedding_dimension()}")
+```
+
+## Load SEC 10-K Filings
+
+```{python}
+#| eval: false
+data_dir = Path("../data/SEC-10K-2024")
+txt_files = sorted(data_dir.glob("*.txt"))
+print(f"Found {len(txt_files)} 10-K text files:")
+for f in txt_files[:10]:
+    print(f"  {f.name}  ({f.stat().st_size // 1024:,} KB)")
+```
+
+```{python}
+#| eval: false
+def load_filing(filepath: Path) -> str:
+    return filepath.read_text(encoding="utf-8", errors="replace")
+
+filings = {f.stem: load_filing(f) for f in txt_files[:3]}
+for name, text in filings.items():
+    print(f"{name}: {len(text):,} chars")
+```
+
+## Document Chunking
+
+```{python}
+#| eval: false
+def chunk_text(text, source, chunk_size=300, overlap=50):
+    words  = text.split()
+    chunks = []
+    step   = chunk_size - overlap
+    for i, start in enumerate(range(0, len(words), step)):
+        w = words[start : start + chunk_size]
+        if len(w) < 20:
+            break
+        chunks.append({"id": f"{source}_chunk_{i:04d}", "text": " ".join(w),
+                        "source": source, "chunk_idx": i})
+    return chunks
+
+corpus = []
+for source, text in filings.items():
+    chunks = chunk_text(text, source)
+    corpus.extend(chunks)
+    print(f"{source}: {len(chunks)} chunks")
+print(f"\nTotal chunks: {len(corpus)}")
+```
+
+## Embedding the Corpus
+
+```{python}
+#| eval: false
+texts = [c["text"] for c in corpus]
+embeddings = embedder.encode(texts, batch_size=64, show_progress_bar=True,
+                             convert_to_numpy=True, normalize_embeddings=True)
+print(f"Embeddings shape: {embeddings.shape}")
+```
+
+## Build a FAISS Index
+
+```{python}
+#| eval: false
+dim   = embeddings.shape[1]
+index = faiss.IndexFlatIP(dim)
+index.add(embeddings.astype(np.float32))
+print(f"FAISS index size: {index.ntotal:,} vectors")
+```
+
+```{python}
+#| eval: false
+def search_faiss(query, k=5):
+    q = embedder.encode([query], normalize_embeddings=True).astype(np.float32)
+    scores, idxs = index.search(q, k)
+    results = []
+    for rank, (s, i) in enumerate(zip(scores[0], idxs[0])):
+        r = corpus[i].copy(); r["score"] = float(s); r["rank"] = rank + 1
+        results.append(r)
+    return results
+
+query = "cloud computing revenue growth risk factors"
+results = search_faiss(query, k=5)
+print(f"Query: {query}\n")
+for r in results:
+    print(f"Rank {r['rank']} (score={r['score']:.4f}) — {r['source']} chunk {r['chunk_idx']}")
+    print(textwrap.fill(r['text'][:200], width=90))
+    print()
+```
+
+## Build a ChromaDB Collection
+
+```{python}
+#| eval: false
+chroma_client = chromadb.PersistentClient(path="./chroma_store")
+COLLECTION_NAME = "sec10k_lab"
+try:
+    chroma_client.delete_collection(COLLECTION_NAME)
+except Exception:
+    pass
+collection = chroma_client.create_collection(
+    name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"})
+print(f"Created collection: {COLLECTION_NAME}")
+```
+
+```{python}
+#| eval: false
+BATCH = 500
+for start in range(0, len(corpus), BATCH):
+    batch = corpus[start : start + BATCH]
+    collection.add(
+        ids        = [c["id"]   for c in batch],
+        documents  = [c["text"] for c in batch],
+        metadatas  = [{"source": c["source"], "chunk_idx": c["chunk_idx"]} for c in batch],
+        embeddings = embeddings[start : start + BATCH].tolist(),
+    )
+print(f"ChromaDB collection size: {collection.count():,}")
+```
+
+```{python}
+#| eval: false
+def search_chroma(query, k=5, source_filter=None):
+    where = {"source": source_filter} if source_filter else None
+    q = embedder.encode([query], normalize_embeddings=True).tolist()
+    res = collection.query(query_embeddings=q, n_results=k, where=where)
+    results = []
+    for i, (doc, meta, dist) in enumerate(
+            zip(res["documents"][0], res["metadatas"][0], res["distances"][0])):
+        results.append({"rank": i+1, "text": doc, "source": meta["source"],
+                        "chunk_idx": meta["chunk_idx"], "distance": dist})
+    return results
+
+results_chroma = search_chroma(query, k=5)
+for r in results_chroma:
+    print(f"Rank {r['rank']} (dist={r['distance']:.4f}) — {r['source']} chunk {r['chunk_idx']}")
+    print(textwrap.fill(r['text'][:200], width=90)); print()
+```
+
+## Compare FAISS vs ChromaDB
+
+```{python}
+#| eval: false
+faiss_ids  = {(r['source'], r['chunk_idx']) for r in results}
+chroma_ids = {(r['source'], r['chunk_idx']) for r in results_chroma}
+overlap = faiss_ids & chroma_ids
+print(f"FAISS  top-5 IDs : {faiss_ids}")
+print(f"Chroma top-5 IDs : {chroma_ids}")
+print(f"Overlap: {len(overlap)}/5")
+```
+
+## RAG Prompt Formatter
+
+```{python}
+#| eval: false
+def build_rag_prompt(query, k=3, backend="faiss"):
+    retrieved = search_faiss(query, k) if backend == "faiss" else search_chroma(query, k)
+    ctx = "\n\n---\n\n".join(
+        f"[Source: {r['source']}, chunk {r['chunk_idx']}]\n{r['text']}" for r in retrieved)
+    return (
+        "You are a financial analyst assistant specializing in SEC 10-K filings.\n"
+        "Use ONLY the context below to answer the question.\n"
+        "If the answer is not in the context, say "
+        '"I cannot determine this from the provided filings."\n\n'
+        f"Context:\n{ctx}\n\nQuestion: {query}\n\nAnswer:"
+    )
+
+print(build_rag_prompt("What are the main risk factors related to competition?", k=3)[:1500])
+```
+
+## Lab Questions
+
+**Q1. Chunking Strategy**
+Re-run the chunking with `chunk_size=150, overlap=30` and `chunk_size=600, overlap=100`.
+How does chunk size affect (a) number of passages retrieved, (b) coherence of retrieved text, and (c) indexing time?
+
+**Q2. Embedding Model Comparison**
+Replace `all-MiniLM-L6-v2` with `all-mpnet-base-v2`. Does the ranking change?
+Consult the MTEB leaderboard and explain the trade-offs between these two models.
+
+**Q3. Metadata Filtering**
+Use `search_chroma` with `source_filter` set to one company.
+When would you filter by metadata vs searching across all companies?
+
+**Q4. Retrieval Quality Evaluation**
+For five hand-crafted queries, retrieve top-3 from both backends.
+Score each passage (0/1) for relevance and compute Precision@3 for each backend.
+
+**Q5. RAG Limitations**
+Identify two failure modes of the `build_rag_prompt` approach.
+Propose one enhancement for each.

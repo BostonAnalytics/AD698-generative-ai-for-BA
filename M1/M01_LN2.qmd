@@ -4,11 +4,24 @@ subtitle: "Language, Probability, and Generative Systems"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
+date-format: long
+engine: jupyter
 format:
-    html: default
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['M01:', 'Notes', 'Lecture']
-description: "Lecture covering Introduction to Generative AI & Business Applications."
+description: "Text analytics, NLP pipelines, TF-IDF, sentiment analysis, and MLP text classifiers."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 # Text Analytics and Sentiment Analysis
@@ -1267,7 +1280,7 @@ Sentiment analysis determines whether text expresses positive, negative, or neut
 ## Text Information
 
 ```{python}
-
+#| eval: false
 def read_xy_data(filename: str) -> tuple[list[str], list[int]]:
     x_data = []
     y_data = []
@@ -1583,6 +1596,196 @@ plt.show()
 
 ```
 
+
+
+# TF-IDF: Weighting Words by Informativeness
+
+## Motivation
+
+Bag of Words counts every word equally.
+But common words like *the*, *is*, and *and* appear everywhere and carry little discriminating information.
+
+**TF-IDF** (Term Frequency–Inverse Document Frequency) solves this by down-weighting terms that appear in many documents.
+
+$$
+\text{TF-IDF}(t, d) = \underbrace{\frac{f_{t,d}}{\sum_{t'} f_{t',d}}}_{\text{Term Frequency}} \times \underbrace{\log\frac{N}{|\{d : t \in d\}|}}_{\text{Inverse Document Frequency}}
+$$
+
+where $f_{t,d}$ is the count of term $t$ in document $d$, and $N$ is the total number of documents.
+
+Words that are **frequent in one document** but **rare across the corpus** receive high TF-IDF weight — these are the words that best characterize that document.
+
+## TF-IDF in Practice
+
+```{python}
+#| eval: false
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+corpus = [
+    "revenue increased in the fourth quarter",
+    "operating costs declined due to restructuring",
+    "the company reported record revenue this year",
+    "restructuring charges impacted fourth quarter results",
+]
+
+vectorizer = TfidfVectorizer(max_features=12)
+X = vectorizer.fit_transform(corpus)
+
+tfidf_df = pd.DataFrame(
+    X.toarray().round(3),
+    columns=vectorizer.get_feature_names_out(),
+    index=[f"Doc{i+1}" for i in range(len(corpus))]
+)
+tfidf_df
+```
+
+## Comparing BoW and TF-IDF
+
+| Property | Bag of Words | TF-IDF |
+|---|---|---|
+| Representation | Raw counts | Weighted counts |
+| Common word handling | Counts them equally | Penalizes common words |
+| Unique word emphasis | None | Boosts discriminating terms |
+| Interpretability | High | High |
+| Best for | Baselines, frequency tasks | Classification, similarity |
+
+Both representations produce **sparse, fixed-length vectors** — they are the foundation before learning dense embeddings.
+
+
+# Sentiment Analysis with a PyTorch MLP
+
+## From Features to Neural Classification
+
+Once text is represented as TF-IDF vectors, we can feed those vectors directly into a neural network.
+This bridges **classical NLP feature engineering** and **deep learning**.
+
+The architecture is a simple **Multi-Layer Perceptron (MLP)**:
+
+$$
+\hat{y} = \text{softmax}(W_2 \cdot \text{ReLU}(W_1 x + b_1) + b_2)
+$$
+
+where $x$ is the TF-IDF vector for a document.
+
+## TextMLP in PyTorch
+
+```{python}
+#| eval: false
+import torch
+import torch.nn as nn
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+# ── Tiny labeled corpus ──────────────────────────────────────
+texts = [
+    "revenue increased profit rose earnings beat expectations",
+    "strong growth quarterly results exceeded analyst forecasts",
+    "record sales driven by product demand and market expansion",
+    "operating costs declined margins improved efficiency gains",
+    "loss widened charges impacted results below expectations",
+    "restructuring charges write-downs impaired assets quarter",
+    "revenue declined sales dropped demand weakened significantly",
+    "net loss reported guidance cut outlook revised downward",
+]
+labels = [1, 1, 1, 1, 0, 0, 0, 0]   # 1 = positive, 0 = negative
+
+# ── TF-IDF features ──────────────────────────────────────────
+vectorizer = TfidfVectorizer(max_features=50)
+X = vectorizer.fit_transform(texts).toarray().astype(np.float32)
+y = np.array(labels, dtype=np.int64)
+
+X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.25, random_state=42)
+
+X_tr = torch.tensor(X_tr)
+X_te = torch.tensor(X_te)
+y_tr = torch.tensor(y_tr)
+y_te = torch.tensor(y_te)
+
+
+# ── Model ─────────────────────────────────────────────────────
+class TextMLP(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int = 32, num_classes: int = 2):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(hidden_dim, num_classes),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.net(x)
+
+
+model = TextMLP(input_dim=X_tr.shape[1])
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+criterion = nn.CrossEntropyLoss()
+
+# ── Training loop ─────────────────────────────────────────────
+for epoch in range(50):
+    model.train()
+    logits = model(X_tr)
+    loss = criterion(logits, y_tr)
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+    if (epoch + 1) % 10 == 0:
+        print(f"Epoch {epoch+1:3d}  loss={loss.item():.4f}")
+
+# ── Evaluation ────────────────────────────────────────────────
+model.eval()
+with torch.no_grad():
+    preds = model(X_te).argmax(dim=1)
+    acc = (preds == y_te).float().mean().item()
+    print(f"\nTest accuracy: {acc:.2%}")
+```
+
+## Evaluation Metrics
+
+Beyond accuracy, text classifiers are evaluated with **precision**, **recall**, and **F1**:
+
+$$
+\text{Precision} = \frac{TP}{TP + FP}
+\qquad
+\text{Recall} = \frac{TP}{TP + FN}
+\qquad
+F_1 = 2 \cdot \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+```{python}
+#| eval: false
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+y_pred = preds.numpy()
+y_true = y_te.numpy()
+
+print(classification_report(y_true, y_pred, target_names=["Negative", "Positive"]))
+
+cm = confusion_matrix(y_true, y_pred)
+sns.heatmap(cm, annot=True, fmt="d", cmap="Blues",
+            xticklabels=["Neg", "Pos"], yticklabels=["Neg", "Pos"])
+plt.title("Confusion Matrix")
+plt.ylabel("True")
+plt.xlabel("Predicted")
+plt.tight_layout()
+plt.show()
+```
+
+## From Classical NLP to Deep Learning
+
+| Era | Representation | Model | Strength |
+|---|---|---|---|
+| Classical | BoW / TF-IDF | Naïve Bayes, SVM | Fast, interpretable |
+| Transition | Word2Vec embeddings | Shallow MLP | Semantic similarity |
+| Deep Learning | Contextual embeddings | RNN, LSTM | Sequence-aware |
+| Modern | Transformer embeddings | BERT, GPT | Full-context, generative |
+
+Each row builds on the previous.
+The MLP above sits at the **transition row** — it uses classical features (TF-IDF) but learns nonlinear patterns through a neural network.
 
 
 # Strengths and Limitations of BoW

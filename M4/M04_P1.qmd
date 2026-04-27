@@ -19,8 +19,10 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
+        auto-stretch: false
     pptx:
         reference-doc: ../theme/presentation_template.pptx
+from: markdown+emoji
 self-contained-math: true
 fig-align: center
 monofont: Roboto
@@ -39,16 +41,6 @@ csl: ../mis-quarterly.csl
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
-
-```{python}
-#| echo: false
-#| eval: true
-from IPython.display import SVG, display
-
-%load_ext autoreload
-%autoreload 2
-
-```
 
 # Attention Mechanism and Transformers
 

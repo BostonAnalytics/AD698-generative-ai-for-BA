@@ -19,9 +19,11 @@ format:
         slide-number: c/t
         toc: true
         toc-depth: 1
-        code-fold: true
+        auto-stretch: false
+        code-fold: false
     pptx:
         reference-doc: ../theme/presentation_template.pptx
+from: markdown+emoji
 self-contained-math: true
 fig-align: center
 monofont: Roboto
@@ -30,7 +32,8 @@ title-slide-attributes:
     data-background-size: 103% auto
     data-background-opacity: "0.95"
 execute: 
-  echo: true
+  echo: false
+  eval: true
   warning: false
   message: false
 bibliography: ../references.bib

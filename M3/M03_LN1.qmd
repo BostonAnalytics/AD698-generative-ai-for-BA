@@ -1,14 +1,27 @@
 ---
-title: "AD698 - Applied Generative AI"
+title: "M03: Lecture Note 1"
 subtitle: "Prompting as System Design"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
 engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
+csl: ../mis-quarterly.csl
 categories: ['Lecture', 'M03:', 'Notes']
-description: "Lecture covering Prompting as System Design."
+description: "Zero-shot and few-shot prompting, chain-of-thought reasoning, prompt engineering patterns, and inference-centric AI."
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
 ---
 
 ```{python}
@@ -372,3 +385,113 @@ We will cover transformers in the next lecture, but it’s important to understa
 ## Transformer Models
 
 ![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
+
+# Prompting Patterns: Code Demonstrations
+
+## Zero-Shot vs Few-Shot Prompt Construction
+
+These cells demonstrate prompt formatting patterns in pure Python — no API key required. The patterns here translate directly to any LLM API (OpenAI, Anthropic, HuggingFace).
+
+```{python}
+#| eval: false
+# ─── Zero-shot prompt ────────────────────────────────────────────────────────
+def zero_shot_prompt(task: str, input_text: str) -> str:
+    return f"{task}\n\nInput: {input_text}\nOutput:"
+
+# ─── Few-shot prompt ─────────────────────────────────────────────────────────
+def few_shot_prompt(task: str, examples: list[dict], input_text: str) -> str:
+    prompt = task + "\n\n"
+    for ex in examples:
+        prompt += f"Input: {ex['input']}\nOutput: {ex['output']}\n\n"
+    prompt += f"Input: {input_text}\nOutput:"
+    return prompt
+
+# Sentiment analysis examples
+task = "Classify the sentiment of the following text as POSITIVE, NEGATIVE, or NEUTRAL."
+
+examples = [
+    {"input": "The product exceeded all my expectations.",  "output": "POSITIVE"},
+    {"input": "Delivery was delayed by two weeks.",          "output": "NEGATIVE"},
+    {"input": "The report was submitted on time.",           "output": "NEUTRAL"},
+]
+
+test_text = "Revenue grew 12% year-over-year driven by strong cloud adoption."
+
+print("=== ZERO-SHOT PROMPT ===")
+print(zero_shot_prompt(task, test_text))
+print()
+print("=== FEW-SHOT PROMPT (k=3) ===")
+print(few_shot_prompt(task, examples, test_text))
+```
+
+## Chain-of-Thought Prompting
+
+Chain-of-thought (CoT) prompting instructs the model to reason step-by-step before giving a final answer. It is especially effective for multi-step problems.
+
+```{python}
+#| eval: false
+def cot_prompt(task: str, examples: list[dict], input_text: str) -> str:
+    """Build a chain-of-thought few-shot prompt."""
+    prompt = task + "\n\n"
+    for ex in examples:
+        prompt += f"Question: {ex['question']}\n"
+        prompt += f"Reasoning: {ex['reasoning']}\n"
+        prompt += f"Answer: {ex['answer']}\n\n"
+    prompt += f"Question: {input_text}\nReasoning:"
+    return prompt
+
+task_cot = (
+    "You are a financial analyst. "
+    "For each question, show your reasoning step by step, "
+    "then provide a concise final answer."
+)
+
+cot_examples = [
+    {
+        "question": "A company reports $500M revenue with 20% YoY growth. What was last year's revenue?",
+        "reasoning": (
+            "If this year is $500M with 20% growth, then: "
+            "last_year × 1.20 = $500M → last_year = $500M / 1.20 = $416.7M"
+        ),
+        "answer": "Last year's revenue was approximately $416.7 million.",
+    },
+    {
+        "question": "Operating margin is 15% on $200M revenue. What is operating income?",
+        "reasoning": "Operating income = revenue × margin = $200M × 0.15 = $30M.",
+        "answer": "Operating income is $30 million.",
+    },
+]
+
+question = "A firm's net income grew from $80M to $104M. What is the percentage growth?"
+
+print(cot_prompt(task_cot, cot_examples, question))
+```
+
+## Role Prompting and Structured Output
+
+```{python}
+#| eval: false
+def role_prompt(role: str, context: str, request: str) -> str:
+    return (
+        f"You are {role}.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Task: {request}\n\n"
+        f"Respond in valid JSON."
+    )
+
+role = "a senior equity research analyst specializing in technology sector 10-K filings"
+
+context = """
+Item 1A. Risk Factors (excerpt):
+The Company faces intense competition from well-established and emerging companies.
+Rapid technological changes could render our products obsolete.
+We are subject to significant regulatory requirements in multiple jurisdictions.
+"""
+
+request = (
+    "Extract the top 3 risk categories from the excerpt. "
+    "For each, provide: category, description (one sentence), and severity (High/Medium/Low)."
+)
+
+print(role_prompt(role, context, request))
+```
