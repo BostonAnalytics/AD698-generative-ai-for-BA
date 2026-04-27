@@ -1,0 +1,221 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Module 0: Lab 1\"\n",
+        "subtitle: \"PyTorch Tensor Foundations in Google Colab\"\n",
+        "number-sections: true\n",
+        "date: \"2026-01-01\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "categories: [\"Lab\", \"Google Colab\", \"PyTorch\", \"Tensors\"]\n",
+        "---\n",
+        "\n",
+        "# Lab Overview {.unnumbered}\n",
+        "\n",
+        "This lab gives you hands-on practice with core tensor operations used in deep learning workflows.\n",
+        "\n",
+        "You should complete this lab in Google Colab with GPU runtime enabled when possible.\n",
+        "\n",
+        "\n",
+        "# Learning Outcomes {.unnumbered}\n",
+        "\n",
+        "By the end of this lab, you should be able to:\n",
+        "\n",
+        "1. Create and reshape tensors from raw values.\n",
+        "2. Index and summarize tensor slices.\n",
+        "3. Apply broadcasting in matrix operations.\n",
+        "4. Move tensors across devices and verify placement.\n",
+        "\n",
+        "\n",
+        "# Setup Cell {.unnumbered}\n",
+        "\n",
+        "Run this first."
+      ],
+      "id": "30a751f2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import torch\n",
+        "\n",
+        "print(\"PyTorch:\", torch.__version__)\n",
+        "print(\"CUDA available:\", torch.cuda.is_available())\n",
+        "if torch.cuda.is_available():\n",
+        "    print(\"GPU:\", torch.cuda.get_device_name(0))"
+      ],
+      "id": "6b6881eb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Create and Reshape a Tensor\n",
+        "\n",
+        "Create a tensor containing integers from `0` to `23` and reshape it to `(3, 2, 4)`.\n",
+        "\n",
+        "Tasks:\n",
+        "\n",
+        "1. Print the tensor.\n",
+        "2. Print rank and shape.\n",
+        "3. Print dtype."
+      ],
+      "id": "a3d8c533"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# Your code here\n",
+        "raw = torch.arange(24)\n",
+        "t = raw.reshape(3, 2, 4)\n",
+        "\n",
+        "print(t)\n",
+        "print(\"rank:\", t.ndim)\n",
+        "print(\"shape:\", t.shape)\n",
+        "print(\"dtype:\", t.dtype)"
+      ],
+      "id": "33a167db",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Indexing and Reductions\n",
+        "\n",
+        "Using tensor `t` from Question 1:\n",
+        "\n",
+        "1. Extract the first 2D block (`t[0]`).\n",
+        "2. Compute column sums of that block.\n",
+        "3. Compute row means of that block."
+      ],
+      "id": "5717e1e2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# Your code here\n",
+        "block = t[0]\n",
+        "print(\"block:\\n\", block)\n",
+        "print(\"column sums:\", block.sum(dim=0))\n",
+        "print(\"row means:\", block.float().mean(dim=1))"
+      ],
+      "id": "72cb48d4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Broadcasting\n",
+        "\n",
+        "Create:\n",
+        "\n",
+        "1. `m` as a `(3, 4)` tensor with values `0` to `11`.\n",
+        "2. `bias` as a `(4,)` tensor `[0.1, 0.2, 0.3, 0.4]`.\n",
+        "\n",
+        "Then compute `m + bias` and explain in one sentence why this works."
+      ],
+      "id": "7199a9ac"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# Your code here\n",
+        "m = torch.arange(12).reshape(3, 4).float()\n",
+        "bias = torch.tensor([0.1, 0.2, 0.3, 0.4])\n",
+        "out = m + bias\n",
+        "\n",
+        "print(\"m:\\n\", m)\n",
+        "print(\"bias:\", bias)\n",
+        "print(\"m + bias:\\n\", out)"
+      ],
+      "id": "14535a24",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# CPU and GPU Device Practice\n",
+        "\n",
+        "Create a random tensor of shape `(1000, 1000)` and move it to GPU if available.\n",
+        "\n",
+        "Tasks:\n",
+        "\n",
+        "1. Print original and target devices.\n",
+        "2. If GPU is available, compute a matrix multiplication on GPU.\n",
+        "3. Print output tensor shape and device."
+      ],
+      "id": "c5547733"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# Your code here\n",
+        "x = torch.randn(1000, 1000)\n",
+        "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n",
+        "x_dev = x.to(device)\n",
+        "\n",
+        "print(\"x device:\", x.device)\n",
+        "print(\"x_dev device:\", x_dev.device)\n",
+        "\n",
+        "y_dev = x_dev @ x_dev.T\n",
+        "print(\"y_dev shape:\", y_dev.shape)\n",
+        "print(\"y_dev device:\", y_dev.device)"
+      ],
+      "id": "fc50afc4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Submission Checklist {.unnumbered}\n",
+        "\n",
+        "Before submitting, ensure:\n",
+        "\n",
+        "1. All four questions run without errors.\n",
+        "2. Your output cells are visible.\n",
+        "3. You include one short reflection sentence for Question 3.\n",
+        "4. Notebook file is saved in Drive and exported as `.ipynb` if requested.\n",
+        "\n",
+        "\n",
+        "# Stretch (Optional) {.unnumbered}\n",
+        "\n",
+        "Time CPU vs GPU for Question 4 matrix multiplication and report the timing difference."
+      ],
+      "id": "e9b07b37"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "d:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

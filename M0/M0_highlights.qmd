@@ -1,5 +1,67 @@
 ---
-title: "M00 Highlights"
+title: "Module 0: Highlights"
+subtitle: "Technology Stack Preparation & Deep Learning Foundations"
+number-sections: true
+date: "2026-01-01"
+date-modified: today
+format:
+    html:
+        code-fold: true
+    docx: default
+date-format: long
+categories: ["Technology Stack Preparation", "Deep Learning Foundations", "Computational Environment", "Neural Networks", "Sequence Learning"]
 ---
 
-# M00 Highlights
+
+# Learning Objectives
+
+By the end of this module, students will be able to:
+
+* Configure and utilize a GPU-enabled computational environment using Google Colab
+* Represent data using tensors and perform basic tensor operations on CPU and GPU
+* Explain how neural networks perform forward computation and learn via gradient-based optimization
+* Interpret loss functions in regression and classification settings
+* Understand the sequence learning problem and why modeling ordered data introduces additional complexity
+* Prepare for the transition from static models to sequence-based architectures such as RNNs
+
+
+# Lecture Highlights
+
+## Colab + GPU + Tensors
+
+**Compute setup, tensors, GPU execution**
+
+* Introduction to cloud-based execution environments using Google Colab
+* Understanding CPU vs GPU computation and why GPUs are critical for deep learning
+* Tensors as the fundamental data structure in modern machine learning
+* Performing tensor operations and moving data between CPU and GPU
+* Benchmarking simple computations to observe performance differences
+
+
+## Math for Neural Networks, Regression and Classification Problems
+
+**NN, loss, gradients, training loop**
+
+* Transition from linear models to neural networks
+* Forward pass as a sequence of linear transformations and nonlinear activations
+* Loss functions:
+
+  * Mean Squared Error (regression)
+  * Cross-Entropy Loss (classification)
+* Conceptual understanding of gradients and optimization
+* Backpropagation as an application of the chain rule
+* Structure of a basic training loop (forward → loss → backward → update)
+
+
+## Sequence Learning Problem
+
+**Temporal modeling, introduction to sequences**
+
+* Limitations of traditional models on sequential data
+* Importance of order, context, and temporal dependencies in language
+* Formalizing sequence prediction tasks
+* Differences between:
+
+  * independent observations
+  * dependent (sequential) observations
+* Motivation for architectures that maintain memory across time

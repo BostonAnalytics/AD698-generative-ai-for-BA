@@ -128,29 +128,64 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 
 import pandas as pd
 from IPython.display import display, HTML
+from schedules.semester_planner import build_section_schedules, get_lecture_catalog
 
-# -------------------------------------------------
-# Load COURSE DESCRIPTION table (content only)
-# -------------------------------------------------
-course_description = (
-    pd.read_excel(
-        "data/AD698-Schedule.xlsx",
-        sheet_name="Course Details"
-    )
-    .drop(columns=["Modules", "Module Name"], errors="ignore")
+# =================================================
+# USER INPUT (only edit this section)
+# =================================================
+semester = "Summer"
+year = 2026
+modalities = ["oncampus", "o1", "o2"]
+
+start_dates_by_semester = {
+    "Spring": {
+        "oncampus": "2026-01-26",
+        "o2": "2026-01-29",
+    },
+    "Summer": {
+        "oncampus": "2026-05-18",
+        "o1": "2026-05-19",
+        "o2": "2026-05-18",
+    },
+    "Fall": {
+        "oncampus": "2026-09-14",
+        "o1": "2026-09-17",
+    },
+}
+
+section_plan = build_section_schedules(
+    semester=semester,
+    year=year,
+    modalities=modalities,
+    start_dates_by_semester=start_dates_by_semester,
 )
 
-# -------------------------------------------------
-# Keep only description-related columns
-# -------------------------------------------------
-expected_cols = ["Lecture", "Title", "Description"]
-course_description = course_description[expected_cols]
+course_description = pd.read_excel(
+    "data/AD698-Schedule.xlsx",
+    sheet_name="Course Details"
+).drop(columns=["Modules", "Module Name"], errors="ignore")
 
-# -------------------------------------------------
-# Drop trailing admin / notes rows if present
-# (assumes last 4 rows are non-lecture content)
-# -------------------------------------------------
-course_description = course_description.iloc[:-4].reset_index(drop=True)
+course_description = get_lecture_catalog(course_description)
+max_lectures = max(plan.lecture_count for plan in section_plan.values())
+course_description = course_description.head(max_lectures).reset_index(drop=True)
+course_description = course_description[["Lecture", "Title", "Description"]]
+
+oncampus_sections = [
+    s for s, p in section_plan.items() if p.modality == "oncampus"
+]
+online_sections = [
+    s for s, p in section_plan.items() if p.modality != "oncampus"
+]
+
+for s in oncampus_sections + online_sections:
+    dates = section_plan[s].lecture_dates
+    course_description[s] = dates + [pd.NaT] * (max_lectures - len(dates))
+
+def fmt(d):
+    return "-" if pd.isna(d) else d.strftime("%d-%b")
+
+for col in oncampus_sections + online_sections:
+    course_description[col] = course_description[col].map(fmt)
 
 # -------------------------------------------------
 # Presentation
@@ -164,7 +199,7 @@ styled_table = (
         {"selector": "td", "props": [
             ("text-align", "left"),
             ("vertical-align", "top"),
-            ("max-width", "550px"),
+            ("max-width", "500px"),
             ("white-space", "normal")
         ]},
     ])

@@ -29,7 +29,6 @@ csl: mis-quarterly.csl
 
 import pandas as pd
 from IPython.display import display, HTML
-from schedules.semester_planner import build_section_schedules
 import sys
 
 # -------------------------------------------------
@@ -38,6 +37,8 @@ import sys
 for m in list(sys.modules):
     if m.startswith(("schedules", "bu_calendar")):
         del sys.modules[m]
+
+from schedules.semester_planner import build_section_schedules
 
 # =================================================
 # USER INPUT (only edit this section)
@@ -109,175 +110,76 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 - All Labs (for online) will open **in the first two weeks** and are ungraded.
 
 
-## Online (O1) Spring
+## Online Deliverables (Selected Semester)
 
 ```{python}
 #| echo: false
-#| eval: false
 #| tbl-colwidths: [10,10,15,15]
 
-from datetime import datetime, timedelta
 import pandas as pd
 from IPython.display import HTML
+from schedules.semester_planner import build_section_schedules
+from schedules.deliverables.apply import apply_deliverables
+from schedules.presentation import format_deliverables_view
 
-semester = "Spring25"
+semester = "Summer"
+year = 2026
+modalities = ["o1", "o2"]
 
-# Define Summer sections only (excluding A1, A2, A3)
-sections = {
-    "A1": "2026-01-27",  # 2026-01-20 Tuesday start
+start_dates_by_semester = {
+    "Spring": {
+        "oncampus": "2026-01-26",
+        "o2": "2026-01-29",
+    },
+    "Summer": {
+        "oncampus": "2026-05-18",
+        "o1": "2026-05-19",
+        "o2": "2026-05-18",
+    },
+    "Fall": {
+        "oncampus": "2026-09-14",
+        "o1": "2026-09-17",
+    },
 }
 
-# Number of lectures (shorter summer term)
-required_lectures = 7
+section_plan = build_section_schedules(
+    semester=semester,
+    year=year,
+    modalities=modalities,
+    start_dates_by_semester=start_dates_by_semester,
+)
 
-# Class days: Tuesday (1) and Thursday (3)
-class_days = [1]  # Monday=0, Sunday=6
+frames = []
+for section, plan in section_plan.items():
+    schedule_df = pd.DataFrame({
+        "Date": [d.strftime("%d-%b (%a)") for d in plan.lecture_dates],
+    })
+    schedule_df = apply_deliverables(
+        schedule_df,
+        plan.lecture_dates,
+        mode="online",
+    )
+    schedule_df = format_deliverables_view(schedule_df)
+    schedule_df.insert(0, "Section", section)
+    frames.append(schedule_df)
 
-# Optional: Summer break or holiday dates
-holiday_substitutions = {}  # Add if needed
+online_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
-breaks = {
-    "IPD": ("2025-10-13", "2025-10-13"),  # if Thursday is off
-}
-
-# Parse break ranges
-break_ranges = [
-    (datetime.strptime(start, "%Y-%m-%d"), datetime.strptime(end, "%Y-%m-%d"))
-    for start, end in breaks.values()
-]
-
-# Define course end date (adjust as needed)
-end_date = datetime(2025, 10, 17)
-
-# Schedule generation
-schedule = {section: [] for section in sections}
-
-for section, start_str in sections.items():
-    start_date = datetime.strptime(start_str, "%Y-%m-%d")
-    lecture_dates = []
-    current_date = start_date
-
-    while len(lecture_dates) < required_lectures:
-        if current_date.weekday() in class_days:
-            # Check breaks
-            if any(start <= current_date <= end for start, end in break_ranges):
-                current_date += timedelta(days=1)
-                continue
-
-            # Check substitutions
-            if current_date in holiday_substitutions:
-                lecture_dates.append(holiday_substitutions[current_date])
-            else:
-                lecture_dates.append(current_date)
-
-        current_date += timedelta(days=1)
-        if current_date > end_date:
-            break
-
-    # Format dates
-    schedule[section] = [d.strftime("%d-%b (%a)") for d in sorted(lecture_dates)]
-
-# Insert as a new column
-
-# Create DataFrame
-schedule_df = pd.DataFrame(schedule)
-# schedule_df.insert(0, "#", [f"L{i+1}" for i in range(required_lectures)])
-
-# # Create lab strings only for the first 8 lectures
-# lab_entries = [
-#     f"Lab {i+1}" if i < 8 else ""
-#     for i in range(len(schedule_df))
-# ]
-# schedule_df["Lab"] = lab_entries
-
-# Set class day index (Monday = 0)
-class_day_index = 1
-
-# Identify lectures on the chosen class day
-classday_lectures = [(i, d) for i, d in enumerate(lecture_dates) if d.weekday() == class_day_index]
-
-# Select up to 4 lectures for assignment release (every 2 weeks, starting from 2nd)
-selected_assignments = classday_lectures[1::1][:4]  # skip first, then take every 2nd, limit to 4
-
-# Create assignments list
-assignments = []
-for idx, (i, open_date) in enumerate(selected_assignments):
-    due_date = open_date + timedelta(days=1)  # Due on next week's Tuesday/Wednesday
-    assignments.append((i, f"A{idx+1} (Due: {due_date.strftime('%b %d')})"))
-
-# Add to DataFrame
-assignment_column = [""] * len(schedule_df)
-for i, label in assignments:
-    assignment_column[i] = label
-
-schedule_df["Assignments"] = assignment_column
-
-selected_project_dates = classday_lectures[1::1][:4]
-
-# Create project milestones aligned with assignment releases
-project = []
-for idx, (i, _) in enumerate(selected_project_dates):
-    project.append((i, f"Ungraded Milestone {idx+1}"))
-
-# Add final project milestone on the last lecture
-# Identify last two lecture indices
-last_lecture_index = schedule_df.index[-1]
-second_last_lecture_index = schedule_df.index[-2]
-
-# Add final presentation label to both
-project.append((second_last_lecture_index, ""))
-project.append((last_lecture_index, "Final Project Report + Presentation"))
-
-# Create and assign project column
-project_column = [""] * len(schedule_df)
-for i, label in project:
-    project_column[i] = label
-
-schedule_df["Project Milestones"] = project_column
-
-# Create and assign project column
-project_column = [""] * len(schedule_df)
-for i, label in project:
-    project_column[i] = label
-
-schedule_df["Project Milestones"] = project_column
-
-schedule_df["Participation"] = [""] * len(schedule_df)
-
-# Initialize participation entries
-participation = []
-
-# Choose the second-to-last lecture (Week 11)
-participation_index = schedule_df.index[-2]  # -2 gets the 11th lecture (0-indexed)
-
-# Create empty column
-schedule_df["Participation"] = [""] * len(schedule_df)
-
-# Add multi-line text to second-to-last lecture
-participation_index = schedule_df.index[-2]
-schedule_df.loc[participation_index, "Participation"] = "Participation 1 + Participation 2"
-
-# Export
-output_file = f"./data/{semester}_schedule_online.xlsx"
-schedule_df.to_excel(output_file, index=False)
-
-# Display HTML
-HTML(schedule_df.to_html(index=False))
+HTML(online_df.to_html(index=False))
 
 
 ```
 
 
-## On Campus (A1) Spring
+## On Campus Deliverables (Selected Semester)
 
 ```{python}
 # | echo: false
 # | tbl-colwidths: [10,10,15,15]
 
-from schedules.build_schedule import build
+import pandas as pd
 from schedules.deliverables.oncampus_deliverables import apply_oncampus_deliverables
 from schedules.presentation import format_deliverables_view
-from schedules.term_resolver import resolve_term
 from IPython.display import HTML
 import sys
 
@@ -288,53 +190,60 @@ for m in list(sys.modules):
     if m.startswith(("schedules", "bu_calendar", "schedules.deliverables")):
         del sys.modules[m]
 
+from schedules.semester_planner import build_section_schedules
+
 # ==================================================
 # USER INPUT
 # ==================================================
-class_days = [0]           # Monday (Mon=0)
-class_day_index = 0        # Anchor for cadence (Monday)
+semester = "Summer"
+year = 2026
+modalities = ["oncampus"]
 
-# ==================================================
-# SEMESTER CONTEXT
-# ==================================================
-season, year = resolve_term()
-semester = f"{season}{str(year)[-2:]}"
+start_dates_by_semester = {
+    "Spring": {
+        "oncampus": "2026-01-26",
+        "o2": "2026-01-29",
+    },
+    "Summer": {
+        "oncampus": "2026-05-18",
+        "o1": "2026-05-19",
+        "o2": "2026-05-18",
+    },
+    "Fall": {
+        "oncampus": "2026-09-14",
+        "o1": "2026-09-17",
+    },
+}
 
-# ==================================================
-# BUILD LECTURE SCHEDULE (LECTURES ONLY)
-# ==================================================
-schedule_df, lecture_dates = build(
-    return_dates=True,
-    class_days=class_days
+section_plan = build_section_schedules(
+    semester=semester,
+    year=year,
+    modalities=modalities,
+    start_dates_by_semester=start_dates_by_semester,
 )
 
-# 🔒 Deliverables invariant
-lecture_count = len(lecture_dates)
+frames = []
+for section, plan in section_plan.items():
+    schedule_df = pd.DataFrame({
+        "Date": [d.strftime("%d-%b (%a)") for d in plan.lecture_dates],
+    })
+    class_day_index = plan.class_days[0]
 
-# ==================================================
-# APPLY ON-CAMPUS DELIVERABLES (LECTURES ONLY)
-# ==================================================
-schedule_df = apply_oncampus_deliverables(
-    schedule_df,
-    lecture_dates,
-    class_day_index=class_day_index
-)
+    schedule_df = apply_oncampus_deliverables(
+        schedule_df,
+        plan.lecture_dates,
+        class_day_index=class_day_index,
+    )
+    schedule_df = format_deliverables_view(schedule_df)
+    schedule_df.insert(0, "Section", section)
+    frames.append(schedule_df)
 
-# ==================================================
-# PRESENTATION FORMAT (NO COURSE CONTENT)
-# ==================================================
-schedule_df = format_deliverables_view(schedule_df)
+oncampus_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
-# Remove internal index column if present
-schedule_df.drop(columns=["#"], inplace=True, errors="ignore")
+output_file = f"./data/{semester.lower()}{str(year)[-2:]}_deliverables_oncampus.xlsx"
+oncampus_df.to_excel(output_file, index=False)
 
-# ==================================================
-# EXPORT
-# ==================================================
-output_file = f"./data/{semester}_deliverables_oncampus.xlsx"
-schedule_df.to_excel(output_file, index=False)
-
-HTML(schedule_df.to_html(index=False))
+HTML(oncampus_df.to_html(index=False))
 
 
 ```

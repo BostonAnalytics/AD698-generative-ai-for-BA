@@ -1,11 +1,387 @@
 ---
-title: "Assignment 0: Environment Setup and Git Basics"
-subtitle: "M00 Assignment"
+title: "Module 0 Assignment: Neural Networks for Regression and Classification"
+subtitle: "End-to-End Deep Learning with PyTorch"
 number-sections: true
-date: "2024-11-21"
+date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['Setup', 'and', 'Assignment', 'Basics']
-description: "Assignment task: Assignment 0: Environment Setup and Git Basics."
+execute:
+  eval: false
+  echo: true
+categories: ['Neural Networks', 'PyTorch', 'Regression', 'Classification', 'MLP']
+description: "Build end-to-end MLP pipelines for regression (Ames Housing) and digit classification (MNIST) following the data science life cycle."
 ---
+
+# Important Reminder {.unnumbered}
+
+- This assignment may be completed locally or on [Google Colab]{.uublue-bold} (GPU runtime recommended: Runtime → Change runtime type → T4 GPU).
+- [The assignment involves both implementation and interpretation. Start early — training takes time.]{.uublue-bold}
+- You may use any generative AI tool, but you must [build and explain the pipeline yourself]{.uugreen-bold}.
+
+# Submission Instructions {.unnumbered}
+
+Submit the following on Blackboard:
+
+1. **Jupyter Notebook** (`.ipynb`)
+   - Fully executable with all cell outputs present
+   - Organized by question (Q1–Q7)
+   - All figures saved and displayed inline
+2. **Written Report** (`.pdf` or `.docx`, max 4 pages)
+   - Answers to all reflection questions
+   - Key figures reproduced with captions
+   - Business interpretation of results — no raw code
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+This assignment builds your first complete **data science pipeline** using neural networks, following each stage of the data science life cycle:
+
+**Understand → Collect → Explore → Prepare → Model → Evaluate**
+:::
+
+You will apply this lifecycle to two canonical problems:
+
+1. **Regression**: Predicting residential sale prices from tabular features (Ames Housing dataset)
+2. **Classification**: Recognizing handwritten digits from pixel images (MNIST dataset)
+
+By the end you will be able to:
+
+- Load, inspect, and prepare real-world tabular and image datasets for neural network training
+- Build a multi-layer perceptron (MLP) in PyTorch using the **from-scratch** patterns from lecture
+- Implement a training loop with **early stopping** to prevent overfitting
+- Evaluate models with regression and classification metrics and visualizations
+- Communicate findings with business-relevant interpretation
+
+# Business Context {.unnumbered}
+
+**Regression problem**: A real estate analytics firm wants an automated valuation model (AVM) to estimate residential sale prices.
+Classical regression is already in production; the question is whether a neural network meaningfully reduces prediction error.
+Success is measured in **root mean squared error (RMSE)** on held-out test data.
+
+**Classification problem**: A bank's check-processing unit handles thousands of handwritten forms daily.
+An accurate digit recognizer could automate data entry, reducing cost and error rates.
+Success is measured in **classification accuracy**, **per-class AUC**, and the **confusion pattern** across digits — because misclassifying a "1" as a "7" has different business consequences than other errors.
+
+# Datasets {.unnumbered}
+
+## Ames Housing {.unnumbered}
+
+The [Ames, Iowa Housing dataset](https://www.openml.org/d/42165) contains 1,460 residential property sales with 79 features covering size, quality ratings, location, and construction details.
+The regression target is `SalePrice` (continuous, in USD).
+
+```python
+from sklearn.datasets import fetch_openml
+
+ames = fetch_openml(data_id=42165, as_frame=True, parser='auto')
+df = ames.frame.copy()
+print(df.shape)   # (1460, 80) — 79 features + target
+```
+
+## MNIST {.unnumbered}
+
+[MNIST](http://yann.lecun.com/exdb/mnist/) contains 70,000 grayscale images (28 × 28 pixels) of handwritten digits 0–9:
+60,000 training samples and 10,000 test samples.
+The classification target is the digit class (integer 0–9).
+
+```{python}
+#| eval: false
+#| echo: true
+import torchvision
+from torchvision import datasets, transforms
+
+transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.1307,), (0.3081,))   # MNIST mean and std
+])
+
+train_ds = datasets.MNIST(root='./data', train=True,  download=True, transform=transform)
+test_ds  = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
+```
+
+---
+
+# Part 1: Regression — Ames Housing
+
+## Q1. Load and Explore the Dataset {#sec-q1}
+
+### Instructions
+
+1. Load the Ames Housing dataset using `fetch_openml` as shown above.
+2. Display the first five rows and report the dataset shape.
+3. Perform the following EDA:
+   a. **Target distribution**: Plot a histogram of raw `SalePrice`.
+   b. **Log-transformed target**: Apply `y = log(1 + SalePrice)` and plot the resulting histogram. Explain in your report why this transform is useful for regression on price data.
+   c. **Feature correlation**: Identify the top 10 numeric features most correlated (by absolute Pearson correlation) with `SalePrice`. Display as a horizontal bar chart.
+   d. **Missing values**: Compute the percentage of missing values per column. Report how many columns have > 40% missing.
+
+### Expected Outputs
+
+- Two histograms: raw and log-transformed `SalePrice`
+- Horizontal bar chart: top 10 correlated features
+- Summary of missing-value counts
+
+:::{.callout-tip}
+Use `df.describe()`, `df.isnull().mean()`, and `df.select_dtypes(include='number').corr()` to explore efficiently.
+:::
+
+## Q2. Preprocess and Prepare the Data {#sec-q2}
+
+### Instructions
+
+1. **Drop** all columns with more than 40% missing values.
+2. **Impute** remaining numeric columns using the **column median**.
+3. **Impute** categorical columns with the string `"Missing"`, then apply **label encoding** (map each category to an integer). Justify this choice in your report — when would one-hot encoding be preferable?
+4. **Log-transform** the target: `y = np.log1p(df['SalePrice'])`. Store as a float32 array.
+5. **Split** the data:
+   - 80% train, 20% test (use `random_state=42`)
+   - Further split the 80% train into 80% train / 20% validation
+6. **Standardize** features using `StandardScaler`. **Fit only on the training set** and transform validation and test using the fitted scaler. Explain in your report why fitting on the full dataset would be a mistake.
+7. Convert all splits to PyTorch tensors and wrap in `DataLoader` with `batch_size=64`.
+
+### Starter Code
+
+```python
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+import torch
+from torch.utils.data import TensorDataset, DataLoader
+
+# After building X (numpy float32 array) and y (log-transformed float32 array):
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_val,  y_train, y_val  = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+
+scaler  = StandardScaler()
+X_train = scaler.fit_transform(X_train)   # fit ONLY on train
+X_val   = scaler.transform(X_val)
+X_test  = scaler.transform(X_test)
+
+# Convert to PyTorch tensors
+def to_tensor(X, y):
+    return (torch.tensor(X, dtype=torch.float32),
+            torch.tensor(y, dtype=torch.float32))
+
+X_tr, y_tr = to_tensor(X_train, y_train)
+X_vl, y_vl = to_tensor(X_val,   y_val)
+X_te, y_te = to_tensor(X_test,  y_test)
+
+train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=64, shuffle=True)
+```
+
+## Q3. Build and Train Your Regression MLP {#sec-q3}
+
+### Model Architecture
+
+Build an MLP regressor by subclassing `nn.Module`. Requirements:
+
+- At least **3 hidden layers** (suggested: Linear(in → 256), Linear(256 → 128), Linear(128 → 64), Linear(64 → 1))
+- **`nn.BatchNorm1d`** after the first two linear layers
+- **`nn.ReLU`** activations
+- **`nn.Dropout`** (rate 0.2–0.3) for regularization
+- A **single output neuron** with **no activation** (raw output for regression)
+
+```python
+import torch.nn as nn
+
+class AmesRegressor(nn.Module):
+    def __init__(self, in_features):
+        super().__init__()
+        # TODO: define your layers here
+        # Suggested: 256 → 128 → 64 → 1 with BatchNorm and Dropout
+        pass
+
+    def forward(self, x):
+        # TODO: implement the forward pass
+        pass
+```
+
+### Early Stopping Utility
+
+Copy and use the following class exactly as shown — you do not need to modify it:
+
+```python
+class EarlyStopping:
+    """Stops training when validation loss stops improving."""
+
+    def __init__(self, patience=5, min_delta=1e-4):
+        self.patience   = patience
+        self.min_delta  = min_delta
+        self.counter    = 0
+        self.best_loss  = float('inf')
+        self.stop       = False
+        self.best_state = None
+
+    def __call__(self, val_loss, model):
+        if val_loss < self.best_loss - self.min_delta:
+            self.best_loss  = val_loss
+            self.counter    = 0
+            # Save the best weights
+            self.best_state = {k: v.clone() for k, v in model.state_dict().items()}
+        else:
+            self.counter += 1
+            if self.counter >= self.patience:
+                self.stop = True
+
+    def restore_best(self, model):
+        """Restore model to the best checkpoint."""
+        if self.best_state:
+            model.load_state_dict(self.best_state)
+```
+
+### Training Loop
+
+Train for **up to 20 epochs**. Fill in the three TODOs:
+
+```python
+NUM_EPOCHS = 20
+
+model_reg = AmesRegressor(in_features=X_train.shape[1])
+optimizer = torch.optim.Adam(model_reg.parameters(), lr=1e-3, weight_decay=1e-4)
+criterion = nn.MSELoss()
+early_stopper = EarlyStopping(patience=5)
+
+train_losses, val_losses = [], []
+
+for epoch in range(NUM_EPOCHS):
+    model_reg.train()
+    batch_losses = []
+    for X_b, y_b in train_loader:
+        optimizer.zero_grad()
+        pred = ???          # TODO: forward pass
+        loss = ???          # TODO: compute MSE loss (squeeze pred to match y_b shape)
+        ???                 # TODO: backward pass
+        optimizer.step()
+        batch_losses.append(loss.item())
+
+    # Validation (provided — do not modify)
+    model_reg.eval()
+    with torch.no_grad():
+        val_pred = model_reg(X_vl)
+        v_loss   = criterion(val_pred.squeeze(), y_vl).item()
+
+    train_losses.append(sum(batch_losses) / len(batch_losses))
+    val_losses.append(v_loss)
+
+    early_stopper(v_loss, model_reg)
+    print(f'Epoch {epoch+1:2d} | train MSE: {train_losses[-1]:.4f} | val MSE: {v_loss:.4f}')
+    if early_stopper.stop:
+        print('Early stopping triggered!')
+        early_stopper.restore_best(model_reg)
+        break
+```
+
+## Q4. Evaluate Your Regression Model {#sec-q4}
+
+### Instructions
+
+1. **Loss curves**: Plot training and validation MSE vs. epoch on a single figure. Add a dashed vertical line at the best epoch.
+2. **RMSE on original scale**: After running predictions on the test set, convert predictions back to dollars using `np.expm1()`. Compute and print RMSE and R².
+3. **True vs. Predicted scatter**: Scatter `y_true` (x-axis) vs. `y_pred` (y-axis), both in original dollars. Add a red dashed diagonal (perfect-prediction line). Annotate with RMSE and R².
+
+### Expected Outputs
+
+- Loss curve figure
+- True vs. Predicted scatter plot
+- Printed metrics: `Test RMSE: $XX,XXX` and `R²: 0.XXXX`
+
+:::{.callout-note}
+**Interpret your results in the report**: Does the model underfit or overfit? Are errors larger for expensive or inexpensive houses? What might explain this pattern?
+:::
+
+---
+
+# Part 2: Classification — MNIST
+
+## Q5. Load and Explore MNIST {#sec-q5}
+
+### Instructions
+
+1. Load MNIST using `torchvision.datasets.MNIST` as shown in the Datasets section.
+2. Report: total training samples, test samples, image shape (C × H × W), number of classes.
+3. **Sample image grid**: Display a 2-row × 10-column grid showing 2 examples per digit class (0–9). Label each image with its class number.
+4. **Class distribution**: Bar chart of the number of training examples per digit class. Is the dataset balanced? Comment in your report.
+5. Split the training set into 85% train / 15% validation, and wrap all three splits (train, val, test) in `DataLoader` with `batch_size=128`.
+
+### Expected Outputs
+
+- 2×10 image grid
+- Class distribution bar chart
+- Printed dataset statistics
+
+## Q6. Build and Train Your Classification MLP {#sec-q6}
+
+### Model Architecture
+
+Build an MLP classifier by subclassing `nn.Module`. Requirements:
+
+- **`nn.Flatten()`** to convert each 28×28 image to a 784-vector
+- At least **3 hidden layers** (suggested: 512 → 256 → 128 → 10)
+- **`nn.BatchNorm1d`** and **`nn.ReLU`** after each hidden layer
+- **`nn.Dropout`** for regularization
+- **10 output neurons** with **no activation** — `nn.CrossEntropyLoss` applies log-softmax internally
+
+```python
+class MNISTClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        # TODO: define Flatten + hidden layers + output layer
+        pass
+
+    def forward(self, x):
+        # TODO: flatten then pass through network
+        pass
+```
+
+:::{.callout-warning}
+**Never** apply `softmax` before passing logits to `nn.CrossEntropyLoss` — it combines log-softmax and NLL loss internally for numerical stability.
+:::
+
+### Training Loop
+
+Train for **up to 20 epochs** using:
+
+- Optimizer: `torch.optim.Adam` (lr = 0.001)
+- Loss: `nn.CrossEntropyLoss()`
+- Track **loss and accuracy** on both train and validation sets each epoch
+- Use `EarlyStopping(patience=5)` from Q3
+
+:::{.callout-tip}
+Accuracy per batch = `(logits.argmax(dim=1) == y_batch).float().mean()`
+:::
+
+## Q7. Evaluate Your Classification Model {#sec-q7}
+
+### Instructions
+
+1. **Training curves**: Two side-by-side plots — (a) loss vs. epoch and (b) accuracy vs. epoch — for both train and validation sets.
+2. **Confusion matrix**: Compute and display the 10×10 confusion matrix on the test set using `sklearn.metrics.ConfusionMatrixDisplay`. Which two digits are most frequently confused?
+3. **ROC curves + AUC**: Using a **one-vs-rest** strategy, plot all 10 ROC curves on a single figure. Report the AUC for each digit and the macro-average AUC.
+4. **Sample predictions**: Display a 4-row × 8-column grid (32 images) from the test set. Show the true label and predicted label for each image. Color correct predictions **green** and incorrect ones **red**.
+
+### Expected Outputs
+
+- Loss + accuracy curves figure (2 subplots)
+- 10×10 confusion matrix heatmap
+- ROC curve figure with per-class AUC in the legend
+- 4×8 sample prediction grid
+
+:::{.callout-tip}
+For ROC curves, use `sklearn.preprocessing.label_binarize` and `sklearn.metrics.roc_curve`.
+:::
+
+---
+
+# Reflection Questions {.unnumbered}
+
+Answer these in your written report (3–5 sentences each):
+
+1. **Data leakage**: Why is it critical to fit `StandardScaler` only on the training set? What would happen to test performance if you fit it on the full dataset before splitting?
+
+2. **Log transform**: You applied `log1p` to `SalePrice` before training. Explain why this improves regression training. What would happen to the loss landscape without it?
+
+3. **Early stopping**: At what epoch did early stopping trigger for each model? What does this tell you about the relationship between model capacity and dataset size?
+
+4. **Confusion patterns**: Identify the most confused digit pair in the MNIST confusion matrix. Why might a neural network struggle to distinguish these two digits? What architectural change might help?
+
+5. **Business decision**: A colleague proposes deploying the MNIST model immediately since test accuracy exceeds 97%. What additional information would you want before agreeing to deployment? Think about edge cases, error costs, and monitoring.
+

@@ -1,29 +1,29 @@
 ---
 title: "AD 6698 Generative AI for Business Analytics" 
-subtitle: "Schedule"
+subtitle: "Course Schedule"
 number-sections: true
-sidebar: false
 format:
     html:
       toc: false
+      format-links: false
       grid:
-        sidebar-width: 100px
         body-width: 1100px
         margin-width: 400px
         gutter-width: 1.5rem
     docx: default
+sidebar: false
 html-table-processing: none
 execute: 
   freeze: false
   cache: true
 ---
 
-## Course Schedule
 
 Please adhere to the due dates posted on the course website. [Late work is not accepted]{.bloodred-bold}.
 
 ```{python}
 #| echo: false
+#| eval: false
 #| output: markdown
 
 from datetime import datetime, timedelta
@@ -60,8 +60,6 @@ display(combined_table.style.hide(axis="index"))
 ```
 
 
-### Course Schedule
-
 ```{python}
 # | label: build-course-schedule
 # | echo: false
@@ -71,7 +69,6 @@ display(combined_table.style.hide(axis="index"))
 
 import pandas as pd
 from IPython.display import display, HTML
-from schedules.semester_planner import build_section_schedules, get_lecture_catalog
 import sys
 
 # -------------------------------------------------
@@ -80,6 +77,8 @@ import sys
 for m in list(sys.modules):
     if m.startswith(("schedules", "bu_calendar")):
         del sys.modules[m]
+
+from schedules.semester_planner import build_section_schedules, get_lecture_catalog
 
 # =================================================
 # USER INPUT (only edit this section)
@@ -95,7 +94,7 @@ start_dates_by_semester = {
     },
     "Summer": {
         "oncampus": "2026-05-18",
-        "o1": "2026-05-19",
+        "o1": "2026-05-05",
         "o2": "2026-05-18",
     },
     "Fall": {
@@ -119,15 +118,24 @@ course_table = (
         "data/AD698-Schedule.xlsx",
         sheet_name="Course Details"
     )
-    .drop(columns=["Modules", "Module Name"], errors="ignore")
 )
+
+module0_catalog = (
+    course_table
+    .loc[
+        course_table["Lecture"].astype(str).str.strip().str.upper().str.match(r"^L0\.\d+$", na=False),
+        ["Lecture", "Title", "Description"],
+    ]
+    .reset_index(drop=True)
+)
+
+course_table = course_table.drop(columns=["Modules", "Module Name"], errors="ignore")
 
 # Keep lecture rows only, excluding Module 0
 course_table = get_lecture_catalog(course_table)
 max_lectures = max(p.lecture_count for p in section_plan.values())
 course_table = course_table.head(max_lectures).reset_index(drop=True)
 course_table = course_table[["Lecture", "Title"]]
-
 # -------------------------------------------------
 # Generate schedules PER SECTION
 # -------------------------------------------------
@@ -176,6 +184,21 @@ module0_table = pd.DataFrame([
     for section, plan in section_plan.items()
 ])
 
+module0_preview_styled = (
+    module0_catalog
+    .style
+    .hide(axis="index")
+    # .set_caption("Week Ahead: Module 0 Preview")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "normal")
+        ]},
+    ])
+)
+
 # -------------------------------------------------
 # Presentation
 # -------------------------------------------------
@@ -183,7 +206,7 @@ module0_styled = (
     module0_table
     .style
     .hide(axis="index")
-    .set_caption("Module 0 Release Plan (opens 10 days before first class)")
+    # .set_caption("Module 0 Release Plan (opens 10 days before first class)")
     .set_table_styles([
         {"selector": "th", "props": [("text-align", "left")]},
         {"selector": "td", "props": [
@@ -208,7 +231,10 @@ styled = (
     ])
 )
 
+course_table.drop(columns=["A1","O2"], inplace=True)
+module0_table.drop(index=[0,2], inplace=True)
 display(HTML(module0_styled.to_html()))
+display(HTML(module0_preview_styled.to_html()))
 display(HTML(styled.to_html()))
 
 ```

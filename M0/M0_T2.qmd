@@ -1,336 +1,205 @@
 ---
 title: "Module 0: Tutorial 2"
-subtitle: "Quarto and Github Portfolio"
+subtitle: "Hands-On Math for Neural Networks: Activations and SGD"
 number-sections: true
-date: "2024-11-21"
+date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ["Git", "Version Control", "Data Science Portfolio", "Resume"]
+engine: jupyter
+bibliography: ../references.bib
+categories: ["Tutorial", "Math Foundations", "SGD", "Activation Functions"]
 ---
 
-This Tutorial is a student‑friendly add‑on that makes **deployment fully automated with GitHub Actions**, while keeping **VS Code (preferred) or Positron** as the IDE and reinforcing the **user site** rule: `yourusername.github.io`.
+# Tutorial goals
 
-I’ve added the screenshots/links as needed but the original document is available at [GutHub Pages](https://quarto.org/docs/publishing/github-pages.html).
+This tutorial operationalizes Lecture Notes 2 with short, reproducible experiments.
 
+You will:
 
-# Auto‑Deploy Quarto Portfolio to GitHub Pages with **GitHub Actions**
+1. Visualize activation behavior.
+2. Explore gradients and chain rule numerically.
+3. Compare learning rates in SGD.
+4. Build intuition needed for Lab 2.
 
-> **IDE**: VS Code (preferred) or Positron
-> **Site type**: **User site** at `https://yourusername.github.io`
-> **Remember**:
-> • Sign up for **GitHub Education Pack**: [https://education.github.com/pack](https://education.github.com/pack)
-> • **Sign in** to GitHub inside your IDE
->
-> * **VS Code**: Accounts icon (status bar) → **Sign in with GitHub**
-> * **Positron**: Accounts tab → connect **GitHub**
 
+# Setup
 
-## One‑time setup (5–10 min)
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+import torch
 
-1. **Create the Quarto project** (name it `portfolio`, or anything you like):
-
-```bash
-quarto create project website portfolio
-cd portfolio
-```
-
-2. **Edit `_quarto.yml`** minimally (user site doesn’t require `output-dir: docs` when CI renders):
-
-```yaml
-project:
-  type: website
-
-website:
-  title: "FirstName LastName"
-  navbar:
-    right:
-      - text: "Home"
-        href: index.qmd
-      - text: "Projects"
-        href: projects.qmd
-      - text: "About"
-        href: about.qmd
-
-format:
-  html:
-    theme: cosmo
-    toc: true
-```
-
-3. (Optional but recommended) **Freeze computations** so CI doesn’t have to execute code:
-   Create or edit `_quarto.yml` and add:
-
-```yaml
-execute:
-  freeze: auto
-```
-
-This stores results in `_freeze/`, which you’ll commit.
-
-4. **Initialize Git and first commit**
-
-```bash
-git init -b main
-git add .
-git commit -m "Initial portfolio"
-```
-
-## Create the **user site** repository
-
-On GitHub, create a **public** repo named **exactly**:
-
-```
-yourusername.github.io
-```
-
-(Replace `yourusername` with your actual GitHub username.)
-
-Connect and push:
-
-```bash
-git remote add origin https://github.com/yourusername/yourusername.github.io.git
-git push -u origin main
-```
-
-> Why this matters: **User sites** at `yourusername.github.io` must be published from a repo with that exact name.
-
-
-## Do a **one-time local publish** (bootstraps Quarto’s publish config)
-
-Run this once from your project folder:
-
-```bash
-quarto publish gh-pages
-```
-
-* This creates a hidden `_publish.yml` Quarto config that the Action will use.
-* It also creates the `gh-pages` branch and configures Pages for you.
-
-Commit any new files that Quarto created (e.g., `_publish.yml`, `_freeze/` if present):
-
-```bash
-git add .
-git commit -m "Add Quarto publish config"
-git push
-```
-
-### Verify Pages "Source" → `gh-pages`
-
-Open your repo → **Settings → Pages** and confirm **Source** is **`gh-pages`** with **/ (root)**.
-
-![](./M0_lecture02_figures/gh-pages-user-site.png){.border}
-
-## Add the **GitHub Actions** workflow (automatic build & deploy)
-
-Create **`.github/workflows/publish.yml`** with this content:
-
-```yaml
-on:
-  workflow_dispatch:
-  push:
-    branches: main
-
-name: Quarto Publish
-
-jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write   # allows the action to push to gh-pages
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-
-      # If you use Python notebooks (uncomment & add requirements.txt)
-      # - name: Install Python and Dependencies
-      #   uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.12'
-      #     cache: 'pip'
-      # - run: pip install jupyter
-      # - run: pip install -r requirements.txt
-
-      # If you use R/knitr (uncomment to add renv support)
-      # - name: Install R
-      #   uses: r-lib/actions/setup-r@v2
-      #   with:
-      #     r-version: '4.5.1'
-      # - name: Install R Dependencies
-      #   uses: r-lib/actions/setup-renv@v2
-      #   with:
-      #     cache-version: 1
-
-      - name: Render and Publish
-        uses: quarto-dev/quarto-actions/publish@v2
-        with:
-          target: gh-pages
-          # path: .           # use if your Quarto project is in a subfolder
-          # render: false     # use if you commit pre-rendered output; default is true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-```
-
-**Grant workflow permissions**:
-Repo → **Settings → Actions → General → Workflow permissions** → select **Read and write permissions** → Save.
-
-Commit & push the workflow:
-
-```bash
-git add .github/workflows/publish.yml
-git commit -m "Add Quarto GH Actions auto-deploy"
-git push
-```
-
-Now, **every push to `main`** triggers a rebuild and updates `https://yourusername.github.io`.
-
-You can also run it manually: repo → **Actions → Quarto Publish → Run workflow**.
-
-
-## Keep screenshots section (if you show the other two methods)
-
-If your tutorial also describes the other two (non‑CI) routes, keep these sections and images:
-
-### Render to `docs/` (simple, no CI)
-
-* Set `_quarto.yml`:
-
-  ```yaml
-  project:
-    type: website
-    output-dir: docs
-  ```
-* Add `.nojekyll` (root):
-
-  * macOS/Linux:
-
-    ```bash
-    touch .nojekyll
-    ```
-  * Windows:
-
-    ```bash
-    copy NUL .nojekyll
-    ```
-* Render & push:
-
-  ```bash
-  quarto render
-  git add docs
-  git commit -m "Publish site to docs/"
-  git push
-  ```
-* Set **Settings → Pages** to **Branch: main / Folder: /docs**.
-
-![](./M0_lecture02_figures/gh-pages-docs-dir.png){.border}
-
-### Publish command (manual deploy from local)
-
-* Ensure **Source** branch for Pages is `gh-pages` with **/** (root) (screenshot above).
-* Run:
-
-  ```bash
-  quarto publish gh-pages
-  ```
-* Private site?
-
-  ```bash
-  quarto publish gh-pages --no-browser
-  ```
-
-
-## Executing code on CI (optional patterns)
-
-If you want CI to **execute notebooks** and then render:
-
-### Python + Jupyter + `requirements.txt`
-
-```yaml
-- name: Install Python and Dependencies
-  uses: actions/setup-python@v5
-  with:
-    python-version: '3.12'
-    cache: 'pip'
-- run: pip install jupyter
-- run: pip install -r requirements.txt
-```
-
-### R + knitr + `renv.lock`
-
-```yaml
-- name: Install R
-  uses: r-lib/actions/setup-r@v2
-  with:
-    r-version: '4.5.1'
-- name: Install R Dependencies
-  uses: r-lib/actions/setup-renv@v2
-  with:
-    cache-version: 1
-```
-
-Then keep the same **Render and Publish** step:
-
-```yaml
-- name: Render and Publish
-  uses: quarto-dev/quarto-actions/publish@v2
-  with:
-    target: gh-pages
-  env:
-    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+np.random.seed(42)
+torch.manual_seed(42)
 ```
 
 
-## Ignore transient outputs but **commit `_freeze/`**
+# Exercise A: activation function behavior
 
-Add a `.gitignore` (top level) to avoid committing bulky render artifacts when using CI:
+Activation choices strongly shape optimization [@Goodfellow.Bengio.Courville.2016].
 
+```{python}
+x = np.linspace(-8, 8, 500)
+
+sigmoid = 1 / (1 + np.exp(-x))
+tanh = np.tanh(x)
+relu = np.maximum(0, x)
+
+fig, axes = plt.subplots(1, 3, figsize=(14, 4))
+axes[0].plot(x, sigmoid)
+axes[0].set_title("Sigmoid")
+axes[1].plot(x, tanh)
+axes[1].set_title("Tanh")
+axes[2].plot(x, relu)
+axes[2].set_title("ReLU")
+for ax in axes:
+    ax.grid(alpha=0.25)
+    ax.set_xlabel("x")
+plt.tight_layout()
+plt.show()
 ```
-# Quarto caches/site output (CI will render)
-_site/
-.quarto/
-*.DS_Store
 
-# If you’re NOT using the docs/ method, also ignore it:
-docs/
+Quick interpretation:
+
+1. Sigmoid and tanh saturate at large magnitudes.
+2. ReLU is linear on positive inputs and zero on negative inputs.
+
+
+# Exercise B: softmax and confidence
+
+```{python}
+logits = torch.tensor([[2.0, 1.0, 0.1], [0.5, 0.5, 0.5], [5.0, 1.0, -2.0]])
+probs = torch.softmax(logits, dim=1)
+
+print("logits:\n", logits)
+print("softmax probabilities:\n", probs)
+print("row sums:", probs.sum(dim=1))
 ```
 
-> Keep `_freeze/` committed so frozen execution results are available to CI.
+Discussion:
+
+1. Higher logit gaps lead to more confident distributions.
+2. Softmax normalizes each row to sum to 1.
 
 
-## Custom domain (optional)
+# Exercise C: chain rule intuition with autograd
 
-Add a plain text `CNAME` file at project root (alongside `_quarto.yml`) with your domain:
+This section links calculus to PyTorch autograd [@zhang2023d2l].
 
+```{python}
+x = torch.tensor(3.0, requires_grad=True)
+y = x**2 + 2*x + 1  # y = (x+1)^2
+
+y.backward()
+print("x:", x.item())
+print("autograd dy/dx:", x.grad.item())
+print("analytic dy/dx:", 2*x.item() + 2)
 ```
-www.example.com
+
+
+# Exercise D: mini-batch SGD on linear regression
+
+```{python}
+# Synthetic data: y = 3x + 2 + noise
+n = 400
+X = torch.randn(n, 1)
+y = 3 * X + 2 + 0.2 * torch.randn(n, 1)
+
+def train_sgd(lr=0.05, batch_size=32, epochs=30):
+    w = torch.zeros((1, 1), requires_grad=True)
+    b = torch.zeros(1, requires_grad=True)
+
+    losses = []
+    for _ in range(epochs):
+        perm = torch.randperm(n)
+        for i in range(0, n, batch_size):
+            idx = perm[i:i+batch_size]
+            xb, yb = X[idx], y[idx]
+
+            pred = xb @ w + b
+            loss = ((pred - yb)**2).mean()
+
+            loss.backward()
+            with torch.no_grad():
+                w -= lr * w.grad
+                b -= lr * b.grad
+                w.grad.zero_()
+                b.grad.zero_()
+
+        with torch.no_grad():
+            full_loss = ((X @ w + b - y)**2).mean().item()
+            losses.append(full_loss)
+    return losses, w.detach().item(), b.detach().item()
+
+losses_small, w_small, b_small = train_sgd(lr=0.01)
+losses_mid, w_mid, b_mid = train_sgd(lr=0.05)
+losses_large, w_large, b_large = train_sgd(lr=0.3)
+
+plt.figure(figsize=(8, 5))
+plt.plot(losses_small, label="lr=0.01")
+plt.plot(losses_mid, label="lr=0.05")
+plt.plot(losses_large, label="lr=0.3")
+plt.yscale("log")
+plt.xlabel("Epoch")
+plt.ylabel("MSE (log scale)")
+plt.title("Learning Rate Sensitivity in SGD")
+plt.grid(alpha=0.25)
+plt.legend()
+plt.show()
+
+print("lr=0.01 -> w,b:", round(w_small, 3), round(b_small, 3))
+print("lr=0.05 -> w,b:", round(w_mid, 3), round(b_mid, 3))
+print("lr=0.30 -> w,b:", round(w_large, 3), round(b_large, 3))
 ```
 
-Re-render/publish so the `CNAME` is present on `gh-pages`.
-(Prefer the file approach over only using the Settings UI—Quarto won’t overwrite your `CNAME` on render.)
+Interpret using ideas from [@datacamp_sgd_tutorial]:
+
+1. A low learning rate is stable but slower.
+2. A moderate rate often converges fastest.
+3. A high rate can oscillate and degrade progress.
 
 
-## Troubleshooting quick hits
+# Exercise E: put activation into a tiny network
 
-* **404 / old content** → Check the latest **Actions** run; ensure **Pages** source is `gh-pages`.
-* **Workflow can’t push** → Confirm **Actions → Workflow permissions → Read and write**.
-* **User site URL wrong** → Must be `https://yourusername.github.io` (no repo name suffix).
-* **Images not showing** → Ensure you committed the `images/` folder and paths match:
+```{python}
+Xc = torch.randn(600, 2)
+labels = (Xc[:, 0] * Xc[:, 1] > 0).long()  # nonlinear boundary
 
-  * `![](./M0_lecture02_figures/gh-pages-user-site.png){.border}`
-  * `![](./M0_lecture02_figures/gh-pages-docs-dir.png){.border}`
+model = torch.nn.Sequential(
+    torch.nn.Linear(2, 8),
+    torch.nn.Tanh(),
+    torch.nn.Linear(8, 2)
+)
+
+opt = torch.optim.SGD(model.parameters(), lr=0.1)
+loss_fn = torch.nn.CrossEntropyLoss()
+
+history = []
+for epoch in range(60):
+    opt.zero_grad()
+    logits = model(Xc)
+    loss = loss_fn(logits, labels)
+    loss.backward()
+    opt.step()
+    history.append(loss.item())
+
+plt.figure(figsize=(7, 4))
+plt.plot(history)
+plt.title("Training Loss of Tiny Classifier")
+plt.xlabel("Epoch")
+plt.ylabel("Cross-Entropy Loss")
+plt.grid(alpha=0.25)
+plt.show()
+```
 
 
-## Student one‑page checklist
+# Pre-lab checklist
 
-* [ ] Sign up for **GitHub Education**; sign in to GitHub in **VS Code/Positron**
-* [ ] `quarto create project website portfolio && cd portfolio`
-* [ ] Edit `_quarto.yml`, `index.qmd`, `about.qmd`, `projects.qmd`
-* [ ] `git init -b main && git add . && git commit -m "Initial"`
-* [ ] Create repo **`yourusername.github.io`** on GitHub (public, empty)
-* [ ] `git remote add origin <repo-url> && git push -u origin main`
-* [ ] **Run once**: `quarto publish gh-pages` (creates `_publish.yml`, sets Pages)
-* [ ] Add workflow at `.github/workflows/publish.yml` (above)
-* [ ] **Settings → Actions → Workflow permissions → Read and write**
-* [ ] Push changes → watch **Actions** → visit `https://yourusername.github.io`
+Before starting Lab 2, verify that you can:
+
+1. Explain one advantage and one limitation for each activation.
+2. Explain mini-batch SGD update steps in words.
+3. Identify a bad learning-rate pattern from a loss curve.
+
+
+# References

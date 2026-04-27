@@ -1,5 +1,45 @@
 ---
-title: "M00 Wrapup"
+title: "Module 0: Wrap-Up"
+subtitle: "Technology Stack Preparation & Deep Learning Foundations"
+number-sections: true
+format: 
+    html:
+        code-fold: true
+    docx: default
+date: "2026-01-01"
+date-modified: today
+date-format: long
+categories: ["Generative AI", "Language Modeling", "Probability", "System Design"]
 ---
 
-# M00 Wrapup
+
+# What Did We Learn?
+
+In this module, we established the **computational and theoretical foundation** for all subsequent topics in generative AI.
+
+We learned that modern AI systems are built on **large-scale numerical computation**, where GPUs enable efficient execution of tensor operations. Using environments like Google Colab, we can seamlessly experiment with these systems in a reproducible way.
+
+We explored how **neural networks learn from data** by:
+
+* transforming inputs through layered computations
+* measuring error using loss functions
+* updating parameters using gradients
+
+This introduced the core principle that learning is fundamentally an **optimization process over high-dimensional parameter spaces**.
+
+Finally, we examined the **sequence learning problem**, which highlights why text and language are fundamentally different from static datasets. Unlike traditional machine learning tasks, language requires models to capture **order, context, and dependencies across time**, motivating the need for specialized architectures.
+
+# Conceptual Bridge to Next Module
+
+We now move from:
+
+> **Static computation and learning**
+> to
+> **Dynamic sequence modeling with memory**
+
+The next module will address:
+
+* How models retain information across time
+* Why standard neural networks fail on long sequences
+* How recurrent architectures (RNNs, LSTMs, GRUs) overcome these challenges
+

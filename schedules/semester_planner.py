@@ -47,9 +47,9 @@ def normalize_semester(semester: str) -> str:
 
 
 def get_lecture_catalog(course_df: pd.DataFrame) -> pd.DataFrame:
-    lecture_col = course_df["Lecture"].astype(str)
-    valid_rows = lecture_col.str.match(r"^L\\d+\\.\\d+$")
-    no_module_zero = ~lecture_col.str.startswith("L0.")
+    lecture_col = course_df["Lecture"].astype(str).str.strip().str.upper()
+    valid_rows = lecture_col.str.match(r"^L\d+\.\d+$", na=False)
+    no_module_zero = ~lecture_col.str.match(r"^L0\.\d+$", na=False)
     return course_df.loc[valid_rows & no_module_zero].reset_index(drop=True)
 
 

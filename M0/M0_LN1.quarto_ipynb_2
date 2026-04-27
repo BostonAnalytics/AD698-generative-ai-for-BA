@@ -1,0 +1,427 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Module 0: Lecture Notes 1\"\n",
+        "subtitle: \"Colab + GPU + Tensors (Detailed)\"\n",
+        "number-sections: true\n",
+        "date: \"2026-01-01\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "categories: [\"Google Colab\", \"GPU\", \"PyTorch\", \"Tensors\", \"Computational Environment\"]\n",
+        "bibliography: ../references.bib\n",
+        "---\n",
+        "\n",
+        "# Why This Lecture Matters\n",
+        "\n",
+        "Before building RAG systems, prompt pipelines, or neural NLP workflows, you need a stable computation workflow and tensor fluency.\n",
+        "\n",
+        "This lecture builds three foundations:\n",
+        "\n",
+        "1. Reliable execution in Google Colab.\n",
+        "2. Correct GPU setup and verification.\n",
+        "3. Tensor operations in PyTorch for deep learning.\n",
+        "\n",
+        "\n",
+        "# Learning Targets\n",
+        "\n",
+        "By the end of this lecture, you will be able to:\n",
+        "\n",
+        "1. Explain Colab runtime behavior and persistence limits.\n",
+        "2. Configure and validate GPU runtime in Colab.\n",
+        "3. Organize Drive-backed project folders for reproducibility.\n",
+        "4. Create tensors of different ranks and inspect shape/dtype/device.\n",
+        "5. Perform indexing, reshaping, broadcasting, and reductions.\n",
+        "6. Move tensors between CPU and GPU and benchmark matrix operations.\n",
+        "\n",
+        "\n",
+        "# Google Colab in AD698\n",
+        "\n",
+        "## What Colab is good for\n",
+        "\n",
+        "Colab is a cloud notebook runtime that lets you run Python code in the browser with optional GPU acceleration.\n",
+        "\n",
+        "In this course, Colab is especially useful for:\n",
+        "\n",
+        "1. Quick setup (no local CUDA installation).\n",
+        "2. Running deep learning exercises on GPU.\n",
+        "3. Sharing notebook-based experiments.\n",
+        "\n",
+        "## What Colab is not\n",
+        "\n",
+        "Colab is not persistent local development.\n",
+        "Session storage under `/content` is temporary.\n",
+        "\n",
+        ":::{.callout-warning}\n",
+        "Anything not saved to Google Drive (or committed to GitHub) can be lost after runtime reset.\n",
+        ":::\n",
+        "\n",
+        "## Recommended working model\n",
+        "\n",
+        "1. Develop long-form projects in VS Code.\n",
+        "2. Use Colab for GPU experiments and notebook execution.\n",
+        "3. Save stable outputs in Drive and version-controlled repositories.\n",
+        "\n",
+        "\n",
+        "# Runtime Setup and GPU Validation\n",
+        "\n",
+        "## Configure GPU runtime\n",
+        "\n",
+        "In Colab:\n",
+        "\n",
+        "1. `Runtime -> Change runtime type`\n",
+        "2. Set hardware accelerator to `T4 GPU` (or available GPU)\n",
+        "3. Save\n",
+        "\n",
+        "## Validate hardware from Python"
+      ],
+      "id": "c3c984a5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import torch\n",
+        "\n",
+        "print(\"PyTorch:\", torch.__version__)\n",
+        "print(\"CUDA available:\", torch.cuda.is_available())\n",
+        "print(\"CUDA device count:\", torch.cuda.device_count())\n",
+        "\n",
+        "if torch.cuda.is_available():\n",
+        "    print(\"GPU name:\", torch.cuda.get_device_name(0))"
+      ],
+      "id": "2a593433",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Why GPU helps\n",
+        "\n",
+        "Most deep learning workloads are dominated by linear algebra kernels (matrix multiplications, convolutions). GPUs accelerate these operations through massive parallelism.\n",
+        "\n",
+        "\n",
+        "# Drive Mount and Course Folder Layout\n",
+        "\n",
+        "## Mount Google Drive"
+      ],
+      "id": "064cd9aa"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "from google.colab import drive\n",
+        "\n",
+        "drive.mount('/content/drive')"
+      ],
+      "id": "b09705f0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Suggested Module 0 folder structure\n",
+        "\n",
+        "```text\n",
+        "MyDrive/\n",
+        "  AD698/\n",
+        "    M0/\n",
+        "      notebooks/\n",
+        "      data/\n",
+        "      outputs/\n",
+        "```\n",
+        "\n",
+        "## Create folders programmatically"
+      ],
+      "id": "82582d1a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import os\n",
+        "\n",
+        "base = \"/content/drive/MyDrive/AD698/M0\"\n",
+        "os.makedirs(f\"{base}/notebooks\", exist_ok=True)\n",
+        "os.makedirs(f\"{base}/data\", exist_ok=True)\n",
+        "os.makedirs(f\"{base}/outputs\", exist_ok=True)"
+      ],
+      "id": "62e06ba8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Tensor Concepts You Need Now\n",
+        "\n",
+        "Tensors generalize familiar data structures:\n",
+        "\n",
+        "1. Scalar: rank 0 tensor\n",
+        "2. Vector: rank 1 tensor\n",
+        "3. Matrix: rank 2 tensor\n",
+        "4. Higher-rank tensor: rank 3+\n",
+        "\n",
+        "A tensor is defined by:\n",
+        "\n",
+        "1. Rank (number of axes)\n",
+        "2. Shape (size per axis)\n",
+        "3. Dtype (numeric type)\n",
+        "4. Device (cpu or cuda)\n",
+        "\n",
+        "\n",
+        "## Constructing tensors from raw data"
+      ],
+      "id": "7ca8d07e"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import torch\n",
+        "\n",
+        "raw = torch.arange(16)\n",
+        "\n",
+        "rank2 = raw.reshape(2, 8)\n",
+        "rank3 = raw.reshape(2, 4, 2)\n",
+        "\n",
+        "print(\"rank2 shape:\", rank2.shape)\n",
+        "print(rank2)\n",
+        "\n",
+        "print(\"rank3 shape:\", rank3.shape)\n",
+        "print(rank3)"
+      ],
+      "id": "49dbcce4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This mirrors a common deep learning pattern: same raw values, different structural meaning after reshape.\n",
+        "\n",
+        "\n",
+        "# Core Tensor Operations\n",
+        "\n",
+        "## Inspect and move tensors"
+      ],
+      "id": "9d16b22d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "x = torch.arange(12).reshape(3, 4).float()\n",
+        "print(\"shape:\", x.shape, \"dtype:\", x.dtype, \"device:\", x.device)\n",
+        "\n",
+        "device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\")\n",
+        "x_dev = x.to(device)\n",
+        "print(\"moved device:\", x_dev.device)"
+      ],
+      "id": "412bad7d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Indexing and slicing"
+      ],
+      "id": "9208f177"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "x = torch.arange(12).reshape(3, 4)\n",
+        "\n",
+        "print(\"first row:\", x[0])\n",
+        "print(\"last column:\", x[:, -1])\n",
+        "print(\"submatrix:\\n\", x[1:, 1:3])"
+      ],
+      "id": "1c4634d2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Reshape, transpose, squeeze/unsqueeze"
+      ],
+      "id": "b5c91feb"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "x = torch.arange(24)\n",
+        "a = x.reshape(2, 3, 4)\n",
+        "b = a.transpose(1, 2)\n",
+        "\n",
+        "print(\"a shape:\", a.shape)\n",
+        "print(\"b shape:\", b.shape)\n",
+        "\n",
+        "v = torch.tensor([1.0, 2.0, 3.0])\n",
+        "print(\"v shape:\", v.shape)\n",
+        "print(\"unsqueeze:\", v.unsqueeze(0).shape)\n",
+        "print(\"squeeze:\", v.unsqueeze(0).squeeze(0).shape)"
+      ],
+      "id": "022b1fc2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Broadcasting"
+      ],
+      "id": "bb6bcd5b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "m = torch.arange(12).reshape(3, 4)\n",
+        "bias = torch.tensor([10, 20, 30, 40])\n",
+        "\n",
+        "print(\"m + bias:\\n\", m + bias)"
+      ],
+      "id": "f09791d5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The 1D tensor `bias` is automatically expanded across rows.\n",
+        "\n",
+        "## Reductions"
+      ],
+      "id": "1c472661"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "x = torch.arange(12).reshape(3, 4).float()\n",
+        "\n",
+        "print(\"sum all:\", x.sum())\n",
+        "print(\"sum dim=0 (column sums):\", x.sum(dim=0))\n",
+        "print(\"mean dim=1 (row means):\", x.mean(dim=1))"
+      ],
+      "id": "2430b38c",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# CPU vs GPU Benchmark (Simple)"
+      ],
+      "id": "73082ced"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import time\n",
+        "import torch\n",
+        "\n",
+        "n = 2000\n",
+        "a_cpu = torch.randn(n, n)\n",
+        "b_cpu = torch.randn(n, n)\n",
+        "\n",
+        "t0 = time.time()\n",
+        "_ = a_cpu @ b_cpu\n",
+        "cpu_s = time.time() - t0\n",
+        "\n",
+        "if torch.cuda.is_available():\n",
+        "    a_gpu = a_cpu.cuda()\n",
+        "    b_gpu = b_cpu.cuda()\n",
+        "    torch.cuda.synchronize()\n",
+        "    t1 = time.time()\n",
+        "    _ = a_gpu @ b_gpu\n",
+        "    torch.cuda.synchronize()\n",
+        "    gpu_s = time.time() - t1\n",
+        "    print(f\"CPU: {cpu_s:.4f}s | GPU: {gpu_s:.4f}s\")\n",
+        "else:\n",
+        "    print(f\"CPU: {cpu_s:.4f}s | GPU not available\")"
+      ],
+      "id": "414f8a9f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "# Common Errors and Quick Fixes\n",
+        "\n",
+        "## CUDA unavailable\n",
+        "\n",
+        "1. Re-open runtime settings and select GPU.\n",
+        "2. Restart runtime.\n",
+        "3. Re-run setup cells.\n",
+        "\n",
+        "## Out-of-memory\n",
+        "\n",
+        "1. Reduce tensor size or batch size.\n",
+        "2. Delete large tensors and rerun.\n",
+        "3. Restart runtime when needed.\n",
+        "\n",
+        "## Lost work\n",
+        "\n",
+        "1. Save to Drive often.\n",
+        "2. Export `.ipynb` snapshots for critical milestones.\n",
+        "\n",
+        "\n",
+        "# Summary\n",
+        "\n",
+        "You now have a practical baseline for deep learning notebook work:\n",
+        "\n",
+        "1. Colab environment setup and persistence workflow.\n",
+        "2. GPU verification and device-aware tensor execution.\n",
+        "3. Core tensor manipulations used in later PyTorch models.\n",
+        "\n",
+        "These are the exact prerequisites for Module 0 lab and the first neural-model exercises."
+      ],
+      "id": "da061849"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "d:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

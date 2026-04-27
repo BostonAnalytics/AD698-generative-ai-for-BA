@@ -43,11 +43,22 @@ description: "Brief description."
 format:
   revealjs:
     theme: [../analytics_themes/presentation.scss]
-    html-math-method: mathml
+    html-math-method: katex
     slide-number: c/t
   pptx:
     reference-doc: ../analytics_themes/AD688_Presentation.pptx
 ```
+
+### Math Authoring Convention
+- For display equations, always use a KaTeX-friendly aligned block in this form:
+```text
+$$
+\begin{align}
+...equation lines...
+\end{align}
+$$
+```
+- Prefer `\begin{align} ... \end{align}` even for single-line display equations to keep formatting consistent across all AD698 content.
 
 ### Naming Conventions
 - Module prefixes: `M00` through `M07`

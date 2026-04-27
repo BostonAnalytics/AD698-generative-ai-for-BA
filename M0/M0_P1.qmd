@@ -17,7 +17,7 @@ self-contained: true
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
-        html-math-method: mathml
+        html-math-method: katex
         slide-number: c/t
 from: markdown+emoji
 self-contained-math: true
@@ -37,14 +37,6 @@ execute:
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
-
-```{r}
-#| label: setup
-#| echo: false
-#| eval: true
-
-library(fontawesome)
-```
 
 ---
 
@@ -88,7 +80,7 @@ library(fontawesome)
 
 :::{.column}
 
-![](https://octodex.github.com/images/Professortocat_v2.png){width="60%" fig-align="center"}
+![GitHub mascot Professortocat wearing a graduation cap](https://octodex.github.com/images/Professortocat_v2.png){width="60%" fig-align="center"}
 
 :::
 
@@ -182,7 +174,7 @@ Step 1: Go to the GitHub website:
 
 - [GitHub Sign-up](https://github.com/signup?source=login)
 
-![](./M0_lecture01_figures//welcome-sign-up-github-account.png){width="75%" fig-align="center"}
+![GitHub sign-up welcome page showing the account creation form](./M0_lecture01_figures//welcome-sign-up-github-account.png){width="75%" fig-align="center"}
 
 
 --- 
@@ -199,7 +191,7 @@ Step 1: Go to the GitHub website:
   - **Username** - Choose a unique username for your account.
   - Select the **Start Puzzle** button to do so, and then follow the prompts.
 
-![](./M0_lecture01_figures//welcome-github-enter-email.png){width="75%" fig-align="center"}
+![GitHub sign-up form prompting for email address and password](./M0_lecture01_figures//welcome-github-enter-email.png){width="75%" fig-align="center"}
 
 ---
 
@@ -225,7 +217,7 @@ Step 1: Go to the GitHub website:
 
 ## Github Configuration
 
-![](./M0_lecture01_figures//git-workflow-simple-vers.webp){width="95%"}
+![Diagram of the Git workflow showing local commits and push to remote repository](./M0_lecture01_figures//git-workflow-simple-vers.webp){width="95%"}
 
 ## Setting up Git 
 
@@ -398,11 +390,11 @@ A More Descriptive Procedure is available at [Create a New Repo](https://docs.gi
 :::{.column width="50%"}
 :::{.r-stack}
 
-![](https://docs.github.com/assets/cb-29762/mw-1440/images/help/repository/repo-create-global-nav-update.webp){.fragment .fade-out width="50%" fig-align="center"}
+![GitHub navigation bar showing the + button to create a new repository](https://docs.github.com/assets/cb-29762/mw-1440/images/help/repository/repo-create-global-nav-update.webp){.fragment .fade-out width="50%" fig-align="center"}
 
-![](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+![Repository owner dropdown menu for selecting the account that will own the repo](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
 
-![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+![Repository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
 
 :::
 :::
@@ -431,11 +423,11 @@ A More Descriptive Procedure is available at [Template Repo](https://docs.github
 :::{.column width="50%"}
 :::{.r-stack}
 
-![](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp){.fragment .fade-out width="50%" fig-align="center"}
+![Use this template button on a GitHub repository page](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp){.fragment .fade-out width="50%" fig-align="center"}
 
-![](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+![Repository owner dropdown menu for selecting the account that will own the repo](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
 
-![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
+![Repository name text field on the GitHub create repository formRepository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
 
 :::
 :::
@@ -468,11 +460,11 @@ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 
 :::{.r-stack}
 
-![](https://docs.github.com/assets/cb-13128/images/help/repository/code-button.png){.fragment width="80%" fig-align="center" .fade-out}
+![GitHub Code button dropdown showing the HTTPS clone URL for a repository](https://docs.github.com/assets/cb-13128/images/help/repository/code-button.png){.fragment width="80%" fig-align="center" .fade-out}
 
-![](https://docs.github.com/assets/cb-60499/images/help/repository/https-url-clone-cli.png){.fragment width="80%" fig-align="center" .fade-in}
+![HTTPS URL displayed in the GitHub clone dialog for copying the repository URL](https://docs.github.com/assets/cb-60499/images/help/repository/https-url-clone-cli.png){.fragment width="80%" fig-align="center" .fade-in}
 
-![](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment width="80%" fig-align="center" .fade-in-then-out}
+![Repository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment width="80%" fig-align="center" .fade-in-then-out}
 
 :::
 :::
@@ -483,8 +475,8 @@ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 ## Commit your changes
 
 - Use an informative commit message
-  - (Not great) "Analyze data" `r emo::ji("disappointed")`
-  - (Better) "Estimate logistic regression" `r emo::ji("tada")`
+  - (Not great) "Analyze data" 😔
+  - (Better) "Estimate logistic regression" 🎉
 
 - Have a consistent style
   - Start with an action verb
@@ -497,7 +489,7 @@ git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
 
 ## Push your changes
 
-![](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
+![Git flow diagram showing cloning, staging, committing, and pushing to remote](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
 
 
 # Using the command line (CLI)
@@ -532,5 +524,5 @@ git push
 
 ## Adding your files to git repository
 
-![](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
+![Git flow diagram showing cloning, staging, committing, and pushing to remote](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
 

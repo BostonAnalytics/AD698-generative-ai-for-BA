@@ -1,210 +1,247 @@
 ---
 title: "Module 0: Tutorial 1"
-subtitle: "Introduction to Version Control"
+subtitle: "Hands-On Google Colab + PyTorch Tensors"
 number-sections: true
-date: "2024-11-21"
+date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ["Git", "Version Control"]
+categories: ["Google Colab", "GPU", "PyTorch", "Tutorial"]
 ---
 
-# Objectives {.unnumbered}
+# Tutorial Goal {.unnumbered}
 
-This tutorial complements Module 0 Lab 1. By the end of this tutorial (and lab), you will:  
-1. Install and set up Git, GitHub Desktop, and essential tools.  
-2. Create and configure your GitHub account, including SSH key setup.  
-3. Create a GitHub repository named `yourusername.github.io` and manage it using Git.  
-4. Submit the GitHub repository link on Blackboard.  
+This tutorial helps you become operational in Colab and comfortable with basic tensor operations in PyTorch.
 
+By the end, you should be able to:
 
-# Software Installation
-
-Ensure Python v3.12 and R v4.5.x are installed. Then install the following software based on your operating system:
-
-## Install Git
-- **Mac**: it usually comes pre-installed on macOS. You can check by running `git --version` in the terminal. If it's not installed, you can install it using Homebrew:
-
-  ```bash
-  brew install git
-  ```  
-  Or [Download Git for Mac](https://git-scm.com/download/mac).
-
-- **Windows**:  
-  Download and run the [Git for Windows installer](https://git-scm.com/download/win).  
-  - During installation, select "Git Bash" as the default terminal.  
-
-- **Linux**:  
-  ```bash
-  sudo apt update && sudo apt install git
-  ```
-
-## Install GitHub CLI
-Download the [GitHub CLI](https://cli.github.com/). Follow platform-specific installation instructions.
-
-## Install GitHub Desktop
-Download [GitHub Desktop](https://desktop.github.com/).
-
-## Install Visual Studio Code  
-Download [Visual Studio Code](https://code.visualstudio.com/).
-
-## Install Quarto
-Download [Quarto](https://quarto.org/docs/download/).
+1. Start and validate a GPU runtime.
+2. Mount and organize Google Drive for AD698.
+3. Build and manipulate tensors of different ranks.
+4. Run a simple CPU vs GPU comparison.
 
 
-# GitHub Account Creation
+# Part 1: Colab Setup
 
-1. **Create a GitHub Account**  
-   - Go to [GitHub Signup](https://github.com/signup).  
-   - Use your **Boston University email address** to create an account.  
-   - Choose a strong password and a unique username.
+## Step 1: Create notebook and configure runtime
 
-2. **Set Up Account Privacy**  
-   - Add a personal email address in [GitHub Settings → Emails](https://github.com/settings/emails).  
-   - Set your email to private.
+1. Open [Google Colab](https://colab.research.google.com/)
+2. Create a new notebook
+3. Rename it `AD698_M0T1_<your-bu-id>.ipynb`
+4. Set runtime to GPU: `Runtime -> Change runtime type -> T4 GPU`
 
-3. **Enable Two-Factor Authentication (2FA)**  
-   - Follow the steps at [GitHub 2FA Setup](https://github.com/settings/security).
+## Step 2: Verify environment
 
-4. **Apply for GitHub Education Benefits**  
-   - Go to [GitHub Education](https://education.github.com/pack).  
-   - Verify your student status using your university email.  
-   - Wait up to 48 hours for verification.
+```{python}
+#| eval: false
+import platform
+import torch
 
+print("Python:", platform.python_version())
+print("PyTorch:", torch.__version__)
+print("CUDA available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("GPU:", torch.cuda.get_device_name(0))
+```
 
-# Creating a Specific Lab Repository
+Expected:
 
-Follow these steps to create a GitHub repository named `yourusername.github.io`, pleas make sure that your user name is set as your github username and [not literal]{.bloodred-bold} 'yourusername' and set it up for submission:
-
-1. **Log in to GitHub**  
-   Navigate to [GitHub](https://github.com/) and log in.
-
-2. **Create a New Repository**  
-   - In the top-right corner, click the **+** icon and select **New repository**.  
-   - Fill in the repository details:
-     - **Repository Name**: `yourusername.github.io`
-     - **Description**: "Lab 01 Repository for AD 688 SP25"
-     - **Visibility**: Select **Public** (required for submission).  
-       > *Ensure the repository is public to allow the instructor to access it.*
-   - Check the box to **Add a README file**.  
-   - Click **Create repository**.
-
-3. **Clone the Repository Locally**  
-   - Copy the repository URL (HTTPS or SSH).  
-   - Open your terminal (Git Bash or equivalent) and run:
-     ```bash
-     git clone <repository_url>
-     cd yourusername.github.io
-     ```
-
-4. **Add Files to the Repository**  
-   - Create or copy any required files into the `yourusername.github.io` directory.  
-   - Stage and commit your changes:
-     ```bash
-     git add .
-     git commit -m "Initial setup with README"
-     ```
-
-5. **Push Changes to GitHub**  
-   ```bash
-   git push origin main
-   ```
+1. PyTorch version shown.
+2. CUDA available is `True` for GPU runtime.
 
 
-# Keeping the Repository Public
+# Part 2: Drive and File Hygiene
 
-To ensure your repository remains public:  
-1. Navigate to your repository on GitHub.  
-2. Under the repository name, click **Settings**.  
-3. In the **General** section, scroll down to **Danger Zone** and confirm that **Public** is selected.  
-4. Confirm changes if prompted.  
+## Step 3: Mount Drive
 
+```{python}
+#| eval: false
+from google.colab import drive
 
-# Git Configuration
+drive.mount('/content/drive')
+```
 
-1. **Set Up Git Locally**  
-   - Open Terminal (Mac/Linux) or Git Bash (Windows).  
-   - Set your username and email:
-     ```bash
-     git config --global user.name "Your Name"
-     git config --global user.email "your_email@example.com"
-     ```
-   - Verify your settings:
-     ```bash
-     git config --list
-     ```
+## Step 4: Build AD698 folder structure
 
-2. **Optional: Enable Colored Output**  
-   ```bash
-   git config --global color.ui auto
-   ```
+```{python}
+#| eval: false
+import os
 
+base = "/content/drive/MyDrive/AD698/M0"
+os.makedirs(f"{base}/notebooks", exist_ok=True)
+os.makedirs(f"{base}/data", exist_ok=True)
+os.makedirs(f"{base}/outputs", exist_ok=True)
+print("Folder ready:", base)
+```
 
-## SSH Key Setup
-
-1. **Check for Existing SSH Keys**  
-   Run:
-   ```bash
-   ls -al ~/.ssh
-   ```
-
-2. **Generate a New SSH Key**  
-   - **Mac/Linux**:
-     ```bash
-     ssh-keygen -t ed25519 -C "your_email@example.com"
-     ```
-   - **Windows**: Use Git Bash:
-     ```bash
-     ssh-keygen -t ed25519 -C "your_email@example.com"
-     ```
-
-3. **Add SSH Key to GitHub**  
-   Copy the public key:
-   ```bash
-   cat ~/.ssh/id_ed25519.pub
-   ```
-   Add it to [GitHub → SSH Keys](https://github.com/settings/keys).
-
-4. **Test SSH Connection**  
-   ```bash
-   ssh -T git@github.com
-   ```
-   Expected output:
-   ```
-   Hi <username>! You've successfully authenticated, but GitHub does not provide shell access.
-   ```
+:::{.callout-warning}
+Anything in `/content` can disappear after runtime reset. Save files in Drive-backed directories.
+:::
 
 
-## Submission Instructions (no submission needed for M0)
+# Part 3: Tensor Walkthrough
 
-1. **Follow Personal Portfolio Instructions**  
-   - Ensure your personal portfolio is up to date with your latest projects and information.
+## Example A: rank, shape, dtype
 
-2. **Copy the Repository Link**  
-   - On your GitHub repository page, click the green **Code** button.  
-   - Copy the HTTPS URL (e.g., `https://github.com/yourusername/yourusername.github.io.git`).
+```{python}
+#| eval: false
+import torch
 
-3. **Submit the Link on Blackboard**  
-   - Log in to **Blackboard** and navigate to the submission area for this lab.  
-   - Paste the GitHub repository link into the submission field.  
-   - Ensure the link is accessible to the instructor before submitting.  
+scalar = torch.tensor(7)
+vector = torch.tensor([1, 2, 3])
+matrix = torch.arange(12).reshape(3, 4)
 
-## Add text to the README.md file
+print("scalar rank:", scalar.ndim, "shape:", tuple(scalar.shape))
+print("vector rank:", vector.ndim, "shape:", tuple(vector.shape))
+print("matrix rank:", matrix.ndim, "shape:", tuple(matrix.shape), "dtype:", matrix.dtype)
+```
 
-1. **Open the README.md file**  
-   - In your local repository, open the `README.md` file in a text editor.  
-   - Add a brief description of the repository and its contents.  
-   - Save the changes.
-   - Stage and commit the changes using command line/vscode/github desktop:
-     
-     ```bash
-     git add README.md
-     git commit -m "Update README.md"
-     ```
+## Example B: create from raw sequence
+
+```{python}
+#| eval: false
+raw = torch.arange(16)
+rank2 = raw.reshape(2, 8)
+rank3 = raw.reshape(2, 4, 2)
+
+print("rank2 shape:", rank2.shape)
+print(rank2)
+
+print("rank3 shape:", rank3.shape)
+print(rank3)
+```
+
+## Example C: indexing and slicing
+
+```{python}
+#| eval: false
+x = torch.arange(20).reshape(4, 5)
+print("x:\n", x)
+print("row 2:", x[1])
+print("col 4:", x[:, 3])
+print("block:\n", x[1:3, 2:5])
+```
+
+## Example D: broadcasting and reductions
+
+```{python}
+#| eval: false
+x = torch.arange(12).reshape(3, 4).float()
+bias = torch.tensor([0.1, 0.2, 0.3, 0.4])
+
+print("broadcast add:\n", x + bias)
+print("sum over rows (dim=1):", x.sum(dim=1))
+print("mean over cols (dim=0):", x.mean(dim=0))
+```
+
+
+# Part 4: Move to GPU + Benchmark
+
+## Example E: device transfer
+
+```{python}
+#| eval: false
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+x = torch.arange(12).reshape(3, 4).float()
+x_dev = x.to(device)
+print("device:", x_dev.device)
+```
+
+## Example F: matrix multiply timing
+
+```{python}
+#| eval: false
+import time
+
+size = 2000
+a_cpu = torch.randn(size, size)
+b_cpu = torch.randn(size, size)
+
+t0 = time.time()
+_ = a_cpu @ b_cpu
+cpu_s = time.time() - t0
+
+if torch.cuda.is_available():
+    a_gpu = a_cpu.cuda()
+    b_gpu = b_cpu.cuda()
+    torch.cuda.synchronize()
+    t1 = time.time()
+    _ = a_gpu @ b_gpu
+    torch.cuda.synchronize()
+    gpu_s = time.time() - t1
+    print(f"CPU: {cpu_s:.4f}s | GPU: {gpu_s:.4f}s")
+else:
+    print(f"CPU: {cpu_s:.4f}s | GPU not available")
+```
+
+
+# Quick Practice Questions (Tutorial)
+
+Try these directly after the examples:
+
+1. Create a tensor with values 0 to 23 and reshape to shape `(3, 2, 4)`.
+2. From that tensor, extract the first 2D block and compute its column sums.
+3. Create a `(3, 4)` matrix and a `(4,)` vector. Add them using broadcasting.
+4. Move a random `(1000, 1000)` tensor to GPU (if available) and print its device.
+
+
+# Troubleshooting
+
+## CUDA is false
+
+1. Re-select GPU runtime.
+2. Restart runtime.
+3. Re-run setup cells.
+
+## Drive issues
+
+1. Re-run mount cell.
+2. Confirm correct Google account.
+
+## Out-of-memory
+
+1. Reduce tensor sizes.
+2. Restart runtime.
+
+
+# Instructor Internal Reference (Hidden)
+
+The following cells mirror the internal notebook workflow used for preparation.
+They are hidden in rendered output.
+
+```{python}
+#| eval: false
+#| include: false
+import platform
+import torch
+
+print("Python:", platform.python_version())
+print("PyTorch:", torch.__version__)
+print("CUDA available:", torch.cuda.is_available())
+print("GPU count:", torch.cuda.device_count())
+if torch.cuda.is_available():
+    print("GPU name:", torch.cuda.get_device_name(0))
+```
+
+```{python}
+#| eval: false
+#| include: false
+import os
+
+base = None
+try:
+    from google.colab import drive
+    drive.mount('/content/drive')
+    base = '/content/drive/MyDrive/AD698/M0'
+    os.makedirs(f'{base}/notebooks', exist_ok=True)
+    os.makedirs(f'{base}/data', exist_ok=True)
+    os.makedirs(f'{base}/outputs', exist_ok=True)
+except ModuleNotFoundError:
+    pass
+```
+
 
 # Resources
-- [GitHub Docs: Creating Repositories](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)  
-- [GitHub Docs: Cloning a Repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)  
-- [Pro Git Book (Free)](https://git-scm.com/book/en/v2)  
-- [GitHub Education](https://education.github.com/pack)
 
-
+1. [Google Colab](https://colab.research.google.com/)
+2. [PyTorch Tensor Docs](https://pytorch.org/docs/stable/tensors.html)
+3. [Tensor Notes Reference](https://notes.101ai.net/basics/tensors)
