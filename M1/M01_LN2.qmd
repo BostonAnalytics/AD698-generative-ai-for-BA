@@ -1508,7 +1508,6 @@ BoW produces a document‑term matrix (DTM) where rows are documents and columns
 
 ```{python}
 #| echo: false
-#| eval: true
 #| 
 
 import pandas as pd
