@@ -1,480 +1,337 @@
 ---
-title: "Business Running Case - Building a Section-Scoped RAG System for SEC 10-K (2024)"
-subtitle: "Data Cleaning, Retrieval Engineering, and Grounded LLM Development"
+title: "AD698 - Applied Generative AI"
+subtitle: "Project Instructions I - Complete Pipeline Overview and Step 1"
 number-sections: true
-date: "2026-02-14"
+date: "2026-04-28"
 date-modified: today
 date-format: long
-categories: ["Project", "LLM Systems", "RAG", "Vector Search", "SEC 10-K", "NLP"]
+engine: jupyter
+execute:
+  echo: true
+  eval: false
+categories: ['M01:', 'Project']
+description: "Project guidance for Module 1 focused on Project Instructions I - Complete Pipeline Overview and Step 1."
 ---
 
-# Objective and Context
+# Product Vision
 
-This project is designed for **teams of 3–5 students**, where each team will act as a **domain-specific AI systems engineering group** building a section-scoped Retrieval-Augmented Generation (RAG) system over 2024 SEC 10-K filings.
+Your team is building a **financial technology product**: a domain-scoped Retrieval-Augmented Generation (RAG) system that enables analysts to ask structured questions about publicly traded companies in a specific industry and receive grounded, citation-backed answers drawn from SEC 10-K annual filings.
 
-Rather than building a generic financial chatbot, each team will select a **domain focus** and restrict their RAG system to the relevant SEC 10-K items.
+This is not a research exercise. Think of the final deliverable as a prototype you would present to a FinTech startup, an investment analytics team, or a regulatory technology firm. The product must be reproducible, auditable, and domain-coherent.
 
-Each team must:
+Primary workflow:
 
-* Select a domain track (e.g., Finance, HR, AI, Governance, Marketing, IS, Risk)
-* Identify the relevant 10-K item(s)
-* Build a section-scoped RAG system
-* Clean and chunk that section rigorously
-* Implement retrieval and grounded generation
-* Evaluate reliability and hallucination behavior
+- Google Colab notebooks
+- Google Drive storage
 
-This project reflects how enterprise AI systems are scoped by regulatory structure and business domain.
+Optional workflow:
 
-# Domain-Based Project Tracks
+- Local machine execution
+- GitHub version control (optional, not required for AD698)
+
+:::{.callout-important}
+GitHub is optional in AD698. Do not block progress if your team is not using GitHub.
+:::
+
+# NAICS Industry Code Selection
+
+Your team must select a **specific 4-digit NAICS (North American Industry Classification System) code** to scope your product. All company selection, filing downloads, and analytical questions must be anchored to this single industry.
+
+Use the official NAICS reference document to browse industry categories and choose one that is analytically interesting and has at least 8-10 publicly traded companies filing 10-Ks:
+
+> [NAICS Industry Code Reference (PDF)](https://www.uscourts.gov/file/78724/download)
+
+Your NAICS code selection must be documented at the top of your first notebook and justified in 2-3 sentences: why is this industry relevant to financial analysis or FinTech applications?
+
+**Examples of analytically rich NAICS 4-digit codes:**
+
+| NAICS Code | Industry |
+|---:|---|
+| 5221 | Depository Credit Intermediation (Banking) |
+| 5241 | Insurance Carriers |
+| 5179 | Other Telecommunications |
+| 3674 | Semiconductor and Related Device Manufacturing |
+| 5112 | Software Publishers |
+| 5242 | Agencies, Brokerages, and Other Insurance Related |
+| 3559 | Special Industry Machinery Manufacturing |
+| 4911 | Electric Power Generation, Transmission and Distribution |
+
+# Complete Product Pipeline
+
+Your FinTech product is built in four sequential steps across Modules 1-5. Each step produces artifacts that feed the next.
+
+## Step 1 — Industry Scoping, Metadata, and Filing Acquisition (M1)
+
+- Select NAICS 4-digit industry and 5-10 public companies
+- Download 10-K HTML filings from SEC EDGAR for 2015-2025
+- Parse SEC header metadata and DEI/XBRL fields
+- Extract all standard 10-K Items into file-level artifacts
+- **Deliverable:** `filing_metadata.csv`, extracted item files
+
+## Step 2 — Item Cleaning and Exploratory Data Analysis (M2)
+
+- Select domain-relevant 10-K Items tied to your NAICS industry
+- Clean raw HTML text: remove boilerplate, table-of-contents noise, artifacts
+- Conduct EDA: token distributions, company and year coverage, top terms
+- **Deliverable:** `cleaned_item_metadata.csv`, cleaned item text files
+
+## Step 3 — Chunking, Embeddings, and Vector Index (M3)
+
+- Chunk cleaned text with token-aware overlap strategy
+- Generate embeddings via API or open-source model
+- Build a FAISS vector index with full chunk-level metadata
+- Validate top-k retrieval quality on test questions
+- **Deliverable:** `sec10k_chunks.parquet`, vector index artifacts
+
+## Step 4 — Grounded Generation, Market Analysis, and Evaluation (M5)
+
+- Build a grounded RAG prompt pipeline with citation requirements
+- Generate answers to industry-relevant financial questions
+- Fetch historical stock prices for your selected companies using the Yahoo Finance API and conduct a meaningful market-performance analysis tied to your RAG findings
+- Evaluate retrieval relevance, answer faithfulness, and hallucination risk
+- Package final report with findings and limitations
+- **Deliverable:** `rag_answers.csv`, `rag_evaluation.csv`, `yahoo_prices/`, final report
 
 :::{.callout-note}
-The SEC Form 10-K is a comprehensive annual report required of publicly traded companies in the United States. It is not a single narrative document — it is a regulatorily structured disclosure framework divided into four major Parts, each containing numbered Items that correspond to specific reporting obligations.
-
-Understanding this structure is essential because your RAG system must operate within these regulatory boundaries.
-
-There are 4 parts and 16 items in total (listed below), but not all items are relevant to every domain. For example, if you choose a Finance track, you might focus on Part II (Financial Information) and select items like MD&A or Financial Statements. If you choose a Governance track, you might focus on Part III (Governance and Executive Structure) and select items related to directors and compensation.
+Module 4 is a mid-project checkpoint. Use that week to catch up, clean up, and confirm Steps 1-3 are complete before starting Step 4.
 :::
 
+# Project Folder Structure
 
-:::{.panel-tabset}
-## Part I
-
-**Business and Risk Overview:** Focuses on operational description and risk disclosure.
-
-* **Item 1** – Business
-* **Item 1A** – Risk Factors
-* **Item 1B** – Unresolved Staff Comments
-* **Item 2** – Properties
-* **Item 3** – Legal Proceedings
-* **Item 4** – Mine Safety Disclosures
-
-This section provides strategic positioning, industry context, and operational risk exposure.
-
-## Part II
-
-**Financial Information and Market Risk:** Focuses on performance, accounting data, and financial condition.
-
-* **Item 5** – Market for Common Equity
-* **Item 6** – Selected Financial Data
-* **Item 7** – Management’s Discussion and Analysis (MD&A)
-* **Item 7A** – Market Risk Disclosures
-* **Item 8** – Financial Statements
-* **Item 9** – Changes in and Disagreements with Accountants
-* **Item 9A** – Controls and Procedures
-* **Item 9B** – Other Information
-
-This section is heavily quantitative and forward-looking.
-
-## Part III
-
-**Governance and Executive Structure:** Focuses on management, ownership, and compensation.
-
-* **Item 10** – Directors and Corporate Governance
-* **Item 11** – Executive Compensation
-* **Item 12** – Security Ownership
-* **Item 13** – Related Transactions and Independence
-* **Item 14** – Principal Accounting Fees and Services
-
-This section reveals incentive structures and governance controls.
-
-## Part IV
-
-**Exhibits and Summary:** Administrative and supporting documentation.
-
-* **Item 15** – Exhibits and Financial Statement Schedules
-* **Item 16** – Form 10-K Summary
-
-These items primarily contain technical attachments and summaries.
-
-:::
-
-Below are recommended domain tracks mapped to SEC 10-K items. Teams must choose one track. These are meant to be illustrative, and teams can propose alternative tracks if they justify the item selection. 
-
-
-# Key Areas of Analysis (Teams Choose One Focus Area)
-
-Each team will **select one domain track** and restrict their RAG system to the relevant SEC 10-K Item(s).
-
-Multiple teams may choose the same domain, but systems must demonstrate:
-
-- Cleaning strategy
-- Retrieval tuning
-- Evaluation insights
-
-Teams may also propose a related focus area, provided it maps clearly to one or more specific 10-K Items.
-
-:::{.panel-tabset}
-## AI & Technology Strategy Analysis
-
-*Primary Items: 1, 1A, 7*
-
-Your RAG system should be able to answer questions such as:
-
-* How does the firm describe its **AI strategy or technological transformation**?
-* Is AI framed as a **core revenue driver, operational efficiency tool, or experimental initiative**?
-* Does the company disclose **AI-related risks** (regulatory, cybersecurity, operational)?
-* Is AI positioned as **labor substitution or labor complement**?
-* Are R&D investments linked to AI initiatives?
-* Does management describe measurable outcomes tied to digital transformation?
-
-Your system should return:
-
-* AI positioning classification
-* Opportunity vs. risk framing
-* Supporting citations
-
-## Human Capital & Labor Economics
-
-*Primary Items: 1, 1A, 11*
-
-Your RAG system should be able to answer:
-
-* Does the firm identify **labor shortages** as a structural risk?
-* Are wage pressures or retention concerns discussed?
-* Is workforce restructuring mentioned?
-* How is executive compensation structured relative to performance?
-* Does the company discuss human capital as a strategic asset?
-* Are training or reskilling initiatives described?
-
-Your system should produce:
-
-* Labor risk classification
-* Automation exposure indicators
-* Compensation alignment summary
-
-## Financial Performance & Risk Analysis
-
-*Primary Items: 6, 7, 7A, 8*
-
-Your RAG system should be able to answer:
-
-* What are the primary drivers of revenue growth or decline?
-* Is margin pressure attributed to labor, inflation, supply chain, or macroeconomic factors?
-* How does the firm describe liquidity and capital allocation strategy?
-* What market risks are disclosed (interest rate, FX, commodity exposure)?
-* Are forward-looking risks quantified?
-* Is capital expenditure linked to technological transformation?
-
-Your system should generate:
-
-* Performance driver summaries
-* Risk exposure classification
-* Market sensitivity indicators
-
-
-## Information Systems & Internal Controls
-
-*Primary Items: 9, 9A, 14*
-
-Your RAG system should be able to answer:
-
-* Does the firm report material weaknesses in internal controls?
-* Are IT systems described as critical operational infrastructure?
-* Are there disagreements with auditors?
-* How are accounting fees structured?
-* Is cybersecurity risk disclosed as part of controls?
-
-Your system should output:
-
-* Control weakness classification
-* Audit risk indicators
-* Governance robustness signals
-
-## Legal & Regulatory Exposure
-
-*Primary Items: 3, 1A, 9B*
-
-Your RAG system should answer:
-
-* What active legal proceedings are disclosed?
-* Does the firm face regulatory investigations?
-* Are environmental or compliance risks material?
-* Are sanctions or geopolitical exposures mentioned?
-* Does the firm quantify potential legal liabilities?
-
-Your system should return:
-
-* Litigation exposure taxonomy
-* Regulatory risk summary
-* Legal risk severity classification
-
-## Corporate Governance & Ownership
-
-*Primary Items: 10, 11, 12, 13*
-
-Your RAG system should answer:
-
-* What is the board structure and independence profile?
-* How concentrated is ownership?
-* Are related-party transactions disclosed?
-* Are executive incentives aligned with performance?
-* Does governance structure suggest control concentration?
-
-Your system should output:
-
-* Governance structure classification
-* Ownership concentration metric
-* Incentive alignment signal
-
-
-## Market Structure & Equity Behavior
-
-*Primary Items: 5, 7*
-
-Your RAG system should answer:
-
-* How does the firm describe its shareholder base?
-* Are share repurchases discussed?
-* Is equity volatility mentioned?
-* Does management discuss competitive positioning?
-* Are dividend policies linked to performance strategy?
-
-Your system should return:
-
-* Market positioning classification
-* Shareholder structure summary
-* Capital return strategy description
-
-## Physical Assets & Operational Footprint
-
-*Primary Items: 2, 4*
-
-Your RAG system should answer:
-
-* Where are primary physical assets located?
-* Is geographic concentration risk present?
-* Are safety risks disclosed?
-* Are properties described as strategically critical?
-* Does the company discuss modernization or expansion?
-
-Your system should output:
-
-* Geographic exposure summary
-* Asset concentration classification
-* Operational footprint profile
-
-:::
-
-
-# Project Milestones: Engineering a Section-Scoped SEC 10-K RAG System
-
-This project progresses through five technical milestones. Each milestone represents a system capability that builds toward a fully validated Retrieval-Augmented Generation (RAG) platform.
-
-
-## Milestone 1 — Section Extraction & Cleaning Infrastructure
-
-The foundation of your system begins with extending the **10K-Filings-Analyzer** repository.
-
-At this stage, you will:
-
-* Select your domain track and corresponding SEC 10-K Item(s).
-* Extract only those sections from 2024 filings.
-* Improve section boundary detection where necessary.
-* Remove table-of-contents contamination, duplicated headings, signature blocks, and HTML artifacts.
-* Normalize text formatting and encoding.
-
-By the end of this milestone, you must produce a **clean, section-scoped dataset** suitable for LLM processing.
-
-This milestone establishes the **data engineering layer** of your RAG system.
-
-
-## Milestone 2 — Token-Aware Chunking & Metadata Engineering
-
-Once section text is clean, it must be structured for retrieval.
-
-At this milestone, you will:
-
-* Implement token-aware chunking.
-* Justify chunk size and overlap strategy.
-* Attach structured metadata to every chunk:
-
-  * CIK
-  * Company name
-  * Filing year
-  * Section ID
-  * Chunk ID
-  * Token count
-
-You should analyze chunk distributions and verify that regulatory formatting does not distort chunk logic.
-
-By the end of this milestone, you will have an **LLM-ready structured corpus**.
-
-This milestone transforms regulatory text into **retrievable computational units**.
-
-## Milestone 3 — Embedding Layer & Section-Scoped Retrieval
-
-Now you build the retrieval backbone.
-
-At this milestone, you will:
-
-* Generate embeddings for all chunks.
-* Build a persistent vector index (FAISS or Chroma).
-* Enforce strict metadata filtering by section.
-* Demonstrate top-k retrieval with similarity scores.
-* Prove that retrieval does not cross section boundaries.
-
-By the end of this milestone, you will have a functioning **section-scoped retrieval system**.
-
-This milestone constructs the **search intelligence layer** of your platform.
-
-
-## Milestone 4 — Grounded RAG Generation Engine
-
-With retrieval functioning, you now integrate generation.
-
-At this milestone, you will:
-
-* Implement a Question → Retrieval → Context Assembly → LLM Answer pipeline.
-* Enforce structured JSON outputs.
-* Require explicit citation of chunk_id and Item number.
-* Implement refusal logic when evidence is insufficient.
-
-Your system must successfully answer at least:
-
-* 15 structured domain-specific questions
-* Across 10 distinct firms
-
-By the end of this milestone, you will have a complete **grounded RAG engine**.
-
-This milestone integrates retrieval with controlled LLM reasoning.
-
-
-## Milestone 5 — Evaluation and System Validation
-
-The final milestone is validation and reliability assessment.
-
-You must evaluate:
-
-- Retrieval Accuracy
-  - Create at least 20 labeled question–chunk pairs.
-  - Compute `Recall@k` or `Hit\above@k`.
-- Grounding Reliability
-    - Measure citation coverage.
-    - Estimate hallucination rate.
-- Section Integrity
-  - Demonstrate zero cross-item leakage.
-- You must conclude with:
-    - A system architecture diagram.
-    - Quantitative performance summary.
-    - Reflection on limitations and failure modes.
-
-By the end of this milestone, you will have delivered a **validated enterprise-style RAG system**.
-
-# Submission Instructions for Milestone — I
-
-This first submission focuses on **system scoping and architecture design**, not full implementation.
-
-Once your group is formed:
-
-- Self-enroll in your Blackboard group.
-- Select your **Domain Track** and corresponding SEC 10-K Item(s).
-- Define the scope of your Section-Scoped RAG system.
-- Prepare a short system design brief (see requirements below).
-
-GitHub is **optional at this stage**.
-
-If you wish to deploy your final system using **Streamlit, Heroku, or similar platforms**, you may create a repository. Deployment can earn up to **25 bonus points** (see Deployment Option below).
-
-# Selecting a Domain Track
-
-Treat this as a **system design problem**, not a research paper.
-
-Your team must:
-
-* Select one Domain Track (Finance, HR, AI, Governance, Legal, IS, etc.).
-* Identify the relevant SEC 10-K Item(s).
-* Clearly state what your RAG system will be able to answer.
-* Define the boundaries of retrieval (which Items are allowed).
-* Specify what the system will refuse to answer.
-
-Your first submission should include:
-
-* System objective
-* Selected SEC Item(s)
-* 10–15 structured leading questions
-* High-level architecture description
-* Anticipated cleaning challenges
-* Expected retrieval risks
-
-No literature review is required.
-
-
-# Milestone 1 Design Brief (First Submission)
-
-Submit a short technical design document (2–4 pages) covering:
-
-- System Scope
-  - Which SEC Item(s) are selected?
-  - Why are they appropriate for your chosen domain?
-  - What type of questions will your system answer?
-- Retrieval Boundaries
-  - Will retrieval be limited to one Item or multiple?
-  - How will you enforce section scoping?
-  - What types of cross-section questions will your system reject?
--  Anticipated Data Cleaning Issues, Identify likely challenges:
-   -  Table-of-contents bleed
-   -  ML artifacts
-   -  Repeated headers
-   -  Long financial tables
-   -  Boilerplate legal disclaimers
--  Initial Question Pack
-   -  Provide 10–15 structured domain questions your system must answer.
-   -  These questions will later be used for evaluation.
-- Proposed System Architecture
-  - Provide a simple diagram or explanation of:
-
-```{mermaid}
-flowchart TD
-    A[SEC Download] --> B[Section Extraction]
-    B --> C[Cleaning]
-    C --> D[Chunking]
-    D --> E[Embedding]
-    E --> F[Vector Store]
-    F --> G[RAG Engine]
-    G --> H[Evaluation]
+Set up your project folder before writing any code. Use the structure below whether you are working in Google Drive (Colab) or a local Git repository.
 
 ```
+project_sec10k_rag/
+├── README.md
+├── requirements.txt
+├── .env                        ← local API keys (never commit)
+├── .gitignore
+├── notebooks/
+│   ├── 01_industry_company_selection_and_10k_download.ipynb
+│   ├── 02_item_selection_cleaning_and_eda.ipynb
+│   ├── 03_embeddings_and_rag_preparation.ipynb
+│   └── 04_rag_generation_and_evaluation.ipynb
+├── scripts/
+│   ├── parse_sec_metadata.py
+│   ├── download_10k_html.py
+│   ├── extract_10k_items.py
+│   ├── clean_items.py
+│   ├── build_embeddings.py
+│   ├── build_vector_index.py
+│   ├── rag_pipeline.py
+│   ├── evaluate_rag.py
+│   └── download_yahoo_prices.py
+├── data/
+│   ├── raw_html/
+│   ├── extracted_items/
+│   ├── cleaned_items/
+│   ├── chunked/
+│   ├── embeddings/
+│   ├── vector_store/
+│   ├── yahoo_prices/           ← stock price data from Yahoo Finance API
+│   └── outputs/
+├── config/
+│   ├── companies.csv
+│   ├── industry_selection.yaml
+│   ├── item_map.yaml
+│   ├── model_config.yaml
+│   └── sic_naics_map.csv
+└── reports/
+    ├── figures/
+    ├── tables/
+    └── final_outputs/
+```
 
+**Google Drive users:** create this folder at `MyDrive/project_sec10k_rag/` and mirror the `data/`, `config/`, and `reports/` sub-structure. Notebooks live in the Drive root or a `notebooks/` subfolder.
 
-# Optional: Repository & Deployment (Bonus Credit)
+**Git users:** initialize the repo at the `project_sec10k_rag/` root. Add `.env`, `data/raw_html/`, `data/embeddings/`, and `data/vector_store/` to `.gitignore`.
 
-Creating a GitHub repository is optional for the base project.
+:::{.callout-tip}
+Create the folder structure in your first notebook cell before writing any data so that all subsequent notebooks can reference `BASE_DIR` without path errors.
+:::
 
-However, teams may earn up to **25 bonus points** by:
+# Step 1 Deliverable Scope
 
-- Deploying their RAG system via:
-  - Streamlit
-  - Gradio
-  - Heroku
-  - Hugging Face Spaces
-- Providing a live demo interface.
-- Implementing user query logging.
-- Demonstrating real-time retrieval visualization.
+In Step 1, your team must:
 
-Deployment is considered an **engineering extension**, not a requirement.
+- confirm NAICS 4-digit code selection and document industry rationale
+- choose 5-10 publicly traded companies in that NAICS industry
+- download 10-K HTML filings for 2015-2025 from SEC EDGAR
+- parse SEC header and DEI/XBRL metadata
+- extract all standard 10-K Items
+- save item-level files with standardized names
 
+# Colab Setup (Required)
 
-# What This First Submission Should Demonstrate
+## Mount Drive
 
-By the end of Milestone 1, your team should show:
+```{python}
+from google.colab import drive
+drive.mount('/content/drive')
+```
 
-- Clear domain scoping
-- Understanding of SEC structural segmentation
-- Awareness of cleaning complexity
-- Structured RAG question design
-- Retrieval boundary discipline
+## Base Path Pattern
 
-This ensures that implementation begins with **architectural clarity**, not code experimentation.
+```{python}
+from pathlib import Path
 
+BASE_DIR = Path('/content/drive/MyDrive/project_sec10k_rag')
+# Optional local alternative:
+# BASE_DIR = Path.cwd() / 'project_sec10k_rag'
 
-# Summary of What Needs to Submitted
+RAW_HTML_DIR = BASE_DIR / 'data' / 'raw_html'
+EXTRACTED_ITEMS_DIR = BASE_DIR / 'data' / 'extracted_items'
+OUTPUTS_DIR = BASE_DIR / 'data' / 'outputs'
 
-* Group enrollment in Blackboard
-* Domain Track selection
-* SEC Item(s) selected
-* 10–15 structured system questions
-* Cleaning challenges outline
-* High-level architecture description
-* Optional:
-  * GitHub repository (if planning deployment)
-  * Deployment plan for bonus credit
+for d in [RAW_HTML_DIR, EXTRACTED_ITEMS_DIR, OUTPUTS_DIR]:
+    d.mkdir(parents=True, exist_ok=True)
+```
+
+# Required SEC Metadata Fields
+
+Your filing metadata table must contain:
+- accession_number
+- form_type
+- filing_date
+- acceptance_datetime
+- period_of_report
+- company_name
+- cik
+- sic_code
+- sic_description
+- organization_name
+- fiscal_year_end
+- state_of_incorporation
+- irs_number
+- sec_file_number
+- film_number
+- business_city
+- business_state
+- business_zip
+- document_type
+- document_period_end_date
+- entity_file_number
+- filer_category
+- public_float
+- shares_outstanding
+- source_file
+- generated_filename
+
+# Filename Standards
+
+Filing HTML filename convention:
+- YYYYMMDD_10-K_CIK_ACCESSION_COMPANY-NAME-(TICKER).html
+
+Extracted item filename convention:
+- YYYYMMDD_10-K_CIK_ACCESSION_TICKER_item_1.html
+
+# Required Outputs for Step 1
+
+- data/outputs/filing_metadata.csv
+- data/outputs/industry_filing_panel.csv
+- extracted item files in data/extracted_items/
+
+# Security and Secrets Management
+
+Your product will use paid API services (LLMs, embeddings, potentially Yahoo Finance premium). Never hard-code API keys in notebook cells or commit them to any repository.
+
+## Colab Secrets (Colab workflow)
+
+Use the Colab Secrets panel (the key icon in the left sidebar) to store keys, then load them at runtime:
+
+```{python}
+from google.colab import userdata
+OPENAI_API_KEY = userdata.get('OPENAI_API_KEY')
+GEMINI_API_KEY = userdata.get('GEMINI_API_KEY')
+ANTHROPIC_API_KEY = userdata.get('ANTHROPIC_API_KEY')
+COHERE_API_KEY = userdata.get('COHERE_API_KEY')
+```
+
+## .env File (local or Git workflow)
+
+For local development, store all secrets in a `.env` file at the project root and load with `python-dotenv`:
+
+```
+# .env  ← never commit this file
+OPENAI_API_KEY=sk-...
+GEMINI_API_KEY=...
+ANTHROPIC_API_KEY=...
+COHERE_API_KEY=...
+```
+
+```{python}
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # reads .env from the current working directory
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+```
+
+Add `.env` to `.gitignore` immediately:
+
+```
+# .gitignore
+.env
+data/raw_html/
+data/embeddings/
+data/vector_store/
+```
+
+:::{.callout-warning}
+Never commit secrets, raw HTML filings, embeddings, or vector store artifacts to any public or private repository.
+:::
+
+# Student Submission Checklist (Step 1)
+
+- [ ] NAICS 4-digit code selected and justified
+- [ ] 5-10 companies selected with metadata
+- [ ] 2015-2025 filings downloaded
+- [ ] Required SEC metadata fields extracted
+- [ ] Filename conventions followed
+- [ ] `filing_metadata.csv` and `industry_filing_panel.csv` exported
+
+# Weekly Team Standup
+
+Your team holds a **5-minute standup once per week** during Module 1. This mirrors the daily standup ritual used in agile software and FinTech product teams. The goal is to surface blockers early, keep everyone aligned, and give the instructor visibility into team progress.
+
+> **Reference:** [Atlassian — How to Run Effective Standups](https://www.atlassian.com/agile/scrum/standups)
+
+Each standup covers three questions for the team — not individuals:
+
+1. **What did the team complete since the last standup?**
+2. **What will the team work on before the next standup?**
+3. **What blockers or decisions is the team stuck on?**
+
+## In-Person Sections
+
+Standup happens live at the start of class. One team member facilitates, each person answers the three questions in ≤60 seconds, and the team flags one blocker or open decision for instructor input.
+
+## Online Sections — Weekly Standup Document
+
+Submit a **one-page standup document** to the course portal by the due date each week. This is ungraded on its own, but **standup submissions count toward your final project participation grade**.
+
+Use this template:
+
+---
+
+**Team Name / NAICS Industry:**
+
+**Standup Week:** Module 1 — Week ___
+
+**Date Submitted:**
+
+| Question | Team Response |
+|---|---|
+| What did we complete this week? | |
+| What will we work on next week? | |
+| What is blocking us or needs a decision? | |
+
+**Files or outputs produced this week** (list filenames or Drive links):
+
+**Team member who facilitated this standup:**
+
+---
+
+:::{.callout-note}
+Standup documents should be honest and brief — one paragraph per row is enough. If there are no blockers, say so explicitly. Instructors read these to anticipate where teams need support before the next class.
+:::

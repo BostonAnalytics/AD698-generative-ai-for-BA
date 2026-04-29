@@ -1,5 +1,5 @@
 ---
-title: "Module 0: Lab 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Math Foundations, Activations, and SGD"
 number-sections: true
 date: "2026-01-01"
@@ -7,7 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ["Lab", "Math", "Optimization", "SGD", "Neural Networks"]
+categories: ['M0:', 'Lab']
+description: "Hands-on lab for Module 0 focused on Math Foundations, Activations, and SGD."
 ---
 
 # Lab objective

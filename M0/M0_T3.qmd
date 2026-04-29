@@ -1,5 +1,5 @@
 ---
-title: "Module 0, Tutorial 3: Neural Networks in Practice"
+title: "AD698 - Applied Generative AI"
 subtitle: "Single-Layer Perceptron vs. 3-Layer MLP on Simulated Data"
 author:
   - name: Nakul R. Padalkar
@@ -14,8 +14,6 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['Tutorial', 'M00:', 'Notes']
-description: "Hands-on tutorial: train a single-layer perceptron and a 3-layer MLP on simulated regression data, visualise training dynamics, decision boundaries, and overfitting. All figures saved to M0_lecture03_figures/."
 format:
   html:
     toc: true
@@ -23,6 +21,8 @@ format:
     code-fold: false
     fig-width: 9
     fig-height: 5
+categories: ['M0:', 'Tutorial']
+description: "Tutorial for Module 0 focused on Single-Layer Perceptron vs. 3-Layer MLP on Simulated Data."
 ---
 
 ## Learning Objectives {.unnumbered}

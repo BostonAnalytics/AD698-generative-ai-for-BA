@@ -1,5 +1,5 @@
 ---
-title: "Module 0, Lecture 3: Neural Networks — Regression and Classification"
+title: "AD698 - Applied Generative AI"
 subtitle: "From Linear Models to Multilayer Perceptrons"
 author:
   - name: Nakul R. Padalkar
@@ -14,13 +14,13 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['Lecture', 'M00:', 'Notes']
-description: "A comprehensive, chapter-style treatment of neural network fundamentals: linear regression, softmax classification, multilayer perceptrons, and the PyTorch builders guide — from first principles to production-ready deep learning code."
 format:
   html:
     toc: true
     toc-depth: 3
     code-overflow: wrap
+categories: ['M0:', 'Linear Models', 'MLP', 'Deep Learning', 'Lecture Notes']
+description: "Lecture notes for Module 0 covering From Linear Models to Multilayer Perceptrons."
 ---
 
 ```{python}

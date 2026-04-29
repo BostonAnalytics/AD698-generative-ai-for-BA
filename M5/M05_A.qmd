@@ -1,5 +1,399 @@
 ---
-title: "M05 Assignment"
+title: "AD698 - Applied Generative AI"
+subtitle: "Prompting, Retrieval, and Evaluation Methods for SEC 10-K Analysis"
+number-sections: true
+date: "2026-04-01"
+date-modified: today
+date-format: long
+engine: jupyter
+execute:
+  echo: true
+  eval: false
+categories: ['M05:', 'Assignment']
+description: "Assignment for Module 5 focused on Prompting, Retrieval, and Evaluation Methods for SEC 10-K Analysis."
 ---
 
-# M05 Assignment
+# Important Reminder {.unnumbered}
+
+- This assignment must be completed using **Google Colab** and **Google Drive**.
+- You must use the **same two rival companies and NAICS vertical** as Assignments 1–3.
+- You need **one active LLM API key**: OpenAI, Gemini, Anthropic, or Cohere all work.
+
+:::{.callout-important}
+## Prerequisites
+
+The following files must exist on your Drive before starting:
+
+- `/assignment01/corpus.csv`
+- `/assignment01/chunks.csv`
+
+Load and inspect `chunks.csv` at the start of your notebook. Your corpus from Assignment 1 is the document base for all retrieval in this assignment.
+:::
+
+:::{.callout-warning}
+**API key security:** Store your API key in Colab Secrets (left panel → key icon) or in a `.env` file on Drive. Never paste a key directly into a code cell. Never commit a key to GitHub.
+:::
+
+:::{.callout-important}
+## DataFrame and Visualization Standard
+
+For every DataFrame you create or transform:
+
+- Show `.head()` to display sample rows in your notebook
+- Run `.info()` to confirm column types and null counts
+- Run `.describe()` to summarize numeric statistics
+- Include at least one relevant visualization (bar chart, heatmap, scatter plot, or distribution plot) with a descriptive title and labeled axes
+
+These are graded as part of your technical evidence. Undocumented DataFrames and unexplained outputs will lose points.
+:::
+
+# Submission Instructions {.unnumbered}
+
+Submit two files on Blackboard:
+
+1. **Word Document (`.docx`)** — maximum 5 pages (excluding cover and references)
+   - All 9 LLM answers (3 questions × 3 methods) as a formatted table or appendix
+   - 3×3 evaluation matrix
+   - Answers to Q1–Q4 and Business Recommendation
+   - No code
+
+2. **Jupyter Notebook (`.ipynb`)** — fully executable on Colab, organized by section
+
+Suggested notebook structure:
+
+1. Configuration, Drive mount, API key setup
+2. Load Assignment 1 corpus and inspect
+3. Embed chunks and build FAISS index
+4. Implement three answering functions
+5. Run all 9 answers (3 questions × 3 methods)
+6. Build and fill the 3×3 evaluation matrix
+7. Q1–Q4 analysis and Business Recommendation
+
+:::{.callout-note}
+## Alignment with M05 Tutorials and Labs
+
+To reduce duplicated work, reuse your prior module artifacts:
+
+- `M05_T1`: your baseline RAG chain function and prompt template
+- `M05_Lab1`: chunking and retrieval diagnostics (latency/hit quality)
+- `M05_T2`: evaluation helper functions and endpoint-ready pipeline wrapper
+- `M05_Lab2`: comparative evaluation table and failure taxonomy
+
+You can improve these artifacts before final submission, but your Assignment 4 notebook should clearly show this lineage.
+:::
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+Assignments 1–3 built increasingly powerful models to classify and represent company language. Assignment 4 shifts the task: instead of classifying text, you are **answering comparative questions** about your two rival companies. You will compare three fundamentally different approaches to the same three questions.
+:::
+
+:::{.callout-important}
+**Core question:** When answering a specific financial comparison question about two rival companies, does it matter how the LLM gets its information — and can we measure the difference?
+:::
+
+**Three methods compared:**
+
+| Method | What the LLM receives | What students implement |
+|--------|----------------------|------------------------|
+| Zero-shot prompting | Question + company names only | `prompt_only(query)` |
+| RAG (retrieval-augmented) | Question + top-5 retrieved chunks per company | `rag_answer(query, top_k=5)` |
+| Pretraining knowledge | Question + company names (explicitly no filing text) | `pretrain_answer(query)` |
+
+**Three evaluation dimensions:**
+
+| Dimension | What it measures | How computed |
+|-----------|-----------------|----------|
+| Faithfulness | Does the answer contain at least one traceable claim? | Binary (1/0), checked manually |
+| Grounding score (RAG only) | Fraction of sentences citing a filing year, item, or company name | Ratio, computed manually |
+| Factual consistency (pretraining only) | Does LLM world knowledge agree with 10-K text? | Identify 1 agreement + 1 discrepancy per question |
+
+:::{.callout-important}
+In addition to the 3x3 matrix, include one short retrieval diagnostics table with query latency and top-hit relevance notes for your RAG method.
+:::
+
+# Load Corpus and Configure API {#sec-setup}
+
+```python
+import pandas as pd
+
+chunks_df = pd.read_csv("/content/drive/MyDrive/assignment01/chunks.csv")
+print(chunks_df.shape)
+chunks_df.info()
+chunks_df.describe(include="all")
+chunks_df.head()
+```
+
+📊 **Required:** Stacked bar chart of chunk counts by company and by year.
+
+## Load API Key Securely
+
+```python
+# Colab Secrets (recommended):
+from google.colab import userdata
+api_key = userdata.get("OPENAI_API_KEY")   # or GEMINI_API_KEY, etc.
+
+# Verify key loaded (do NOT print the key value):
+print("API key loaded:", api_key is not None)
+```
+
+# Build the FAISS Retrieval Index {#sec-faiss}
+
+## Embed All Chunks
+
+Use `text-embedding-3-small` (OpenAI), `models/text-embedding-004` (Gemini), or a sentence-transformer model to embed all chunks.
+
+```python
+import numpy as np
+from openai import OpenAI   # replace with your chosen client
+
+client = OpenAI(api_key=api_key)
+
+def embed_batch(texts: list, model: str = "text-embedding-3-small") -> np.ndarray:
+    response = client.embeddings.create(input=texts, model=model)
+    return np.array([r.embedding for r in response.data], dtype="float32")
+
+batch_size = 100
+all_embeddings = []
+for i in range(0, len(chunks_df), batch_size):
+    batch = chunks_df["chunk_text"].iloc[i:i+batch_size].tolist()
+    all_embeddings.append(embed_batch(batch))
+    if i % 500 == 0:
+        print(f"Embedded {i}/{len(chunks_df)} chunks")
+
+embeddings = np.vstack(all_embeddings)
+print(f"Embedding matrix shape: {embeddings.shape}")
+pd.DataFrame(embeddings).describe()
+```
+
+## Build and Save the Index
+
+```python
+import faiss
+
+dim = embeddings.shape[1]
+index = faiss.IndexFlatL2(dim)
+index.add(embeddings)
+print(f"FAISS index total vectors: {index.ntotal}")
+
+faiss.write_index(index, "/content/drive/MyDrive/assignment04/faiss_index.bin")
+np.save("/content/drive/MyDrive/assignment04/embeddings.npy", embeddings)
+```
+
+# Implement the Three Answering Methods {#sec-methods}
+
+## Method 1: Zero-Shot Prompting
+
+Send the question directly to the LLM — no filing context, just company names.
+
+```python
+def prompt_only(query: str, company_a: str, company_b: str,
+                model: str = "gpt-4o-mini") -> str:
+    prompt = (
+        f"You are a financial analyst. Answer the following question about "
+        f"{company_a} and {company_b} based only on your general knowledge.\n\n"
+        f"Question: {query}\n\nAnswer:"
+    )
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+```
+
+## Method 2: Retrieval-Augmented (RAG)
+
+Embed the query, retrieve top-5 chunks per company from FAISS, inject into prompt.
+
+```python
+def embed_query(query: str) -> np.ndarray:
+    return embed_batch([query])[0]
+
+def retrieve(query_vec: np.ndarray, k: int = 5,
+             company_filter=None) -> pd.DataFrame:
+    distances, indices = index.search(query_vec.reshape(1, -1), k * 10)
+    results = []
+    for idx in indices[0]:
+        row = chunks_df.iloc[idx]
+        if company_filter is None or row["company"] == company_filter:
+            results.append(row)
+        if len(results) == k:
+            break
+    retrieved = pd.DataFrame(results)
+    print(retrieved.shape)
+    retrieved.info()
+    retrieved.describe(include="all")
+    retrieved.head()
+    return retrieved
+
+def rag_answer(query: str, company_a: str, company_b: str,
+               top_k: int = 5, model: str = "gpt-4o-mini"):
+    q_vec = embed_query(query)
+    chunks_a = retrieve(q_vec, k=top_k, company_filter=company_a)
+    chunks_b = retrieve(q_vec, k=top_k, company_filter=company_b)
+
+    def fmt(df):
+        return "\n".join(
+            f"[{r['company']} | {r['year']} | Item {r['item']}] {r['chunk_text']}"
+            for _, r in df.iterrows()
+        )
+
+    prompt = (
+        "You are a financial analyst. Use only the provided excerpts to answer.\n"
+        "Cite the source (company, year, item) for every factual claim.\n\n"
+        f"Company A excerpts:\n{fmt(chunks_a)}\n\n"
+        f"Company B excerpts:\n{fmt(chunks_b)}\n\n"
+        f"Question: {query}\n\nAnswer:"
+    )
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content, chunks_a, chunks_b
+```
+
+## Method 3: Pretraining Knowledge Probe
+
+Ask the LLM what it knows from training data — company names provided, no filing text.
+
+```python
+def pretrain_answer(query: str, company_a: str, company_b: str,
+                    model: str = "gpt-4o-mini") -> str:
+    prompt = (
+        f"You are a financial analyst. Based only on what you know from your "
+        f"training data about {company_a} and {company_b} (approximately 2020–2024):\n\n"
+        f"Question: {query}\n\n"
+        "Important: Give your best answer based on general knowledge. "
+        "Flag any uncertainty explicitly. Do not decline to answer.\n\nAnswer:"
+    )
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content
+```
+
+# Run All Nine Answers {#sec-run}
+
+Three questions are provided below. Use them exactly as written.
+
+```python
+questions = [
+    "Which of these two companies faces greater exposure to interest rate risk?",
+    "How do these two companies differ in their AI or technology investment strategy?",
+    "Which company's risk narrative suggests greater vulnerability to an economic downturn?"
+]
+
+answers = []
+for q in questions:
+    print(f"\nProcessing: {q}")
+    a_zero = prompt_only(q, company_a_name, company_b_name)
+    a_rag, retrieved_a, retrieved_b = rag_answer(q, company_a_name, company_b_name)
+    a_pre = pretrain_answer(q, company_a_name, company_b_name)
+    answers.append({
+        "question": q,
+        "zero_shot": a_zero,
+        "rag": a_rag,
+        "pretrain": a_pre
+    })
+
+answers_df = pd.DataFrame(answers)
+print(answers_df.shape)
+answers_df.info()
+answers_df.head()
+
+answers_df.to_csv(
+    "/content/drive/MyDrive/assignment04/comparison_answers.csv", index=False)
+```
+
+📊 **Required:** Display all 9 answers as a formatted table in your notebook (one row per question, three answer columns). Truncate to 200 characters per cell if needed for readability.
+
+# Build the 3×3 Evaluation Matrix {#sec-eval}
+
+For each of the 9 answers, manually fill in the evaluation scores. The schema is:
+
+```python
+eval_records = []
+for i, row in answers_df.iterrows():
+    eval_records.append({
+        "question_id": i + 1,
+        "question": row["question"][:60] + "...",
+        # Zero-shot: does it contain a traceable factual claim? 1 = yes, 0 = no
+        "zero_shot_faithfulness": None,
+        # RAG: does it cite a specific filing source? 1 = yes, 0 = no
+        "rag_faithfulness": None,
+        # RAG: fraction of sentences that cite year/item/company (compute manually)
+        "rag_grounding_score": None,
+        # Pretraining: traceable claim present? 1 = yes, 0 = no
+        "pretrain_faithfulness": None,
+        # Pretraining: one sentence that agrees with 10-K text
+        "pretrain_agreement": None,
+        # Pretraining: one sentence that diverges from or contradicts 10-K text
+        "pretrain_discrepancy": None
+    })
+
+eval_df = pd.DataFrame(eval_records)
+print(eval_df.shape)
+eval_df.info()
+eval_df.describe()
+eval_df
+```
+
+Fill in all `None` values manually by reading each answer and the corresponding retrieved chunks. This is the **3×3 evaluation matrix** required in your Word document.
+
+**Grounding score calculation (for RAG answers):**
+
+Count the number of sentences in the RAG answer that explicitly reference a filing year, item (e.g., "Item 1A"), or company name divided by the total sentence count.
+
+$$\text{Grounding Score} = \frac{\text{sentences with citation}}{\text{total sentences in answer}}$$
+
+# Q1: For Which Question Does RAG Most Outperform Zero-Shot? {#sec-q1}
+
+**Answer in your Word document:** Identify the question where RAG produces the most noticeably better answer than zero-shot prompting. Show the two answers side by side (≤3 sentences each). Show `.head()` of the retrieved chunks that enabled the RAG answer. Explain in 2–3 sentences why the retrieved context mattered — what specific information did the chunks provide that the zero-shot answer lacked?
+
+# Q2: What Does the Grounding Score Reveal About RAG Quality? {#sec-q2}
+
+**Answer in your Word document:** Does a higher grounding score (more citations in the RAG answer) always correspond to a more accurate or more useful answer? Can a heavily-cited RAG answer still be misleading? Give one specific example from your 3 RAG answers — either a well-grounded answer that was genuinely informative, or a highly-grounded answer that still failed to answer the question usefully.
+
+# Q3: Where Does LLM World Knowledge Agree and Diverge? {#sec-q3}
+
+Refer to your `pretrain_agreement` and `pretrain_discrepancy` columns in `eval_df`.
+
+**Answer in your Word document:** For each of the three questions, describe one claim in the pretraining answer that is consistent with what the actual 10-K filings say and one claim that diverges or adds information not found in the filings. Present these as a simple table (Question | Agreement | Discrepancy). What does this pattern tell you about the reliability of LLM world knowledge as a substitute for document retrieval in financial analysis?
+
+
+# Q4: Which Method Is Most Reliable for a Compliance Officer? {#sec-q4}
+
+## Business Recommendation — Risk Management
+
+A compliance officer at an asset management firm must justify every claim about a company's risk profile. They need answers that are **auditable** — traceable to a specific document, year, and section.
+
+**Answer in your Word document (≤1 page):** Based on your 3×3 evaluation matrix, which of the three methods produces the most auditable answers? Your answer must reference:
+
+- At least two specific cells from the evaluation matrix (cite question number and method)
+- The tradeoff between answer quality (faithfulness) and answer coverage (what the method can say)
+- Under what conditions you would switch from RAG to zero-shot or vice versa
+- Whether this method would scale to 500 filings per quarter without breaking a compliance team's budget
+
+# Deliverables Summary {.unnumbered}
+
+| Artifact | Location |
+|----------|----------|
+| `faiss_index.bin` | `/assignment04/` on Drive |
+| `embeddings.npy` | `/assignment04/` on Drive |
+| `comparison_answers.csv` | `/assignment04/` on Drive |
+| 3×3 evaluation matrix (`eval_df`) | In notebook + Word doc |
+| 9-answer comparison table | In notebook + Word doc |
+| Chunk count bar chart | In notebook + Word doc |
+| Retrieval diagnostics table | In notebook + Word doc |
+| Failure taxonomy (at least 3 labeled errors) | In notebook + Word doc |
+
+# Use of Generative AI {.unnumbered}
+
+You may use generative AI tools for code assistance, debugging, and explanation. You must:
+
+- List every tool used
+- Include the prompts you submitted
+- Explain how you validated the output
+
+Submit AI disclosure as a separate document or appendix.

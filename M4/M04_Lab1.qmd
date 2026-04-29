@@ -1,13 +1,11 @@
 ---
-title: "M04: Lab 1"
-subtitle: "Implementing Attention Mechanisms in PyTorch"
+title: "AD698 - Applied Generative AI"
+subtitle: "Transformers, Attention, and Context"
 number-sections: true
 date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M04:', '1', 'Lab']
-description: "Build scaled dot-product attention and multi-head attention, visualize weights, and apply attention-based classification."
 format:
     html:
         toc: true
@@ -22,6 +20,8 @@ execute:
     eval: false
     warning: false
     message: false
+categories: ['M04:', 'Lab']
+description: "Hands-on lab for Module 4 focused on Transformers, Attention, and Context."
 ---
 
 ## Learning Objectives

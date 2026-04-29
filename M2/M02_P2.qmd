@@ -36,6 +36,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M02:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 2 on From Words to Structured Text."
 ---
 
 ## How to print Revealjs slides

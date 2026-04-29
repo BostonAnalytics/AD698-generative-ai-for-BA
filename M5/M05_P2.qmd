@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Building an Agentic Retrieval Augmented Generation"
+subtitle: "M05 P2 - RAG Generation, Evaluation, and Production"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -12,16 +12,13 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
         html-math-method: katex
         slide-number: c/t
         toc: true
-        toc-depth: 1
+        toc-depth: 2
 
 self-contained-math: true
 fig-align: center
@@ -30,14 +27,240 @@ title-slide-attributes:
     data-background-size: 103% auto
     data-background-opacity: "0.95"
 execute: 
+  enabled: false
   echo: false
   warning: false
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M05:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 5 on M05 P2 - RAG Generation, Evaluation, and Production."
 ---
 
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+
+# Recap and Transition
+
+## Where P1 Ended
+
+- We built retrieval intuition and HNSW search logic
+- We saw that retrieval quality controls answer quality
+- We now focus on generation quality and system reliability
+
+---
+
+## This Session
+
+1. Prompt and context assembly patterns
+2. LCEL-based RAG orchestration
+3. Evaluation and diagnostics
+4. Deployment and observability paths
+
+# Building the Generator
+
+## Context Construction
+
+Good generation depends on how context is packed:
+
+- rank and select chunks
+- deduplicate and compress
+- preserve source attribution
+- format prompt sections clearly
+
+---
+
+## Prompt Template Pattern
+
+```{python}
+#| eval: false
+from langchain.prompts import ChatPromptTemplate
+
+RAG_PROMPT = ChatPromptTemplate.from_template(
+  """
+  You are a careful assistant.
+  Use ONLY the context to answer.
+
+  Question:
+  {question}
+
+  Context:
+  {context}
+
+  If context is insufficient, say so explicitly.
+  """
+)
+```
+
+---
+
+## Response Contract
+
+Production answer format should include:
+
+- concise claim
+- evidence bullets
+- confidence note
+- citations or source IDs
+
+This supports grading, auditing, and stakeholder trust.
+
+# NVIDIA Patterns to Reuse
+
+## Ingestion and Chunking
+
+```{python}
+#| eval: false
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+docs = DirectoryLoader("./data/corpus", glob="**/*.md").load()
+splitter = RecursiveCharacterTextSplitter(chunk_size=700, chunk_overlap=120)
+chunks = splitter.split_documents(docs)
+```
+
+---
+
+## Embeddings and Vector Store
+
+```{python}
+#| eval: false
+from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
+from langchain_community.vectorstores import FAISS
+
+embed = NVIDIAEmbeddings(model="nvidia/nv-embedqa-e5-v5")
+vs = FAISS.from_documents(chunks, embed)
+retriever = vs.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+```
+
+---
+
+## LCEL RAG Chain
+
+```{python}
+#| eval: false
+from langchain_nvidia_ai_endpoints import ChatNVIDIA
+from langchain_core.runnables import RunnableLambda
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct")
+
+def join_context(docs):
+  return "\n\n".join(d.page_content for d in docs)
+
+chain = (
+  {
+    "question": RunnableLambda(lambda x: x["question"]),
+    "context": RunnableLambda(lambda x: join_context(retriever.invoke(x["question"]))),
+  }
+  | RAG_PROMPT
+  | llm
+  | StrOutputParser()
+)
+```
+
+# Evaluation and Diagnostics
+
+## A Practical Evaluation Matrix
+
+Track both quality and operations:
+
+- answer relevance
+- groundedness / faithfulness
+- citation quality
+- latency
+- cost per query
+- retrieval hit quality
+
+---
+
+## LLM-as-a-Judge Loop
+
+```{python}
+#| eval: false
+judge_prompt = """
+Rate the answer from 1-5 for groundedness and relevance.
+Question: {q}
+Answer: {a}
+Reference: {ref}
+Return JSON.
+"""
+```
+
+Use sampled human checks to calibrate the judge and detect drift.
+
+---
+
+## Error Taxonomy
+
+- retrieval miss: right info absent
+- retrieval noise: irrelevant chunk dominates
+- synthesis failure: answer conflicts with evidence
+- abstention failure: should have said "insufficient context"
+
+Each error type implies a different fix path.
+
+# Productionization
+
+## Serving with LangServe + FastAPI
+
+```{python}
+#| eval: false
+from fastapi import FastAPI
+from langserve import add_routes
+
+app = FastAPI(title="AD698-RAG")
+add_routes(app, chain, path="/rag")
+```
+
+API-first design helps notebook prototypes become reusable services.
+
+---
+
+## Observability Checklist
+
+- log query, retrieved chunk IDs, and latency
+- store prompt and response traces
+- monitor bad-case cohorts
+- keep versioned index snapshots
+- maintain rollback strategy
+
+---
+
+## Security and Governance
+
+- content filtering on user input/output
+- source allowlist and document sanitation
+- secret management for model keys
+- PII-safe logging and retention policy
+
+# Assignment 4 Alignment
+
+## What You Should Reuse
+
+For `M05_A.qmd`, your pipeline should include:
+
+- retrieval module with explicit chunking strategy
+- generation prompt template with source-aware instructions
+- evaluation table comparing Prompt-only vs RAG vs Pretraining-only
+- short failure analysis with at least two error categories
+
+---
+
+## Suggested Milestones
+
+1. Baseline prompt-only system
+2. Add RAG with FAISS retriever
+3. Build evaluation matrix and analyze failure cases
+4. Package a reproducible notebook/script
+
+# Wrap-Up
+
+## Key Takeaways
+
+- Retrieval quality gates generation quality
+- Evaluation must cover quality and operations
+- Production RAG requires traceability, not just fluency
+- Assignment 4 should demonstrate comparative reasoning, not only code
 

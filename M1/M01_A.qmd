@@ -1,301 +1,434 @@
 ---
-title: "Module 1 Assignment: Corporate Risk Narratives in Form 10-K"
-subtitle: "Building a Classical and Neural NLP Pipeline for Industry Analysis"
+title: "AD698 - Applied Generative AI"
+subtitle: "Vocabulary, Frequency, and a First Classifier from SEC 10-K Filings"
 number-sections: true
 date: "2026-02-01"
 date-modified: today
 date-format: long
 engine: jupyter
 execute:
+  echo: true
   eval: false
-  echo: false
+categories: ['M01:', 'Assignment']
+description: "Assignment for Module 1 focused on Vocabulary, Frequency, and a First Classifier from SEC 10-K Filings."
 ---
 
 # Important Reminder {.unnumbered}
 
-- This assignment may be completed using [Google Colab]{.uublue-bold} or [AWS Academy]{.uublue-bold}.
-- Your goal is to [understand and implement the NLP pipeline]{.uugreen-bold} not to scale it.
-- It will be [impossible to run anything on your local machine (mac or PC)]{.uured-bold}. Please use Google Colab or request AWS Academy labs.
-- [The assignment takes significant time to complete. Start early!]{.uublue-bold}
+- This assignment must be completed using **Google Colab** and **Google Drive**. Running locally is not supported.
+- You must select your **NAICS industry vertical and two rival companies before starting**. These choices carry forward to Assignments 2, 3, and 4.
+- **This assignment takes significant time. Start at least one week early.**
+- The corpus and vocabulary you build here will be reused in every subsequent assignment.
 
+:::{.callout-important}
+## Prerequisites
+
+Before beginning, verify you have:
+
+- A Google account with Google Drive accessible from Colab
+- Two rival public companies in the same NAICS 4-digit vertical, each with 10-K filings on SEC EDGAR (2020–2024) and a Yahoo Finance ticker
+- `yfinance`, `scikit-learn`, and `torch` available in Colab (`!pip install yfinance scikit-learn torch`)
+:::
+
+
+
+:::{.callout-important}
+## DataFrame and Visualization Standard
+
+For every DataFrame you create or transform:
+
+- Show `.head()` to display sample rows in your notebook
+- Run `.info()` to confirm column types and null counts
+- Run `.describe()` to summarize numeric statistics
+- Include at least one relevant visualization (bar chart, heatmap, scatter plot, or distribution plot) with a descriptive title and labeled axes
+
+These are graded as part of your technical evidence. Undocumented DataFrames and unexplained outputs will lose points.
+:::
 
 # Submission Instructions {.unnumbered}
 
-You must submit two files on blackboard:
+Submit two files on Blackboard:
 
-1. Word Document (`.docx`)
-   - Answers to all questions (Q1–Q4)
-   - Business interpretation
-   - Tables and figures
-   - No more than 5 pages (excluding cover page and references)
-   - No code in this document.
-2. Jupyter Notebook (`.ipynb`)
-   - Fully executable
-   - Clearly organized by Question (Q1–Q4)
-   - Well-commented code
-3. You can follow following structur for your solution notebook, feel free to adjust as needed:
-    1. config and paths
-    2. load and parse 10k
-    3. clean and chunk text
-    4. feature engineering
-    5. predictive models
-    6. error analysis
+1. **Word Document (`.docx`)** — maximum 5 pages (excluding cover page and references)
+   - Answers to Q1–Q3 and Business Recommendation
+   - All required tables and figures embedded inline
+   - No code in this document
+
+2. **Jupyter Notebook (`.ipynb`)** — fully executable on Colab, organized by section
+
+Suggested notebook structure:
+
+1. Configuration, Drive mount, package installs
+2. Industry and company selection — NAICS code and Yahoo Finance context table
+3. SEC EDGAR data download and text extraction
+4. Corpus construction: cleaning and sentence chunking
+5. TF-IDF feature engineering and cosine similarity
+6. PyTorch BoW classifier: training and evaluation
+7. Q1–Q3 analysis and Business Recommendation
 
 # Objective {.unnumbered}
 
 :::{.callout-note}
-This assignment introduces the [end-to-end NLP lifecycle]{.uured-bold} using real corporate disclosures.
-You may use any generative AI tool, but you must still [build and explain the pipeline yourself]{.uugreen-bold}.
-:::
+This assignment introduces the end-to-end NLP pipeline for financial text analysis using real SEC filings. You may use generative AI tools for code assistance, but you must build and explain every pipeline step yourself.
 
-You will analyze 2024 Form 10-K filings to answer the following business question:
+**This assignment feeds Assignments 2, 3, and 4.** The corpus, vocabulary, and classifier weights you create here are reused in every subsequent assignment.
+:::
 
 :::{.callout-important}
-Can corporate risk language be used to understand and predict industry-level risk exposure?
+**Core business question:** Can the vocabulary a company uses in its SEC 10-K filings reliably distinguish it from a direct competitor — and does that linguistic distinction carry financial meaning?
 :::
 
-This assignment establishes the [cleaned corpus, labels, and baselines]{.uugreen-bold} that will be reused in [Assignments 2–5]{.uugreen-bold}, where you will build [LLM-based and RAG pipelines]{.uugreen-bold}.
+**Business context:** An investment firm wants to determine whether two companies competing in the same NAICS vertical describe their risks differently enough to be distinguished by text alone — without reading every filing manually. Your task is to build the evidence base.
 
+# Industry Vertical and Company Selection {#sec-setup}
 
-# Business Context {.unnumbered}
+## Select a NAICS Vertical
 
-An investment firm is reassessing sector exposure amid increasing uncertainty related to:
+Choose one NAICS 4-digit (or 5-digit) vertical. Your vertical must have at least two publicly traded rivals with SEC 10-K filings and Yahoo Finance tickers. Find codes at the [NAICS code list](https://www.census.gov/naics/).
 
--  regulation
--  technological disruption
--  operational risk
--  macroeconomic volatility
+Justify your choice in 2–3 sentences. Example verticals that work well: regional banking (5221), cloud software (5112), specialty insurance (5241), semiconductor manufacturing (3344), pharmaceutical distribution (4242).
 
-Rather than relying only on numerical indicators, the firm wants to understand how companies describe risk in their own words.
+## Select Two Rival Companies
 
-Each Form 10-K filing includes a Standard Industrial Classification (SIC) code, which will be used as a high-level industry label for analysis and prediction.
+Your two companies must:
 
+- Operate in the same NAICS 4-digit vertical
+- Have 10-K filings for years 2020–2024 on SEC EDGAR
+- Have valid Yahoo Finance tickers with market data available
 
-# Data Source {.unnumbered}
+## Build a Yahoo Finance Market Context Table
 
-You will use SEC-provided TXT versions of 2024 Form 10-K filings, available here:
-
-## SEC 2024 Form 10-K TXT Files {.unnumbered}
-
-- You will use all SEC-provided TXT versions of 2024 Form 10-K filings contained in the shared Google Drive folder.
-- All files in the folder must be processed programmatically.
-- You may later filter, subset, or group the data for analysis, but your NLP pipeline must be capable of ingesting the entire corpus.
-
-[2024 SEC 10-K Filings](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=sharing)
-
-
-## Accessing the Files in Google Colab {.unnumbered}
-
-### Add Folder to Your Drive {.unnumbered}
-
-1. Open the link above.
-2. Right-click the folder → Add shortcut to Drive
-3. Save it in My Drive
-
-### Mount Drive in Colab {.unnumbered}
+Pull the following fields for both tickers and store in a 2-row DataFrame:
 
 ```python
-from google.colab import drive
-drive.mount('/content/drive')
+import yfinance as yf
+import pandas as pd
+
+tickers = ["TICKER_A", "TICKER_B"]
+fields = ["marketCap", "trailingPE", "beta",
+          "revenueGrowth", "returnOnEquity", "debtToEquity"]
+rows = []
+for t in tickers:
+    info = yf.Ticker(t).info
+    row = {f: info.get(f) for f in fields}
+    row["ticker"] = t
+    rows.append(row)
+
+market_df = pd.DataFrame(rows).set_index("ticker")
+print(market_df.shape)
+market_df.info()
+market_df.describe()
+market_df
 ```
 
-### Verify Files {.unnumbered}
+Also pull 5-year cumulative return for both tickers and add as a column.
+
+Save to Drive:
 
 ```python
-import os
-os.listdir("/content/drive/MyDrive")
+market_df.to_csv("/content/drive/MyDrive/assignment01/company_context.csv")
 ```
 
-Adjust paths as needed.
+📊 **Required:** Show `market_df` as a table. Include it in your Word document. Briefly justify (1 paragraph) why these two companies are genuine rivals in the same vertical.
 
-# How should the 10-K corpus be constructed for industry-level analysis? {#sec-q1}
+# SEC Data Acquisition and Corpus Construction {#sec-data}
 
-## Business Goal
+## Download 10-K Filings Programmatically
 
-- Load the raw text data from all 10-K filings
-- Create a clean, reproducible corpus that supports comparison across industries.
-- You can choose 7 different industries from the [SEC filings](https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list).
-- Justify why your selection is rational and what are you gaining from it.
+Use the SEC EDGAR submissions API to retrieve the filing index for each company, then download Item 1A (Risk Factors) and Item 7 (MD&A) for years 2020–2024.
 
-## Technical Instructions
+```python
+import requests
+import re
+import time
 
-1. Load and process all Form 10-K TXT files in the shared folder:
-   1. Do not manually select files
-   2. Your code must iterate over the directory programmatically
-2. For each filing:
-   1. Load the full TXT file
-   2. Extract:
-     1. Item 1A – Risk Factors
-     2. Item 7 – MD&A
-   3. Extract and store:
-     1. company identifier
-     2. SIC code
-3. Build a structured corpus where each record contains:
-   1. company
-   2. SIC code
-   3. section name
-   4. cleaned text
-   5. sentence-level chunks
-4. Save intermediate artifacts:
-   1. cleaned section text
-   2. sentence-level files
-   3. metadata tables
-5. For analysis and reporting only, select:
-   1. at least 10 industries
+HEADERS = {"User-Agent": "your-email@bu.edu"}
 
-## Expected Outputs
+def get_10k_index(cik: str) -> list:
+    """Return list of 10-K filing metadata for a given CIK."""
+    url = f"https://data.sec.gov/submissions/CIK{cik.zfill(10)}.json"
+    resp = requests.get(url, headers=HEADERS)
+    resp.raise_for_status()
+    filings = resp.json()["filings"]["recent"]
+    records = []
+    for i, form in enumerate(filings["form"]):
+        if form == "10-K":
+            records.append({
+                "accession": filings["accessionNumber"][i].replace("-", ""),
+                "date": filings["filingDate"][i],
+                "year": int(filings["filingDate"][i][:4]),
+            })
+    return [r for r in records if 2020 <= r["year"] <= 2024]
+```
 
- - Table: company → SIC → industry group → section length
- - Folder structure showing saved artifacts
- - Brief explanation of cleaning decisions
+For each filing, extract Item 1A and Item 7 text. Store each extracted section as one row in a corpus DataFrame:
 
-:::{.callout-important}
-All Form 10-K files in the shared folder must be processed as part of the NLP pipeline.
+```python
+corpus_records = []
+# For each company, each year, each item:
+corpus_records.append({
+    "company": company_name,
+    "ticker": ticker,
+    "naics_code": naics_code,
+    "year": year,
+    "item": item_label,       # "1A" or "7"
+    "raw_text": extracted_text,
+    "char_count": len(extracted_text)
+})
 
-For Questions 2–4, you may subset the processed corpus for analysis, visualization, and modeling.
-:::
+corpus_df = pd.DataFrame(corpus_records)
+print(corpus_df.shape)
+corpus_df.info()
+corpus_df.describe()
+corpus_df.head()
+```
 
-# How should corporate risk language be represented for NLP analysis? {#sec-q2}
+📊 **Required:** Bar chart of filing count by company and year.
 
-> All text representations must be generated for the entire corpus, even if only a subset is used for downstream modeling.
+Save:
 
-## Business Goal
+```python
+corpus_df.to_csv("/content/drive/MyDrive/assignment01/corpus.csv", index=False)
+```
 
-Determine how narrative risk disclosures should be numerically represented for analysis and prediction.
+## Build Sentence-Level Chunks
 
-## Technical Instructions
+Split each `raw_text` into sentence chunks (≈ 3–5 sentences per chunk with 1-sentence overlap). Store as `chunks_df`:
 
-1. Build a classical NLP representation:
-   * TF-IDF on Item 1A text
-   * Explain tokenization and stopword choices
-2. Build a neural representation:
-   * Sentence embeddings using a Hugging Face model
-   * Aggregate to document-level embeddings
-3. Ensure all representations retain:
-   * company identifier
-   * SIC code
-   * section source (Item 1A or Item 7)
-4. Compare representations:
-   * dimensionality
-   * sparsity
-   * semantic coverage
+```python
+chunks_records = []
+for _, row in corpus_df.iterrows():
+    sentences = sent_tokenize(row["raw_text"])  # use nltk or spacy
+    for i in range(0, len(sentences) - 2, 3):
+        chunk = " ".join(sentences[i:i+4])
+        chunks_records.append({
+            "chunk_id": f"{row['ticker']}_{row['year']}_{row['item']}_{i}",
+            "company": row["company"],
+            "ticker": row["ticker"],
+            "naics_code": row["naics_code"],
+            "year": row["year"],
+            "item": row["item"],
+            "chunk_text": chunk,
+            "char_count": len(chunk)
+        })
 
-## Expected Outputs
+chunks_df = pd.DataFrame(chunks_records)
+print(chunks_df.shape)
+chunks_df.info()
+chunks_df.describe()
+chunks_df.head()
+```
 
-* Comparison table of representations
-* Short explanation of trade-offs
+📊 **Required:** Histogram of `char_count` by company to compare writing density.
+
+Save:
+
+```python
+chunks_df.to_csv("/content/drive/MyDrive/assignment01/chunks.csv", index=False)
+```
+
+# TF-IDF Feature Engineering {#sec-tfidf}
+
+## Build the TF-IDF Matrix
+
+```python
+from sklearn.feature_extraction.text import TfidfVectorizer
+import json
+
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    stop_words="english",
+    ngram_range=(1, 2),
+    min_df=3)
+X = vectorizer.fit_transform(chunks_df["chunk_text"])
+vocab = list(vectorizer.get_feature_names_out())
+
+with open("/content/drive/MyDrive/assignment01/vocab.json", "w") as f:
+    json.dump(vocab, f)
+
+tfidf_df = pd.DataFrame(X.toarray(), columns=vocab)
+tfidf_df["company"] = chunks_df["company"].values
+print(tfidf_df.shape)
+tfidf_df.describe().T.head(20)
+```
+
+## Top-20 Terms per Company
+
+Compute the mean TF-IDF weight per term for each company. Report top-20 terms.
+
+📊 **Required:** Side-by-side horizontal bar chart of top-20 terms for Company A and Company B. Include company names in the chart title.
+
+Save:
+
+```python
+pd.DataFrame(X.toarray(), columns=vocab).to_csv(
+    "/content/drive/MyDrive/assignment01/tfidf_matrix.csv", index=False)
+```
+
+## Cosine Similarity Between Matched Sections
+
+For each year (2020–2024), compute cosine similarity between the mean TF-IDF vector for Company A's Item 1A and Company B's Item 1A. Repeat for Item 7.
+
+```python
+from sklearn.metrics.pairwise import cosine_similarity
+
+sim_records = []
+for year in range(2020, 2025):
+    for item in ["1A", "7"]:
+        mask_a = (chunks_df["company"] == company_a) & \
+                 (chunks_df["year"] == year) & (chunks_df["item"] == item)
+        mask_b = (chunks_df["company"] == company_b) & \
+                 (chunks_df["year"] == year) & (chunks_df["item"] == item)
+        if mask_a.sum() == 0 or mask_b.sum() == 0:
+            continue
+        vec_a = X[mask_a.values].mean(axis=0)
+        vec_b = X[mask_b.values].mean(axis=0)
+        sim = cosine_similarity(vec_a, vec_b)[0][0]
+        sim_records.append({"year": year, "item": item, "cosine_similarity": sim})
+
+sim_df = pd.DataFrame(sim_records)
+print(sim_df.shape)
+sim_df.info()
+sim_df.describe()
+sim_df.head()
+```
+
+📊 **Required:** Line chart of cosine similarity over years, with Item 1A and Item 7 as separate lines. Label axes and include a legend.
+
+# PyTorch BoW Classifier {#sec-classifier}
+
+## Train a BoW Linear Classifier
+
+```python
+import torch
+import torch.nn as nn
+from torch.utils.data import TensorDataset, DataLoader
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+X_tensor = torch.tensor(X.toarray(), dtype=torch.float32)
+y = (chunks_df["company"] == company_a).astype(int).values
+y_tensor = torch.tensor(y, dtype=torch.long)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_tensor, y_tensor, test_size=0.2, random_state=42, stratify=y_tensor)
+
+class BoWClassifier(nn.Module):
+    def __init__(self, vocab_size: int, num_classes: int = 2):
+        super().__init__()
+        self.fc = nn.Linear(vocab_size, num_classes)
+
+    def forward(self, x):
+        return self.fc(x)
+
+model = BoWClassifier(X_tensor.shape[1])
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+criterion = nn.CrossEntropyLoss()
+
+losses = []
+for epoch in range(20):
+    model.train()
+    optimizer.zero_grad()
+    logits = model(X_train)
+    loss = criterion(logits, y_train)
+    loss.backward()
+    optimizer.step()
+    losses.append(loss.item())
+
+plt.plot(losses)
+plt.xlabel("Epoch")
+plt.ylabel("Training Loss")
+plt.title("BoW Classifier Training Loss")
+plt.show()
+```
+
+## Evaluate the Classifier
+
+```python
+model.eval()
+with torch.no_grad():
+    preds = model(X_test).argmax(dim=1).numpy()
+
+print(classification_report(y_test.numpy(), preds,
+      target_names=[company_b, company_a]))
+```
+
+📊 **Required:** Confusion matrix as a seaborn heatmap with company names on axes.
+
+Save weights:
+
+```python
+torch.save(model.state_dict(),
+           "/content/drive/MyDrive/assignment01/bow_classifier_weights.pt")
+```
+
+## Cosine-Similarity Threshold Baseline
+
+Predict the label of each test chunk as the label of its nearest training chunk (cosine similarity). Report baseline accuracy alongside classifier accuracy.
+
+```python
+baseline_results = pd.DataFrame({
+    "Method": ["Cosine Similarity Baseline", "PyTorch BoW Classifier"],
+    "Accuracy": [cosine_acc, bow_acc]})
+print(baseline_results)
+```
+
+# Q1: Which 10-K Section Best Separates the Two Rivals? {#sec-q1}
+
+Retrain your PyTorch BoW classifier separately on Item 1A chunks only and on Item 7 chunks only. Report accuracy for each run.
+
+| Section | Accuracy |
+|---------|----------|
+| Item 1A – Risk Factors | |
+| Item 7 – MD&A | |
+
+📊 **Required:** Bar chart of accuracy by section.
+
+**Answer in your Word document:** Which section produces higher classification accuracy? What does this suggest about where these two companies differentiate their language — operational risk versus strategic narrative?
 
 
-# Can risk language predict industry membership? {#sec-q3}
+# Q2: Does a Neural Classifier Outperform a Similarity Baseline? {#sec-q2}
 
-> For modeling and evaluation, you may restrict the dataset to a subset of SIC groups with sufficient sample size.
+Report the PyTorch BoW accuracy and the cosine-similarity baseline accuracy in a 2-row results table. Inspect 5 misclassified chunks (wrong-company predictions).
 
-## Business Goal
+📊 **Required:** Show a table of 5 misclassified chunks with `chunk_text`, `true_company`, and `predicted_company` columns. Show `.head()` of this error table.
 
-Evaluate whether how firms describe risk contains enough signal to predict industry classification.
+**Answer in your Word document:** What does the gap (or lack of gap) between the two methods tell you about whether company language is separated by vocabulary alone, or by something subtler?
 
-## Technical Instructions
 
-### Prediction Task
+# Q3: Do the Words That Separate the Companies Match the Numbers? {#sec-q3}
 
-* Input: Item 1A risk text
-* Target: SIC-based industry group (coarse-grained)
+## Business Recommendation — Investment Decision
 
-### Model A: Classical NLP
+Refer to your top-20 discriminating terms bar chart (Section 4) and your Yahoo Finance market context table (Section 2).
 
-* TF-IDF features
-* Logistic Regression or Linear SVM
-* Report:
+**Answer in your Word document (≤1 page):** The top-20 discriminating terms represent each company's narrative fingerprint. Would a fundamental analyst reading only these keywords reach the same investment conclusion as the Yahoo Finance numbers do? Identify at least two terms that align with a financial metric (e.g., a term about "debt" aligning with a high debt-to-equity ratio) and at least one term that provides information the numbers do not capture. Based on this combined evidence, would you weight the two companies differently in a portfolio?
 
-  * accuracy
-  * confusion matrix
 
-### Model B: Basic Neural NLP
+# Deliverables Summary {.unnumbered}
 
-* Sentence/document embeddings
-* Feedforward neural network (MLP)
-* Report:
-
-  * accuracy
-  * comparison vs classical model
-
-### Analysis
-
-* Compare model performance
-* Identify industries that are frequently misclassified
-* Discuss interpretability vs performance
-
-## Expected Outputs
-
-* Model performance table
-* Confusion matrices
-* Short technical discussion
-
-# How reliable are NLP-based risk assessments for business decision-making? {#sec-q4}
-
-## Business Goal
-
-Assess whether these models are decision-ready for real investment use.
-
-## Technical Instructions
-
-1. Identify at least three failure cases, such as:
-   * boilerplate language
-   * ambiguous phrasing
-   * sentiment mismatch
-2. Perform manual validation:
-   * inspect representative sentences
-   * explain why models failed
-3. Compare:
-   * classical vs neural models
-   * strengths and weaknesses
-4. Write an executive summary ($\leq 1 $ page):
-   * key findings
-   * limitations
-   * recommendations
-
-## Expected Outputs
-
-* Failure case table
-* Executive-style memo
-
+| Artifact | Location |
+|----------|----------|
+| `company_context.csv` | `/assignment01/` on Drive |
+| `corpus.csv` | `/assignment01/` on Drive |
+| `chunks.csv` | `/assignment01/` on Drive |
+| `tfidf_matrix.csv` | `/assignment01/` on Drive |
+| `vocab.json` | `/assignment01/` on Drive |
+| `bow_classifier_weights.pt` | `/assignment01/` on Drive |
+| Market context table | In notebook + Word doc |
+| Top-20 TF-IDF terms chart | In notebook + Word doc |
+| Cosine similarity over years chart | In notebook + Word doc |
+| Confusion matrix heatmap | In notebook + Word doc |
 
 # Use of Generative AI {.unnumbered}
 
-:::{.callout-important}
-Generative AI tools may be used for:
+You may use generative AI tools for code assistance, debugging, and explanation. You must:
 
-* code assistance
-* explanation
-* summarization
+- List every tool used
+- Include the prompts you submitted
+- Explain how you validated the output
 
-They may not replace required pipeline steps.
-:::
-
-You must briefly document:
-
-* where AI tools were used
-* how outputs were validated or modified
-
-
-# Looking Ahead {.unnumbered}
-
-:::{.callout-note}
-In Assignments 2–5, you will:
-
-* replace classical models with large language models
-* build retrieval-augmented generation (RAG) pipelines
-* use vector search and neural retrieval
-
-The cleaned corpus, SIC labels, sentence chunks, and embeddings created here will be reused directly.
-:::
-
----
-
-# Resources {.unnumbered}
-
-* SEC EDGAR Filings Guide
-* Hugging Face Transformers Documentation
-* scikit-learn NLP Documentation
-* PyTorch Documentation
+Submit AI disclosure as a separate document or as an appendix to your Word submission.
 

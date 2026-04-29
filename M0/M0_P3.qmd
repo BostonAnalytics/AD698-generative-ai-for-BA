@@ -32,6 +32,8 @@ execute:
   eval: true
   warning: false
   message: false
+categories: ['M0:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 0 on Neural Networks — Regression and Classification."
 ---
 
 ## Roadmap for Today

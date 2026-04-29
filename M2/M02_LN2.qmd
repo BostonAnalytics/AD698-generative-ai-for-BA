@@ -1,5 +1,5 @@
 ---
-title: "M02: Lecture Note 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "From Words to Structured Text"
 number-sections: true
 date: "2024-11-21"
@@ -15,13 +15,13 @@ format:
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['Notes', 'Lecture', 'M02:']
-description: "Types vs tokens, Naïve Bayes classifier, MLP bridge, word embeddings, and text evaluation metrics."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M02:', 'Text Representation', 'Structured Text', 'NLP', 'Lecture Notes']
+description: "Lecture notes for Module 2 covering From Words to Structured Text."
 ---
 
 # Defining the Word

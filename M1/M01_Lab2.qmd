@@ -1,5 +1,5 @@
 ---
-title: "Module 1 - Lab 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Word Embeddings and Neural Text Representations"
 number-sections: true
 date: "2024-11-21"
@@ -11,13 +11,13 @@ format:
         toc: true
         toc-depth: 3
         code-overflow: wrap
-categories: ['M01:', 'Lab']
-description: "From count-based representations to learned neural word embeddings on SEC 10-K filings."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M01:', 'Lab']
+description: "Hands-on lab for Module 1 focused on Word Embeddings and Neural Text Representations."
 ---
 
 ## Lab Overview {.unnumbered}

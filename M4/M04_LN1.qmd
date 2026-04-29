@@ -1,5 +1,5 @@
 ---
-title: "M04: Lecture Note 1"
+title: "AD698 - Applied Generative AI"
 subtitle: "Transformers, Attention, and Context"
 number-sections: true
 date: "2024-03-12"
@@ -15,13 +15,13 @@ format:
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['Lecture', 'Notes', 'M04:', 'Transformers', 'Attention']
-description: "Attention mechanisms, multi-head self-attention, positional encoding, and the transformer architecture."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M04:', 'Transformers', 'Attention', 'Context Windows', 'Lecture Notes']
+description: "Lecture notes for Module 4 covering Transformers, Attention, and Context."
 ---
 
 ```{python}

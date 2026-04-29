@@ -1,5 +1,5 @@
 ---
-title: "Module 2: Highlights"
+title: "AD698 - Applied Generative AI"
 subtitle: "Meaning and Structured Text"
 number-sections: true
 format: 
@@ -9,7 +9,8 @@ format:
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ["Language Modeling", "Embeddings", "Information Theory", "Text Representation"]
+categories: ['M02:', 'Highlights']
+description: "Module 2 highlights for Meaning and Structured Text."
 ---
 
 # Lecture 2.1: Mathematical Foundations Through Language Modeling

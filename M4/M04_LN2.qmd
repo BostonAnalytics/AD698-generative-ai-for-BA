@@ -1,7 +1,6 @@
 ---
-title: "M04: Lecture Note 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Training Paradigms and Fine-Tuning Pipelines"
-description: "From pretraining objectives through full fine-tuning, instruction tuning, RLHF, and parameter-efficient methods (LoRA / adapters)."
 number-sections: true
 date: "2026-03-12"
 date-modified: today
@@ -21,6 +20,8 @@ execute:
     eval: false
     warning: false
     message: false
+categories: ['M04:', 'Fine-Tuning', 'Training', 'Transfer Learning', 'Lecture Notes']
+description: "Lecture notes for Module 4 covering Training Paradigms and Fine-Tuning Pipelines."
 ---
 
 ## Overview

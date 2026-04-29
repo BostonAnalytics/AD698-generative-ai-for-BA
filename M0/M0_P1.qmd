@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Introduction to Version Control"
+subtitle: "Colab + GPU + Tensors (Detailed)"
 logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
 date-modified: today
@@ -32,6 +32,8 @@ execute:
   eval: true
   warning: false
   message: false
+categories: ['M0:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 0 on Colab + GPU + Tensors (Detailed)."
 ---
 
 ## How to print Revealjs slides

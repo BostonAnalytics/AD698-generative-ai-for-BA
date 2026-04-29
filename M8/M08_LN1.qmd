@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['Neural Networks', 'Classification', 'Regression', 'generalization', 'overfitting', 'underfitting']
-description: "Lecture covering Neural Networks for Classification and Regression."
+categories: ['M08:', 'Neural Networks', 'Classification', 'Regression', 'Lecture Notes']
+description: "Lecture notes for Module 8 covering Neural Networks for Classification and Regression."
 ---
 
 {{< include "./m08_l01_content/1.neural-network-regression.qmd" >}}

@@ -1,11 +1,260 @@
 ---
-title: "Project Data Processing Setup"
-subtitle: "M05 Project Milestone"
+title: "AD698 - Applied Generative AI"
+subtitle: "Project Instructions V - Step 4, Final Packaging, and Report"
 number-sections: true
-date: "2024-11-21"
+date: "2026-04-28"
 date-modified: today
 date-format: long
-
-categories: ['Processing', 'Data', 'Setup', 'Project']
-description: "Project milestone: Project Data Processing Setup."
+execute:
+  echo: true
+  eval: false
+categories: ['M05:', 'Project']
+description: "Project guidance for Module 5 focused on Project Instructions V - Step 4, Final Packaging, and Report."
 ---
+
+# Step 4 and Final Submission Overview
+
+Module 5 is the final build phase of your financial technology product. You will complete two things:
+
+1. **Step 4** — Build and evaluate the grounded generation pipeline
+2. **Final Packaging** — Produce a clean, reproducible submission package and written report
+
+By the end of Module 5 your product must be fully functional: a user can ask an industry-specific financial question and receive a grounded, citation-backed answer drawn from 10-K filings scoped to your NAICS 4-digit industry.
+
+# Step 4: Grounded Generation and Evaluation
+
+## Step 4 Objective
+
+Step 4 closes the product loop. You will connect your validated vector index (Step 3) to a language model to generate answers that are grounded in specific filing passages and traceable back to a company, year, and Item.
+
+Your product must demonstrate that it can answer questions a financial analyst or regulator would actually ask about your NAICS industry — not just generic LLM-style answers, but answers tied to specific evidence.
+
+## Colab Path Setup
+
+```{python}
+from pathlib import Path
+BASE_DIR = Path('/content/drive/MyDrive/project_sec10k_rag')
+# Optional local: BASE_DIR = Path.cwd() / 'project_sec10k_rag'
+
+VECTOR_STORE_DIR = BASE_DIR / 'data' / 'vector_store'
+OUTPUTS_DIR = BASE_DIR / 'data' / 'outputs'
+OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
+```
+
+## Required Generation Behavior
+
+For each industry-relevant question your product must:
+
+- retrieve top-k chunks from the vector index
+- assemble a grounded prompt that includes retrieved evidence
+- generate an answer using your selected model
+- include structured citations for every claim
+
+**Required citation fields in each answer row:**
+
+- `chunk_id`
+- `company_name` or `ticker`
+- `filing_year`
+- `item_number`
+- `naics_code`
+
+:::{.callout-important}
+Answers without citations are not acceptable for this product. Every substantive claim must trace back to a retrievable filing passage.
+:::
+
+## Industry Question Set
+
+Design at least 8 analytical questions grounded in your NAICS industry. Questions should be the type a financial analyst, equity researcher, or FinTech product user would ask.
+
+Example question types for industry-scoped RAG:
+
+- "What risk factors did [NAICS industry] companies cite most frequently in 2020-2022 relative to 2015-2019?"
+- "How have [NAICS industry] companies described their capital expenditure strategy over the past decade?"
+- "Which companies in [NAICS industry] disclosed material cybersecurity incidents and what remediation steps were mentioned?"
+
+## Evaluation Dimensions
+
+Evaluate your product's output across these five dimensions:
+
+| Dimension | What to Measure |
+|---|---|
+| Retrieval Relevance | Are the top-k chunks actually relevant to the question? |
+| Answer Faithfulness | Does the answer only claim what the retrieved text supports? |
+| Citation Accuracy | Do citations correctly identify the company, year, and item? |
+| Hallucination Risk | Does the model assert facts not present in the retrieved context? |
+| Refusal Behavior | Does the model decline when no relevant context is retrieved? |
+
+Optional evaluation extensions:
+
+- LangSmith tracing
+- RAGAS-style automated metrics
+- Cohere reranking for retrieval improvement
+- Hugging Face evaluation models
+
+## Required Outputs for Step 4
+
+- `data/outputs/rag_answers.csv`
+- `data/outputs/rag_evaluation.csv`
+
+## Yahoo Finance Market Analysis (Required)
+
+Your FinTech product must connect filing-based RAG findings to real market behavior. Use the `yfinance` library to download historical stock prices for all companies in your NAICS industry scope.
+
+```{python}
+import yfinance as yf
+import pandas as pd
+
+tickers = ['AAPL', 'MSFT']  # replace with your NAICS industry companies
+prices = yf.download(tickers, start='2015-01-01', end='2025-12-31', auto_adjust=True)
+prices['Close'].to_csv(BASE_DIR / 'data' / 'yahoo_prices' / 'closing_prices.csv')
+```
+
+**Required market features per company:**
+
+| Feature | Description |
+|---|---|
+| Annual return | Year-over-year price change |
+| Volatility | Rolling 30-day standard deviation of returns |
+| Maximum drawdown | Largest peak-to-trough decline in the period |
+| Filing-window movement | Price change in the ±30 days around 10-K filing date |
+
+**Required analysis:** Connect market data to RAG findings. At minimum, address one of the following:
+
+- Do companies that disclosed higher risk-factor counts in Item 1A show elevated volatility in the same or following fiscal year?
+- Is there a pattern between the sentiment of Item 7 (MD&A) language and filing-window stock returns?
+- Which companies in your NAICS industry show the largest gap between disclosed risk language and subsequent market performance?
+
+Outputs: `data/yahoo_prices/closing_prices.csv`, `data/outputs/company_price_features.csv`
+
+## Submission Checklist (Step 4)
+
+- [ ] Industry question set defined and tied to NAICS domain
+- [ ] All answers include required citation fields including `naics_code`
+- [ ] Evaluation table completed across all five dimensions
+- [ ] At least 2 failure cases documented with explanation
+- [ ] `rag_answers.csv` and `rag_evaluation.csv` exported to Drive
+- [ ] Yahoo Finance prices downloaded and saved to `data/yahoo_prices/`
+- [ ] Market analysis section completed with at least one filing-to-market connection
+
+---
+
+# Final Packaging and Report
+
+## Final Submission Package
+
+Your final submission is a reproducible financial technology product prototype. It must be student-built, clearly organized, and runnable from top to bottom in Google Colab.
+
+Required package components:
+
+- Four project notebooks
+- Output artifacts in `data/outputs/`
+- Vector index artifacts in `data/vector_store/`
+- Short written final report (see below)
+
+:::{.callout-note}
+GitHub is optional. Teams can submit a Google Drive folder link plus report if not using GitHub.
+:::
+
+## Notebook Package Requirements
+
+The four notebooks must follow this naming convention:
+
+- `01_industry_company_selection_and_10k_download`
+- `02_item_selection_cleaning_and_eda`
+- `03_embeddings_and_rag_preparation`
+- `04_rag_generation_and_evaluation`
+
+Each notebook must begin with:
+
+- Drive mount cell
+- `BASE_DIR` path cell
+- NAICS code and industry label documented in a markdown cell
+
+## Security Checklist
+
+- Never submit API keys in notebooks
+- Never commit `.env` or secrets files to any repository
+- Keep raw filings, embeddings, and vector indexes out of public repos
+
+## Required Final Outputs
+
+| File | Step |
+|---|---|
+| `data/outputs/filing_metadata.csv` | Step 1 |
+| `data/outputs/industry_filing_panel.csv` | Step 1 |
+| `data/outputs/cleaned_item_metadata.csv` | Step 2 |
+| `data/chunked/sec10k_chunks.parquet` | Step 3 |
+| `data/vector_store/` | Step 3 |
+| `data/outputs/rag_answers.csv` | Step 4 |
+| `data/outputs/rag_evaluation.csv` | Step 4 |
+| `data/yahoo_prices/closing_prices.csv` | Step 4 |
+| `data/outputs/company_price_features.csv` | Step 4 |
+
+## Final Report Requirements
+
+The written report should be 1,500-2,500 words and organized as follows:
+
+1. **Product Description** — What is the product, who is the target user, and what NAICS industry does it serve?
+2. **Data and Scope** — Companies selected, filing years covered, Items used, and data quality notes
+3. **Pipeline Architecture** — Brief description of each of the four steps and the design choices made
+4. **Evaluation Results** — Summary of RAG evaluation findings, including retrieval quality and failure cases
+5. **Market Analysis** — Key findings from the Yahoo Finance price analysis and at least one filing-to-market connection
+6. **Limitations and Risks** — What does the product not handle well? What would need to change before deployment?
+7. **Recommendations** — If this were a real FinTech product, what would the next development sprint focus on?
+
+## Final Checklist
+
+- [ ] All four notebooks complete and runnable
+- [ ] All required output files exported to Drive
+- [ ] Security rules followed throughout (`.env` not committed, keys not in notebooks)
+- [ ] NAICS code and industry documented at the top of notebook 1
+- [ ] Yahoo Finance prices downloaded and market analysis complete
+- [ ] Final report addresses all seven sections
+- [ ] Team contribution clearly documented
+
+# Weekly Team Standup
+
+Your team holds a **5-minute standup once per week** during Module 5. This is the final build sprint — standups ensure the RAG generation, evaluation, and market analysis tracks stay coordinated through the finish line.
+
+> **Reference:** [Atlassian — How to Run Effective Standups](https://www.atlassian.com/agile/scrum/standups)
+
+Three questions for the team each week:
+
+1. **What did the team complete since the last standup?**
+2. **What will the team work on before the next standup?**
+3. **What blockers or decisions is the team stuck on?**
+
+## In-Person Sections
+
+Standup happens live at the start of class. Flag LLM generation issues, evaluation gaps, Yahoo Finance data problems, or report writing bottlenecks.
+
+## Online Sections — Weekly Standup Document
+
+Submit a **one-page standup document** to the course portal by the due date each week. Ungraded on its own, but **standup submissions count toward your final project participation grade**.
+
+Use this template:
+
+---
+
+**Team Name / NAICS Industry:**
+
+**Standup Week:** Module 5 — Week ___
+
+**Date Submitted:**
+
+| Question | Team Response |
+|---|---|
+| What did we complete this week? | |
+| What will we work on next week? | |
+| What is blocking us or needs a decision? | |
+
+**Files or outputs produced this week** (list filenames or Drive links):
+
+**Team member who facilitated this standup:**
+
+---
+
+:::{.callout-note}
+The final Module 5 standup (last week before submission) should confirm that all checklist items above are complete. If anything is missing, flag it in the standup rather than discovering it on submission day.
+:::
+

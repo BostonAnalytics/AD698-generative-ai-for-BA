@@ -1,5 +1,5 @@
 ---
-title: "Module 0: Lecture Notes 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Mathematical Foundations for Neural Networks and SGD"
 number-sections: true
 date: "2026-01-01"
@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ["Lecture", "Math Foundations", "Optimization", "SGD", "Activation Functions"]
-description: "Detailed chapter-style lecture notes on linear algebra, calculus, activations, and SGD with inline figures and code."
+categories: ['M0:', 'Mathematics', 'Neural Networks', 'SGD', 'Lecture Notes']
+description: "Lecture notes for Module 0 covering Mathematical Foundations for Neural Networks and SGD."
 ---
 
 # Why this chapter

@@ -1,6 +1,6 @@
 ---
-title: "Module 1 - Lab 1"
-subtitle: "From Raw Text to NLP Pipelines (SEC 10-K)"
+title: "AD698 - Applied Generative AI"
+subtitle: "Early Neural Networks & Natural Language Processing"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -8,8 +8,8 @@ date-format: long
 format: 
     html:
         code-overflow: wrap
-categories: ['1', 'M01:', 'Lab']
-description: "Hands-on lab activity: Interacting with Textual Data in Jupyter and Colab."
+categories: ['M01:', 'Lab']
+description: "Hands-on lab for Module 1 focused on Early Neural Networks & Natural Language Processing."
 ---
 
 

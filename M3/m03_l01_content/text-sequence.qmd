@@ -1,6 +1,10 @@
 ---
+title: "AD698 - Applied Generative AI"
+subtitle: "text-sequence"
 execute: 
   freeze: true
+categories: ['M03:', 'Module']
+description: "Module 3 content focused on text-sequence."
 ---
 
 ```{python}

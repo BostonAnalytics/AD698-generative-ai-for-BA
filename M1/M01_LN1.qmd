@@ -9,8 +9,8 @@ format:
     docx: 
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
-categories: ['M01:', 'Notes', 'Lecture']
-description: "Early history of neural networks, the foundations of natural language processing, and MLP-based text classification with PyTorch."
+categories: ['M01:', 'Neural Networks', 'NLP', 'History of AI', 'Lecture Notes']
+description: "Lecture notes for Module 1 covering Early Neural Networks & Natural Language Processing."
 ---
 
 # What Is Generative AI?

@@ -1,11 +1,410 @@
 ---
-title: "Assignment 1: AI in Business Intelligence"
-subtitle: "M04 Assignment"
+title: "AD698 - Applied Generative AI"
+subtitle: "Transformers, Encoder vs. Decoder, and the Language of Rivals"
 number-sections: true
-date: "2024-11-21"
+date: "2026-03-15"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['1:', 'AI', 'Business', 'in']
-description: "Assignment task: Assignment 1: AI in Business Intelligence."
+execute:
+  echo: true
+  eval: false
+categories: ['M04:', 'Assignment']
+description: "Assignment for Module 4 focused on Transformers, Encoder vs. Decoder, and the Language of Rivals."
 ---
+
+# Important Reminder {.unnumbered}
+
+- This assignment must be completed using **Google Colab with a GPU runtime** (Runtime → Change runtime type → T4 GPU).
+- You must use the **same two rival companies and NAICS vertical** as Assignments 1 and 2.
+
+:::{.callout-important}
+## Prerequisites
+
+The following files must exist on your Drive before starting:
+
+- `/assignment01/corpus.csv`
+- `/assignment01/chunks.csv`
+- `/assignment02/glove_mlp_weights.pt` (used to report the A2 baseline accuracy)
+
+Load and inspect `chunks.csv` at the start of your notebook.
+:::
+
+:::{.callout-important}
+## DataFrame and Visualization Standard
+
+For every DataFrame you create or transform:
+
+- Show `.head()` to display sample rows in your notebook
+- Run `.info()` to confirm column types and null counts
+- Run `.describe()` to summarize numeric statistics
+- Include at least one relevant visualization (bar chart, heatmap, scatter plot, or distribution plot) with a descriptive title and labeled axes
+
+These are graded as part of your technical evidence. Undocumented DataFrames and unexplained outputs will lose points.
+:::
+
+
+# Submission Instructions {.unnumbered}
+
+Submit two files on Blackboard:
+
+1. **Word Document (`.docx`)** — maximum 5 pages (excluding cover and references)
+   - Answers to Q1–Q4 and Business Recommendation
+   - Encoder vs. Decoder conceptual comparison (≤1 page)
+   - All figures and tables embedded inline
+   - No code
+
+2. **Jupyter Notebook (`.ipynb`)** — runs on Colab with GPU, organized by section
+
+Suggested notebook structure:
+
+1. Configuration, Drive mount, GPU check, package installs
+2. Load Assignment 1 corpus and inspect
+3. BERT attention extraction and heatmap visualization
+4. BERT fine-tuned classification head: training and evaluation
+5. GPT-2 perplexity computation and boxplots
+6. GPT-2 completion examples
+7. 4-method accuracy comparison table
+8. Yahoo Finance risk metrics
+9. Q1–Q4 analysis and Business Recommendation
+
+# Objective {.unnumbered}
+
+:::{.callout-note}
+Assignments 1 and 2 used frequency counts and distributional word embeddings to distinguish two rival companies. Assignment 3 introduces **contextual language models** — models that represent word meaning based on the full sentence context, not just word co-occurrence patterns. It also introduces the fundamental architectural split between encoder models (designed for understanding) and decoder models (designed for generation).
+:::
+
+:::{.callout-important}
+**Core question:** What do transformer models see in 10-K financial language that frequency-based and distributional models miss — and what does the encoder vs. decoder split reveal about how companies write?
+:::
+
+**Encoder vs. Decoder — conceptual framing (required in Word document, ≤1 page):**
+
+| | Encoder (BERT) | Decoder (GPT-2) |
+|--|--|--|
+| Architecture | Bidirectional: sees full context | Left-to-right: sees only prior tokens |
+| Trained for | Understanding, classification | Generation, prediction |
+| What it measures | Which tokens are contextually relevant (attention) | How predictable the next token is (perplexity) |
+| Higher score means | Stronger attention weight | More unusual / distinctive language |
+
+# Load Corpus and Verify GPU {#sec-setup}
+
+```python
+import torch
+print("GPU available:", torch.cuda.is_available())
+if torch.cuda.is_available():
+    print("Device:", torch.cuda.get_device_name(0))
+
+import pandas as pd
+chunks_df = pd.read_csv("/content/drive/MyDrive/assignment01/chunks.csv")
+print(chunks_df.shape)
+chunks_df.info()
+chunks_df.describe(include="all")
+chunks_df.head()
+```
+
+📊 **Required:** Bar chart of chunk counts per company and per item type.
+
+# BERT Attention Visualization {#sec-attention}
+
+## Load BERT and Extract Attention
+
+```python
+from transformers import BertTokenizer, BertModel
+
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+bert = BertModel.from_pretrained("bert-base-uncased", output_attentions=True)
+bert.eval()
+```
+
+Select one matched sentence pair — one sentence from Company A's Item 1A and one topically similar sentence from Company B's Item 1A (same risk topic, different wording). Each sentence should be 15–30 tokens.
+
+```python
+sentence_a = "PASTE YOUR COMPANY A SENTENCE HERE"
+sentence_b = "PASTE YOUR COMPANY B SENTENCE HERE"
+
+def get_attention(sentence: str):
+    inputs = tokenizer(sentence, return_tensors="pt")
+    with torch.no_grad():
+        outputs = bert(**inputs)
+    tokens = tokenizer.convert_ids_to_tokens(inputs["input_ids"][0])
+    return outputs.attentions, tokens
+
+attn_a, tokens_a = get_attention(sentence_a)
+attn_b, tokens_b = get_attention(sentence_b)
+```
+
+Build a DataFrame of top-attended tokens for Company A (Layer 12, Head 1):
+
+```python
+import numpy as np
+
+weights = attn_a[11][0, 0].detach().numpy()   # Layer 12, Head 1
+top_idx = np.argsort(weights.mean(axis=0))[::-1][:10]
+
+attention_df = pd.DataFrame({
+    "token": [tokens_a[i] for i in top_idx],
+    "mean_attention": weights.mean(axis=0)[top_idx]
+})
+print(attention_df.shape)
+attention_df.info()
+attention_df.describe()
+attention_df.head(10)
+```
+
+## Plot Attention Heatmaps
+
+Plot four heatmaps: Company A (Layer 1, Head 1), Company A (Layer 12, Head 1), Company B (Layer 1, Head 1), Company B (Layer 12, Head 1).
+
+```python
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def plot_attention_heatmap(attn, tokens, layer: int, head: int, title: str):
+    weights = attn[layer][0, head].detach().numpy()
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(weights, xticklabels=tokens, yticklabels=tokens,
+                cmap="Blues", ax=ax)
+    ax.set_title(title, fontsize=12)
+    ax.set_xlabel("Key tokens")
+    ax.set_ylabel("Query tokens")
+    plt.tight_layout()
+    plt.show()
+
+plot_attention_heatmap(attn_a, tokens_a, layer=0, head=0,
+                       title=f"{company_a} — Layer 1, Head 1")
+plot_attention_heatmap(attn_a, tokens_a, layer=11, head=0,
+                       title=f"{company_a} — Layer 12, Head 1")
+plot_attention_heatmap(attn_b, tokens_b, layer=0, head=0,
+                       title=f"{company_b} — Layer 1, Head 1")
+plot_attention_heatmap(attn_b, tokens_b, layer=11, head=0,
+                       title=f"{company_b} — Layer 12, Head 1")
+```
+
+📊 **Required:** All four heatmaps with token labels on both axes.
+
+# BERT Fine-Tuned Classifier {#sec-bert-cls}
+
+## Add a Classification Head (Frozen Encoder)
+
+Freeze the BERT encoder. Add a single Linear layer on top of the `[CLS]` token embedding.
+
+```python
+class BERTClassifier(torch.nn.Module):
+    def __init__(self, bert_model, num_classes: int = 2):
+        super().__init__()
+        self.bert = bert_model
+        for param in self.bert.parameters():
+            param.requires_grad = False   # freeze encoder
+        self.classifier = torch.nn.Linear(768, num_classes)
+
+    def forward(self, input_ids, attention_mask):
+        outputs = self.bert(input_ids=input_ids,
+                            attention_mask=attention_mask)
+        cls = outputs.last_hidden_state[:, 0, :]
+        return self.classifier(cls)
+```
+
+Tokenize all chunks (truncate to 128 tokens). Train for 3 epochs with AdamW optimizer.
+
+## Evaluate
+
+```python
+from sklearn.metrics import classification_report, confusion_matrix
+
+print(classification_report(y_true, y_pred,
+      target_names=[company_b, company_a]))
+
+cm = confusion_matrix(y_true, y_pred)
+sns.heatmap(cm, annot=True, fmt="d",
+            xticklabels=[company_b, company_a],
+            yticklabels=[company_b, company_a],
+            cmap="Blues")
+plt.title("BERT Classifier — Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("True")
+plt.show()
+```
+
+📊 **Required:** Confusion matrix heatmap with company names on axes.
+
+Save classification head weights:
+
+```python
+torch.save(bert_clf.classifier.state_dict(),
+           "/content/drive/MyDrive/assignment03/bert_classifier_weights.pt")
+```
+
+# GPT-2 Perplexity Analysis {#sec-gpt2}
+
+## Compute Perplexity Per Chunk
+
+GPT-2 is a **decoder-only** model that predicts each token given only the tokens to its left. Perplexity measures how surprised the model is by a text: **lower perplexity = more standard, predictable language; higher perplexity = more unusual, distinctive language**.
+
+```python
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
+import math
+
+gpt2_tok = GPT2Tokenizer.from_pretrained("gpt2")
+gpt2 = GPT2LMHeadModel.from_pretrained("gpt2")
+gpt2.eval()
+
+def compute_perplexity(text: str, max_length: int = 512) -> float:
+    enc = gpt2_tok(text, return_tensors="pt",
+                   truncation=True, max_length=max_length)
+    with torch.no_grad():
+        out = gpt2(**enc, labels=enc["input_ids"])
+    return math.exp(out.loss.item())
+```
+
+Sample 50 chunks per company per item type. Compute perplexity for each.
+
+```python
+ppl_records = []
+for _, row in sample_chunks.iterrows():
+    ppl = compute_perplexity(row["chunk_text"])
+    ppl_records.append({
+        "company": row["company"],
+        "item": row["item"],
+        "perplexity": ppl
+    })
+
+ppl_df = pd.DataFrame(ppl_records)
+print(ppl_df.shape)
+ppl_df.info()
+ppl_df.describe()
+ppl_df.head()
+```
+
+📊 **Required:** Box plot of perplexity by company, with a second panel by item type (Item 1A vs Item 7).
+
+Save:
+
+```python
+ppl_df.to_csv("/content/drive/MyDrive/assignment03/ppl_df.csv", index=False)
+```
+
+## GPT-2 Completion Examples
+
+Take the first 20 tokens of one distinctive risk-factor sentence from each company. Show the top-5 beam-search continuations:
+
+```python
+from transformers import pipeline
+
+generator = pipeline("text-generation", model="gpt2",
+                     max_new_tokens=30, num_return_sequences=5,
+                     num_beams=5, do_sample=False)
+
+completions_a = generator(prompt_a)
+completions_b = generator(prompt_b)
+
+comp_df = pd.DataFrame({
+    "#": range(1, 6),
+    f"{company_a} continuation": [c["generated_text"] for c in completions_a],
+    f"{company_b} continuation": [c["generated_text"] for c in completions_b]
+})
+comp_df
+```
+
+# Yahoo Finance Risk Metrics {#sec-yahoo}
+
+Pull 3-year beta and 52-week return for both companies:
+
+```python
+import yfinance as yf
+
+def get_risk_metrics(ticker: str) -> dict:
+    info = yf.Ticker(ticker).info
+    hist = yf.Ticker(ticker).history(period="1y")
+    annual_return = (hist["Close"].iloc[-1] / hist["Close"].iloc[0]) - 1
+    return {
+        "ticker": ticker,
+        "beta": info.get("beta"),
+        "trailingPE": info.get("trailingPE"),
+        "52w_return": round(annual_return, 4),
+        "marketCap": info.get("marketCap")
+    }
+
+risk_df = pd.DataFrame([get_risk_metrics(ticker_a), get_risk_metrics(ticker_b)])
+print(risk_df.shape)
+risk_df.info()
+risk_df.describe()
+risk_df
+```
+
+📊 **Required:** Show this table in your Word document. You will use beta and return in Q3 and Q4.
+
+# 4-Method Accuracy Comparison {#sec-compare}
+
+Compile all accuracy results into one comparison table. Fill in A1 and A2 values from prior assignments.
+
+```python
+comparison_df = pd.DataFrame({
+    "Assignment": ["A1", "A1", "A2", "A2", "A3"],
+    "Method": [
+        "TF-IDF BoW (Linear)",
+        "Cosine Similarity Baseline",
+        "Word2Vec MLP (scratch)",
+        "GloVe MLP (pretrained)",
+        "BERT (frozen encoder + linear head)"
+    ],
+    "Accuracy": [a1_bow, a1_cos, a2_w2v, a2_glove, a3_bert]
+})
+print(comparison_df)
+```
+
+📊 **Required:** Horizontal bar chart of all five methods sorted by accuracy.
+
+# Q1: Which Attention Layer Focuses on More Meaningful Tokens? {#sec-q1}
+
+Refer to your four attention heatmaps (Layer 1 and Layer 12 for each company).
+
+**Answer in your Word document:** For each company, describe what changes from Layer 1 to Layer 12 attention patterns. Does later-layer attention focus on more financially meaningful tokens? Give at least two specific token examples from your heatmaps and explain why the shift is consistent (or inconsistent) with BERT's architecture.
+
+# Q2: How Much Does BERT Improve Over Word2Vec? {#sec-q2}
+
+Refer to the 4-method accuracy comparison table.
+
+**Answer in your Word document:** Report the accuracy gap between BERT (A3) and the best A2 method. Estimate the difference in compute time and model size (parameter count) between the two approaches. Given those tradeoffs, under what business conditions would you recommend BERT over GloVe for a financial NLP classification task?
+
+
+# Q3: What Does Perplexity Reveal About Company Writing Style? {#sec-q3}
+
+Refer to your GPT-2 perplexity box plot and your Yahoo Finance risk metrics table.
+
+**Answer in your Word document:** Which company has higher average GPT-2 perplexity? What does this mean about how standard or distinctive their 10-K language is? Does the company with higher perplexity also have higher beta in the Yahoo Finance table — suggesting that more unusual language correlates with more unpredictable market behavior? State clearly whether you observe this pattern or not, and why it might or might not hold.
+
+# Q4: Which Method Would You Recommend to a FinTech Compliance Team? {#sec-q4}
+
+## Business Recommendation — Model Selection
+
+A FinTech compliance team needs to flag unusual risk language in 500 new 10-K filings per quarter on a **$5,000/quarter cloud budget**.
+
+**Answer in your Word document (≤1 page):** Which of the five methods in your comparison table would you recommend? Your answer must explicitly reference:
+
+- At least two accuracy values from the comparison table
+- Estimated compute cost or processing time (rough order of magnitude)
+- The interpretability vs. accuracy tradeoff
+- Whether the beta and P/E profile of your two rivals changes your recommendation (e.g., would you use a more expensive model for a higher-beta company?)
+
+# Deliverables Summary {.unnumbered}
+
+| Artifact | Location |
+|----------|----------|
+| `bert_classifier_weights.pt` | `/assignment03/` on Drive |
+| `ppl_df.csv` | `/assignment03/` on Drive |
+| 4 attention heatmap figures | In notebook + Word doc |
+| GPT-2 perplexity box plot | In notebook + Word doc |
+| GPT-2 completion table | In notebook + Word doc |
+| 4-method accuracy comparison table | In notebook + Word doc |
+| Yahoo Finance risk metrics table | In notebook + Word doc |
+
+# Use of Generative AI {.unnumbered}
+
+You may use generative AI tools for code assistance, debugging, and explanation. You must:
+
+- List every tool used
+- Include the prompts you submitted
+- Explain how you validated the output
+
+Submit AI disclosure as a separate document or appendix.

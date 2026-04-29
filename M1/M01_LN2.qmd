@@ -1,5 +1,5 @@
 ---
-title: "M01: Lecture Note 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Language, Probability, and Generative Systems"
 number-sections: true
 date: "2024-11-21"
@@ -15,13 +15,13 @@ format:
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M01:', 'Notes', 'Lecture']
-description: "Text analytics, NLP pipelines, TF-IDF, sentiment analysis, and MLP text classifiers."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M01:', 'Language Models', 'Probability', 'Generative AI', 'Lecture Notes']
+description: "Lecture notes for Module 1 covering Language, Probability, and Generative Systems."
 ---
 
 # Text Analytics and Sentiment Analysis

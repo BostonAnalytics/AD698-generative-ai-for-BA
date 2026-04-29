@@ -36,6 +36,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M03:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 3 on Language Modeling Foundations, Transformer Mechanics, and Semantic Geometry."
 ---
 
 

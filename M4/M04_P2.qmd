@@ -1,5 +1,5 @@
 ---
-title: "M04: Lecture 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Training Paradigms and Fine-Tuning Pipelines"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: "2026-03-12"
@@ -29,6 +29,8 @@ execute:
     message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M04:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 4 on Training Paradigms and Fine-Tuning Pipelines."
 ---
 
 ## How to print Revealjs slides

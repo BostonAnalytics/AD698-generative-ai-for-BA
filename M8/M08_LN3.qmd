@@ -6,11 +6,11 @@ date: "2024-11-21"
 date-modified: today
 date-format: long
 bibliography: ../references.bib
-categories: ['Notes', 'Lecture', 'M07:']
-description: "Lecture covering BERT from Scratch with Pytorch."
 execute: 
   echo: true
   eval: true
+categories: ['M08:', 'BERT', 'Transformers', 'PyTorch', 'Lecture Notes']
+description: "Lecture notes for Module 8 covering Mastering BERT from Scratch with Pytorch."
 ---
 
 # Introduction

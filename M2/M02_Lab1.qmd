@@ -1,6 +1,6 @@
 ---
-title: "M02: Lab 1"
-subtitle: "Neural Language Modeling with PyTorch LSTM"
+title: "AD698 - Applied Generative AI"
+subtitle: "Mathematical Foundations Through Language Modeling"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -13,13 +13,13 @@ format:
         code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M02:', '1', 'Lab']
-description: "Build a word-level LSTM language model on patent abstract text using PyTorch, then generate novel text by temperature sampling."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M02:', 'Lab']
+description: "Hands-on lab for Module 2 focused on Mathematical Foundations Through Language Modeling."
 ---
 
 ## Overview

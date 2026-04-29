@@ -1,10 +1,10 @@
 {
-  "hash": "42da81f7b66d27b47af6fcc845f4cdaa",
+  "hash": "c45474d7479f2c831e0f7868ab687760",
   "result": {
     "engine": "jupyter",
-    "markdown": "---\ntitle: \"M07: Lecture Notes\"\nsubtitle: \"AI-Powered Business Dashboards\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['Notes', 'Lecture', 'M07:']\ndescription: \"Lecture covering AI-Powered Business Dashboards.\"\n---\n\n",
+    "markdown": "---\ntitle: \"AD698 - Applied Generative AI\"\nsubtitle: \"AI-Powered Business Dashboards\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\nbibliography: ../references.bib\ncategories: ['M08:', 'Neural Networks', 'Deep Learning', 'Lecture Notes']\ndescription: \"Lecture notes for Module 8 covering AI-Powered Business Dashboards.\"\n---\n\n",
     "supporting": [
-      "M08_LN2_files"
+      "M08_LN2_files\\figure-html"
     ],
     "filters": [],
     "includes": {}

@@ -1,5 +1,5 @@
 ---
-title: "Module 0: Tutorial 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Hands-On Math for Neural Networks: Activations and SGD"
 number-sections: true
 date: "2026-01-01"
@@ -7,7 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ["Tutorial", "Math Foundations", "SGD", "Activation Functions"]
+categories: ['M0:', 'Tutorial']
+description: "Tutorial for Module 0 focused on Hands-On Math for Neural Networks: Activations and SGD."
 ---
 
 # Tutorial goals

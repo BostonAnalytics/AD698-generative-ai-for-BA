@@ -1,247 +1,359 @@
 ---
-title: "Module 2 Assignment: Engineering an AI Investment Corpus from Form 10-K"
-subtitle: "Signal Extraction and Retrieval-Ready Dataset Construction"
+title: "AD698 - Applied Generative AI"
+subtitle: "Word Embeddings and the Geometry of Rivalry in SEC 10-K Filings"
 number-sections: true
 date: "2026-02-15"
 date-modified: today
 date-format: long
 engine: jupyter
 execute:
+  echo: true
   eval: false
-  echo: false
+categories: ['M02:', 'Assignment']
+description: "Assignment for Module 2 focused on Word Embeddings and the Geometry of Rivalry in SEC 10-K Filings."
 ---
 
 # Important Reminder {.unnumbered}
 
-* This assignment may be completed using **Google Colab** or **AWS Academy**.
-* You must reuse the **processed corpus created in Assignment 1**.
-* The objective is to **engineer a clean retrieval corpus**, not to train or fine-tune models.
-* You must focus **only on Artificial Intelligence investment signals**.
-* You must carefully review:
+- This assignment must be completed using **Google Colab** and **Google Drive**.
+- You must use the **same two rival companies and NAICS vertical** selected in Assignment 1.
+- You will reuse the corpus built in Assignment 1.
 
-  * **Module 2 Tutorial Video 1**
-  * **Module 2 Tutorial Video 2**
-  * **Module 2 Tutorial Instructions 1**
+:::{.callout-important}
+## Prerequisites
 
-These materials provide the **pipeline logic required to complete the assignment**.
+The following files from Assignment 1 must exist on your Drive before starting:
 
-Start with a **small subset of filings**, validate your pipeline, then scale.
+- `/assignment01/corpus.csv`
+- `/assignment01/chunks.csv`
+- `/assignment01/vocab.json`
 
+Load and inspect each file at the top of your notebook before proceeding. If any file is missing, complete Assignment 1 first.
+:::
+
+:::{.callout-important}
+## DataFrame and Visualization Standard
+
+For every DataFrame you create or transform:
+
+- Show `.head()` to display sample rows in your notebook
+- Run `.info()` to confirm column types and null counts
+- Run `.describe()` to summarize numeric statistics
+- Include at least one relevant visualization (bar chart, heatmap, scatter plot, or distribution plot) with a descriptive title and labeled axes
+
+These are graded as part of your technical evidence. Undocumented DataFrames and unexplained outputs will lose points.
+:::
 
 # Submission Instructions {.unnumbered}
 
-You must submit the following:
+Submit two files on Blackboard:
 
-## Word Document (`.docx`) {.unnumbered}
+1. **Word Document (`.docx`)** — maximum 5 pages (excluding cover and references)
+   - Answers to Q1–Q3 and Business Recommendation
+   - All required tables and figures embedded inline
+   - No code
 
-Maximum **5 pages** (excluding cover and references).
+2. **Jupyter Notebook (`.ipynb`)** — fully executable on Colab, organized by section
 
-The report must include:
+Suggested notebook structure:
 
-* AI investment signal definition
-* extraction strategy
-* chunk engineering strategy
-* dataset summary
-* short business interpretation
-
-**Do not include code.**
-
-
-## Jupyter Notebook (`.ipynb`) {.unnumbered}
-
-The notebook must:
-
-* run without errors
-* follow the pipeline structure from tutorials
-* include comments explaining each stage
-* clearly separate Q1–Q3 sections
-
-Suggested structure:
-
-1. Configuration and corpus loading
-2. AI signal definition
-3. Programmatic extraction
-4. Sentence processing
-5. Rolling-window chunk engineering
-6. Retrieval dataset construction
-7. Export outputs
-
-
-## Generative AI Prompt Disclosure {.unnumbered}
-
-If generative AI tools are used:
-
-* list tools used
-* include prompts
-* include outputs
-* explain validation
-
-Submit as a separate document.
-
-
-## Final Dataset {.unnumbered}
-
-Submit the final **retrieval-ready dataset** as:
-
-* `.csv` or `.json`
-
-This dataset will be reused in **Assignment 3 (Retrieval Systems)**.
-
-
+1. Configuration, Drive mount, package installs
+2. Load and inspect Assignment 1 corpus
+3. Train Word2Vec skip-gram from scratch
+4. Load pretrained GloVe vectors
+5. Build and train PyTorch MLP classifiers (scratch vs pretrained)
+6. UMAP / t-SNE projection and visualization
+7. Yahoo Finance annual return quintile analysis
+8. Q1–Q3 analysis and Business Recommendation
 
 # Objective {.unnumbered}
 
 :::{.callout-note}
-- Assignment 1 focused on **building a structured NLP corpus** from SEC filings.
-- Assignment 2 focuses on **extracting a specific strategic signal** and engineering a dataset that supports **future LLM retrieval workflows**.
+Assignment 1 used frequency counts (TF-IDF) to distinguish two rival companies by vocabulary alone. Assignment 2 asks a deeper question: does **learned semantic meaning** — where words that appear in similar contexts become close in vector space — provide richer representations of these companies?
 :::
-
-Your task is to design a pipeline that extracts **Artificial Intelligence investment signals** from Form 10-K filings and transforms them into a **retrieval-ready corpus**.
-
-
-# Business Context {.unnumbered}
-
-Technology analysts and investors increasingly rely on narrative disclosures to understand:
-
-* firm-level AI capability investment
-* digital transformation strategy
-* infrastructure modernization
-* competitive positioning
-
-These signals appear in:
-
-* long narrative filings
-* inconsistent language
-* dispersed disclosure sections
-
-Your task is to **systematically detect and structure AI investment language**.
-
-
-# Data Source {.unnumbered}
-
-You must use the [2024 SEC Form 10-K HTML]{.uublue-bold} located [2024 SEC 10-K Filings - HTML](https://drive.google.com/drive/folders/1tqqoqDfcOpGKBoRN7PpAtElcmzKcrbGz?usp=sharing)
-
-# Defining the AI Investment Signal
-
-You must operationalize **AI investment** as an extraction construct.
-
-## Requirements
-
-1. Define what counts as AI investment evidence.
-2. Define what does **not** count.
-3. Provide examples of valid evidence sentences.
-4. Develop an initial keyword strategy.
-5.  Identify relevant filing sections:
-    1.  Item 1 – Business
-    2.  Item 1A – Risk Factors
-    3.  Item 7 – MD&A
-    4.  Item 7A – Quantitative and Qualitative Disclosures about Market Risk
-
-## Expected Output
-
-* conceptual signal definition
-* inclusion / exclusion examples
-* keyword table
-
-
-# Programmatic Extraction Pipeline
-
-1. Using the cleaned corpus:
-  1. Search for AI-related language using regex / keyword logic.
-  2. Extract candidate text segments.
-  3. Attach metadata:
-    1. company identifier
-    2. filing section
-    3. keyword trigger
-    4. raw evidence text
-2. Store results in structured format.
-3. Maintain a **recheck dataset** for extraction failures.
-
-## Expected Output
-
-* extraction pipeline description
-* dataset summary
-* sample extracted evidence
-
-
-# Chunk Engineering and Retrieval Dataset Construction
-
-You will transform extracted evidence into a **retrieval-ready corpus**. This stage focuses on **text engineering**, not modeling.
-
-## Required Steps
-
-1. [Sentence Processing]{.uublue-bold}: Clean and structure raw text.
-   1. clean extracted text
-   2. split into sentences
-   3. remove noise
-2. [Chunk Construction]{.uublue-bold}: Build retrieval chunks using a rolling window approach.
-   1. sentence-based windows
-   2. overlap strategy
-   3. approximate token control
-3. [Rolling Window Chunk Construction]{.uublue-bold}
-   1. sentence-based windows
-   2. overlap strategy
-   3. approximate token control
-4. [Metadata Attachment]{.uublue-bold}: Ensure each chunk is richly annotated for retrieval.
-   1. company identifier
-   2. filing section
-   3. chunk size metrics
-   4. source tracking fields
-5. [Dataset Assembly]{.uublue-bold}: Compile chunks into a structured dataset ready for embedding generation and retrieval workflows.
-   1. Final dataset should resemble:
-
-  ```
-  chunk_id
-  company
-  section
-  signal_type
-  chunk_text
-  sentence_count
-  approx_token_count
-  ```
 
 :::{.callout-important}
-You are **not required to generate embeddings in this assignment**. That step will be introduced in Assignment 3.
+**Core question:** Does encoding financial language into a semantic vector space improve company discrimination — and what does the geometry of the embedding space reveal about corporate rivalry?
 :::
 
-## Expected Output
+# Load Assignment 1 Corpus {#sec-load}
 
-* dataset summary statistics
-* number of companies represented
-* number of chunks generated
-* example chunk inspection
+```python
+import pandas as pd
+import json
 
+chunks_df = pd.read_csv("/content/drive/MyDrive/assignment01/chunks.csv")
+print(chunks_df.shape)
+chunks_df.info()
+chunks_df.describe(include="all")
+chunks_df.head()
+
+with open("/content/drive/MyDrive/assignment01/vocab.json") as f:
+    a1_vocab = json.load(f)
+print(f"Assignment 1 vocabulary size: {len(a1_vocab)}")
+```
+
+📊 **Required:** Stacked bar chart of chunk counts by company and by item type (Item 1A vs Item 7).
+
+# Train a Word2Vec Embedding from Scratch {#sec-word2vec}
+
+## Tokenize and Train
+
+```python
+from gensim.models import Word2Vec
+from gensim.utils import simple_preprocess
+
+sentences = [simple_preprocess(text) for text in chunks_df["chunk_text"]]
+
+w2v_model = Word2Vec(
+    sentences,
+    vector_size=100,
+    window=5,
+    min_count=3,
+    sg=1,       # skip-gram
+    epochs=10,
+    workers=4)
+
+w2v_model.save("/content/drive/MyDrive/assignment02/word2vec_scratch.bin")
+print(f"Vocabulary size: {len(w2v_model.wv)}")
+```
+
+## Inspect Nearest Neighbors for Finance Terms
+
+For each of the five terms below, retrieve the top-10 nearest neighbors and build a DataFrame:
+
+```python
+finance_terms = ["liquidity", "leverage", "risk", "capital", "growth"]
+
+rows = []
+for term in finance_terms:
+    if term in w2v_model.wv:
+        for neighbor, sim in w2v_model.wv.most_similar(term, topn=10):
+            rows.append({"seed_term": term, "neighbor": neighbor,
+                         "similarity": round(sim, 4)})
+
+neighbors_df = pd.DataFrame(rows)
+print(neighbors_df.shape)
+neighbors_df.info()
+neighbors_df.describe()
+neighbors_df.head(20)
+```
+
+📊 **Required:** For two of the five terms, show a horizontal bar chart of the top-10 nearest neighbors sorted by similarity. Label axes and include the term in the chart title.
+
+## Per-Company Nearest Neighbors
+
+Train separate Word2Vec models on Company A chunks only and Company B chunks only. For the term `"risk"`, compare the top-5 nearest neighbors from each model in a side-by-side table:
+
+```python
+nn_comparison = pd.DataFrame({
+    f"{company_a} neighbors": top5_a,
+    f"{company_b} neighbors": top5_b})
+nn_comparison
+```
+
+# Load Pretrained GloVe Vectors {#sec-glove}
+
+Download GloVe 6B 100-dimensional vectors and load into a gensim-compatible format.
+
+```python
+# In Colab:
+# !wget -q http://nlp.stanford.edu/data/glove.6B.zip
+# !unzip -q glove.6B.zip -d /content/glove/
+from gensim.models import KeyedVectors
+from gensim.scripts.glove2word2vec import glove2word2vec
+
+glove2word2vec("/content/glove/glove.6B.100d.txt",
+               "/content/glove/glove_gensim.txt")
+glove_model = KeyedVectors.load_word2vec_format("/content/glove/glove_gensim.txt")
+print(f"GloVe vocabulary size: {len(glove_model)}")
+```
+
+# PyTorch MLP Classifier {#sec-mlp}
+
+## Build Mean-Pooled Chunk Vectors
+
+For each chunk, embed tokens using Word2Vec (or GloVe), then mean-pool to get a single 100-d vector:
+
+```python
+import numpy as np
+
+def mean_pool_w2v(text, model):
+    tokens = simple_preprocess(text)
+    vecs = [model.wv[t] for t in tokens if t in model.wv]
+    return np.mean(vecs, axis=0) if vecs else np.zeros(100)
+
+def mean_pool_glove(text, model):
+    tokens = simple_preprocess(text)
+    vecs = [model[t] for t in tokens if t in model]
+    return np.mean(vecs, axis=0) if vecs else np.zeros(100)
+
+X_w2v = np.array([mean_pool_w2v(t, w2v_model) for t in chunks_df["chunk_text"]])
+X_glove = np.array([mean_pool_glove(t, glove_model) for t in chunks_df["chunk_text"]])
+print(f"Word2Vec embedding matrix: {X_w2v.shape}")
+print(f"GloVe embedding matrix: {X_glove.shape}")
+```
+
+Show `.describe()` on the embedding matrix:
+
+```python
+pd.DataFrame(X_glove).describe()
+```
+
+## Train a 2-Layer MLP
+
+```python
+import torch
+import torch.nn as nn
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+class MLPClassifier(nn.Module):
+    def __init__(self, input_dim=100, hidden_dim=64, num_classes=2):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(0.2),
+            nn.Linear(hidden_dim, num_classes)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+```
+
+Train for 30 epochs with AdamW optimizer and cross-entropy loss. Plot the training loss curve for both models.
+
+📊 **Required:** Training loss curve with Word2Vec model and GloVe model on the same chart.
+
+Evaluate both models and build a 3-row accuracy comparison table including the Assignment 1 BoW baseline:
+
+```python
+comparison_df = pd.DataFrame({
+    "Method": ["A1: TF-IDF BoW (Linear)", "A2: Word2Vec scratch MLP",
+               "A2: GloVe pretrained MLP"],
+    "Accuracy": [a1_acc, w2v_acc, glove_acc]})
+print(comparison_df)
+```
+
+📊 **Required:** Horizontal bar chart of all three method accuracies.
+
+Save GloVe MLP weights:
+
+```python
+torch.save(glove_mlp.state_dict(),
+           "/content/drive/MyDrive/assignment02/glove_mlp_weights.pt")
+```
+
+# Embedding Projection with UMAP {#sec-umap}
+
+Project all GloVe chunk embeddings to 2D using UMAP (or t-SNE if UMAP is unavailable):
+
+```python
+import umap  # !pip install umap-learn
+
+reducer = umap.UMAP(n_components=2, random_state=42)
+X_2d = reducer.fit_transform(X_glove)
+
+proj_df = pd.DataFrame(X_2d, columns=["x", "y"])
+proj_df["company"] = chunks_df["company"].values
+proj_df["item"] = chunks_df["item"].values
+proj_df["year"] = chunks_df["year"].values
+
+print(proj_df.shape)
+proj_df.info()
+proj_df.describe()
+proj_df.head()
+```
+
+📊 **Required Plot 1:** 2D scatter plot colored by company. Title: "Embedding Space by Company." Do the two rivals form separate clusters or overlap?
+
+📊 **Required Plot 2:** 2D scatter plot colored by item type (Item 1A vs Item 7). Title: "Embedding Space by 10-K Section." Which section separates more cleanly?
+
+# Yahoo Finance Annual Return Quintile Analysis {#sec-returns}
+
+Pull annual returns for both companies and assign each filing chunk to a return quintile based on its year:
+
+```python
+import yfinance as yf
+
+def get_annual_returns(ticker: str, start: str = "2019-12-31",
+                       end: str = "2024-12-31") -> pd.Series:
+    hist = yf.Ticker(ticker).history(start=start, end=end, interval="1mo")
+    hist["year"] = hist.index.year
+    return hist.groupby("year")["Close"].last().pct_change().dropna()
+
+returns_a = get_annual_returns(ticker_a)
+returns_b = get_annual_returns(ticker_b)
+
+returns_df = pd.DataFrame({
+    f"{company_a} return": returns_a,
+    f"{company_b} return": returns_b})
+print(returns_df.shape)
+returns_df.info()
+returns_df.describe()
+returns_df
+```
+
+Merge a `return_quintile` column (1=lowest, 5=highest annual return) onto `proj_df` by year and company.
+
+📊 **Required Plot 3:** 2D scatter plot colored by `return_quintile`. Title: "Embedding Space by Return Quintile." Do high-return-year filings cluster differently from low-return-year filings?
+
+# Q1: Does Moving from TF-IDF to Embeddings Improve Discrimination? {#sec-q1}
+
+Report all three accuracy numbers in the comparison table:
+
+| Method | Accuracy |
+|--------|----------|
+| A1: TF-IDF BoW Classifier | |
+| A2: Word2Vec scratch MLP | |
+| A2: GloVe pretrained MLP | |
+
+📊 **Required:** Include the accuracy bar chart from Section 5 in your Word document.
+
+**Answer in your Word document:** Does the switch from TF-IDF to learned embeddings improve company discrimination? Does using pretrained GloVe outperform scratch Word2Vec? What does the pattern suggest about whether these companies' 10-K language is already well-represented in general English corpora?
+
+
+# Q2: What Does the Embedding Geometry Reveal? {#sec-q2}
+
+Refer to your two UMAP scatter plots (by company and by item type).
+
+**Answer in your Word document:** Do the two rivals cluster separately or overlap in the embedding space? Which 10-K section (Item 1A or Item 7) produces cleaner separation? Does this match the section-level accuracy result from Assignment 1? Explain the alignment or discrepancy in 2–3 sentences.
+
+
+# Q3: What Does an Analyst Gain and Lose With Semantic Search? {#sec-q3}
+
+## Business Recommendation — Analyst Efficiency
+
+Your Word2Vec model trained on 5 years of 10-K filings has implicitly encoded each company's strategic vocabulary. If a financial analyst used nearest-neighbor queries in this embedding space instead of reading raw filings:
+
+**Answer in your Word document (≤1 page):**
+
+- What types of questions could they answer quickly using nearest-neighbor search?
+- What would they miss that a careful reader would catch?
+- Based on the average `char_count` of your chunks, estimate roughly how many pages of 10-K text a single nearest-neighbor lookup "replaces" in terms of reading time.
+- Does the UMAP return-quintile plot suggest any relationship between how a company writes about risk and how it performs in the market? State what you see or do not see.
+
+
+# Deliverables Summary {.unnumbered}
+
+| Artifact | Location |
+|----------|----------|
+| `word2vec_scratch.bin` | `/assignment02/` on Drive |
+| `glove_mlp_weights.pt` | `/assignment02/` on Drive |
+| 3-method accuracy comparison table | In notebook + Word doc |
+| UMAP scatter plots (3) | In notebook + Word doc |
+| Nearest-neighbor comparison table | In notebook + Word doc |
+| Annual return DataFrame | In notebook + Word doc |
 
 # Use of Generative AI {.unnumbered}
 
-:::{.callout-important}
-Generative AI may assist with:
+You may use generative AI tools for code assistance, debugging, and explanation. You must:
 
-* regex design
-* keyword exploration
-* debugging
-* explanation
+- List every tool used
+- Include the prompts you submitted
+- Explain how you validated the output
 
-However, you must:
-
-* verify all outputs
-* understand pipeline logic
-* ensure reproducibility
-:::
-
-
-# Looking Ahead {.unnumbered}
-
-:::{.callout-note}
-Assignment 3 will introduce:
-
-* embedding generation
-* vector search systems
-* retrieval evaluation
-
-Assignment 4 will extend this into:
-
-* full Retrieval-Augmented Generation pipelines.
-:::
+Submit AI disclosure as a separate document or appendix.
 
 

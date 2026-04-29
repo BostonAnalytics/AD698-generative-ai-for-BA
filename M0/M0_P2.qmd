@@ -32,6 +32,8 @@ execute:
   eval: false
   warning: false
   message: false
+categories: ['M0:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 0 on Google Colab & Python Environment Setup."
 ---
 
 ## How to print RevealJS slides

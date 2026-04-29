@@ -1,12 +1,13 @@
 ---
-title: "Module 0: Lab 1"
-subtitle: "PyTorch Tensor Foundations in Google Colab"
+title: "AD698 - Applied Generative AI"
+subtitle: "Colab + GPU + Tensors (Detailed)"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ["Lab", "Google Colab", "PyTorch", "Tensors"]
+categories: ['M0:', 'Lab']
+description: "Hands-on lab for Module 0 focused on Colab + GPU + Tensors (Detailed)."
 ---
 
 # Lab Overview {.unnumbered}

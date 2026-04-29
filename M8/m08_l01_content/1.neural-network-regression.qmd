@@ -1,10 +1,14 @@
 ---
+title: "AD698 - Applied Generative AI"
+subtitle: "1.neural-network-regression"
 number-sections: true
 bibliography: ../../references.bib
 date: "2024-11-21"
 date-modified: today
 date-format: long
 engine: jupyter
+categories: ['M08:', 'Module']
+description: "Module 8 content focused on 1.neural-network-regression."
 ---
 
 ## Linear Neural Networks for Regression

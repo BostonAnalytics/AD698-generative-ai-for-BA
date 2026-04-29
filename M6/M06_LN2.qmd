@@ -15,6 +15,8 @@ format:
     number-sections: true
     code-overflow: wrap
 bibliography: ../references.bib
+categories: ['M06:', 'Agentic AI', 'LangChain', 'Implementation', 'Lecture Notes']
+description: "Lecture notes for Module 6 covering Building Agentic AI: A Practical Walkthrough."
 ---
 
 # Introduction: The Agentic AI Paradigm

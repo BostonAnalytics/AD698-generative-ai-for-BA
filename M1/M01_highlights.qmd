@@ -1,5 +1,5 @@
 ---
-title: "Module 1: Highlights"
+title: "AD698 - Applied Generative AI"
 subtitle: "Language Probability and Representation"
 number-sections: true
 date: "2026-01-01"
@@ -9,7 +9,8 @@ format:
         code-fold: true
     docx: default
 date-format: long
-categories: ["Generative AI", "Language Modeling", "Probability", "NLP Foundations"]
+categories: ['M01:', 'Highlights']
+description: "Module 1 highlights for Language Probability and Representation."
 ---
 
 # Lecture 1.1: Course Orientation and Reproducible GenAI Setup

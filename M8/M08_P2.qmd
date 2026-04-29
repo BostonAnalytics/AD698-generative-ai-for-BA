@@ -35,6 +35,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M08:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 8 on Language Modeling, Structured Prediction, & Evaluation."
 ---
 
 ## How to print Revealjs slides

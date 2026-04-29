@@ -1,11 +1,66 @@
 ---
-title: "Project Check-in #2"
-subtitle: "M06 Project Milestone"
+title: "AD698 - Applied Generative AI"
+subtitle: "Project Instructions VI - Final Presentation and Team Assessment"
 number-sections: true
-date: "2024-11-21"
+date: "2026-04-28"
 date-modified: today
 date-format: long
-
-categories: ['#2', 'Check-in', 'Project']
-description: "Project milestone: Project Check-in #2."
+engine: jupyter
+execute:
+  echo: true
+  eval: false
+categories: ['M06:', 'Project']
+description: "Project guidance for Module 6 focused on Project Instructions VI - Final Presentation and Team Assessment."
 ---
+
+# Presentation Guidelines
+
+Each team presents their **financial technology product** — a domain-scoped RAG system built on SEC 10-K filings for a specific NAICS 4-digit industry. You are presenting to a simulated audience of FinTech stakeholders: potential investors, product managers, or a regulatory analytics team.
+
+Each team gives a 10-12 minute presentation plus 3 minutes Q&A.
+
+Expected flow:
+
+1. NAICS industry selection and company scope — why this industry, who are the companies
+2. Data pipeline and metadata quality — what you collected and how reliable it is
+3. Item cleaning and EDA highlights — what patterns emerged in the corpus
+4. Retrieval and generation pipeline — how the product answers questions
+5. Evaluation results and failure cases — honest assessment of product performance
+6. Practical recommendations — what would the next sprint look like for this product
+
+# Required Evidence in Slides
+
+- at least one data quality table
+- at least one retrieval quality example
+- at least one grounded answer with citations
+- one evaluation summary chart
+
+# Teamwork Expectations
+
+- each member contributes to analysis and communication
+- team roles and ownership are documented
+- contributions are traceable through notebook sections or logs
+
+# Presentation Rubric (50 points)
+
+| Category | Points | Standard |
+|---|---:|---|
+| Technical Clarity | 10 | Pipeline explained clearly |
+| Evidence Quality | 10 | Strong tables/figures and retrieval evidence |
+| Grounding and Evaluation | 10 | Honest, measurable RAG evaluation |
+| Story and Delivery | 10 | Structured narrative, clear speaking |
+| Team Coordination | 10 | Balanced contribution and transitions |
+
+# Team Contribution Rubric (50 points)
+
+| Category | Points | Standard |
+|---|---:|---|
+| Contribution Reliability | 15 | Completed tasks on time |
+| Collaboration Quality | 15 | Constructive teamwork and problem-solving |
+| Technical Ownership | 10 | Clear ownership of substantial components |
+| Documentation Quality | 10 | Reproducible and understandable work |
+
+# Final Reminder
+
+Primary platform is Google Colab plus Google Drive.
+GitHub can be used optionally, but it is not required for AD698 project completion.

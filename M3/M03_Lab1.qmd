@@ -1,6 +1,6 @@
 ---
-title: "M03: Lab 1"
-subtitle: "Retrieval-Augmented Generation with FAISS and ChromaDB"
+title: "AD698 - Applied Generative AI"
+subtitle: "Prompting as System Design"
 number-sections: true
 date: "2026-02-15"
 date-modified: today
@@ -13,13 +13,13 @@ format:
         code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M03:', '1', 'Lab']
-description: "Build a retrieval pipeline over SEC 10-K filings using FAISS and ChromaDB vector stores, then wire it into a minimal RAG prompt formatter."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M03:', 'Lab']
+description: "Hands-on lab for Module 3 focused on Prompting as System Design."
 ---
 
 ## Overview

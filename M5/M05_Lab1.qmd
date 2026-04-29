@@ -1,11 +1,150 @@
 ---
-title: "M05: Lab 1"
-subtitle: "Automating business workflows using AI APIs"
+title: "AD698 - Applied Generative AI"
+subtitle: "M05 Lecture Note 01: RAG Foundations and Retrieval"
 number-sections: true
-date: "2024-11-21"
+date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M05:', 'Lab', '1']
-description: "Hands-on lab activity: Automating business workflows using AI APIs."
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
+categories: ['M05:', 'Lab']
+description: "Hands-on lab for Module 5 focused on M05 Lecture Note 01: RAG Foundations and Retrieval."
 ---
+
+## Learning Objectives
+
+By the end of this lab, you will be able to:
+
+1. Build a retrieval corpus from course-aligned documents.
+2. Compare chunking strategies and explain tradeoffs.
+3. Create a vector index and retriever using FAISS.
+4. Produce retrieval diagnostics required for Assignment 4.
+
+## Why This Lab Matters
+
+Assignment 4 asks you to compare Prompt-only, RAG, and Pretraining-only systems. A weak retriever leads to weak RAG answers, even with a strong model.
+
+## Step 0: Setup
+
+```{python}
+#| eval: false
+from pathlib import Path
+import time
+import pandas as pd
+
+from langchain_community.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+
+# If using NVIDIA endpoints, uncomment:
+# from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
+
+DATA_DIR = Path("./data/corpora")
+print("Data dir exists:", DATA_DIR.exists())
+```
+
+## Step 1: Load Documents
+
+```{python}
+#| eval: false
+loader = DirectoryLoader(str(DATA_DIR), glob="**/*.txt")
+docs = loader.load()
+print("Documents loaded:", len(docs))
+print("First doc chars:", len(docs[0].page_content) if docs else 0)
+```
+
+## Step 2: Create Two Chunking Strategies
+
+```{python}
+#| eval: false
+splitter_small = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=80)
+splitter_large = RecursiveCharacterTextSplitter(chunk_size=900, chunk_overlap=120)
+
+chunks_small = splitter_small.split_documents(docs)
+chunks_large = splitter_large.split_documents(docs)
+
+print("Small chunks:", len(chunks_small))
+print("Large chunks:", len(chunks_large))
+```
+
+## Step 3: Build Vector Indexes
+
+```{python}
+#| eval: false
+# Replace with your embedding model/provider.
+# embed = NVIDIAEmbeddings(model="nvidia/nv-embedqa-e5-v5")
+
+# Example placeholder: use any embedding class available in your environment.
+# vs_small = FAISS.from_documents(chunks_small, embed)
+# vs_large = FAISS.from_documents(chunks_large, embed)
+
+print("Create FAISS indexes for both chunking strategies.")
+```
+
+## Step 4: Retrieval Test Harness
+
+```{python}
+#| eval: false
+queries = [
+	"What is the main difference between naive and modular RAG?",
+	"How does HNSW improve retrieval speed?",
+	"When should we abstain instead of answering confidently?",
+]
+
+def run_retrieval_benchmark(retriever, query_list, k=5):
+	rows = []
+	for q in query_list:
+		t0 = time.time()
+		hits = retriever.get_relevant_documents(q)
+		dt_ms = (time.time() - t0) * 1000
+		rows.append({
+			"query": q,
+			"latency_ms": round(dt_ms, 2),
+			"k": k,
+			"top_hit_chars": len(hits[0].page_content) if hits else 0,
+			"hit_count": len(hits),
+		})
+	return pd.DataFrame(rows)
+```
+
+## Step 5: Export Retrieval Diagnostics
+
+```{python}
+#| eval: false
+# df_small = run_retrieval_benchmark(vs_small.as_retriever(search_kwargs={"k": 5}), queries)
+# df_large = run_retrieval_benchmark(vs_large.as_retriever(search_kwargs={"k": 5}), queries)
+
+# df_small.to_csv("M05_lab1_retrieval_small.csv", index=False)
+# df_large.to_csv("M05_lab1_retrieval_large.csv", index=False)
+
+print("Exported diagnostics for Assignment 4 appendix tables.")
+```
+
+## Deliverable for This Lab
+
+Submit:
+
+1. One paragraph justifying your final chunking strategy.
+2. One CSV table with retrieval latency and hit stats.
+3. Two examples where retrieval succeeded and two where it failed.
+
+## Bridge to Assignment 4
+
+Reuse these artifacts directly in `M05_A.qmd`:
+
+1. Final chunking configuration.
+2. Retriever configuration (`k`, filter logic, embedding model).
+3. Retrieval diagnostics table and failure examples.

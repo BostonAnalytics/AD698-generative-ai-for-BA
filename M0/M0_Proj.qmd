@@ -1,5 +1,51 @@
 ---
-title: "M00 Project"
+title: "AD698 - Applied Generative AI"
+subtitle: "SEC 10-K Financial RAG: Student Build Plan"
+number-sections: true
+date: "2026-04-28"
+date-modified: today
+date-format: long
+categories: ['M0:', 'Project']
+description: "Project guidance for Module 0 focused on SEC 10-K Financial RAG: Student Build Plan."
 ---
 
-# M00 Project
+# What You Are Building
+
+In this course project, you will build a domain-scoped financial RAG system over SEC 10-K filings.
+
+Primary platform:
+- Google Colab
+- Google Drive storage
+
+Optional platform:
+- Local machine
+- GitHub (optional only)
+
+:::{.callout-important}
+GitHub is not required. You will be graded on pipeline quality, grounding quality, and evaluation quality.
+:::
+
+# Four-Step Project Roadmap
+
+1. Industry selection, SEC metadata parsing, 10-K download, item extraction.
+2. Item selection, cleaning, and exploratory analysis.
+3. Chunking, embeddings, and vector index construction.
+4. RAG generation and evaluation.
+
+# Required Student Outputs
+
+- data/outputs/filing_metadata.csv
+- data/outputs/industry_filing_panel.csv
+- data/outputs/cleaned_item_metadata.csv
+- data/chunked/sec10k_chunks.parquet
+- data/vector_store/
+- data/outputs/rag_answers.csv
+- data/outputs/rag_evaluation.csv
+- optional: data/outputs/company_price_features.csv
+
+# Submission Rule
+
+Each team should submit:
+- one short technical report
+- one reproducible notebook bundle
+- one outputs folder with required CSV/parquet artifacts

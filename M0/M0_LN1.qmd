@@ -1,13 +1,14 @@
 ---
-title: "Module 0: Lecture Notes 1"
+title: "AD698 - Applied Generative AI"
 subtitle: "Colab + GPU + Tensors (Detailed)"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ["Google Colab", "GPU", "PyTorch", "Tensors", "Computational Environment"]
 bibliography: ../references.bib
+categories: ['M0:', 'Colab', 'GPU', 'Tensors', 'Lecture Notes']
+description: "Lecture notes for Module 0 covering Colab + GPU + Tensors (Detailed)."
 ---
 
 # Why This Lecture Matters

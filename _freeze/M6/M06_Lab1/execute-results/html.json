@@ -1,10 +1,10 @@
 {
-  "hash": "70333436fa0c6192b21d7c345244a831",
+  "hash": "7bcd47c37ec92401f251382cf03e8179",
   "result": {
     "engine": "jupyter",
-    "markdown": "---\ntitle: \"M06: Lab 1\"\nsubtitle: \"AI-assisted financial forecasting in SQL\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['1', 'M06:', 'Lab']\ndescription: \"Hands-on lab activity: AI-assisted financial forecasting in SQL.\"\n---\n\n",
+    "markdown": "---\ntitle: \"AD698 - Applied Generative AI\"\nsubtitle: \"Agentic AI: A Theoretical Framework for Building Autonomous Systems\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['M06:', 'Lab']\ndescription: \"Hands-on lab for Module 6 focused on Agentic AI: A Theoretical Framework for Building Autonomous Systems.\"\n---\n\n",
     "supporting": [
-      "M06_Lab1_files"
+      "M06_Lab1_files\\figure-html"
     ],
     "filters": [],
     "includes": {}

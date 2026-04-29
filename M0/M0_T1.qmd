@@ -1,11 +1,12 @@
 ---
-title: "Module 0: Tutorial 1"
-subtitle: "Hands-On Google Colab + PyTorch Tensors"
+title: "AD698 - Applied Generative AI"
+subtitle: "Colab + GPU + Tensors (Detailed)"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ["Google Colab", "GPU", "PyTorch", "Tutorial"]
+categories: ['M0:', 'Tutorial']
+description: "Tutorial for Module 0 focused on Colab + GPU + Tensors (Detailed)."
 ---
 
 # Tutorial Goal {.unnumbered}

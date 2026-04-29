@@ -1,7 +1,6 @@
 ---
-title: "M02: Tutorial 1"
-subtitle: "Extracting Strategic Technology Signals from Form 10-K"
-description: "Build a retrieval-ready corpus from SEC 10-K HTML filings by extracting Item 1, 1A, and Item 7 sections for downstream LLM pipelines."
+title: "AD698 - Applied Generative AI"
+subtitle: "Mathematical Foundations Through Language Modeling"
 number-sections: true
 date: "2026-02-01"
 date-modified: today
@@ -18,13 +17,14 @@ format:
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M02:', 'Tutorial']
 engine: jupyter
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M02:', 'Tutorial']
+description: "Tutorial for Module 2 focused on Mathematical Foundations Through Language Modeling."
 ---
 
 # Recommended assignment build sequence

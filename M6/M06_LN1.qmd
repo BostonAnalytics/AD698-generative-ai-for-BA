@@ -6,8 +6,8 @@ date: "2024-11-21"
 date-modified: today
 date-format: long
 bibliography: ../references.bib
-categories: ['Notes', 'Lecture', 'M06:']
-description: "This lecture note provides a comprehensive theoretical framework for understanding and building agentic AI systems. It distinguishes between the symbolic and neural paradigms of AI, tracing their historical evolution and analyzing their architectural differences. The note also reviews key frameworks and applications, identifies gaps in current research, and proposes a roadmap for future development in the field of agentic AI."
+categories: ['M06:', 'Agentic AI', 'Autonomous Systems', 'AI Agents', 'Lecture Notes']
+description: "Lecture notes for Module 6 covering Agentic AI: A Theoretical Framework for Building Autonomous Systems."
 ---
 
 

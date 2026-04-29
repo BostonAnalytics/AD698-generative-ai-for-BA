@@ -1,5 +1,5 @@
 ---
-title: "Module 0 Assignment: Neural Networks for Regression and Classification"
+title: "AD698 - Applied Generative AI"
 subtitle: "End-to-End Deep Learning with PyTorch"
 number-sections: true
 date: "2026-03-12"
@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   eval: false
   echo: true
-categories: ['Neural Networks', 'PyTorch', 'Regression', 'Classification', 'MLP']
-description: "Build end-to-end MLP pipelines for regression (Ames Housing) and digit classification (MNIST) following the data science life cycle."
+categories: ['M0:', 'Assignment']
+description: "Assignment for Module 0 focused on End-to-End Deep Learning with PyTorch."
 ---
 
 # Important Reminder {.unnumbered}

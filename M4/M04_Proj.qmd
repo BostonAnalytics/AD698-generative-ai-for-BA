@@ -1,11 +1,113 @@
 ---
-title: "Data Ingestion Plan"
-subtitle: "M04 Project Milestone"
+title: "AD698 - Applied Generative AI"
+subtitle: "Project Checkpoint - Mid-Project Progress Review"
 number-sections: true
-date: "2024-11-21"
+date: "2026-04-28"
 date-modified: today
 date-format: long
-
-categories: ['Ingestion', 'Plan', 'Data']
-description: "Project milestone: Data Ingestion Plan."
+engine: jupyter
+execute:
+  echo: true
+  eval: false
+categories: ['M04:', 'Project']
+description: "Project guidance for Module 4 focused on Project Checkpoint - Mid-Project Progress Review."
 ---
+
+# Module 4 Checkpoint
+
+Module 4 does not introduce new project steps. This is your **mid-project checkpoint** — a structured opportunity to confirm that Steps 1, 2, and 3 are complete and your product is ready for the final build phase in Module 5.
+
+:::{.callout-important}
+Step 4 (Grounded Generation and Evaluation) begins in Module 5. Do not start Step 4 until your vector index from Step 3 is validated and saved to Google Drive.
+:::
+
+# Progress Checklist
+
+Use this checklist to confirm your team's status before Module 5.
+
+## Step 1 — Industry Scoping and Filing Acquisition
+
+- [ ] NAICS 4-digit industry code documented and justified
+- [ ] 5-10 companies selected and confirmed as 10-K filers
+- [ ] 10-K HTML filings downloaded for 2015-2025
+- [ ] `filing_metadata.csv` exported with all required SEC fields
+- [ ] All 10-K Items extracted and saved with standardized filenames
+
+## Step 2 — Item Cleaning and EDA
+
+- [ ] Domain-relevant Items selected and tied to analytical questions
+- [ ] Cleaning pipeline implemented and documented
+- [ ] `cleaned_item_metadata.csv` exported
+- [ ] EDA section complete with token distributions and coverage tables
+
+## Step 3 — Chunking, Embeddings, and Vector Index
+
+- [ ] Token-aware chunking implemented with chunk-level metadata
+- [ ] `naics_code` included in every chunk metadata row
+- [ ] Embeddings generated and saved to Drive
+- [ ] FAISS vector index built and persisted
+- [ ] At least 5 test retrieval queries run and reviewed
+
+# What to Do This Week
+
+1. Review all three notebooks and clean up any incomplete cells
+2. Confirm all required output files exist in your Drive at `project_sec10k_rag/data/outputs/`
+3. Run at least 3 additional retrieval test queries and note any failure patterns
+4. Write one paragraph per team member summarizing their contribution so far
+
+:::{.callout-note}
+If your team is behind on Steps 1-3, use Module 4 entirely for catch-up. Do not advance to Step 4 with an incomplete retrieval foundation — generation quality depends entirely on retrieval quality.
+:::
+
+# Weekly Team Standup
+
+Module 4 is a checkpoint week, making the standup especially important. The instructor uses this week's standup to assess whether teams are ready to proceed to Step 4.
+
+> **Reference:** [Atlassian — How to Run Effective Standups](https://www.atlassian.com/agile/scrum/standups)
+
+Three questions for the team:
+
+1. *What did the team complete since the last standup?*
+2. *What will the team work on before the next standup?*
+3. *What blockers or decisions is the team stuck on?*
+
+## In-Person Sections
+
+Standup happens live at the start of class. The Module 4 standup should include a brief status confirmation for each Step 1-3 checklist item above.
+
+## Online Sections — Weekly Standup Document
+
+Submit a **one-page standup document** to the course portal by the due date. Ungraded on its own, but **standup submissions count toward your final project participation grade**.
+
+Use this template:
+
+---
+
+**Team Name / NAICS Industry:**
+
+**Standup Week:** Module 4 — Checkpoint
+
+**Date Submitted:**
+
+| Question | Team Response |
+|---|---|
+| What did we complete this week? | |
+| What will we work on next week? | |
+| What is blocking us or needs a decision? | |
+
+**Checkpoint status summary** (one sentence per step):
+
+- Step 1 status:
+- Step 2 status:
+- Step 3 status:
+
+**Team member who facilitated this standup:**
+
+---
+
+:::{.callout-important}
+The Module 4 standup document should be your most detailed one. Instructors use it to decide whether to approve a team's readiness for Step 4 or recommend targeted catch-up work.
+:::
+
+
+

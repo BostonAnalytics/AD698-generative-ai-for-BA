@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Language Modeling, Structured Prediction, & Evaluation"
+subtitle: "Neural Networks for Classification and Regression"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -35,6 +35,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M08:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 8 on Neural Networks for Classification and Regression."
 ---
 
 ## How to print Revealjs slides

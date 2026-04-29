@@ -1,5 +1,5 @@
 ---
-title: "M03: Lecture Note 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Tokenization, Embeddings, and Semantic Geometry"
 number-sections: true
 date: "2024-11-21"
@@ -15,13 +15,13 @@ format:
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['Lecture', 'M03:', 'Notes']
-description: "Language modeling foundations, transformer self-attention, contextual embeddings, and semantic geometry."
 execute:
     echo: true
     eval: false
     warning: false
     message: false
+categories: ['M03:', 'Tokenization', 'Embeddings', 'Semantic Search', 'Lecture Notes']
+description: "Lecture notes for Module 3 covering Tokenization, Embeddings, and Semantic Geometry."
 ---
 
 ```{python}

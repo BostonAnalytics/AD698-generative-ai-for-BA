@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Text Generation with Large Language Models"
+subtitle: "Prompting as System Design"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -36,6 +36,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
+categories: ['M03:', 'Slides', 'Presentation']
+description: "Presentation slides for Module 3 on Prompting as System Design."
 ---
 
 

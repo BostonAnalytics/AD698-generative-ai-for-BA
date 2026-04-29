@@ -1,13 +1,11 @@
 ---
-title: "M04: Lab 2"
+title: "AD698 - Applied Generative AI"
 subtitle: "Fine-Tuning a Transformer for Text Classification"
 number-sections: true
 date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M04:', '2', 'Lab']
-description: "Implement a practical fine-tuning loop and compare frozen vs unfrozen embeddings."
 format:
     html:
         toc: true
@@ -22,6 +20,8 @@ execute:
     eval: false
     warning: false
     message: false
+categories: ['M04:', 'Lab']
+description: "Hands-on lab for Module 4 focused on Fine-Tuning a Transformer for Text Classification."
 ---
 
 ## Objectives
