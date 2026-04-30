@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "M05 Lecture Note 01: RAG Foundations and Retrieval"
+subtitle: "RAG Foundations and Retrieval"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -8,7 +8,7 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['M05:', 'RAG', 'Retrieval', 'Vector Search', 'Lecture Notes']
-description: "Lecture notes for Module 5 covering M05 Lecture Note 01: RAG Foundations and Retrieval."
+description: "Lecture notes for Module 5 covering RAG Foundations and Retrieval."
 ---
 
 # Why Retrieval-Augmented Generation Matters

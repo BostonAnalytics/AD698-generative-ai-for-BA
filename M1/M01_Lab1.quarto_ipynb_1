@@ -1,0 +1,459 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"AD698 - Applied Generative AI\"\n",
+        "subtitle: \"Early Neural Networks & Natural Language Processing\"\n",
+        "number-sections: true\n",
+        "date: \"2024-11-21\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "format: \n",
+        "    html:\n",
+        "        code-overflow: wrap\n",
+        "categories: ['M01:', 'Lab']\n",
+        "description: \"Hands-on lab for Module 1 focused on Early Neural Networks & Natural Language Processing.\"\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Lab Objective {.unnumbered}\n",
+        "\n",
+        "In this lab, you will:\n",
+        "\n",
+        "- Connect **Google Colab** to **VS Code**\n",
+        "- Load real-world corporate text data (SEC 10-K filings)\n",
+        "- Implement a **classical NLP preprocessing pipeline**\n",
+        "- Answer **exploratory questions** about corporate disclosures using text analytics\n",
+        "\n",
+        "This lab establishes the **computational and conceptual foundation** for later work with embeddings and generative models.\n",
+        "\n",
+        "\n",
+        "## Background Context {.unnumbered}\n",
+        "\n",
+        "Public companies file **Form 10-K** annually with the U.S. Securities and Exchange Commission (SEC).  \n",
+        "These filings contain rich textual information about:\n",
+        "\n",
+        "- business operations  \n",
+        "- risks and uncertainties  \n",
+        "- management discussion  \n",
+        "- regulatory disclosures  \n",
+        "\n",
+        "In this lab, we treat each 10-K as **raw text data** and apply a standard NLP pipeline to prepare it for analysis.\n",
+        "\n",
+        "\n",
+        "## Connecting Google Colab to VS Code {.unnumbered}\n",
+        "\n",
+        "You will use **Google Colab as the execution backend** while working inside **VS Code**.\n",
+        "\n",
+        "### Install the Colab Extension {.unnumbered}\n",
+        "\n",
+        "Install the **Google Colab extension** in VS Code from one of the following:\n",
+        "\n",
+        "- Visual Studio Marketplace  \n",
+        "- Open VSX Registry  \n",
+        "\n",
+        "Search for **“Colab”** and install the official extension.\n",
+        "\n",
+        "### Open or Create a Notebook {.unnumbered}\n",
+        "\n",
+        "In VS Code:\n",
+        "\n",
+        "- Open an existing `.ipynb` file  \n",
+        "  **or**\n",
+        "- Create a new Jupyter Notebook\n",
+        "\n",
+        "\n",
+        "### Sign In to Google  {.unnumbered}\n",
+        "    \n",
+        "When prompted:\n",
+        "\n",
+        "- Sign in using your Google account\n",
+        "- Authorize Colab access\n",
+        "\n",
+        "\n",
+        "### Select the Colab Kernel {.unnumbered}\n",
+        "\n",
+        "In the notebook interface:\n",
+        "\n",
+        "- Click **Select Kernel**\n",
+        "- Choose **Colab**\n",
+        "- Select **New Colab Server**\n",
+        "\n",
+        "Your notebook is now running on Google Colab \n",
+        "\n",
+        "## Dataset Overview {.unnumbered}\n",
+        "\n",
+        "- All data for this lab is located in: [SEC-10K-2024/](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=drive_link)\n",
+        "- You will need to \"copy\" the folder to your own Google Drive\n",
+        "- Right click on the folder, and then click \"Add shortcut to Drive\". This will allow you to access the folder from your drive!\n",
+        "- This folder contains **plain-text 10-K filings** for multiple publicly traded firms.\n",
+        "- Each file represents **one company’s annual report**.\n",
+        "\n",
+        "![](./M01_lecture02_figures/gdrive-add-folder.png){width=\"80%\" fig-align=\"center\"}\n",
+        "\n",
+        ":::{.callout-note}\n",
+        "When running notebooks on Google Colab, file paths such as `../data/...` will **not work**.\n",
+        "Colab runs on a remote virtual machine, so all data must be accessed via mounted storage or downloads.\n",
+        ":::\n",
+        "\n",
+        "\n",
+        "## Research Framing (Important) {.unnumbered}\n",
+        "\n",
+        "You are **not** training a model yet. Instead, think of this lab as **asking structured questions of text**, such as:\n",
+        "\n",
+        "- What terms dominate risk disclosures?\n",
+        "- How consistent is language across companies?\n",
+        "- Which words survive aggressive cleaning?\n",
+        "- How does preprocessing change the text representation?\n",
+        "\n",
+        "Your answers will be supported by **intermediate outputs**, not final predictions.\n",
+        "\n",
+        "## NLP Processing Pipeline {.unnumbered}\n",
+        "\n",
+        "You will implement the following pipeline **step by step**:\n",
+        "\n",
+        "1. Raw text  \n",
+        "2. Sentence segmentation  \n",
+        "3. Tokenization  \n",
+        "4. Part-of-Speech (POS) tagging  \n",
+        "5. Stop-word removal  \n",
+        "6. Stemming / Lemmatization  \n",
+        "7. Dependency parsing  \n",
+        "8. String metrics & matching  \n",
+        "\n",
+        "```{dot}\n",
+        "digraph NLP {\n",
+        "    graph [bb=\"\", margin=0, pad=0];\n",
+        "    rankdir=LR;\n",
+        "    splines=ortho;\n",
+        "    nodesep=0.5;\n",
+        "    ranksep=0.6;\n",
+        "\n",
+        "    node [shape=box, style=rounded, fontsize=12, fontname=\"Roboto\"];\n",
+        "\n",
+        "    // Row 1\n",
+        "    { rank=same;\n",
+        "        A [label=\"Raw Text\"];\n",
+        "        B [label=\"Sentence Segmentation\"];\n",
+        "        C [label=\"Tokenization\"];\n",
+        "        D [label=\"Part-of-Speech Tagging\"];\n",
+        "    }\n",
+        "\n",
+        "    // Row 2\n",
+        "    { rank=same;\n",
+        "        F [label=\"Stemming / Lemmatization\"];\n",
+        "        E [label=\"Stop Word Removal\"];\n",
+        "        G [label=\"Dependency Parsing\"];\n",
+        "        H [label=\"String Metrics & Matching\"];\n",
+        "    }\n",
+        "\n",
+        "    // Edges Row 1\n",
+        "    A -> B -> C -> D;\n",
+        "\n",
+        "    // Wrap to Row 2\n",
+        "    D -> E;\n",
+        "\n",
+        "    // Row 2 edges\n",
+        "    E -> F -> G -> H;\n",
+        "}\n",
+        "\n",
+        "```\n",
+        "\n",
+        "Each stage produces **artifacts** that help you answer analytical questions.\n",
+        "\n",
+        "\n",
+        "## Load and Inspect the Data {.unnumbered}\n",
+        "\n",
+        "### Mount Drive in Colab {.unnumbered}"
+      ],
+      "id": "f4ac7bff"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ],
+      "id": "6cbefe75",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Verify Files {.unnumbered}"
+      ],
+      "id": "0b0462c3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "import os\n",
+        "os.listdir(\"/content/drive/MyDrive\")"
+      ],
+      "id": "a7ce0d00",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Adjust paths as needed.\n",
+        "\n",
+        "### For Local Drive (Optional) {.unnumbered}"
+      ],
+      "id": "6e1bd6db"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from pathlib import Path\n",
+        "\n",
+        "DATA_DIR = Path(\"../data/SEC-10K-2024\")\n",
+        "\n",
+        "files = list(DATA_DIR.glob(\"*.txt\"))\n",
+        "print(f\"Number of 10-K documents: {len(files)}\")\n",
+        "\n",
+        "# Read a sample document\n",
+        "sample_text = files[0].read_text(encoding=\"utf-8\")\n",
+        "print(sample_text[:1500])"
+      ],
+      "id": "4226f05d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## What sections of the 10-K appear most frequently in the opening text?\n",
+        "\n",
+        "This will help you understand the structure of the document and identify key areas for analysis (e.g., risk factors, management discussion). We first start with Sentence Segmentation"
+      ],
+      "id": "2cb49d37"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "import nltk\n",
+        "nltk.download(\"punkt\")\n",
+        "\n",
+        "from nltk.tokenize import sent_tokenize\n",
+        "\n",
+        "sentences = sent_tokenize(sample_text)\n",
+        "print(f\"Number of sentences: {len(sentences)}\")\n",
+        "sentences[:5]"
+      ],
+      "id": "a66b0859",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Are sentences in 10-Ks longer or shorter than typical news or social media text?\n"
+      ],
+      "id": "d68dafaf"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from nltk.tokenize import word_tokenize\n",
+        "\n",
+        "tokens = word_tokenize(sample_text)\n",
+        "tokens[:30]"
+      ],
+      "id": "7104b634",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## What kinds of tokens appear that are not “words” (e.g., symbols, numbers, legal references)?"
+      ],
+      "id": "505eb06d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "nltk.download(\"averaged_perceptron_tagger\")\n",
+        "\n",
+        "from nltk import pos_tag\n",
+        "\n",
+        "pos_tags = pos_tag(tokens[:50])\n",
+        "pos_tags"
+      ],
+      "id": "88fd9beb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Which POS categories dominate risk-related sections (nouns, verbs, adjectives)?\n"
+      ],
+      "id": "cf9da510"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from nltk.corpus import stopwords\n",
+        "nltk.download(\"stopwords\")\n",
+        "\n",
+        "stop_words = set(stopwords.words(\"english\"))\n",
+        "\n",
+        "filtered_tokens = [\n",
+        "    t.lower() for t in tokens\n",
+        "    if t.isalpha() and t.lower() not in stop_words\n",
+        "]\n",
+        "\n",
+        "filtered_tokens[:30]"
+      ],
+      "id": "bce06fc8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Which important business terms survive stop-word removal?"
+      ],
+      "id": "8e2909f3"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from nltk.stem import PorterStemmer, WordNetLemmatizer\n",
+        "nltk.download(\"wordnet\")\n",
+        "\n",
+        "stemmer = PorterStemmer()\n",
+        "lemmatizer = WordNetLemmatizer()\n",
+        "\n",
+        "stems = [stemmer.stem(t) for t in filtered_tokens[:20]]\n",
+        "lemmas = [lemmatizer.lemmatize(t) for t in filtered_tokens[:20]]\n",
+        "\n",
+        "list(zip(filtered_tokens[:20], stems, lemmas))"
+      ],
+      "id": "609b6388",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Which transformation preserves interpretability better for financial text?\n"
+      ],
+      "id": "0d535746"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "import spacy\n",
+        "nlp = spacy.load(\"en_core_web_sm\")\n",
+        "\n",
+        "doc = nlp(sentences[0])\n",
+        "[(token.text, token.dep_, token.head.text) for token in doc]"
+      ],
+      "id": "51624968",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## How might dependency relationships help identify risk statements or obligations?"
+      ],
+      "id": "fd517a42"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| echo: true\n",
+        "#| eval: false\n",
+        "from difflib import SequenceMatcher\n",
+        "\n",
+        "def similarity(a, b):\n",
+        "    return SequenceMatcher(None, a, b).ratio()\n",
+        "\n",
+        "similarity(\n",
+        "    \"risk management strategy\",\n",
+        "    \"enterprise risk management\"\n",
+        ")"
+      ],
+      "id": "fe0fd272",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Why might approximate string matching be useful for cross-company comparison?\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Deliverables\n",
+        "\n",
+        "Submit word document with answering the questions in addition to the Jupyter notebook with the code and outputs (either `.ipynb` or `.pdf`):\n",
+        "\n",
+        "## Key Takeaway\n",
+        "\n",
+        "> Before we can generate language,\n",
+        "> we must first **discipline text into structure**.\n",
+        "\n",
+        "This pipeline is the foundation upon which **Bag of Words, TF-IDF, embeddings, and generative models** are built.\n"
+      ],
+      "id": "296af83f"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

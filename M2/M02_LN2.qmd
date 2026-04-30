@@ -474,20 +474,15 @@ Multi‑head attention extends the basic attention mechanism by allowing the mod
 ## Leading to transformers
 The limitations of RNNs and the strengths of attention naturally lead to the transformer architecture. Transformers replace recurrence entirely with stacked layers of multi‑head self‑attention and feedforward networks. This design enables full parallelization, efficient training on large corpora, and the ability to model long‑range dependencies. Transformers form the foundation of all modern LLMs, including GPT, BERT, T5, and LLaMA. Understanding attention is therefore essential for understanding how LLMs work                       
 
-# Transformer Architectures
-## Encoder                                               
-## Decoder                                               
-## Encoder–decoder                                       
-## Cross-attention                                       
+## What's Next: Sequence Models and Attention
 
-# Pretraining Objectives
+The bag-of-words and embedding representations developed here treat tokens *independently* or in shallow contexts.
+Real language is sequential: meaning depends on order, and long-range dependencies matter.
 
-## Masked language modeling                              
-## Causal language modeling                              
+In Module 3 we build the machinery to handle sequences — starting with recurrent networks and culminating in the attention mechanism that powers all modern transformers.
 
-# Modern Extensions
 
-## Vision transformers                                   
-## Architectural innovations (MoE, RoPE, Flash Attention)
-## Multimodal LLMs                                       
+### References {.unnumbered}
 
+::: {#refs}
+:::

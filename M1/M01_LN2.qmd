@@ -1928,6 +1928,15 @@ Avoid BoW when:
 - Generative and discriminative models offer complementary perspectives  
 
 
+## What's Next: From Representations to Language Models
+
+The representations developed in this lecture — BoW, TF-IDF, and MLP classifiers — treat text as *unordered* feature bags.
+Words have individual weights, but sequence and context remain invisible.
+
+In Module 2 we formalize **language as a probability distribution over sequences**.
+That shift — from classifying documents to predicting the next token — lays the mathematical foundation for everything from N-gram language models to the transformer-based architectures that power modern generative AI.
+
+
 ### References {.unnumbered}
 
 ::: {#refs}

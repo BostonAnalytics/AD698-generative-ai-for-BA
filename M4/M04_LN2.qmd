@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Training Paradigms and Fine-Tuning Pipelines"
+subtitle: "Prompting: Pre-Train, Prompt, and Predict"
 number-sections: true
 date: "2026-03-12"
 date-modified: today
@@ -20,95 +20,313 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M04:', 'Fine-Tuning', 'Training', 'Transfer Learning', 'Lecture Notes']
-description: "Lecture notes for Module 4 covering Training Paradigms and Fine-Tuning Pipelines."
+categories: ['M04:', 'Prompting', 'Fine-Tuning', 'Alignment', 'Lecture Notes']
+description: "Lecture notes for Module 4 covering the prompting paradigm, fine-tuning, RLHF, and parameter-efficient adaptation."
 ---
 
-## Overview
+# From Pretraining to Prompting {#sec-intro}
 
-The dominant paradigm for modern NLP is **pretrain → adapt**. A model is first trained
-on a massive unlabelled corpus using a self-supervised objective, then adapted for a target
-task with far less labelled data.
-This lecture maps the landscape of pretraining objectives and adaptation strategies, from
-full fine-tuning through the parameter-efficient methods that make large-model adaptation
-practical on modest hardware.
+In Module 4 Lecture 1 we saw how transformers are *pretrained*: masked language modeling
+(BERT), causal language modeling (GPT), and span corruption (T5) teach a model to represent
+language deeply from raw text. Pretraining produces a powerful general-purpose encoder or
+decoder — but a general-purpose model still needs to be aimed at a specific task.
 
-## Pretraining Objectives
+This lecture covers the full spectrum of **adaptation strategies**:
 
-### Masked Language Modeling (MLM) — BERT
+| Strategy | Cost | Data needed | Suited for |
+|----------|------|-------------|------------|
+| Prompt engineering | Zero compute | Zero labels | Rapid prototyping, task spec |
+| Few-shot prompting | Zero compute | 3–10 examples | Low-data settings |
+| Instruction tuning | Medium | 10k–1M examples | Multi-task generalization |
+| RLHF / DPO | High | Human preference pairs | Alignment, safety |
+| Full fine-tuning | High | 1k–100k labels | Max accuracy, domain shift |
+| LoRA / Adapters | Low | 1k–100k labels | VRAM-constrained adaptation |
 
-BERT randomly replaces 15 % of input tokens with `[MASK]` (80 %), a random token (10 %),
-or the unchanged token (10 %), then trains a cross-entropy loss on the masked positions.
+
+# The Shift to Prompt-Based Approaches
+
+## From Training-Centric to Inference-Centric AI
+
+For most of ML history, behavior was determined at **training**. Once deployed, a model was frozen: changing behavior required retraining. LLMs shatter this assumption. Their behavior is no longer fixed at deployment — it can be **steered at inference time** through prompts, context, and task specifications.
+
+This is the **Pre-train, Prompt, and Predict** paradigm [@liu2023pretrain]:
+
+- **Pretrain**: learn a general language model on a massive unlabelled corpus.
+- **Prompt**: supply a natural-language template that converts the downstream task into a language modeling problem.
+- **Predict**: let the model fill in the blanks — no gradient updates required.
+
+## Formal Notation
+
+Given:
+- $x$ — original input (e.g., a sentence)
+- $f_{\text{prompt}}(x)$ — a **prompting function** that converts $x$ into a prompted input $x'$ (fills in a template around $x$)
+- $x'$ — the prompted input (template + input)
+- $z$ — the **answer** (filled slot, e.g., a class label, a word, or a generated span)
+- $f_{\text{fill}}(x', z)$ — the **answer search** function that scores candidate answers $z$
+
+The prediction is:
+
+$$
+\begin{align}
+\hat{z} = \arg\max_{z \in \mathcal{Z}} \, P(f_{\text{fill}}(x', z) \mid \theta)
+\end{align}
+$$
+
+where $\mathcal{Z}$ is the set of candidate answers and $\theta$ are the (frozen) model parameters.
+
+**Example** — sentiment classification:
+
+| Step | Text |
+|------|------|
+| Input $x$ | "The quarterly earnings exceeded expectations." |
+| Template | "[X] The sentiment of this text is [Z]." |
+| Prompted $x'$ | "The quarterly earnings exceeded expectations. The sentiment of this text is ___" |
+| Answer space $\mathcal{Z}$ | {"positive", "negative", "neutral"} |
+| Prediction $\hat{z}$ | "positive" (highest log-prob under the LM) |
+
+
+## Classical Learning vs. Generative Conditioning
+
+### Classical Supervised Learning
+
+In the classical paradigm:
+
+$$
+\begin{align}
+y = f_\theta(x)
+\end{align}
+$$
+
+$\theta$ encodes all learned behavior. Changing the model's behavior requires modifying $\theta$.
+This creates a rigid workflow: expensive offline training followed by static, brittle deployment.
+
+### Generative Conditioning
+
+Generative models define a conditional distribution:
+
+$$
+\begin{align}
+P(Y \mid X, \theta)
+\end{align}
+$$
+
+Adding a prompt $p$ at inference time adds a third control variable:
+
+$$
+\begin{align}
+P(Y \mid X, p, \theta)
+\end{align}
+$$
+
+Prompts act as *soft constraints*: they reshape the model's posterior distribution without touching the weights.
+
+
+## Prompt as an Inference-Time Control Signal
+
+A prompt functions as a **control interface** for a probabilistic model:
+
+- **Conditioning signal** — narrows the space of plausible outputs (Bayesian analogy).
+- **Soft constraint** — biases trajectories probabilistically, not deterministically.
+- **Semantic policy** — encodes how the model should behave ("Be concise", "Act as a SQL expert").
+- **Steering mechanism** — alters token likelihoods to enable rapid task adaptation without retraining.
+
+```{dot}
+digraph InferenceConditioning {
+    rankdir=TB;
+    node [shape=rectangle, style=rounded, fontsize=12];
+    subgraph cluster_input {
+        label="Inputs";
+        style=dashed;
+        X [label="User Input\nX"];
+        P [label="Prompt / Context\np"];
+    }
+    Theta [label="Model Parameters\nθ (frozen)", shape=rectangle, style="rounded,filled", fillcolor=lightgray];
+    subgraph cluster_inference {
+        label="Inference Process";
+        style=dashed;
+        Combine [label="Conditioning:\n[X, p]"];
+        LM [label="Generative Model\nP(Y | X, p, θ)"];
+    }
+    Y [label="Output Distribution\nY"];
+    X -> Combine;
+    P -> Combine;
+    Theta -> LM;
+    Combine -> LM;
+    LM -> Y;
+}
+```
+
+
+## Prompt Engineering, Fine-Tuning, and RAG: A Comparative View
+
+![Venn Diagram of Prompt Engineering, Fine-tuning, and RAG](../M3/M03_lecture01_figures/Prompt_Engineering_vs_RAG-tuning_Venn_Diagram.jpg){width=60% fig-align=center fig-alt="Venn diagram showing the relationship between prompt engineering, fine-tuning, and RAG" #fig-venn-diagram}
+
+| Approach | Weight Update | Data Required | Iteration Speed | Best For |
+|----------|:---:|---|---|---|
+| **Prompt Engineering** | None | 0 labels | Minutes | Task spec, style control |
+| **Fine-Tuning** | Yes — all | Labeled examples | Hours–days | Domain adaptation, new skills |
+| **RAG** | None | Document corpus | Minutes | Factual accuracy, recency |
+| **LoRA / PEFT** | Yes — subset | Labeled examples | Hours | VRAM-limited adaptation |
+
+They interact: **Prompting + RAG** = reasoning over external knowledge; **Prompting + Fine-tuning** = stable specialized behavior; **RAG + Fine-tuning** = domain-specific grounding.
+
+
+## Worked Example: How a Prompt Reshapes Token Probabilities
+
+### Without a Prompt
+
+Input: `"Complete the sentence: The cat"`
+
+The model's next-token distribution (pretrained priors):
+
+| Token | Probability |
+|:-------|:-------------:|
+| runs  | 0.40 |
+| sleeps | 0.35 |
+| . | 0.15 |
+| dog | 0.05 |
+| cat | 0.05 |
+
+### With a Dramatic-Scene Prompt
+
+Prompt: `"Write a dramatic action scene. Complete the sentence: The cat"`
+
+| Token | Probability |
+|:-------|:-------------:|
+| runs | 0.55 |
+| leaps | 0.25 |
+| attacks | 0.10 |
+| sleeps | 0.03 |
+| . | 0.02 |
+
+"sleeps" collapses 0.35 → 0.03. No weights changed — only the **conditioning context**.
+
+### With a Role + Style Prompt
+
+Prompt: `"You are a veterinarian writing a calm, factual report. Complete the sentence: The cat"`
+
+| Token | Probability |
+|:-------|:-------------:|
+| sleeps | 0.50 |
+| rests | 0.20 |
+| is | 0.15 |
+| runs | 0.05 |
+| . | 0.05 |
+
+The prompt now acts as a **semantic policy** — "calm, factual" shifts the distribution toward clinical, low-emotion verbs.
+
+
+## Training Settings: Zero-Shot, Few-Shot, Full-Data
+
+The prompting framework naturally accommodates different data regimes [@liu2023pretrain]:
+
+| Setting | Labeled examples | Parameter update? | Notes |
+|---------|:---:|:---:|---|
+| **Zero-shot** | 0 | No | Model infers task from the template alone |
+| **Few-shot (in-context)** | 1–10 | No | Examples in the prompt context window |
+| **Full-data supervised** | 1k–100k | Yes (fine-tune) | Standard supervised learning on top of pretrained features |
+
+In-context few-shot is a distinguishing *emergent ability* of large models: GPT-3 (175B) can solve new tasks from 3 examples; GPT-2 (1.5B) largely cannot.
+
+
+# Prompting Patterns: Code Demonstrations
+
+## Zero-Shot vs Few-Shot Prompt Construction
+
+These cells demonstrate prompt formatting patterns in pure Python — no API key required.
+The patterns translate directly to any LLM API (OpenAI, Anthropic, HuggingFace).
 
 ```{python}
-def mlm_mask(tokens: list[str], mask_prob: float = 0.15,
-             mask_token: str = "[MASK]", vocab: list[str] = None):
-    """Simulate BERT-style masking; return (masked_tokens, labels)."""
-    import random, copy
-    labels = copy.copy(tokens)
-    masked = copy.copy(tokens)
-    for i, tok in enumerate(tokens):
-        if random.random() < mask_prob:
-            r = random.random()
-            if r < 0.80:
-                masked[i] = mask_token
-            elif r < 0.90 and vocab:
-                masked[i] = random.choice(vocab)
-            # else: keep original
-    return masked, labels
+#| eval: false
+def zero_shot_prompt(task: str, input_text: str) -> str:
+    return f"{task}\n\nInput: {input_text}\nOutput:"
 
-sample = "the company reported strong revenue growth in q3".split()
-masked, labels = mlm_mask(sample)
-print("Original:", sample)
-print("Masked  :", masked)
+def few_shot_prompt(task: str, examples: list[dict], input_text: str) -> str:
+    prompt = task + "\n\n"
+    for ex in examples:
+        prompt += f"Input: {ex['input']}\nOutput: {ex['output']}\n\n"
+    prompt += f"Input: {input_text}\nOutput:"
+    return prompt
+
+task = "Classify the sentiment of the following text as POSITIVE, NEGATIVE, or NEUTRAL."
+examples = [
+    {"input": "The product exceeded all my expectations.",  "output": "POSITIVE"},
+    {"input": "Delivery was delayed by two weeks.",          "output": "NEGATIVE"},
+    {"input": "The report was submitted on time.",           "output": "NEUTRAL"},
+]
+test_text = "Revenue grew 12% year-over-year driven by strong cloud adoption."
+
+print("=== ZERO-SHOT PROMPT ===")
+print(zero_shot_prompt(task, test_text))
+print()
+print("=== FEW-SHOT PROMPT (k=3) ===")
+print(few_shot_prompt(task, examples, test_text))
 ```
 
-**Key property**: MLM uses *bidirectional* context — both left and right tokens are visible
-during encoding. This makes BERT encoders excellent for classification, NER, and extractive QA.
+## Chain-of-Thought Prompting
 
-### Causal Language Modeling (CLM) — GPT
-
-GPT models are trained to predict the next token given all previous tokens:
-
-$$\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1})$$
-
-The causal (triangular) attention mask enforces this left-to-right constraint.
+Chain-of-thought (CoT) prompting instructs the model to reason step-by-step before giving a final answer. It is especially effective for multi-step problems.
 
 ```{python}
-import torch
-import torch.nn.functional as F
+#| eval: false
+def cot_prompt(task: str, examples: list[dict], input_text: str) -> str:
+    prompt = task + "\n\n"
+    for ex in examples:
+        prompt += f"Question: {ex['question']}\n"
+        prompt += f"Reasoning: {ex['reasoning']}\n"
+        prompt += f"Answer: {ex['answer']}\n\n"
+    prompt += f"Question: {input_text}\nReasoning:"
+    return prompt
 
-def causal_mask(seq_len: int) -> torch.Tensor:
-    """Upper-triangular mask: True where attention is BLOCKED."""
-    return torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool), diagonal=1)
-
-print(causal_mask(5).int())
+task_cot = (
+    "You are a financial analyst. "
+    "For each question, show your reasoning step by step, "
+    "then provide a concise final answer."
+)
+cot_examples = [
+    {
+        "question": "A company reports $500M revenue with 20% YoY growth. What was last year's revenue?",
+        "reasoning": "last_year × 1.20 = $500M → last_year = $500M / 1.20 = $416.7M",
+        "answer": "Last year's revenue was approximately $416.7 million.",
+    },
+    {
+        "question": "Operating margin is 15% on $200M revenue. What is operating income?",
+        "reasoning": "Operating income = $200M × 0.15 = $30M.",
+        "answer": "Operating income is $30 million.",
+    },
+]
+question = "A firm's net income grew from $80M to $104M. What is the percentage growth?"
+print(cot_prompt(task_cot, cot_examples, question))
 ```
 
-### Sequence-to-Sequence Span Corruption — T5
+## Role Prompting and Structured Output
 
-T5 corrupts 15 % of token spans (replacing each span with a single sentinel token) and
-trains the decoder to reconstruct them.
+```{python}
+#| eval: false
+def role_prompt(role: str, context: str, request: str) -> str:
+    return (
+        f"You are {role}.\n\n"
+        f"Context:\n{context}\n\n"
+        f"Task: {request}\n\n"
+        f"Respond in valid JSON."
+    )
 
+role = "a senior equity research analyst specializing in technology sector 10-K filings"
+context = """
+Item 1A. Risk Factors (excerpt):
+The Company faces intense competition from well-established and emerging companies.
+Rapid technological changes could render our products obsolete.
+We are subject to significant regulatory requirements in multiple jurisdictions.
+"""
+request = (
+    "Extract the top 3 risk categories from the excerpt. "
+    "For each, provide: category, description (one sentence), and severity (High/Medium/Low)."
+)
+print(role_prompt(role, context, request))
 ```
-Input:  "The company <X> strong revenue in <Y> quarter."
-Target: "<X> reported <Y> Q3 </s>"
-```
 
-This objective is well-suited for generation tasks (summarisation, translation, QA).
 
-## The Transfer Learning Paradigm
-
-Transfer learning consists of two stages:
-
-1. **Pretraining** — self-supervised learning on a large unlabelled corpus.
-2. **Fine-tuning** — supervised learning on a small labelled dataset, starting from the
-   pretrained weights.
-
-The pretrained model has already learned grammar, syntax, world knowledge, and reasoning
-patterns. Fine-tuning steers those representations toward the target task.
-
-## Full Fine-Tuning
+# Full Fine-Tuning
 
 All model parameters are updated during training on labelled task data.
 
@@ -306,8 +524,16 @@ print(f"Trainable params: {total:,}  vs  768×768 = {768*768:,}")
 
 | Method | Updates | Params (7B) | Use When |
 |--------|---------|-------------|----------|
+| Prompt engineering | None | 0 MB | Zero-label task spec, rapid prototyping |
+| Few-shot (in-context) | None | 0 MB | 3–10 examples, no GPU |
 | Full fine-tuning | All | ~14 GB (fp16) | Large data, max accuracy |
 | Instruction tuning | All | ~14 GB | Multi-task generalisation |
 | LoRA (r=8) | A, B matrices | ~20 MB | Limited VRAM, fast iteration |
 | Adapters | Bottleneck layers | ~50 MB | Modular task plug-ins |
 | Prompt tuning | Soft prompt only | ~1 MB | Very limited compute |
+
+
+### References {.unnumbered}
+
+::: {#refs}
+:::

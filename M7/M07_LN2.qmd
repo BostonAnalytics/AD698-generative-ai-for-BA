@@ -1,8 +1,433 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "M07 LN2"
-categories: ['M07:', 'Business Analytics', 'Applied AI', 'Lecture Notes']
-description: "Lecture notes for Module 7 covering M07 LN2."
+subtitle: "Applied AI Pipeline Design and Evaluation"
+number-sections: true
+date: "2024-11-21"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+execute:
+    echo: true
+    eval: false
+    warning: false
+    message: false
+categories: ['M07:', 'Business Analytics', 'Applied AI', 'Evaluation', 'Lecture Notes']
+description: "Lecture notes for Module 7 covering AI pipeline evaluation, human-AI interaction patterns, and design for knowledge work."
 ---
 
-# M07 Lecture Note 02
+# From Pipelines to Practice {#sec-intro}
+
+In the previous lecture (M07_LN1) we built a complete AI pipeline — ingestion, knowledge
+graph, hybrid retrieval, white-box reranking, and LLM explanation — and studied how these
+components connect to form a production system.
+
+This lecture asks the next question: **How do you know if it is working?**
+
+Evaluation is not a single number. A production AI pipeline must satisfy multiple
+stakeholders simultaneously:
+
+- **ML engineers** care about retrieval precision, NDCG, F1, latency.
+- **Business analysts** care about decision quality: are the ranked outputs actually useful?
+- **End users** care about trust, interpretability, and whether the tool integrates
+  into their workflow.
+
+Each stakeholder requires different measurements. We study all three, grounded in two
+recent empirical research programs:
+
+1. **Human-LLM collaboration patterns** — an empirical analysis of how users actually
+   interact with AI in coding tasks, revealing systematic satisfaction and instruction-following failure modes [@empirical2025llm].
+2. **Yodeai: AI for knowledge workers** — a user study of AI-powered dashboards in
+   product management, surfacing three recurring design tensions:
+   *adaptability, accountability, and interoperability* [@yodeai2025pm].
+
+Together they paint a picture of what evaluation must cover: not just offline metrics on
+held-out benchmarks, but live behavioral measurement of how humans interact with AI systems.
+
+
+# Offline Evaluation: Measuring Retrieval and Generation Quality {#sec-offline}
+
+## Retrieval Metrics
+
+Offline evaluation measures a pipeline against a **fixed benchmark** with known relevance
+judgments. The canonical metrics for ranked retrieval are:
+
+| Metric | Formula | What it measures |
+|--------|---------|-----------------|
+| **Precision@k** | $\frac{\text{relevant in top-}k}{k}$ | Precision of top-k results |
+| **Recall@k** | $\frac{\text{relevant in top-}k}{\text{total relevant}}$ | Coverage of relevant items |
+| **NDCG@k** | $\frac{\text{DCG@}k}{\text{IDCG@}k}$ | Graded relevance, penalizes low-ranked hits |
+| **MRR** | $\frac{1}{|Q|}\sum_q \frac{1}{\text{rank}_q}$ | Mean reciprocal rank of first relevant hit |
+
+$$
+\begin{align}
+\text{NDCG@}k &= \frac{\text{DCG@}k}{\text{IDCG@}k} \\
+\text{DCG@}k &= \sum_{i=1}^{k} \frac{\text{rel}_i}{\log_2(i+1)}
+\end{align}
+$$
+
+```{python}
+import numpy as np
+
+def ndcg_at_k(relevances: list[int], k: int = 10) -> float:
+    rel = np.array(relevances[:k], dtype=float)
+    dcg = np.sum(rel / np.log2(np.arange(2, len(rel) + 2)))
+    ideal = np.sort(rel)[::-1]
+    idcg = np.sum(ideal / np.log2(np.arange(2, len(ideal) + 2)))
+    return float(dcg / idcg) if idcg > 0 else 0.0
+
+def mean_reciprocal_rank(rankings: list[list[int]]) -> float:
+    """Each ranking is a list of 0/1 relevance labels in ranked order."""
+    rr = []
+    for ranking in rankings:
+        for i, rel in enumerate(ranking):
+            if rel == 1:
+                rr.append(1.0 / (i + 1))
+                break
+        else:
+            rr.append(0.0)
+    return float(np.mean(rr))
+```
+
+## Generation Quality Metrics
+
+When a pipeline includes an LLM generation step (summarization, explanation, QA),
+additional metrics apply:
+
+| Metric | What it measures | Typical use |
+|--------|-----------------|-------------|
+| **BLEU / ROUGE-L** | N-gram overlap with reference | Summarization, translation |
+| **BERTScore** | Semantic similarity via embeddings | Long-form generation |
+| **Faithfulness** | Are claims grounded in the source? | RAG evaluation |
+| **Hallucination rate** | Fraction of ungrounded facts | Critical for high-stakes outputs |
+
+```{python}
+from bert_score import score as bert_score
+
+def evaluate_generation(predictions: list[str],
+                         references: list[str]) -> dict:
+    """Run BERTScore on generated vs. reference texts."""
+    P, R, F1 = bert_score(predictions, references, lang="en")
+    return {
+        "precision": P.mean().item(),
+        "recall": R.mean().item(),
+        "f1": F1.mean().item(),
+    }
+```
+
+## Faithfulness vs. Relevance: The RAG Evaluation Triangle
+
+For pipelines that use retrieval-augmented generation, evaluation must cover three axes:
+
+```
+         Context Relevance
+              ↑
+              │
+Answer ───────┼──── Faithfulness
+Relevance     │
+              ↓
+```
+
+| Axis | Question | Failure mode |
+|------|---------|-------------|
+| **Context Relevance** | Is the retrieved context relevant to the query? | Retriever retrieves off-topic chunks |
+| **Faithfulness** | Is the generated answer grounded in the context? | LLM hallucinates facts not in context |
+| **Answer Relevance** | Does the answer actually address the question? | LLM gives a grounded but irrelevant response |
+
+All three can fail independently. A highly faithful answer can still be irrelevant. A
+relevant retrieval can still produce hallucinated answers if the LLM ignores the context.
+
+```{python}
+def rag_faithfulness_check(answer: str, context: str,
+                            llm_judge) -> float:
+    """
+    Ask an LLM judge: 'Is every claim in `answer` supported by `context`?'
+    Returns a score in [0, 1].
+    """
+    prompt = f"""
+Rate how faithfully the following Answer is supported by the Context.
+Score 0.0 = completely unsupported, 1.0 = every claim is verifiable.
+
+Context: {context}
+
+Answer: {answer}
+
+Faithfulness score (0.0-1.0):"""
+    response = llm_judge(prompt)
+    try:
+        return float(response.strip().split()[0])
+    except ValueError:
+        return 0.0
+```
+
+
+# Human-AI Interaction Patterns {#sec-patterns}
+
+## Why Offline Metrics Are Not Enough
+
+Offline metrics measure how well a system performs *in isolation*. But users interact
+with AI systems iteratively, correcting mistakes, adjusting prompts, and refining outputs
+over multiple turns. A system with high offline NDCG may still fail in practice if users
+cannot efficiently direct it toward useful outputs.
+
+An empirical analysis of human-LLM collaboration patterns [@empirical2025llm] across
+real-world coding tasks reveals three archetypal interaction structures:
+
+| Pattern | Structure | Typical task | Risk |
+|---------|----------|-------------|------|
+| **Linear** | Sequential refinements, one branch | Code quality optimization | Low — incremental progress |
+| **Star** | Multiple independent queries from same root | Information querying | Medium — context not preserved |
+| **Tree** | Branching explorations, backtracking | Design-driven development | High — context loss, non-compliance |
+
+The key finding: **the tree pattern correlates with the highest LLM instruction
+non-compliance rates**. As conversations branch, the model loses track of prior
+constraints. Users end up re-explaining requirements, and satisfaction declines sharply.
+
+$$
+\begin{align}
+\text{Satisfaction}_{t} = \text{Satisfaction}_{0} - \alpha \cdot (\text{error corrections at turn } t)
+\end{align}
+$$
+
+The longer the conversation, the more turns become error-correction rather than
+productive progress. **This is the primary design failure mode of current AI business tools.**
+
+## Task Types and Their Failure Modes
+
+Five task types with distinct instruction-following profiles [@empirical2025llm]:
+
+| Task Type | Non-compliance rate | User satisfaction |
+|-----------|:-----------:|:-----------:|
+| Information querying | Low | High |
+| Algorithm design | Low | High |
+| Code quality optimization | Medium | Medium |
+| Requirements-driven development | Medium | Low |
+| **Bug fixing / refactoring** | **High** | **Low** |
+
+**Design implication**: AI business dashboards should separate *well-structured* tasks
+(querying, lookup, classification) from *open-ended* tasks (analysis, strategy, root-cause).
+Well-structured tasks can be automated with confidence. Open-ended tasks require the
+human to remain in the loop with explicit checkpoints.
+
+## The Knowledge Work Challenge
+
+A parallel user study of AI tools for product managers [@yodeai2025pm] reveals an
+analogous tension. The system **Yodeai** provides three interactive widgets for synthesizing
+unstructured data (customer interviews, app reviews): User Insights, Pain Point Tracker, and Q&A.
+
+Key findings from 16 product managers:
+
+**Opportunities identified:**
+- AI gives users a "first pass" — a starting point that combats blank-page syndrome.
+  Users with large volumes of unfamiliar data found AI summarization most valuable.
+- Shareable AI outputs create an **audit trail** for cross-functional collaboration —
+  engineers can see the raw customer evidence that drove a PM's decision.
+
+**Limitations identified:**
+- **Overreliance risk**: Auto-generated sticky notes reduced engagement — users felt
+  disconnected from insights they did not derive themselves. (*"I don't feel that
+  connection with those sticky notes."*)
+- **Stale data**: AI outputs become incorrect as context changes. There is no automatic
+  mechanism to flag outdated insights.
+- **Privacy/confidentiality**: Companies restrict which data can be fed into AI tools.
+  PMs use redacted inputs or company-approved enterprise chatbots only.
+
+These findings lead to three design principles for AI knowledge work tools:
+
+| Principle | Operational definition |
+|-----------|----------------------|
+| **Adaptability** | Support diverse workflows; don't force a single output format |
+| **Accountability** | Make AI reasoning auditable; show sources alongside outputs |
+| **Interoperability** | Integrate with existing tools (Slack, Figma, Notion); don't create silos |
+
+
+# Designing for Evaluability {#sec-design}
+
+## Evaluation Must Be Built In, Not Added On
+
+The most common mistake in deploying AI business pipelines is treating evaluation as
+a post-deployment activity. By then, ground truth labels are expensive to collect, A/B
+test infrastructure is absent, and debugging is guesswork.
+
+**Evaluation must be part of the system design**, not a separate phase.
+
+Three practices that enable continuous evaluation:
+
+**1. Instrument every pipeline stage**. Log inputs, outputs, and intermediate results
+at each stage (retrieval, reranking, generation). You cannot debug what you cannot observe.
+
+```{python}
+import logging
+from dataclasses import dataclass, field
+from typing import Any
+
+@dataclass
+class PipelineTrace:
+    query: str
+    query_enriched: dict = field(default_factory=dict)
+    retrieved: list[dict] = field(default_factory=list)
+    reranked: list[dict] = field(default_factory=list)
+    explanation: str = ""
+    latency_ms: dict = field(default_factory=dict)  # per-stage
+
+    def log(self):
+        logging.info(
+            "trace | query=%s | n_retrieved=%d | top_score=%.3f | "
+            "explanation_length=%d | total_ms=%d",
+            self.query[:60],
+            len(self.retrieved),
+            self.reranked[0]["score"] if self.reranked else 0,
+            len(self.explanation),
+            sum(self.latency_ms.values()),
+        )
+```
+
+**2. Collect human relevance labels continuously**. Ask users to rate the top-3 results
+on a 3-point scale (not relevant / somewhat / relevant). Even 10 labels per day accumulate
+into a real benchmark within weeks.
+
+**3. Run shadow evaluations**. Before promoting a new pipeline version, run it in parallel
+with the current version on live traffic. Compare NDCG and user engagement without
+exposing users to unvalidated outputs.
+
+## A/B Testing AI Components
+
+Changing a single component in a complex pipeline (retrieval model, prompt, reranker
+weights) can have non-obvious downstream effects. Rigorous A/B testing requires:
+
+| Step | Action |
+|------|--------|
+| **Isolate the change** | Change exactly one component between A and B |
+| **Define the metric** | Primary metric (NDCG@10, satisfaction), guardrail metrics (latency, error rate) |
+| **Power the test** | Determine minimum detectable effect size; run long enough to reach power |
+| **Log interaction data** | Clicks, dwell time, explicit ratings — anything observable |
+
+```{python}
+import hashlib
+import random
+
+def assign_experiment(user_id: str, experiment: str,
+                      traffic_pct: float = 0.5) -> str:
+    """
+    Deterministic, reproducible assignment. Same user always gets same variant.
+    Returns 'treatment' or 'control'.
+    """
+    h = int(hashlib.md5(f"{user_id}:{experiment}".encode()).hexdigest(), 16)
+    bucket = (h % 1000) / 1000.0
+    return "treatment" if bucket < traffic_pct else "control"
+```
+
+## LLM-as-Judge for Scalable Evaluation
+
+Manual human evaluation is the gold standard but is expensive and slow. For continuous
+pipeline evaluation, **LLM-as-judge** provides a scalable alternative:
+
+An LLM evaluator rates generated outputs on faithfulness, relevance, and coherence.
+This is not a replacement for human judgment — it is a *filter* that flags outputs
+requiring human review.
+
+```{python}
+def llm_judge_pipeline(query: str, context: str,
+                        answer: str, judge_model) -> dict:
+    """
+    Evaluate a single pipeline output using an LLM judge.
+    Returns scores for faithfulness, relevance, and coherence.
+    """
+    prompt = f"""
+Evaluate the following pipeline output on three dimensions (each 1-5):
+
+Query: {query}
+Context provided: {context[:500]}
+Generated answer: {answer}
+
+Faithfulness (1=hallucinated, 5=fully grounded in context):
+Relevance (1=off-topic, 5=directly answers the query):
+Coherence (1=incoherent, 5=well-structured and clear):
+
+Output as JSON: {{"faithfulness": X, "relevance": X, "coherence": X}}
+"""
+    response = judge_model(prompt)
+    import json
+    try:
+        return json.loads(response.strip())
+    except json.JSONDecodeError:
+        return {"faithfulness": 0, "relevance": 0, "coherence": 0}
+```
+
+**Critical caveat**: LLM judges have systematic biases (preferring verbose answers,
+favoring outputs similar to their own style). Always calibrate against a held-out
+human-labeled set before trusting LLM-judge scores for decisions.
+
+
+# Putting It Together: The Evaluation Hierarchy {#sec-hierarchy}
+
+A complete AI pipeline evaluation program operates at three levels simultaneously:
+
+```
+Level 1 — Component metrics (automated, continuous)
+  ├── Retrieval: NDCG@10, Recall@100, latency p50/p95
+  ├── Generation: BERTScore, faithfulness rate
+  └── System: error rate, timeout rate
+
+Level 2 — Behavioral evaluation (semi-automated, weekly)
+  ├── LLM-as-judge: faithfulness, relevance, coherence
+  ├── A/B comparison: treatment vs. control on live traffic
+  └── Shadow evaluation: new version vs. current version
+
+Level 3 — Human evaluation (manual, periodic)
+  ├── Expert annotation: relevance labels, error audits
+  ├── User study: satisfaction, trust, task completion rate
+  └── Stakeholder review: business outcome alignment
+```
+
+| Level | Cadence | Cost | Signal type |
+|-------|:-------:|:----:|-------------|
+| Component metrics | Continuous | Low | Leading indicator of failure |
+| Behavioral evaluation | Weekly | Medium | System-level quality signal |
+| Human evaluation | Monthly | High | Ground truth, business alignment |
+
+**No single level suffices.** Component metrics catch regressions fast but miss semantic
+quality. Human evaluation catches what matters most but is too slow for daily deployment.
+The combination drives both speed and confidence.
+
+## Checklist for Deploying an AI Business Pipeline
+
+Before deploying any AI pipeline into a business context, verify:
+
+- [ ] Offline benchmark exists with domain-specific relevance labels
+- [ ] All pipeline stages are instrumented and logs are searchable
+- [ ] Faithfulness/hallucination rate is measured, not assumed
+- [ ] Latency is measured end-to-end at p50 and p95
+- [ ] A/B testing infrastructure exists and is tested before launch
+- [ ] Human evaluation cadence is scheduled and resourced
+- [ ] Fallback behavior is defined for model errors or high-latency events
+- [ ] Privacy and data-handling policies are reviewed for all data the LLM receives
+- [ ] Audit trail for AI-generated outputs is retained per regulatory requirements
+
+
+## What's Next
+
+Module 7 closes the main sequence of the course. You now have:
+
+1. The **theoretical foundations** (M1–M3): language models, transformers, representations
+2. The **adaptation toolkit** (M4): prompting, fine-tuning, alignment
+3. The **retrieval and agentic layer** (M5–M6): RAG, agentic pipelines
+4. The **deployment and evaluation layer** (M7): production systems, dashboards, evaluation
+
+Module 8 surveys **emerging topics**: multimodal models, long-context architectures,
+model safety, and the evolving regulatory landscape for AI in business.
+
+
+### References {.unnumbered}
+
+::: {#refs}
+:::
+

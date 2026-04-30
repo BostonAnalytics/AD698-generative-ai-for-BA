@@ -1,0 +1,255 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"AD698 - Applied Generative AI\"\n",
+        "subtitle: \"Evaluate Prompt-only vs RAG vs Pretraining-only\"\n",
+        "number-sections: true\n",
+        "date: \"2026-03-12\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "format:\n",
+        "    html:\n",
+        "        toc: true\n",
+        "        toc-depth: 3\n",
+        "        code-overflow: wrap\n",
+        "    docx:\n",
+        "        reference-doc: ../theme/APA7.docx\n",
+        "bibliography: ../references.bib\n",
+        "csl: ../mis-quarterly.csl\n",
+        "execute:\n",
+        "    echo: true\n",
+        "    eval: false\n",
+        "    warning: false\n",
+        "    message: false\n",
+        "categories: ['M05:', 'Lab']\n",
+        "description: \"Hands-on lab for Module 5 focused on Evaluate Prompt-only vs RAG vs Pretraining-only.\"\n",
+        "---\n",
+        "\n",
+        "## Learning Objectives\n",
+        "\n",
+        "1. Define a fair evaluation protocol for three QA systems.\n",
+        "2. Implement a rubric that scores groundedness and relevance.\n",
+        "3. Build a compact experiment table suitable for Assignment 4.\n",
+        "4. Identify failure modes and map each to remediation actions.\n",
+        "\n",
+        "## Systems Under Test\n",
+        "\n",
+        "- Prompt-only baseline\n",
+        "- RAG pipeline\n",
+        "- Pretraining-only baseline (domain-adapted or external model variant)\n",
+        "\n",
+        "## Step 0: Evaluation Dataset\n",
+        "\n",
+        "Create a small benchmark set with columns:\n",
+        "\n",
+        "- `question`\n",
+        "- `reference_answer`\n",
+        "- `difficulty` (easy/medium/hard)\n",
+        "- `topic`"
+      ],
+      "id": "0cffec89"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "import pandas as pd\n",
+        "\n",
+        "eval_df = pd.DataFrame([\n",
+        "\t{\n",
+        "\t\t\"question\": \"What is one limitation of naive RAG?\",\n",
+        "\t\t\"reference_answer\": \"Naive RAG can retrieve irrelevant chunks and produce ungrounded answers.\",\n",
+        "\t\t\"difficulty\": \"easy\",\n",
+        "\t\t\"topic\": \"rag-basics\",\n",
+        "\t},\n",
+        "\t{\n",
+        "\t\t\"question\": \"How does HNSW balance recall and latency?\",\n",
+        "\t\t\"reference_answer\": \"HNSW uses layered graph search; larger efSearch typically improves recall but increases latency.\",\n",
+        "\t\t\"difficulty\": \"medium\",\n",
+        "\t\t\"topic\": \"retrieval\",\n",
+        "\t},\n",
+        "])\n",
+        "\n",
+        "print(eval_df.head())"
+      ],
+      "id": "37c493c5",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 1: Gather Outputs from Each System"
+      ],
+      "id": "283af7c0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "def run_prompt_only(question: str) -> str:\n",
+        "\treturn \"TODO: call your prompt-only system\"\n",
+        "\n",
+        "def run_rag(question: str) -> str:\n",
+        "\treturn \"TODO: call your RAG chain\"\n",
+        "\n",
+        "def run_pretrain_only(question: str) -> str:\n",
+        "\treturn \"TODO: call your pretraining-only baseline\""
+      ],
+      "id": "690cdb5a",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 2: Scoring Rubric\n",
+        "\n",
+        "Use 1-5 scales:\n",
+        "\n",
+        "- `relevance_score`\n",
+        "- `groundedness_score`\n",
+        "- `clarity_score`"
+      ],
+      "id": "4f45025a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "def simple_overlap_score(answer: str, reference: str) -> float:\n",
+        "\ta = set(answer.lower().split())\n",
+        "\tr = set(reference.lower().split())\n",
+        "\treturn len(a & r) / max(1, len(r))\n",
+        "\n",
+        "def heuristic_groundedness(answer: str) -> int:\n",
+        "\t# Replace with LLM-judge later; this is a quick baseline for the lab.\n",
+        "\tif \"insufficient\" in answer.lower() or \"according to\" in answer.lower():\n",
+        "\t\treturn 4\n",
+        "\treturn 3"
+      ],
+      "id": "41aef33f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 3: Build Comparative Table"
+      ],
+      "id": "e25b3696"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "rows = []\n",
+        "for _, row in eval_df.iterrows():\n",
+        "\tq = row[\"question\"]\n",
+        "\tref = row[\"reference_answer\"]\n",
+        "\n",
+        "\tsystems = {\n",
+        "\t\t\"prompt_only\": run_prompt_only(q),\n",
+        "\t\t\"rag\": run_rag(q),\n",
+        "\t\t\"pretrain_only\": run_pretrain_only(q),\n",
+        "\t}\n",
+        "\n",
+        "\tfor name, ans in systems.items():\n",
+        "\t\trows.append({\n",
+        "\t\t\t\"question\": q,\n",
+        "\t\t\t\"system\": name,\n",
+        "\t\t\t\"answer\": ans,\n",
+        "\t\t\t\"relevance_score\": round(simple_overlap_score(ans, ref) * 5, 2),\n",
+        "\t\t\t\"groundedness_score\": heuristic_groundedness(ans),\n",
+        "\t\t})\n",
+        "\n",
+        "result_df = pd.DataFrame(rows)\n",
+        "print(result_df.head())"
+      ],
+      "id": "a31dfe62",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 4: Aggregate and Interpret"
+      ],
+      "id": "a7598650"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "summary = (\n",
+        "\tresult_df\n",
+        "\t.groupby(\"system\")[[\"relevance_score\", \"groundedness_score\"]]\n",
+        "\t.mean()\n",
+        "\t.reset_index()\n",
+        ")\n",
+        "\n",
+        "print(summary)\n",
+        "summary.to_csv(\"M05_lab2_eval_summary.csv\", index=False)"
+      ],
+      "id": "70dc593b",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 5: Failure Analysis\n",
+        "\n",
+        "For each system, document at least two examples of:\n",
+        "\n",
+        "1. retrieval miss (for RAG)\n",
+        "2. hallucinated claim\n",
+        "3. partial answer\n",
+        "4. incorrect confidence level\n",
+        "\n",
+        "## Deliverable for This Lab\n",
+        "\n",
+        "Include in your submission:\n",
+        "\n",
+        "1. Evaluation dataset design (brief rationale).\n",
+        "2. Comparative score table.\n",
+        "3. Failure taxonomy with example rows.\n",
+        "4. One recommendation per system for improvement.\n",
+        "\n",
+        "## Bridge to Assignment 4\n",
+        "\n",
+        "Your `M05_A.qmd` report should import this lab output directly as:\n",
+        "\n",
+        "- Methods section input (evaluation protocol)\n",
+        "- Results table source\n",
+        "- Error analysis evidence"
+      ],
+      "id": "5fea31ec"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

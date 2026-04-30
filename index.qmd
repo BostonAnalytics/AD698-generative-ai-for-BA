@@ -11,7 +11,6 @@ format:
         body-width: 1100px
         margin-width: 400px
         gutter-width: 1.5rem
-    docx: default
 html-table-processing: none
 execute: 
   freeze: false
@@ -22,13 +21,15 @@ execute:
 
 ```{python}
 # | echo: false
-# | output: html
-# |
+
+# | 
 
 import pandas as pd
 from IPython.display import display, Markdown, HTML
 
 sections = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Sections")
+
+sections.drop(0, inplace=True)  # Drop the first row which contains the section names
 
 def restrict_width(column):
     return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
@@ -124,10 +125,19 @@ The class will generally run for 12 weeks with 6 modules. Module 0 will be a pre
 # | echo: false
 # | warning: false
 # | message: false
-# | output: html
+
 
 import pandas as pd
 from IPython.display import display, HTML
+import sys
+
+# -------------------------------------------------
+# Clear module cache (important for Quarto reruns)
+# -------------------------------------------------
+for m in list(sys.modules):
+    if m.startswith(("schedules", "bu_calendar")):
+        del sys.modules[m]
+
 from schedules.semester_planner import build_section_schedules, get_lecture_catalog
 
 # =================================================
@@ -144,7 +154,7 @@ start_dates_by_semester = {
     },
     "Summer": {
         "oncampus": "2026-05-18",
-        "o1": "2026-05-19",
+        "o1": "2026-05-05",
         "o2": "2026-05-18",
     },
     "Fall": {
@@ -160,16 +170,42 @@ section_plan = build_section_schedules(
     start_dates_by_semester=start_dates_by_semester,
 )
 
-course_description = pd.read_excel(
-    "data/AD698-Schedule.xlsx",
-    sheet_name="Course Details"
-).drop(columns=["Modules", "Module Name"], errors="ignore")
+# -------------------------------------------------
+# Load COURSE DESCRIPTION (content only)
+# -------------------------------------------------
+course_table = (
+    pd.read_excel(
+        "data/AD698-Schedule.xlsx",
+        sheet_name="Course Details"
+    )
+)
 
-course_description = get_lecture_catalog(course_description)
-max_lectures = max(plan.lecture_count for plan in section_plan.values())
-course_description = course_description.head(max_lectures).reset_index(drop=True)
-course_description = course_description[["Lecture", "Title", "Description"]]
+module0_catalog = (
+    course_table
+    .loc[
+        course_table["Lecture"].astype(str).str.strip().str.upper().str.match(r"^L0\.\d+$", na=False),
+        ["Lecture", "Title", "Description"],
+    ]
+    .reset_index(drop=True)
+)
 
+course_table = course_table.drop(columns=["Modules", "Module Name"], errors="ignore")
+
+# Keep lecture rows only, excluding Module 0
+course_table = get_lecture_catalog(course_table)
+max_lectures = max(p.lecture_count for p in section_plan.values())
+course_table = course_table.head(max_lectures).reset_index(drop=True)
+course_table = course_table[["Lecture", "Title"]]
+# -------------------------------------------------
+# Generate schedules PER SECTION
+# -------------------------------------------------
+section_dates = {
+    section: plan.lecture_dates for section, plan in section_plan.items()
+}
+
+# -------------------------------------------------
+# Attach section columns (ONLINE LAST)
+# -------------------------------------------------
 oncampus_sections = [
     s for s, p in section_plan.items() if p.modality == "oncampus"
 ]
@@ -177,21 +213,72 @@ online_sections = [
     s for s, p in section_plan.items() if p.modality != "oncampus"
 ]
 
-for s in oncampus_sections + online_sections:
-    dates = section_plan[s].lecture_dates
-    course_description[s] = dates + [pd.NaT] * (max_lectures - len(dates))
+# On-campus first
+for s in oncampus_sections:
+    dates = section_dates[s]
+    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
+
+# Online last
+for s in online_sections:
+    dates = section_dates[s]
+    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
+
+# -------------------------------------------------
+# Date formatting
+# -------------------------------------------------
+
 
 def fmt(d):
     return "-" if pd.isna(d) else d.strftime("%d-%b")
 
-for col in oncampus_sections + online_sections:
-    course_description[col] = course_description[col].map(fmt)
+
+for col in course_table.columns[2:]:
+    course_table[col] = course_table[col].map(fmt)
+
+module0_table = pd.DataFrame([
+    {
+        "Section": section,
+        "Module 0 Opens": plan.module0_open.strftime("%d-%b (%a)"),
+        "First Lecture": plan.lecture_dates[0].strftime("%d-%b (%a)"),
+    }
+    for section, plan in section_plan.items()
+])
+
+module0_preview_styled = (
+    module0_catalog
+    .style
+    .hide(axis="index")
+    # .set_caption("Week Ahead: Module 0 Preview")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "normal")
+        ]},
+    ])
+)
 
 # -------------------------------------------------
 # Presentation
 # -------------------------------------------------
-styled_table = (
-    course_description
+module0_styled = (
+    module0_table
+    .style
+    .hide(axis="index")
+    # .set_caption("Module 0 Release Plan (opens 10 days before first class)")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "nowrap")
+        ]},
+    ])
+)
+
+styled = (
+    course_table
     .style
     .hide(axis="index")
     .set_table_styles([
@@ -199,14 +286,16 @@ styled_table = (
         {"selector": "td", "props": [
             ("text-align", "left"),
             ("vertical-align", "top"),
-            ("max-width", "500px"),
-            ("white-space", "normal")
+            ("white-space", "nowrap")
         ]},
     ])
 )
 
-display(HTML(styled_table.to_html()))
-
+course_table.drop(columns=["A1","O2"], inplace=True)
+module0_table.drop(index=[0,2], inplace=True)
+# display(HTML(module0_styled.to_html()))
+display(HTML(module0_preview_styled.to_html()))
+display(HTML(styled.to_html()))
 ```
 
 ## Boston University Library Information
@@ -269,7 +358,8 @@ All students are required to complete the **AWS Academy Generative AI Foundation
 
 This requirement ensures all students develop a shared baseline in industry-standard generative AI concepts and practices. The assignment is scheduled to be submitted in the 10th week of the semester. Later submission after that week will result in a deduction of 2% per day.
 
-### Group Paper Presentation (Once per Group)
+### Group Paper Presentation (Once per Group)\
+
 Each student group will deliver **one research paper presentation** during the semester.
 
 - Presentation length: approximately **15 minutes**
@@ -284,6 +374,30 @@ Presentations focus on:
 - Implications for building generative AI systems
 
 This component develops skills in **critical reading, synthesis, and technical communication**.
+
+
+:::{.callout-important}
+[Online Students]{.uured-bold}: Please Submit a one page pdf/word with answers to the following questions by the end of the week. Please include the name of the paper and the authors in your submission.
+
+On the second page of the document, please include your AI disclosure and the output (actual output) from the AI tool you used. Failure to disclose AI usage will result in a 50% penalty.
+
+1. Core Idea
+   1. What problem does the paper solve?
+   2. What is the model/system contribution?
+2. Mechanism
+   1. How does it work (pipeline / architecture)?
+   2. Key equation / concept / diagram
+3. Critical Evaluation
+   1. Where does it fail?
+   2. Assumptions that break in real-world systems
+   3. Application Layer (important for your course)
+4. How would this be used in:
+    1. RAG systems?
+    2. Agents?
+    3. Business pipelines?
+5. What would you Improve in the papers model/approach? (don't say more data or bigger model) 
+
+:::
 
 ### Individual Assignments
 
@@ -355,7 +469,7 @@ Failure to appropriately disclose or validate AI-assisted work may result in pen
 
 ```{python}
 # | echo: false
-# | output: html
+
 # | eval: true
 
 import pandas as pd

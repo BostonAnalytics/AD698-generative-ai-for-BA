@@ -350,3 +350,112 @@ print(attention(queries, keys, values, valid_lens).shape)
 ## Summary
 
 Attention scoring functions compute the compatibility between queries and keys. Scaled dot-product attention has become the default mechanism in modern deep learning architectures due to its efficiency and stability. Additive attention remains a historically significant and flexible alternative. The use of masked softmax is vital for handling variable-length sequences, and overall, modern implementations leverage efficient batch matrix operations to scale to billions of parameters.
+
+
+# Pretraining: Teaching Transformers at Scale
+
+## The Pretraining Paradigm
+
+Training a transformer from scratch for every task is prohibitively expensive.
+The key insight behind modern NLP is **pretraining**: first train a large model on a massive
+unlabelled corpus using a self-supervised objective, then adapt it for a downstream task with
+far less labelled data.
+
+The pretrained model has already learned grammar, syntax, world knowledge, and reasoning
+patterns. The adaptation step merely steers those representations toward the target task.
+
+## Masked Language Modeling (MLM) — BERT
+
+BERT randomly replaces 15% of input tokens with `[MASK]` (80%), a random token (10%),
+or the unchanged token (10%), then trains a cross-entropy loss on the masked positions.
+
+```{python}
+def mlm_mask(tokens: list[str], mask_prob: float = 0.15,
+             mask_token: str = "[MASK]", vocab: list[str] = None):
+    """Simulate BERT-style masking; return (masked_tokens, labels)."""
+    import random, copy
+    labels = copy.copy(tokens)
+    masked = copy.copy(tokens)
+    for i, tok in enumerate(tokens):
+        if random.random() < mask_prob:
+            r = random.random()
+            if r < 0.80:
+                masked[i] = mask_token
+            elif r < 0.90 and vocab:
+                masked[i] = random.choice(vocab)
+            # else: keep original
+    return masked, labels
+
+sample = "the company reported strong revenue growth in q3".split()
+masked, labels = mlm_mask(sample)
+print("Original:", sample)
+print("Masked  :", masked)
+```
+
+**Key property**: MLM uses *bidirectional* context — both left and right tokens are visible
+during encoding. This makes BERT encoders excellent for classification, NER, and extractive QA.
+
+## Causal Language Modeling (CLM) — GPT
+
+GPT models are trained to predict the next token given all previous tokens:
+
+$$
+\begin{align}
+\mathcal{L} = -\sum_{t=1}^{T} \log P(x_t \mid x_1, \ldots, x_{t-1})
+\end{align}
+$$
+
+The causal (triangular) attention mask enforces this left-to-right constraint.
+
+```{python}
+import torch
+
+def causal_mask(seq_len: int) -> torch.Tensor:
+    """Upper-triangular mask: True where attention is BLOCKED."""
+    return torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool), diagonal=1)
+
+print(causal_mask(5).int())
+```
+
+## Sequence-to-Sequence Span Corruption — T5
+
+T5 corrupts 15% of token spans (replacing each span with a single sentinel token) and
+trains the decoder to reconstruct them.
+
+```
+Input:  "The company <X> strong revenue in <Y> quarter."
+Target: "<X> reported <Y> Q3 </s>"
+```
+
+This objective suits generation tasks — summarization, translation, and open-domain QA —
+because the decoder must generate variable-length outputs from a compressed encoder representation.
+
+## The Transfer Learning Paradigm
+
+Transfer learning consists of two stages:
+
+1. **Pretraining** — self-supervised learning on a large unlabelled corpus.
+2. **Fine-tuning** — supervised learning on a small labelled dataset, starting from the
+   pretrained weights.
+
+| Stage | Data | Objective | Output |
+|-------|------|-----------|--------|
+| Pretrain | Billions of tokens, no labels | MLM / CLM / span corruption | General-purpose weights |
+| Fine-tune | Thousands of labeled examples | Task-specific cross-entropy | Task-adapted model |
+
+**Why it works**: pretraining on diverse text teaches the model to represent language deeply.
+Fine-tuning then requires far fewer examples than training from scratch because the model
+already understands the input domain.
+
+## What's Next: Beyond Fine-Tuning
+
+Full fine-tuning updates all model weights — expensive for billion-parameter models.
+Module 4 Lecture 2 introduces the full spectrum from prompting (zero additional training) through
+instruction tuning, RLHF, and parameter-efficient fine-tuning (LoRA, Adapters).
+
+
+### References {.unnumbered}
+
+::: {#refs}
+:::
+

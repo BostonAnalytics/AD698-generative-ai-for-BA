@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Prompting as System Design"
+subtitle: "Sequence Models and the Transformer"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -20,8 +20,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M03:', 'Prompt Engineering', 'System Design', 'LLM', 'Lecture Notes']
-description: "Lecture notes for Module 3 covering Prompting as System Design."
+categories: ['M03:', 'Sequence Models', 'RNN', 'Transformer', 'Lecture Notes']
+description: "Lecture notes for Module 3 covering Sequence Models and the Transformer."
 ---
 
 ```{python}
@@ -35,7 +35,6 @@ def set_economist_theme():
         context="talk",
         style="whitegrid",
         rc={
-            # Fonts
             "font.family": "serif",
             "axes.titlesize": 14,
             "axes.titleweight": "bold",
@@ -43,455 +42,221 @@ def set_economist_theme():
             "axes.labelweight": "bold",
             "xtick.labelsize": 9,
             "ytick.labelsize": 9,
-
-            # Grid + Spines
             "grid.color": "#d9d9d9",
             "grid.linewidth": 0.6,
             "axes.edgecolor": "#333333",
             "axes.linewidth": 0.8,
             "axes.spines.top": False,
             "axes.spines.right": False,
-
-            # Lines
             "lines.linewidth": 1.0,
-
-            # Figure
             "figure.figsize": (8, 4),
             "figure.dpi": 120,
-
-            # Legend
             "legend.frameon": False,
         }
     )
 set_economist_theme()
 ```
 
-# The Shift to Prompt‑Based Approaches
-
-## Introduction: From Training-Centric to Inference-Centric AI
-
-For most of the history of machine learning, the behavior of a model was determined almost entirely during [training]{.uublue-bold}. Once deployed, a model was effectively *frozen*: its parameters encoded everything it knew, and any change in behavior required a new round of training, fine‑tuning, or feature engineering. This paradigm made sense when models were small, tasks were narrow, and data distributions were relatively stable.
-
-Large Language Models (LLMs) fundamentally alter this workflow. Their behavior is no longer fixed at deployment. Instead, they can be **steered, adapted, and repurposed at inference time** through prompts, context, and task specifications. This shift represents not just a new technique, but a new *architecture* for building AI systems — one where **control moves from weight updates to inference‑time conditioning**.
-
-
-## Classical Learning vs. Generative Conditioning
-
-### Classical Supervised Learning
-In the classical paradigm, we model a deterministic or probabilistic mapping:
-
-$$
-\begin{align}
-y = f_\theta(x)
-\end{align}
-$$
-
-Here:
-
-- $\theta$ encodes all learned knowledge.
-- Changing the model’s behavior requires modifying $\theta$.
-- Training is the primary locus of intelligence.
-
-This creates a rigid workflow:
-
-- **Training phase:** expensive, offline, compute‑heavy  
-- **Deployment phase:** static, brittle, slow to adapt
-
-### Generative Language Models
-Generative models instead define a conditional distribution:
-
-$$
-\begin{align}
-P(Y \mid X, \theta)
-\end{align}
-$$
-
-The model does not output a single deterministic label; it samples from a probability distribution over sequences. This opens the door to a new control variable:
-
-$$
-\begin{align}
-P(Y \mid X, p, \theta)
-\end{align}
-$$
-
-where $p$ is a **prompt** — an inference‑time input that shapes the distribution without modifying the parameters.
-
-### Why This Matters
-Prompts act as *soft constraints* on the model’s generative process. Instead of retraining, we can:
-
-- specify tasks,
-- provide examples,
-- impose structure,
-- inject domain knowledge,
-- or shape style and behavior
-
-all **without touching the weights**.
-
-This is the essence of **generative conditioning**: the model’s behavior is governed not only by its parameters but by the *context* supplied at inference.
-
-
-## Prompt as an Inference-Time Control Signal
-
-Prompts are not merely instructions. They function as a **control interface** for a probabilistic model.
-
-### Prompt as Conditioning Signal
-A prompt provides additional context that shifts the model’s posterior distribution. It is analogous to conditioning in Bayesian inference: the prompt narrows the space of plausible outputs.
-
-### Prompt as Soft Constraint
-Unlike hard-coded rules, prompts influence behavior *probabilistically*. They bias the model toward certain trajectories without enforcing deterministic outcomes.
-
-### Prompt as Semantic Policy
-Prompts encode *policies* for how the model should behave:
-
-- "Be concise."
-- "Explain step-by-step."
-- "Act as a SQL expert."
-- "Follow this schema."
-
-These policies are expressed in natural language rather than code.
-
-### Prompt as Steering Mechanism
-Prompts steer the model’s sampling process by altering token likelihoods. This enables:
-
-- **rapid task adaptation**  
-- **interactive workflows**  
-- **dynamic behavior shaping**  
-- **domain-specific reasoning without retraining**
-
-In effect, prompting turns inference into a programmable interface.
-
-
-## Why Prompting Represents an Architectural Shift
-
-The move from training-centric to inference-centric control changes how we design AI systems:
-
-### Adaptation Without Retraining
-Instead of updating weights, we update *context*. This reduces:
-
-- compute cost  
-- data requirements  
-- iteration time  
-- operational complexity  
-
-### AI as a Configurable Component
-LLMs become general-purpose engines whose behavior is configured through:
-
-- prompts  
-- examples  
-- instructions  
-- retrieved documents  
-- structured templates  
-
-This mirrors how operating systems or databases are configured: through interfaces, not recompilation.
-
-### Human-AI Interaction as a First-Class Design Space
-Because prompts are written in natural language, **users participate directly in system design**. This democratizes control and shifts power from ML engineers to domain experts.
-
-
-## Prompt Engineering, Fine-Tuning, and RAG: A Comparative View
-
-Prompting, fine‑tuning, and retrieval‑augmented generation (RAG) are not competing techniques but complementary **axes of control**.
-
-
-![Venn Diagram of Prompt Engineering, Fine-tuning, and RAG](./M03_lecture01_figures/Prompt_Engineering_vs_RAG-tuning_Venn_Diagram.jpg){width=60% fig-align=center fig-alt="Venn diagram showing the relationship between prompt engineering, fine-tuning, and RAG" #fig-venn-diagram}
-
-
-### Prompt Engineering
-- No weight updates  
-- Fastest iteration cycle  
-- Best for: task specification, style control, reasoning scaffolds  
-- Limitations: brittle, sensitive to phrasing, limited by model’s latent knowledge  
-
-### Fine-Tuning
-- Updates model parameters  
-- Best for: domain adaptation, new skills, safety alignment  
-- Limitations: expensive, requires data, risk of overfitting or catastrophic forgetting  
-
-### Retrieval-Augmented Generation (RAG)
-- Injects external knowledge at inference  
-- Best for: factual accuracy, up-to-date information, domain grounding  
-- Limitations: requires retrieval infrastructure, depends on document quality  
-
-### How They Interact
-- Prompting + RAG = controlled reasoning over external knowledge  
-- Prompting + fine-tuning = stable, specialized behavior with flexible interfaces  
-- RAG + fine-tuning = domain-specific systems with strong grounding  
-
-Together, they form a **toolbox for inference-time system design**.
-
-```{dot}
-
-digraph InferenceConditioning {
-    rankdir=TB;
-    node [shape=rectangle, style=rounded, fontsize=12];
-
-    subgraph cluster_input {
-        label="Inputs";
-        style=dashed;
-        X [label="User Input\nX"];
-        P [label="Prompt / Context\np"];
-    }
-
-    Theta [label="Model Parameters\nθ (frozen)", shape=rectangle, style="rounded,filled", fillcolor=lightgray];
-
-    subgraph cluster_inference {
-        label="Inference Process";
-        style=dashed;
-        Combine [label="Conditioning:\n[X, p]"];
-        LM [label="Generative Model\nP(Y | X, p, θ)"];
-    }
-
-    Y [label="Output Distribution\nY"];
-
-    X -> Combine;
-    P -> Combine;
-    Theta -> LM;
-    Combine -> LM;
-    LM -> Y;
-}
-
-```
-
-
-
-## Worked Example: How a Prompt Changes Token Probabilities
-
-```
-sentence 1 = "The cat runs."
-sentence 2 = "The cat sleeps."
-sentence 3 = "The dog runs."
-```
-$$
-\begin{align}
-P{Y=The} = 1 \\
-P{Y=cat | Y_{t-1}=The} = 2/3 \\
-P{Y=runs | Y_{t-1}=cat, Y_{t-2}=The} = 0.40 \\
-\end{align}
-$$
-
-We’ll use a tiny vocabulary to illustrate the idea:
-
-Vocabulary = {"the", "cat", "dog", "runs", "sleeps", "."}
-
-
-### Without a Prompt
-
-Input:  
-```
-"Complete the sentence: The cat"
-```
-
-The model’s next‑token distribution might look like:
-
-| Token | Probability |
-|:-------|:-------------:|
-| runs  | 0.40 |
-| sleeps | 0.35 |
-| . | 0.15 |
-| dog | 0.05 |
-| cat | 0.05 |
-
-The model is relying on its **pretrained priors** about typical continuations.
-
-
-## With a Prompt That Acts as a Soft Constraint
-
-Prompt:  
-```
-"Write a dramatic action scene. Complete the sentence: The cat"
-
-dramatic $\in$ {action, suspense, conflict} $\implies$ high-energy verbs like "runs", "leaps", "attacks"
-```
-
-Now the model conditions on the *semantic policy* "dramatic action scene."
-
-New distribution:
-
-| Token | Probability |
-|:-------|:-------------:|
-| runs | 0.55 |
-| leaps | 0.25 (new token from extended vocab) |
-| attacks | 0.10 |
-| sleeps | 0.03 |
-| . | 0.02 |
-| dog | 0.02 |
-| cat | 0.01 |
-
-### What changed?
-
-- The prompt **reshaped the distribution** toward high‑energy verbs.  
-- "sleeps" collapses from 0.35 → 0.03.  
-- "leaps" and "attacks" become viable high‑probability tokens.  
-- No weights changed — only the **conditioning context** changed.
-
-
-## With a Prompt That Specifies Style + Role
-
-Prompt:  
-```
-"You are a veterinarian writing a calm, factual report.
-Complete the sentence: The cat"
-```
-
-
-Distribution:
-
-| Token | Probability |
-|:-------|:-------------:|
-| sleeps | 0.50 |
-| rests | 0.20 |
-| is | 0.15 |
-| runs | 0.05 |
-| . | 0.05 |
-| dog | 0.03 |
-| cat | 0.02 |
-
-
-- The prompt now acts as a **semantic policy** ("calm, factual report").  
-- The model shifts toward clinical, low‑emotion verbs.  
-- "runs" becomes unlikely because it violates the style constraint.
-
-
-## Summary and Implications for System Builders
-
-The shift to prompt-based approaches is not a superficial change in interface — it is a rethinking of how intelligence is deployed:
-
-- **Models are no longer static artifacts**; they are dynamic, programmable components.  
-- **Inference becomes the primary site of adaptation**, not training.  
-- **Prompts act as probabilistic control signals**, shaping behavior without modifying weights.  
-- **Prompting, fine-tuning, and RAG form a unified design space** for building modern AI systems.  
-
-This new paradigm enables faster iteration, more flexible systems, and a more direct alignment between user intent and model behavior.
-
-
-{{< include ./m03_l01_content/index.qmd >}}
+# A Brief History of Language Models {#sec-llm-history}
+
+## From Text to Intelligence: The Language Modeling Imperative
+
+Language is a prominent ability in human beings to express and communicate, which develops
+in early childhood and evolves over a lifetime. Machines, however, cannot naturally grasp
+the abilities of understanding and communicating in the form of human language, unless
+equipped with powerful artificial intelligence (AI) algorithms. It has been a longstanding
+research challenge to enable machines to read, write, and communicate like humans
+[@turing-test].
+
+Technically, **language modeling (LM)** is one of the major approaches to advancing
+language intelligence of machines. In general, LM aims to model the generative likelihood
+of word sequences, so as to predict the probabilities of future (or missing) tokens.
+The research of LM has received extensive attention in the literature, which can be divided
+into four major development stages [@zhao2023survey]:
+
+- **Statistical language models (SLM)**. SLMs are developed based on **statistical
+  learning** methods that rose in the 1990s. The basic idea is to build the word prediction
+  model based on the Markov assumption — predicting the next word based on the most recent
+  context. The SLMs with a fixed context length $n$ are also called $n$-gram language
+  models (bigram, trigram). SLMs suffer from the *curse of dimensionality*: estimating
+  high-order transition probabilities requires exponential sample size, so smoothing
+  strategies (back-off, Good–Turing) were needed to alleviate data sparsity.
+
+- **Neural language models (NLM)**. NLMs characterize the probability of word sequences
+  by neural networks — MLP and RNNs. The seminal work of @Bengio-JMLR-2003-A introduced
+  the concept of **distributed representation** of words and built word prediction
+  conditioned on aggregated context features. word2vec [@Mikolov-NIPS-2013] further
+  simplified this to a shallow network and demonstrated effective representations across
+  NLP tasks. These studies initiated the use of language models for *representation
+  learning*, beyond simple sequence modeling.
+
+- **Pre-trained language models (PLM)**. ELMo [@Peters-NAACL-2018] captured
+  context-aware word representations by pre-training a bidirectional LSTM and then
+  fine-tuning for downstream tasks. BERT [@Devlin-NAACL-2019-BERT] extended this with the
+  Transformer architecture and masked pre-training, establishing the **pre-training and
+  fine-tuning** learning paradigm. A large number of follow-up models (GPT-2, BART,
+  RoBERTa) were built on this foundation.
+
+- **Large language models (LLM)**. Scaling PLMs in model size or data volume leads to
+  improved capacity following the **scaling law** [@Kaplan-arxiv-2020-Scaling]. Large-sized
+  PLMs (GPT-3 at 175B parameters; PaLM at 540B) display **emergent abilities** not seen in
+  smaller models — most notably, **in-context learning** (solving new tasks from a handful
+  of examples without gradient updates). These models are now general-purpose task solvers
+  rather than task-specific tools.
+
+## The Pivotal Shift: From Task-Specific to General-Purpose
+
+From the perspective of task solving, the four generations of language models have
+exhibited different levels of model capacity:
+
+| Generation | Representative Models | Task Approach |
+|---|---|---|
+| SLM | n-gram, SRILM | Enhance task-specific pipelines (IR, ASR) |
+| NLM | word2vec, fastText, ELMo | Learn task-agnostic representations |
+| PLM | BERT, GPT-2, BART | Pre-train once, fine-tune per task |
+| LLM | GPT-3, GPT-4, PaLM, LLaMA | General-purpose solver via prompting |
+
+The key conceptual jump is from **language modeling** to **task solving** — and from
+*training-time* adaptation (fine-tuning) to *inference-time* steering (prompting).
+This is the paradigm shift we trace through Modules 3 and 4.
+
+
+# Introduction: The Challenge of Sequential Data {#sec-sequential}
+
+Language is inherently sequential. A sentence is not a bag of independent tokens — the
+meaning of a word depends on what came before it (and sometimes after it). This simple
+observation has deep consequences for model design.
+
+When we moved from Modules 1–2 (bag-of-words, TF-IDF, static embeddings) to sequences,
+we faced a new challenge: **how do we encode order and long-range dependencies?**
+
+The approaches fall into a clear historical arc:
+
+1. **N-gram models** — Markov assumption: only the last $n-1$ tokens matter.
+2. **RNNs** — maintain a hidden state that summarizes all previous tokens.
+3. **Attention mechanisms** — directly weight all prior tokens without a bottleneck.
+4. **Transformers** — replace recurrence entirely with multi-head self-attention.
+
+The rest of this lecture builds this arc from the ground up.
 
 {{< include ./m03_l01_content/sequence.qmd >}}
 
 {{< include ./m03_l01_content/text-sequence.qmd >}}
 
-<!-- {{< include ./m03_l01_content/language-model.qmd >}} -->
+{{< include ./m03_l01_content/index.qmd >}}
 
 
-# Transformers and the Attention Mechanism
+# From Recurrence to Attention {#sec-recurrence-to-attention}
 
-We will cover transformers in the next lecture, but it’s important to understand the historical context of how we got here. The transformer architecture, introduced in the seminal paper "Attention is All You Need" [@vaswani2017attention], revolutionized natural language processing and laid the groundwork for the development of large language models.
+## The RNN Bottleneck
 
-## The Transformers Timeline
+RNNs process sequences token by token, updating a hidden state $h_t$ at each step:
+
+$$
+\begin{align}
+h_t = f(x_t,\, h_{t-1})
+\end{align}
+$$
+
+This design has two fundamental weaknesses:
+
+1. **Sequential computation** — each step depends on the previous, so training cannot be
+   parallelized across time steps. Long sequences become slow.
+2. **Information bottleneck** — the entire history must be compressed into a fixed-size
+   vector $h_t$. For long sequences, early tokens are increasingly hard to recall. This
+   is the **vanishing gradient** problem.
+
+LSTM and GRU cells mitigate (but do not eliminate) the vanishing gradient by adding gated
+memory cells. But the bottleneck remains.
+
+## The Attention Insight
+
+What if, instead of compressing history into a single vector, we allowed the model to
+**directly access any past token** when processing the current one?
+
+This is the attention mechanism. Given a **query** $q$ and a set of **key–value** pairs
+$(k_i, v_i)$, attention computes a weighted sum of values:
+
+$$
+\begin{align}
+\text{Attention}(q, K, V) = \sum_i \alpha_i \, v_i, \qquad
+\alpha_i = \text{softmax}\!\left(\frac{q \cdot k_i}{\sqrt{d_k}}\right)
+\end{align}
+$$
+
+The weights $\alpha_i$ measure how relevant each key $k_i$ is to the current query $q$.
+The division by $\sqrt{d_k}$ prevents the dot products from growing too large in high
+dimensions (scaled dot-product attention, @vaswani2017attention).
+
+## Multi-Head Attention
+
+A single attention function may attend to one type of relationship. **Multi-head attention**
+runs $H$ attention heads in parallel, each projecting queries, keys, and values into a
+different subspace:
+
+$$
+\begin{align}
+\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}_1, \ldots, \text{head}_H)\,W^O \\
+\text{where} \quad \text{head}_i = \text{Attention}(Q W_i^Q,\, K W_i^K,\, V W_i^V)
+\end{align}
+$$
+
+Different heads can learn to attend to syntactic structure, semantic similarity, coreference,
+and long-range dependencies simultaneously.
+
+## Why Attention Replaces Recurrence
+
+| Property | RNN | Transformer (Self-Attention) |
+|---|---|---|
+| Long-range dependency | ✗ (degrades) | ✓ (direct path) |
+| Parallel training | ✗ (sequential) | ✓ (all positions at once) |
+| Constant path length | ✗ ($O(n)$) | ✓ ($O(1)$) |
+| Memory per token | Fixed ($d_h$) | $O(n)$ (attention matrix) |
+
+The trade-off is memory: transformers store an $n \times n$ attention matrix per layer,
+which is expensive for very long sequences. Modern variants (FlashAttention, sparse
+attention) address this.
+
+
+# Transformers and the Attention Mechanism {#sec-transformers}
+
+## The Transformer Timeline
+
+The transformer architecture [@vaswani2017attention] introduced in 2017 ("Attention is
+All You Need") revolutionized NLP and laid the groundwork for modern LLMs.
 
 ![Timeline of transformer-based models](./M03_lecture01_figures/02-13.png){width=80% fig-align=center fig-alt="Timeline of transformer-based models" #fig-timeline}
 
-
-## Transformer Models
+## Transformer Architecture
 
 ![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
 
-# Prompting Patterns: Code Demonstrations
+The full Transformer stack (encoder + decoder) adds several key components beyond
+multi-head attention:
 
-## Zero-Shot vs Few-Shot Prompt Construction
+- **Positional encoding** — since self-attention is order-agnostic, sinusoidal or learned
+  position embeddings are added to the token embeddings.
+- **Feed-forward sublayer** — a two-layer MLP applied position-wise after each attention
+  block.
+- **Layer normalization + residual connections** — stabilize training of deep stacks.
+- **Masking** — encoder uses full bidirectional attention; decoder uses causal masking to
+  prevent attending to future tokens.
 
-These cells demonstrate prompt formatting patterns in pure Python — no API key required. The patterns here translate directly to any LLM API (OpenAI, Anthropic, HuggingFace).
 
-```{python}
-#| eval: false
-# ─── Zero-shot prompt ────────────────────────────────────────────────────────
-def zero_shot_prompt(task: str, input_text: str) -> str:
-    return f"{task}\n\nInput: {input_text}\nOutput:"
+## What's Next: Token Representations and Semantic Geometry
 
-# ─── Few-shot prompt ─────────────────────────────────────────────────────────
-def few_shot_prompt(task: str, examples: list[dict], input_text: str) -> str:
-    prompt = task + "\n\n"
-    for ex in examples:
-        prompt += f"Input: {ex['input']}\nOutput: {ex['output']}\n\n"
-    prompt += f"Input: {input_text}\nOutput:"
-    return prompt
+In Lecture 2 (M03_LN2) we move from *architecture* to *representation*: how do
+transformers convert tokens into dense vectors that capture semantic meaning?
 
-# Sentiment analysis examples
-task = "Classify the sentiment of the following text as POSITIVE, NEGATIVE, or NEUTRAL."
+We will cover:
 
-examples = [
-    {"input": "The product exceeded all my expectations.",  "output": "POSITIVE"},
-    {"input": "Delivery was delayed by two weeks.",          "output": "NEGATIVE"},
-    {"input": "The report was submitted on time.",           "output": "NEUTRAL"},
-]
+- Subword tokenization (BPE, WordPiece, SentencePiece) — how raw text becomes token IDs
+- Static vs. contextual embeddings — word2vec vs. BERT-style representations
+- Semantic geometry — cosine similarity, analogy arithmetic, clustering in embedding space
+- Self-attention code demonstrations — computing attention weights from scratch
 
-test_text = "Revenue grew 12% year-over-year driven by strong cloud adoption."
 
-print("=== ZERO-SHOT PROMPT ===")
-print(zero_shot_prompt(task, test_text))
-print()
-print("=== FEW-SHOT PROMPT (k=3) ===")
-print(few_shot_prompt(task, examples, test_text))
-```
+### References {.unnumbered}
 
-## Chain-of-Thought Prompting
-
-Chain-of-thought (CoT) prompting instructs the model to reason step-by-step before giving a final answer. It is especially effective for multi-step problems.
-
-```{python}
-#| eval: false
-def cot_prompt(task: str, examples: list[dict], input_text: str) -> str:
-    """Build a chain-of-thought few-shot prompt."""
-    prompt = task + "\n\n"
-    for ex in examples:
-        prompt += f"Question: {ex['question']}\n"
-        prompt += f"Reasoning: {ex['reasoning']}\n"
-        prompt += f"Answer: {ex['answer']}\n\n"
-    prompt += f"Question: {input_text}\nReasoning:"
-    return prompt
-
-task_cot = (
-    "You are a financial analyst. "
-    "For each question, show your reasoning step by step, "
-    "then provide a concise final answer."
-)
-
-cot_examples = [
-    {
-        "question": "A company reports $500M revenue with 20% YoY growth. What was last year's revenue?",
-        "reasoning": (
-            "If this year is $500M with 20% growth, then: "
-            "last_year × 1.20 = $500M → last_year = $500M / 1.20 = $416.7M"
-        ),
-        "answer": "Last year's revenue was approximately $416.7 million.",
-    },
-    {
-        "question": "Operating margin is 15% on $200M revenue. What is operating income?",
-        "reasoning": "Operating income = revenue × margin = $200M × 0.15 = $30M.",
-        "answer": "Operating income is $30 million.",
-    },
-]
-
-question = "A firm's net income grew from $80M to $104M. What is the percentage growth?"
-
-print(cot_prompt(task_cot, cot_examples, question))
-```
-
-## Role Prompting and Structured Output
-
-```{python}
-#| eval: false
-def role_prompt(role: str, context: str, request: str) -> str:
-    return (
-        f"You are {role}.\n\n"
-        f"Context:\n{context}\n\n"
-        f"Task: {request}\n\n"
-        f"Respond in valid JSON."
-    )
-
-role = "a senior equity research analyst specializing in technology sector 10-K filings"
-
-context = """
-Item 1A. Risk Factors (excerpt):
-The Company faces intense competition from well-established and emerging companies.
-Rapid technological changes could render our products obsolete.
-We are subject to significant regulatory requirements in multiple jurisdictions.
-"""
-
-request = (
-    "Extract the top 3 risk categories from the excerpt. "
-    "For each, provide: category, description (one sentence), and severity (High/Medium/Low)."
-)
-
-print(role_prompt(role, context, request))
-```
+::: {#refs}
+:::
