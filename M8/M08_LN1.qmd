@@ -11,6 +11,14 @@ categories: ['M08:', 'Neural Networks', 'Classification', 'Regression', 'Lecture
 description: "Lecture notes for Module 8 covering Neural Networks for Classification and Regression."
 ---
 
+# Fine-Tuning, BERT, and Ethical Considerations
+
+The evolution of Transformers led to models like BERT (Bidirectional Encoder Representations from Transformers), which analyze sentences bidirectionally to capture deep semantic and syntactic nuances. While foundation models are versatile, fine-tuning them for specific tasks further enhances their capabilities. *Generative AI Foundations in Python* examines how Parameter-Efficient Fine-Tuning (PEFT) and Low-Rank Adaptation (LoRA) facilitate approachable continued training for specific tasks without the computational overhead of full fine-tuning.
+
+However, deploying these models requires rigorous ethical oversight. Generative models inevitably learn societal biases embedded in the training data and are susceptible to toxicity and accidental memorization of sensitive information. A human-centered AI governance strategy, combining technical improvements, robust guidelines, and ethical reflections, is essential to ensure fairness, accountability, and the responsible adoption of these transformative technologies.
+
+
+
 {{< include "./m08_l01_content/1.neural-network-regression.qmd" >}}
 
 <!-- {{< include "./m08_l01_content/1.linear-regression.md" >}}

@@ -242,12 +242,12 @@ $$
 
 ## Sentiment Analysis
 
-::: {.columns}
-::: {.column}
+:::{.columns}
+:::{.column}
 ![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align="center" fig-alt="Sentiment Analysis Process" #fig-sentiment-analysis}
 
 :::
-::: {.column}
+:::{.column}
 
 - Methods
     - Lexicon-based
@@ -1456,14 +1456,21 @@ Can we think of solutions for these?
 ## Text Cleaning
 
 :::{.columns}
+
 :::{.column width="50%" .fragment}
+
 :::{.callout}
-Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this .
+
+Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this.
+
 :::
 
 :::{.callout}
+
 despite suffering a sense of humour failure the man who wrote rocky does not deserve to go down with a ship as leaky as this
+
 :::
+
 :::
 
 :::{.column width="50%" .fragment}
@@ -1472,7 +1479,9 @@ despite suffering a sense of humour failure the man who wrote rocky does not des
 - Removing punctuation
 - Removing numbers
 - Removing stopwords (optional)
+
 :::
+
 :::
 
 ---
@@ -1667,6 +1676,7 @@ plt.show()
   - spam detection
 
 :::
+
 :::{.column}
 
 ### Limitations
@@ -1678,6 +1688,7 @@ plt.show()
 - Classic failure: "not good" ≈ "good"
 
 :::
+
 :::
 
 ---
@@ -1793,20 +1804,26 @@ digraph SentimentPipeline {
 ## When Should You Use BoW?
 
 :::{.columns}
+
 :::{.column}
+
 ### When to Use Bag of Words
 -  Dataset is small to medium
 -  Interpretability matters
 -  You need a fast baseline
 -  Text is short and structured
+
 :::
+
 :::{.column}
+
 ### When Not to Use Bag of Words
 - Long documents
 - Semantic nuance matters
 - Context is critical
 
 :::
+
 :::
 
 ---
@@ -1881,4 +1898,4 @@ Modern systems often **combine both approaches**.
 
 :::{#refs}
 
-:::  
+::: 

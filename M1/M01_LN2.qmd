@@ -24,6 +24,14 @@ categories: ['M01:', 'Language Models', 'Probability', 'Generative AI', 'Lecture
 description: "Lecture notes for Module 1 covering Language, Probability, and Generative Systems."
 ---
 
+# Foundations of NLP and Early Generative Systems
+
+In *Generative AI Foundations in Python*, the evolution of NLP is traced from simple count-based methods to the advanced neural networks we see today. Before the widespread use of neural networks (NNs) in language processing, NLP was largely grounded in methods that counted words. Two particularly notable techniques were count vectors and Term Frequency-Inverse Document Frequency (TF-IDF). These count-based methods were successful for tasks such as searching and categorizing, but they could not capture the semantic relationships between words, meaning they could not interpret the nuanced meanings of words in context. 
+
+This challenge paved the way for exploring NNs, offering a deeper and more nuanced way to understand and represent text. In 2003, Yoshua Bengio's team introduced the Neural Network Language Model (NNLM), designed to predict the next word in a sequence based on prior words using hidden layers that learned word embeddings. These embeddings are compact vector representations capturing the core semantic meanings of words. This marked a monumental shift in the field's capability to understand and process language.
+
+
+
 # Text Analytics and Sentiment Analysis
 
 ## Introduction to Text Analytics

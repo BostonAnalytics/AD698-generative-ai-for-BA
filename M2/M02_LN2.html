@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="quarto-1.10.1" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+
+<meta name="dcterms.date" content="2024-11-21" />
+<meta name="description" content="Lecture notes for Module 2 covering From Words to Structured Text." />
+
+<title>AD698 - Applied Generative AI – AD 698 Applied Generative AI Business Analytics</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+<!-- htmldependencies:E3FAD763 -->
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+    <style type="text/css">
+    .ps-root .ps-algorithm {
+      border-top: 2px solid;
+      border-bottom: 2px solid;
+    }
+    .pseudocode-container {
+      text-align: left;
+    }
+    </style>
+  
+      <style type="text/css">
+      .ps-algorithm > .ps-line {
+        text-align: left;
+      }
+      </style>
+    
+
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var head = document.getElementsByTagName("head")[0];
+      var link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.css";
+      head.appendChild(link);
+      
+      function renderMathElements() {
+        var mathElements = document.getElementsByClassName("math");
+        var macros = [];
+        for (var i = 0; i < mathElements.length; i++) {
+          var texText = mathElements[i].firstChild;
+          if (mathElements[i].tagName == "SPAN") {
+            if (window.katex) {
+              window.katex.render(texText.data, mathElements[i], {
+                displayMode: mathElements[i].classList.contains('display'),
+                throwOnError: false,
+                macros: macros,
+                fleqn: false
+              });
+            } else {
+              console.error("KaTeX has not been loaded correctly, as not found globally.");
+            }
+          }
+        }
+      }
+
+      var script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/katex@0.13.11/dist/katex.min.js";
+      script.onload = renderMathElements;
+      
+      // Check for RequireJS and AMD detection as it conflicts with KaTeX loading.
+      if (typeof require === 'function' && typeof define === 'function' && define.amd) {
+        // Disable require.js AMD detection temporarily, as it conflicts with KaTeX loading using CommonJS
+        var disableAmdScript = document.createElement("script");
+        disableAmdScript.textContent = 'window._amd_backup = window.define.amd; window.define.amd = false;';
+        head.appendChild(disableAmdScript);
+        
+        // overwrite onload to restore Require.js AMD detection
+        script.onload = function() {
+          // Restore Require.js AMD detection
+          window.define.amd = window._amd_backup;
+          delete window._amd_backup;
+          renderMathElements();
+        };
+      }
+
+      head.appendChild(script);
+    });
+  </script>
+  
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-search-results"></div>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <div id="quarto-toc-target"></div>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">AD698 - Applied Generative AI</h1>
+<p class="subtitle lead">From Words to Structured Text</p>
+  <div class="quarto-categories">
+    <div class="quarto-category">M02:</div>
+    <div class="quarto-category">Text Representation</div>
+    <div class="quarto-category">Structured Text</div>
+    <div class="quarto-category">NLP</div>
+    <div class="quarto-category">Lecture Notes</div>
+  </div>
+  </div>
+
+<div>
+  <div class="description">
+    Lecture notes for Module 2 covering From Words to Structured Text.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 21, 2024</p>
+    </div>
+  </div>
+  
+    <div>
+    <div class="quarto-title-meta-heading">Modified</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date-modified">May 1, 2026</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+
+</header>
+
+<nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#distributed-representations-and-continuous-vector-spaces" id="toc-distributed-representations-and-continuous-vector-spaces"><span class="header-section-number">1</span> Distributed Representations and Continuous Vector Spaces</a></li>
+  <li><a href="#defining-the-word" id="toc-defining-the-word"><span class="header-section-number">2</span> Defining the Word</a>
+  <ul>
+  <li><a href="#types-tokens-and-vocabulary" id="toc-types-tokens-and-vocabulary"><span class="header-section-number">2.1</span> Types, Tokens, and Vocabulary</a></li>
+  <li><a href="#naïve-bayes-for-word-classification" id="toc-naïve-bayes-for-word-classification"><span class="header-section-number">2.2</span> Naïve Bayes for Word Classification</a></li>
+  <li><a href="#multinomial-naïve-bayes" id="toc-multinomial-naïve-bayes"><span class="header-section-number">2.3</span> Multinomial Naïve Bayes</a></li>
+  <li><a href="#tokenlevel-generative-model" id="toc-tokenlevel-generative-model"><span class="header-section-number">2.4</span> Token‑Level Generative Model</a></li>
+  <li><a href="#why-the-two-models-are-equivalent" id="toc-why-the-two-models-are-equivalent"><span class="header-section-number">2.5</span> Why the Two Models Are Equivalent</a></li>
+  <li><a href="#naïve-bayes-in-practice-sklearn-on-sec-10-k-text" id="toc-naïve-bayes-in-practice-sklearn-on-sec-10-k-text"><span class="header-section-number">2.6</span> Naïve Bayes in Practice: Sklearn on SEC 10-K Text</a>
+  <ul>
+  <li><a href="#from-nb-to-mlp-same-task-neural-approach" id="toc-from-nb-to-mlp-same-task-neural-approach"><span class="header-section-number">2.6.1</span> From NB to MLP: Same Task, Neural Approach</a></li>
+  </ul></li>
+  <li><a href="#tokenization" id="toc-tokenization"><span class="header-section-number">2.7</span> Tokenization</a></li>
+  <li><a href="#outofvocabulary-oov-words" id="toc-outofvocabulary-oov-words"><span class="header-section-number">2.8</span> Out‑of‑Vocabulary (OOV) Words</a></li>
+  </ul></li>
+  <li><a href="#vector-semantics" id="toc-vector-semantics"><span class="header-section-number">3</span> Vector Semantics</a>
+  <ul>
+  <li><a href="#distributional-hypothesis" id="toc-distributional-hypothesis"><span class="header-section-number">3.1</span> Distributional Hypothesis</a></li>
+  <li><a href="#static-embeddings-word2vec-and-glove" id="toc-static-embeddings-word2vec-and-glove"><span class="header-section-number">3.2</span> Static Embeddings: word2vec and GloVe</a></li>
+  <li><a href="#distance-metrics-in-embedding-space" id="toc-distance-metrics-in-embedding-space"><span class="header-section-number">3.3</span> Distance Metrics in Embedding Space</a></li>
+  <li><a href="#mahalanobis-distance-covarianceaware-similarity" id="toc-mahalanobis-distance-covarianceaware-similarity"><span class="header-section-number">3.4</span> Mahalanobis Distance: Covariance‑Aware Similarity</a></li>
+  <li><a href="#crossentropy" id="toc-crossentropy"><span class="header-section-number">3.5</span> Cross‑Entropy</a></li>
+  </ul></li>
+  <li><a href="#representing-meaning" id="toc-representing-meaning"><span class="header-section-number">4</span> Representing Meaning</a>
+  <ul>
+  <li><a href="#representing-meaning-in-vector-spaces" id="toc-representing-meaning-in-vector-spaces"><span class="header-section-number">4.1</span> Representing Meaning in Vector Spaces</a></li>
+  <li><a href="#static-embeddings" id="toc-static-embeddings"><span class="header-section-number">4.2</span> Static Embeddings</a></li>
+  <li><a href="#contextual-embeddings" id="toc-contextual-embeddings"><span class="header-section-number">4.3</span> Contextual Embeddings</a></li>
+  <li><a href="#distance-metrics-in-embedding-space-1" id="toc-distance-metrics-in-embedding-space-1"><span class="header-section-number">4.4</span> Distance Metrics in Embedding Space</a></li>
+  </ul></li>
+  <li><a href="#classification-diagnostics-evaluation" id="toc-classification-diagnostics-evaluation"><span class="header-section-number">5</span> Classification Diagnostics &amp; Evaluation</a>
+  <ul>
+  <li><a href="#palmer-penguins" id="toc-palmer-penguins"><span class="header-section-number">5.1</span> Palmer Penguins</a></li>
+  <li><a href="#feature-space-visualization" id="toc-feature-space-visualization"><span class="header-section-number">5.2</span> Feature Space Visualization</a></li>
+  <li><a href="#roc-curves" id="toc-roc-curves"><span class="header-section-number">5.3</span> ROC Curves</a></li>
+  <li><a href="#precisionrecall-curves" id="toc-precisionrecall-curves"><span class="header-section-number">5.4</span> Precision–Recall Curves</a></li>
+  <li><a href="#simulating-imbalance" id="toc-simulating-imbalance"><span class="header-section-number">5.5</span> Simulating Imbalance</a></li>
+  <li><a href="#llm-correctness-evaluation" id="toc-llm-correctness-evaluation"><span class="header-section-number">5.6</span> LLM Correctness Evaluation</a></li>
+  </ul></li>
+  <li><a href="#feedforward-architectures" id="toc-feedforward-architectures"><span class="header-section-number">6</span> Feedforward Architectures</a></li>
+  <li><a href="#recurrent-architectures" id="toc-recurrent-architectures"><span class="header-section-number">7</span> Recurrent Architectures</a></li>
+  <li><a href="#attention-longrange-dependencies" id="toc-attention-longrange-dependencies"><span class="header-section-number">8</span> Attention &amp; Long‑Range Dependencies</a>
+  <ul>
+  <li><a href="#rnn-limitations" id="toc-rnn-limitations"><span class="header-section-number">8.1</span> RNN limitations</a></li>
+  <li><a href="#the-need-for-direct-access-to-context" id="toc-the-need-for-direct-access-to-context"><span class="header-section-number">8.2</span> The need for direct access to context</a></li>
+  <li><a href="#the-attention-mechanism" id="toc-the-attention-mechanism"><span class="header-section-number">8.3</span> The attention mechanism</a></li>
+  <li><a href="#why-attention-solves-longrange-dependencies" id="toc-why-attention-solves-longrange-dependencies"><span class="header-section-number">8.4</span> Why attention solves long‑range dependencies</a></li>
+  <li><a href="#multihead-selfattention" id="toc-multihead-selfattention"><span class="header-section-number">8.5</span> Multi‑head self‑attention</a></li>
+  <li><a href="#leading-to-transformers" id="toc-leading-to-transformers"><span class="header-section-number">8.6</span> Leading to transformers</a></li>
+  <li><a href="#whats-next-sequence-models-and-attention" id="toc-whats-next-sequence-models-and-attention"><span class="header-section-number">8.7</span> What’s Next: Sequence Models and Attention</a>
+  <ul>
+  <li><a href="#references" id="toc-references">References</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+<section id="distributed-representations-and-continuous-vector-spaces" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Distributed Representations and Continuous Vector Spaces</h1>
+<p>Following the inception of the NNLM, NLP research was propelled toward crafting high-quality word vector representations. As detailed in <em>Generative AI Foundations in Python</em>, this period saw the emergence of Word2Vec and GloVe. These methods applied distributed representation to craft high-quality word vector representations. Distributed representation portrays items such as words not as unique identifiers but as sets of continuous values or vectors. In these vectors, each value corresponds to a specific feature or characteristic of the item.</p>
+<p>Word2Vec uses NNs to predict surrounding words for each target word, ascertaining weights that form a vector in a continuous vector space—a mathematical space wherein each point represents a possible value a vector can take. GloVe analyzes global co-occurrence statistics to learn vector representations that capture the relationships between words. Both Word2Vec and GloVe excel at encapsulating relevant semantic information about words to represent an efficient encoding—a compact way of representing information that captures the essential features necessary for a task while reducing the dimensionality and complexity of the data.</p>
+</section>
+<section id="defining-the-word" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Defining the Word</h1>
+<section id="types-tokens-and-vocabulary" class="level2" data-number="2.1">
+<h2 data-number="2.1"><span class="header-section-number">2.1</span> Types, Tokens, and Vocabulary</h2>
+<p>A foundational question in NLP is what exactly counts as a “word.” Although this seems straightforward, the distinction between <em>types</em> and <em>tokens</em> reveals how much structure is hidden beneath everyday text. A <strong>token</strong> is a specific occurrence of a word in a document, represented formally as a sequence <span class="math inline">w = (w_1, w_2, \ldots, w_M)</span> where each <span class="math inline">w_m \in V</span> is drawn from a vocabulary. A <strong>type</strong>, in contrast, is a unique lexical item; when we collapse a document into a bag‑of‑words representation, we count how many times each type appears. This yields a type‑count vector <span class="math inline">x</span>, where each component <span class="math inline">x_j \in \{0,1,2,\ldots,M\}</span> records the frequency of type <span class="math inline">j</span>. The difference matters because many distinct token sequences correspond to the same type‑count vector. For example, <em>man bites dog</em> and <em>dog bites man</em> share identical counts even though their meanings differ.</p>
+<p>This distinction becomes especially important when we consider generative models such as Naïve Bayes. One view generates the type‑count vector directly using a multinomial distribution. An equivalent view generates the token sequence explicitly: first draw a label <span class="math inline">y^{(i)} \sim \text{Categorical}</span>mu)$, then generate each token independently as <span class="math inline">w_m^{(i)} \mid y^{(i)} \sim \text{Categorical}</span>phi_{y^{(i)}})$. The independence assumption mirrors the multinomial model, and the resulting likelihood differs only by a multinomial coefficient <span class="math inline">B(x)</span>, which counts the number of possible orderings of the tokens. Because <span class="math inline">B(x) \ge 1</span>, the probability of a type‑count vector is always at least as large as the probability of any specific token sequence that yields it. This equivalence highlights how the choice of representation—types or tokens—shapes the statistical assumptions we build into our models.</p>
+</section>
+<section id="naïve-bayes-for-word-classification" class="level2" data-number="2.2">
+<h2 data-number="2.2"><span class="header-section-number">2.2</span> Naïve Bayes for Word Classification</h2>
+<p>Naïve Bayes begins with the fundamental Bayesian idea that classification can be framed as choosing the label <span class="math inline">y</span> that maximizes the posterior probability <span class="math inline">p(y \mid x)</span>. Using Bayes’ rule, this becomes a comparison of the product <span class="math inline">p(x \mid y)p(y)</span>. The “naïve” aspect refers to the assumption that the features of the document—typically words—are conditionally independent given the class. Although this assumption is unrealistic linguistically, it dramatically simplifies the likelihood and leads to a classifier that is surprisingly effective for text. The prior <span class="math inline">p(y=k)=\mu_k</span> captures how common each class is, while the likelihood encodes how characteristic each word is for that class. Because text classification often involves high‑dimensional sparse data, the simplicity and closed‑form nature of Naïve Bayes make it a strong baseline.</p>
+</section>
+<section id="multinomial-naïve-bayes" class="level2" data-number="2.3">
+<h2 data-number="2.3"><span class="header-section-number">2.3</span> Multinomial Naïve Bayes</h2>
+<p>The most common variant for text is the <strong>multinomial Naïve Bayes model</strong>, which treats each document as a bag‑of‑words represented by a type‑count vector <span class="math inline">x = (x_1,\ldots,x_V)</span>. The generative story draws a class label and then generates a total of <span class="math inline">M</span> word tokens by repeatedly sampling from a class‑specific categorical distribution <span class="math inline">\phi_y</span>. The resulting distribution over counts is multinomial, with likelihood<br />
+<span class="math display">
+\begin{align}
+p(x \mid y) = B(x)\prod_{j=1}^V \phi_{y,j}^{x_j},
+\end{align}
+</span> where the multinomial coefficient<br />
+<span class="math display">
+\begin{align}
+B(x) = \frac{M!}{x_1!x_2!\cdots x_V!}
+\end{align}
+</span> counts the number of distinct token sequences that yield the same type‑count vector. This representation discards word order entirely, but under the independence assumption, order carries no additional information. The model’s parameters <span class="math inline">\phi_{y,j}</span> are estimated by normalized word frequencies within each class, often with smoothing to handle rare words.</p>
+</section>
+<section id="tokenlevel-generative-model" class="level2" data-number="2.4">
+<h2 data-number="2.4"><span class="header-section-number">2.4</span> Token‑Level Generative Model</h2>
+<p>An alternative but equivalent perspective is to model the document as a sequence of tokens <span class="math inline">w = (w_1,\ldots,w_M)</span>. In this view, the model first draws a class label <span class="math inline">y^{(i)} \sim \text{Categorical}</span>mu)$ and then generates each token independently from the class‑specific distribution <span class="math inline">\phi_{y^{(i)}}</span>. The likelihood of the sequence is simply the product of the probabilities of each token. This formulation makes explicit the independence assumption: each token is independent of all others given the class. When we convert the sequence into a type‑count vector, the resulting likelihood differs from the multinomial model only by the coefficient <span class="math inline">B(x)</span>, which counts how many sequences correspond to the same counts. Because this coefficient does not depend on the class label, both models produce identical classification decisions. This equivalence highlights that the multinomial model is essentially a compressed version of the token‑level model, with order marginalized out.</p>
+</section>
+<section id="why-the-two-models-are-equivalent" class="level2" data-number="2.5">
+<h2 data-number="2.5"><span class="header-section-number">2.5</span> Why the Two Models Are Equivalent</h2>
+<p>The equivalence between the multinomial and token‑level models arises from the fact that the multinomial distribution is the result of summing over all possible token sequences that share the same type‑count vector. Under the Naïve Bayes independence assumption, the probability of a sequence factorizes into a product of token probabilities, and summing over all permutations yields the multinomial coefficient <span class="math inline">B(x)</span>. This means that the multinomial model is simply a more compact representation of the same generative assumptions. Importantly, because <span class="math inline">B(x)</span> does not depend on the class label, it cancels out when comparing classes, ensuring that both models yield identical predictions. This insight clarifies why Naïve Bayes is insensitive to word order: the model’s assumptions render order irrelevant, and the multinomial form is the natural consequence of marginalizing over all possible orderings.</p>
+</section>
+<section id="naïve-bayes-in-practice-sklearn-on-sec-10-k-text" class="level2" data-number="2.6">
+<h2 data-number="2.6"><span class="header-section-number">2.6</span> Naïve Bayes in Practice: Sklearn on SEC 10-K Text</h2>
+<p>The theory above translates directly to a text classifier. Below we load a sample of SEC 10-K filings, build TF-IDF features, and train a Multinomial Naïve Bayes classifier to distinguish filing sections.</p>
+<div id="ee74c81d" class="cell" data-execution_count="1">
+<div class="sourceCode" id="cb1"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pathlib, re</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.feature_extraction.text <span class="im">import</span> TfidfVectorizer</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.naive_bayes <span class="im">import</span> MultinomialNB</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> classification_report, ConfusionMatrixDisplay</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Load SEC 10-K texts (first 300 chars shown as preview)</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>sec_dir <span class="op">=</span> pathlib.Path(<span class="st">&quot;../data/SEC-10K-2024&quot;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>texts, labels <span class="op">=</span> [], []</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> f <span class="kw">in</span> <span class="bu">sorted</span>(sec_dir.glob(<span class="st">&quot;*.txt&quot;</span>))[:<span class="dv">40</span>]:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    text <span class="op">=</span> f.read_text(errors<span class="op">=</span><span class="st">&quot;replace&quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    texts.append(text)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Label: 0 = risk factors mention dominant, 1 = revenue/sales dominant</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    label <span class="op">=</span> <span class="dv">1</span> <span class="cf">if</span> re.search(<span class="vs">r&#39;</span><span class="dv">\b</span><span class="vs">revenue</span><span class="dv">\b</span><span class="cf">|</span><span class="dv">\b</span><span class="vs">sales</span><span class="dv">\b</span><span class="vs">&#39;</span>, text[:<span class="dv">3000</span>], re.I) <span class="cf">else</span> <span class="dv">0</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    labels.append(label)</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f&quot;Loaded </span><span class="sc">{</span><span class="bu">len</span>(texts)<span class="sc">}</span><span class="ss"> documents, label balance: </span><span class="sc">{</span><span class="bu">sum</span>(labels)<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span><span class="bu">len</span>(labels)<span class="op">-</span><span class="bu">sum</span>(labels)<span class="sc">}</span><span class="ss">&quot;</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="co"># TF-IDF features</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>vectorizer <span class="op">=</span> TfidfVectorizer(max_features<span class="op">=</span><span class="dv">5000</span>, stop_words<span class="op">=</span><span class="st">&quot;english&quot;</span>, ngram_range<span class="op">=</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> vectorizer.fit_transform(texts)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.array(labels)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>X_train, X_test, y_train, y_test <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.25</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Multinomial Naïve Bayes</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>nb <span class="op">=</span> MultinomialNB(alpha<span class="op">=</span><span class="fl">1.0</span>)  <span class="co"># Laplace smoothing</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>nb.fit(X_train, y_train)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>y_pred <span class="op">=</span> nb.predict(X_test)</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(classification_report(y_test, y_pred, target_names<span class="op">=</span>[<span class="st">&quot;risk-dominant&quot;</span>, <span class="st">&quot;revenue-dominant&quot;</span>]))</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Confusion matrix</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>ConfusionMatrixDisplay.from_predictions(y_test, y_pred,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    display_labels<span class="op">=</span>[<span class="st">&quot;risk-dominant&quot;</span>, <span class="st">&quot;revenue-dominant&quot;</span>])</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;Naïve Bayes — SEC 10-K&quot;</span>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+</div>
+<section id="from-nb-to-mlp-same-task-neural-approach" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1"><span class="header-section-number">2.6.1</span> From NB to MLP: Same Task, Neural Approach</h3>
+<p>The NB model above uses exact word probability estimates. A PyTorch MLP replaces the closed-form NB parameters with learned weights, enabling non-linear decision boundaries.</p>
+<div id="6d3b44c1" class="cell" data-execution_count="2">
+<div class="sourceCode" id="cb2"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> torch.nn <span class="im">as</span> nn</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> torch.utils.data <span class="im">import</span> DataLoader, TensorDataset</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.sparse <span class="im">import</span> issparse</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert sparse TF-IDF to dense tensors</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> to_dense_tensor(X_sp):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> issparse(X_sp):</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> torch.tensor(X_sp.toarray(), dtype<span class="op">=</span>torch.float32)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> torch.tensor(X_sp, dtype<span class="op">=</span>torch.float32)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>X_tr <span class="op">=</span> to_dense_tensor(X_train)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>X_te <span class="op">=</span> to_dense_tensor(X_test)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>y_tr <span class="op">=</span> torch.tensor(y_train, dtype<span class="op">=</span>torch.<span class="bu">long</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>y_te <span class="op">=</span> torch.tensor(y_test, dtype<span class="op">=</span>torch.<span class="bu">long</span>)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>train_dl <span class="op">=</span> DataLoader(TensorDataset(X_tr, y_tr), batch_size<span class="op">=</span><span class="dv">8</span>, shuffle<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TextMLP(nn.Module):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, vocab_size: <span class="bu">int</span>, hidden: <span class="bu">int</span> <span class="op">=</span> <span class="dv">256</span>, n_classes: <span class="bu">int</span> <span class="op">=</span> <span class="dv">2</span>):</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>()</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.net <span class="op">=</span> nn.Sequential(</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            nn.Linear(vocab_size, hidden),</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>            nn.ReLU(),</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>            nn.Dropout(<span class="fl">0.3</span>),</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>            nn.Linear(hidden, n_classes),</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> forward(<span class="va">self</span>, x):</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.net(x)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> TextMLP(vocab_size<span class="op">=</span>X_tr.shape[<span class="dv">1</span>])</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>optimizer <span class="op">=</span> torch.optim.Adam(model.parameters(), lr<span class="op">=</span><span class="fl">1e-3</span>)</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>loss_fn <span class="op">=</span> nn.CrossEntropyLoss()</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">10</span>):</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>    model.train()</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    total_loss <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> xb, yb <span class="kw">in</span> train_dl:</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        optimizer.zero_grad()</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        loss <span class="op">=</span> loss_fn(model(xb), yb)</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>        loss.backward()</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        optimizer.step()</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        total_loss <span class="op">+=</span> loss.item()</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (epoch <span class="op">+</span> <span class="dv">1</span>) <span class="op">%</span> <span class="dv">5</span> <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        model.<span class="bu">eval</span>()</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> torch.no_grad():</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>            acc <span class="op">=</span> (model(X_te).argmax(<span class="dv">1</span>) <span class="op">==</span> y_te).<span class="bu">float</span>().mean().item()</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="ss">f&quot;Epoch </span><span class="sc">{</span>epoch<span class="op">+</span><span class="dv">1</span><span class="sc">:&gt;3}</span><span class="ss"> | loss=</span><span class="sc">{</span>total_loss<span class="op">/</span><span class="bu">len</span>(train_dl)<span class="sc">:.4f}</span><span class="ss"> | val_acc=</span><span class="sc">{</span>acc<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span></code></pre></div>
+</div>
+</section>
+</section>
+<section id="tokenization" class="level2" data-number="2.7">
+<h2 data-number="2.7"><span class="header-section-number">2.7</span> Tokenization</h2>
+<p>Before we can even talk about types or tokens, we must decide how to segment raw text into meaningful units. Tokenization is the process of converting a stream of characters into a sequence of discrete tokens, and although English often appears simple—whitespace and punctuation rules get us surprisingly far—ambiguity is always lurking. Different tokenizers can produce different segmentations of the same sentence, especially when contractions, punctuation, emoticons, or social‑media conventions are involved. A sentence like “Isn’t Ahab, Ahab? ;)” can yield multiple token sequences depending on whether the tokenizer splits contractions, isolates punctuation, or treats emoticons as single units.</p>
+<p>The challenge becomes far more serious in languages without explicit word boundaries. In Chinese, for example, words are composed of characters written without intervening spaces, so segmentation must be inferred. Early approaches relied on dictionary matching, but dictionaries are never complete and struggle with new names, domain‑specific terminology, or creative language use. This motivated statistical approaches that treat segmentation as a supervised sequence labeling problem. Models such as logistic regression classifiers or conditional random fields (CRFs) predict boundary decisions for each character, and neural architectures such as LSTM‑CRF models further improve performance by learning contextual representations and decoding globally optimal segmentations using the Viterbi algorithm. Tokenization, therefore, is not merely a preprocessing step but a genuine modeling decision that influences every downstream task.</p>
+</section>
+<section id="outofvocabulary-oov-words" class="level2" data-number="2.8">
+<h2 data-number="2.8"><span class="header-section-number">2.8</span> Out‑of‑Vocabulary (OOV) Words</h2>
+<p>Even once we have defined tokens and segmented text, we face the reality that natural language is open‑ended. New words appear constantly—names, technologies, slang, morphological variants—and no fixed vocabulary can capture them all. Traditional language models assume a closed vocabulary <span class="math inline">V</span>, but real‑world text routinely violates this assumption. A model trained on a corpus from 2003, for example, would not contain terms like <em>WikiLeaks</em>, <em>DCLeaks</em>, or <em>Guccifer 2.0</em>, which emerged years later. The simplest strategy is to map all unseen types to a special token ⟨UNK⟩, either by predefining a vocabulary of the top‑K most frequent words or by marking the first occurrence of each type as unknown. While easy to implement, this approach collapses all novel words into a single symbol, discarding potentially meaningful distinctions.</p>
+<p>More sophisticated approaches recognize that many unseen forms are predictable from subword structure. This is especially important in morphologically rich languages, where a single lemma may generate dozens of inflected forms. Even in English, if a model knows <em>transferestrate</em>, it should reasonably assign non‑zero probability to <em>transferestrated</em> even if that form never appears in the training data. Character‑level models address this by modeling sequences of characters rather than whole words, using n‑grams, recurrent networks, or convolutional architectures. Subword segmentation methods—such as morpheme‑based models, byte‑pair encoding (BPE), or unigram language models—provide another solution by decomposing words into smaller, reusable units. These approaches allow models to generalize beyond the fixed vocabulary and handle OOV words in a principled, linguistically informed way.</p>
+<p>You don’t need to provide any additional references. I can build <strong>Module 2 — Vector Semantics</strong> (slides + lecture notes) at full graduate‑level depth using standard, well‑established material from NLP, distributional semantics, and embedding geometry. Your existing context from Module 1 already sets up the transition perfectly.</p>
+</section>
+</section>
+<section id="vector-semantics" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Vector Semantics</h1>
+<section id="distributional-hypothesis" class="level2" data-number="3.1">
+<h2 data-number="3.1"><span class="header-section-number">3.1</span> Distributional Hypothesis</h2>
+<p>The shift from symbolic to statistical semantics begins with the distributional hypothesis, articulated by Harris and Firth in the mid‑20th century. The central claim is that the meaning of a word can be inferred from the linguistic environments in which it appears. Words that occur in similar contexts tend to have similar meanings, and this intuition provides the theoretical foundation for representing words as points in a geometric space. Instead of manually defining semantic categories, we allow the corpus to reveal patterns of co‑occurrence, producing a high‑dimensional representation in which semantic similarity corresponds to geometric proximity. This idea underlies all modern embedding models, from early vector space models to neural embeddings and transformer‑based contextual representations.</p>
+</section>
+<section id="static-embeddings-word2vec-and-glove" class="level2" data-number="3.2">
+<h2 data-number="3.2"><span class="header-section-number">3.2</span> Static Embeddings: word2vec and GloVe</h2>
+<p>Static embeddings assign each word type a single vector, independent of context. Two influential approaches dominate this space: <strong>word2vec</strong> and <strong>GloVe</strong>.</p>
+<p>word2vec operationalizes the distributional hypothesis through predictive modeling. In the skip‑gram architecture, the model attempts to predict surrounding context words given a target word. Formally, for each position <span class="math inline">t</span>, the model maximizes the log‑probability of observing context words <span class="math inline">w_c</span> within a window around <span class="math inline">w_t</span>. This yields embeddings that capture fine‑grained semantic and syntactic regularities, including linear analogies such as <em>king – man + woman ≈ queen</em>.</p>
+<p>GloVe, by contrast, begins with a global co‑occurrence matrix $X_{ij} $ and seeks a low‑dimensional factorization that preserves the ratios of co‑occurrence probabilities. Its objective function penalizes deviations between the dot product of word vectors and the logarithm of their co‑occurrence counts. The weighting function <span class="math inline">f(X_{ij})</span> ensures that rare and extremely frequent pairs do not dominate training. Although derived differently, GloVe and word2vec produce embeddings with similar geometric properties and are often interchangeable in downstream tasks.</p>
+</section>
+<section id="distance-metrics-in-embedding-space" class="level2" data-number="3.3">
+<h2 data-number="3.3"><span class="header-section-number">3.3</span> Distance Metrics in Embedding Space</h2>
+<p>Once words are embedded in a vector space, semantic similarity becomes a geometric question. Two metrics are especially common.</p>
+<p>Cosine similarity measures the angle between vectors, ignoring magnitude. It is defined as<br />
+<span class="math display">
+\begin{align}
+\text{cos}(u,v) = \frac{u \cdot v}{\|u\|\|v\|},
+\end{align}
+</span> and is widely used because it captures directional similarity while being robust to frequency‑related scaling effects. Euclidean distance,<br />
+<span class="math display">
+\begin{align}
+d(u,v) = \|u - v\|,
+\end{align}
+</span> incorporates both magnitude and direction, but can be distorted by differences in vector norms. In practice, cosine similarity aligns better with human judgments of semantic similarity, while Euclidean distance is more sensitive to global structure in the embedding space.</p>
+<div id="fig-distance-metrics" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Illustration of Dot product, Cosine similarity, Euclidean and Manhattan distance in embedding space.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-distance-metrics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./M02_lecture02_figures/distance-metrics.png" class="img-fluid quarto-figure quarto-figure-center" style="width:80.0%" alt="Illustration of Dot product, Cosine similarity, Euclidean and Manhattan distance in embedding space." />
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-distance-metrics-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<strong>Figure</strong> 1<strong>.</strong> Distance Metrics
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="mahalanobis-distance-covarianceaware-similarity" class="level2" data-number="3.4">
+<h2 data-number="3.4"><span class="header-section-number">3.4</span> Mahalanobis Distance: Covariance‑Aware Similarity</h2>
+<p>Standard metrics assume that embedding dimensions are orthogonal and equally informative, but real embedding spaces are often anisotropic: some directions encode meaningful variation, while others reflect noise or corpus artifacts. The Mahalanobis distance addresses this by incorporating the covariance structure of the embedding distribution. Defined as<br />
+<span class="math display">
+\begin{align}
+d_M(u,v) = \sqrt{(u-v)^\top \Sigma^{-1}(u-v)},
+\end{align}
+</span></p>
+<p>it effectively rescales and rotates the space so that distances reflect true semantic variation rather than raw coordinate differences. When <span class="math inline">\Sigma</span> is the identity matrix, Mahalanobis distance reduces to Euclidean distance; when <span class="math inline">\Sigma</span> captures empirical correlations, the metric becomes more sensitive to meaningful distinctions. This makes it valuable in metric learning, clustering, and retrieval tasks where fine‑grained semantic discrimination is required.</p>
+<div id="fig-mahalanobis" class="quarto-float quarto-figure quarto-figure-center" data-fig-align="center" alt="Illustration of Mahalanobis distance identifying outliers in a 2D distribution.">
+<figure class="quarto-float quarto-float-fig">
+<div aria-describedby="fig-mahalanobis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="./M02_lecture02_figures/mahalanobis-outlier.jpg" class="img-fluid quarto-figure quarto-figure-center" style="width:60.0%" alt="Illustration of Mahalanobis distance identifying outliers in a 2D distribution." />
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mahalanobis-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<strong>Figure</strong> 2<strong>.</strong> Mahalanobis Distance
+</figcaption>
+</figure>
+</div>
+<div id="8a56b86a" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img src="M02_LN2_files/figure-html/cell-4-output-1.png" class="img-fluid" alt="Scatter plots showing low, medium, high, and extreme entropy distributions." /></p>
+<figcaption>Different levels of entropy in 2D data</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="crossentropy" class="level2" data-number="3.5">
+<h2 data-number="3.5"><span class="header-section-number">3.5</span> Cross‑Entropy</h2>
+<ul>
+<li>Cross‑entropy measures how well a predicted distribution matches the true one.<br />
+</li>
+<li>High cross‑entropy → model assigns low probability to the correct class.<br />
+</li>
+<li>Low cross‑entropy → model is confident and correct.<br />
+</li>
+<li>Visual intuition:
+<ul>
+<li>When the predicted probability for the true class approaches 1, loss → 0.<br />
+</li>
+<li>When the model is wrong/confident, loss spikes sharply.<br />
+</li>
+</ul></li>
+<li>This loss underlies softmax classifiers, word prediction, and neural language models.</li>
+</ul>
+</section>
+</section>
+<section id="representing-meaning" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Representing Meaning</h1>
+<section id="representing-meaning-in-vector-spaces" class="level2" data-number="4.1">
+<h2 data-number="4.1"><span class="header-section-number">4.1</span> Representing Meaning in Vector Spaces</h2>
+<p>The central challenge in computational semantics is to represent meaning in a form that supports comparison, generalization, and inference. Traditional symbolic approaches treat words as atomic units, but this fails to capture the rich structure of meaning that emerges from usage. The distributional hypothesis provides the bridge: words that appear in similar contexts tend to have similar meanings. This insight motivates representing words as points in a high‑dimensional vector space, where geometric relationships encode semantic relationships. Once meaning is embedded in a vector space, operations such as similarity measurement, clustering, and analogy become natural and computationally efficient.</p>
+</section>
+<section id="static-embeddings" class="level2" data-number="4.2">
+<h2 data-number="4.2"><span class="header-section-number">4.2</span> Static Embeddings</h2>
+<p>Static embeddings assign each word type a single vector, regardless of context. Models such as word2vec and GloVe operationalize the distributional hypothesis in different ways. word2vec uses predictive modeling: the skip‑gram architecture learns embeddings by predicting context words from a target word, optimizing the log‑probability of observed co‑occurrences. GloVe instead factorizes a global co‑occurrence matrix, ensuring that the dot product of word vectors approximates the logarithm of their co‑occurrence counts. Despite their differences, both approaches produce embeddings that capture syntactic and semantic regularities, enabling tasks such as analogy reasoning. However, static embeddings cannot represent polysemy or context‑dependent meaning, since each word type maps to a single vector.</p>
+</section>
+<section id="contextual-embeddings" class="level2" data-number="4.3">
+<h2 data-number="4.3"><span class="header-section-number">4.3</span> Contextual Embeddings</h2>
+<p>Contextual embeddings address the limitations of static models by generating a distinct vector for each token in its specific context. Models such as ELMo, BERT, and GPT derive these representations from the hidden states of deep neural networks trained on large corpora. Because these models process entire sentences or documents, the resulting embeddings encode not only local context but also long‑range dependencies, syntactic structure, and discourse‑level information. This allows them to distinguish between different senses of the same word and to adapt representations dynamically based on usage. Contextual embeddings have become the foundation of modern NLP, powering state‑of‑the‑art performance across a wide range of tasks.</p>
+</section>
+<section id="distance-metrics-in-embedding-space-1" class="level2" data-number="4.4">
+<h2 data-number="4.4"><span class="header-section-number">4.4</span> Distance Metrics in Embedding Space</h2>
+<p>Once words are represented as vectors, semantic similarity becomes a geometric question. Cosine similarity measures the angle between vectors, capturing directional similarity while ignoring magnitude. This makes it robust to frequency‑related scaling effects and well‑suited for semantic comparisons. Euclidean distance incorporates both magnitude and direction, but can be distorted by differences in vector norms. Both metrics are widely used in tasks such as nearest‑neighbor search, clustering, and analogy evaluation. The choice of metric influences how semantic relationships are interpreted and how embedding spaces are navigated.</p>
+</section>
+</section>
+<section id="classification-diagnostics-evaluation" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Classification Diagnostics &amp; Evaluation</h1>
+<section id="palmer-penguins" class="level2" data-number="5.1">
+<h2 data-number="5.1"><span class="header-section-number">5.1</span> Palmer Penguins</h2>
+<p>The Palmer Penguins dataset provides a visually intuitive and statistically clean environment for teaching classification diagnostics. Unlike synthetic datasets, penguins offer natural clusters that help students understand why ROC and PR curves behave the way they do. By framing the task as <em>Adelie vs Non‑Adelie</em>, we obtain a binary classification problem with moderate separability, making it ideal for demonstrating threshold‑based metrics.</p>
+<div id="f76a6fe8" class="cell" data-execution_count="4">
+<div class="sourceCode" id="cb3"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve, roc_auc_score</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> precision_recall_curve, auc</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>penguins <span class="op">=</span> sns.load_dataset(<span class="st">&quot;penguins&quot;</span>).dropna()</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>penguins[<span class="st">&quot;label&quot;</span>] <span class="op">=</span> (penguins[<span class="st">&quot;species&quot;</span>] <span class="op">==</span> <span class="st">&quot;Adelie&quot;</span>).astype(<span class="bu">int</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> penguins[[<span class="st">&quot;bill_length_mm&quot;</span>, <span class="st">&quot;bill_depth_mm&quot;</span>]]</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> penguins[<span class="st">&quot;label&quot;</span>]</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>trainX, testX, trainy, testy <span class="op">=</span> train_test_split(X, y, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span></code></pre></div>
+</div>
+</section>
+<section id="feature-space-visualization" class="level2" data-number="5.2">
+<h2 data-number="5.2"><span class="header-section-number">5.2</span> Feature Space Visualization</h2>
+<p>Plotting bill length against bill depth reveals distinct clusters for Adelie and other species. This visualization helps students understand why a classifier might achieve high ROC‑AUC: the classes are separable. It also sets the stage for explaining why PR‑AUC behaves differently when the positive class becomes rare.</p>
+<div id="1b7868e3" class="cell" data-execution_count="5">
+<div class="sourceCode" id="cb4"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">6</span>))</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span>penguins,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    x<span class="op">=</span><span class="st">&quot;bill_length_mm&quot;</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span><span class="st">&quot;bill_depth_mm&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    hue<span class="op">=</span><span class="st">&quot;species&quot;</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    palette<span class="op">=</span><span class="st">&quot;deep&quot;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;Penguins Feature Space&quot;</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&quot;Bill Length (mm)&quot;</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&quot;Bill Depth (mm)&quot;</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>plt.legend(title<span class="op">=</span><span class="st">&quot;Species&quot;</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+</div>
+</section>
+<section id="roc-curves" class="level2" data-number="5.3">
+<h2 data-number="5.3"><span class="header-section-number">5.3</span> ROC Curves</h2>
+<p>The ROC curve plots the true positive rate against the false positive rate across thresholds. On the penguins dataset, the ROC curve typically bows strongly toward the top‑left corner, indicating good separability. This provides a concrete example of the attached document’s explanation that ROC curves measure ranking quality. It also connects directly to LLM evaluation, where token probabilities are ranked and evaluated similarly.</p>
+<div id="366519a7" class="cell" data-execution_count="6">
+<div class="sourceCode" id="cb5"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LogisticRegression()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>model.fit(trainX, trainy)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> model.predict_proba(testX)[:, <span class="dv">1</span>]</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>fpr, tpr, _ <span class="op">=</span> roc_curve(testy, probs)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">0</span>,<span class="dv">1</span>], [<span class="dv">0</span>,<span class="dv">1</span>], <span class="st">&#39;--&#39;</span>, label<span class="op">=</span><span class="st">&quot;No Skill&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>plt.plot(fpr, tpr, label<span class="op">=</span><span class="st">&quot;Logistic&quot;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&quot;False Positive Rate&quot;</span>)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&quot;True Positive Rate&quot;</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;ROC Curve — Penguins&quot;</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>plt.legend()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">&quot;ROC AUC:&quot;</span>, roc_auc_score(testy, probs))</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure>
+<p><img src="M02_LN2_files/figure-html/cell-7-output-1.png" class="img-fluid" /></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>ROC AUC: 0.9995993589743589</code></pre>
+</div>
+</div>
+</section>
+<section id="precisionrecall-curves" class="level2" data-number="5.4">
+<h2 data-number="5.4"><span class="header-section-number">5.4</span> Precision–Recall Curves</h2>
+<p>PR curves focus on the positive class and are more sensitive to class imbalance. When Adelie is treated as the minority class, the PR curve reveals how precision drops sharply as recall increases. This mirrors the document’s insight that PR curves are recommended for highly skewed domains. It also parallels LLM evaluation, where correct answers may be rare and PR‑AUC becomes more informative.</p>
+<div id="81a1b38d" class="cell" data-execution_count="7">
+<div class="sourceCode" id="cb7"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>precision, recall, _ <span class="op">=</span> precision_recall_curve(testy, probs)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>pr_auc <span class="op">=</span> auc(recall, precision)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>plt.plot(recall, precision)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">&quot;Recall&quot;</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">&quot;Precision&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="ss">f&quot;Precision–Recall Curve — PR AUC = </span><span class="sc">{</span>pr_auc<span class="sc">:.3f}</span><span class="ss">&quot;</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+<div class="cell-output cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img src="M02_LN2_files/figure-html/cell-8-output-1.png" class="img-fluid quarto-figure quarto-figure-center" /></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="simulating-imbalance" class="level2" data-number="5.5">
+<h2 data-number="5.5"><span class="header-section-number">5.5</span> Simulating Imbalance</h2>
+<p>By downsampling Adelie penguins to create a 1:10 imbalance, we can show that ROC‑AUC remains deceptively high while PR‑AUC collapses. This demonstrates the document’s warning that ROC‑AUC can be overly optimistic under severe imbalance. It also provides a bridge to LLM correctness evaluation, where rare correct answers require PR‑AUC‑like metrics.</p>
+<div id="155a8811" class="cell" data-execution_count="8">
+<div class="sourceCode" id="cb8"><pre class="sourceCode python cell-code"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>minority <span class="op">=</span> penguins[penguins[<span class="st">&quot;label&quot;</span>] <span class="op">==</span> <span class="dv">1</span>]</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>majority <span class="op">=</span> penguins[penguins[<span class="st">&quot;label&quot;</span>] <span class="op">==</span> <span class="dv">0</span>].sample(frac<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>imbalanced <span class="op">=</span> pd.concat([minority, majority])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>X_imb <span class="op">=</span> imbalanced[[<span class="st">&quot;bill_length_mm&quot;</span>, <span class="st">&quot;bill_depth_mm&quot;</span>]]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>y_imb <span class="op">=</span> imbalanced[<span class="st">&quot;label&quot;</span>]</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>trainX, testX, trainy, testy <span class="op">=</span> train_test_split(X_imb, y_imb, test_size<span class="op">=</span><span class="fl">0.3</span>, random_state<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>model.fit(trainX, trainy)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>probs <span class="op">=</span> model.predict_proba(testX)[:, <span class="dv">1</span>]</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># ROC</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>fpr, tpr, _ <span class="op">=</span> roc_curve(testy, probs)</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>plt.plot([<span class="dv">0</span>,<span class="dv">1</span>], [<span class="dv">0</span>,<span class="dv">1</span>], <span class="st">&#39;--&#39;</span>)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>plt.plot(fpr, tpr)</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;ROC Curve — Severe Imbalance&quot;</span>)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># PR</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>precision, recall, _ <span class="op">=</span> precision_recall_curve(testy, probs)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>plt.plot(recall, precision)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">&quot;PR Curve — Severe Imbalance&quot;</span>)</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div>
+</div>
+</section>
+<section id="llm-correctness-evaluation" class="level2" data-number="5.6">
+<h2 data-number="5.6"><span class="header-section-number">5.6</span> LLM Correctness Evaluation</h2>
+<p>Large language models produce probability distributions over tokens. Evaluating correctness involves ranking the correct token above incorrect ones, which is conceptually identical to ROC‑AUC. When correct answers are rare, PR‑AUC becomes more informative. Calibration metrics such as the Brier score and expected calibration error (ECE) further extend these ideas. The penguins example builds intuition for these modern evaluation techniques.</p>
+</section>
+</section>
+<section id="feedforward-architectures" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> Feedforward Architectures</h1>
+<p>Check module 8 Lecture note 1 and 2 for details on feedforward architectures and Backpropagation.</p>
+</section>
+<section id="recurrent-architectures" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Recurrent Architectures</h1>
+<p>Check module 8 Lecture note 3 for details on recurrent architectures and LSTM.</p>
+</section>
+<section id="attention-longrange-dependencies" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Attention &amp; Long‑Range Dependencies</h1>
+<section id="rnn-limitations" class="level2" data-number="8.1">
+<h2 data-number="8.1"><span class="header-section-number">8.1</span> RNN limitations</h2>
+<p>Recurrent neural networks process sequences one token at a time, maintaining a hidden state that summarizes all previous inputs. This creates a structural bottleneck: the hidden state must compress all relevant information into a single vector. As sequences grow longer, this compression becomes increasingly lossy. Gradients must propagate through many time steps, which leads to vanishing or exploding gradients even with gated architectures such as LSTMs and GRUs. These issues make it difficult for RNNs to capture long‑range dependencies, such as linking pronouns to distant antecedents or maintaining coherence across long sentences. Additionally, RNNs are inherently sequential, preventing parallelization and slowing training.</p>
+</section>
+<section id="the-need-for-direct-access-to-context" class="level2" data-number="8.2">
+<h2 data-number="8.2"><span class="header-section-number">8.2</span> The need for direct access to context</h2>
+<p>Many natural language tasks require linking information across long spans. For example, resolving coreference (“The scientist… <em>she</em>…”) requires connecting tokens that may be far apart. RNNs force the model to “remember” everything through the hidden state, which is both inefficient and unreliable. A more flexible mechanism would allow each token to directly retrieve relevant information from any other token in the sequence, bypassing the recurrent bottleneck. This motivates the development of attention.</p>
+</section>
+<section id="the-attention-mechanism" class="level2" data-number="8.3">
+<h2 data-number="8.3"><span class="header-section-number">8.3</span> The attention mechanism</h2>
+<p>Attention provides a way for each token to selectively focus on other tokens. Each token produces a query vector, and every token in the sequence provides key and value vectors. The similarity between a query and each key determines how much of each value contributes to the output. This mechanism allows the model to dynamically retrieve information based on content rather than position. The scaled dot‑product formulation stabilizes gradients and improves training. Attention is fully differentiable and can be computed in parallel across all tokens, making it efficient and expressive.</p>
+</section>
+<section id="why-attention-solves-longrange-dependencies" class="level2" data-number="8.4">
+<h2 data-number="8.4"><span class="header-section-number">8.4</span> Why attention solves long‑range dependencies</h2>
+<p>Attention eliminates the need for a single compressed hidden state. Instead, each token can directly access any other token’s representation, regardless of distance. This removes the vanishing‑gradient problem associated with long sequences and allows the model to learn relationships that span hundreds or thousands of tokens. Because attention is parallelizable, it also dramatically accelerates training compared to RNNs. These properties make attention a powerful mechanism for modeling long‑range dependencies.</p>
+</section>
+<section id="multihead-selfattention" class="level2" data-number="8.5">
+<h2 data-number="8.5"><span class="header-section-number">8.5</span> Multi‑head self‑attention</h2>
+<p>Multi‑head attention extends the basic attention mechanism by allowing the model to attend to different types of relationships simultaneously. Each head learns its own projection of queries, keys, and values, enabling the model to capture multiple patterns such as syntactic structure, semantic similarity, or positional relationships. The outputs of all heads are concatenated and projected to form the final representation. This architecture allows transformers to model complex dependencies across long sequences efficiently and in parallel, which is why it forms the core of modern large language models.</p>
+</section>
+<section id="leading-to-transformers" class="level2" data-number="8.6">
+<h2 data-number="8.6"><span class="header-section-number">8.6</span> Leading to transformers</h2>
+<p>The limitations of RNNs and the strengths of attention naturally lead to the transformer architecture. Transformers replace recurrence entirely with stacked layers of multi‑head self‑attention and feedforward networks. This design enables full parallelization, efficient training on large corpora, and the ability to model long‑range dependencies. Transformers form the foundation of all modern LLMs, including GPT, BERT, T5, and LLaMA. Understanding attention is therefore essential for understanding how LLMs work</p>
+</section>
+<section id="whats-next-sequence-models-and-attention" class="level2" data-number="8.7">
+<h2 data-number="8.7"><span class="header-section-number">8.7</span> What’s Next: Sequence Models and Attention</h2>
+<p>The bag-of-words and embedding representations developed here treat tokens <em>independently</em> or in shallow contexts. Real language is sequential: meaning depends on order, and long-range dependencies matter.</p>
+<p>In Module 3 we build the machinery to handle sequences — starting with recurrent networks and culminating in the attention mechanism that powers all modern transformers.</p>
+<section id="references" class="level3 unnumbered">
+<h3 class="unnumbered">References</h3>
+<div id="refs" role="list">
+
+</div>
+<div id="quarto-navigation-envelope" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1zaWRlYmFyLXRpdGxl">AD 698 Applied Generative AI Business Analytics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLWludC1uYXZiYXItdGl0bGU=">AD 698 Applied Generative AI Business Analytics</span></p>
+</div>
+<div id="quarto-meta-markdown" class="hidden">
+<p><span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGF0aXRsZQ==">AD698 - Applied Generative AI – AD 698 Applied Generative AI Business Analytics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkdGl0bGU=">AD698 - Applied Generative AI – AD 698 Applied Generative AI Business Analytics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZHRpdGxl">AD698 - Applied Generative AI – AD 698 Applied Generative AI Business Analytics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW1ldGFzaXRlbmFtZQ==">AD 698 Applied Generative AI Business Analytics</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLXR3aXR0ZXJjYXJkZGVzYw==">Lecture notes for Module 2 covering From Words to Structured Text.</span> <span class="hidden quarto-markdown-envelope-contents" data-render-id="cXVhcnRvLW9nY2FyZGRkZXNj">Lecture notes for Module 2 covering From Words to Structured Text.</span></p>
+</div>
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id = "quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+    <script type="text/javascript">
+    (function(d) {
+      d.querySelectorAll(".pseudocode-container").forEach(function(el) {
+        let pseudocodeOptions = {
+          indentSize: el.dataset.indentSize,
+          commentDelimiter: " " + el.dataset.commentDelimiter + " ",
+          lineNumber: el.dataset.lineNumber.toLowerCase() === "true",
+          lineNumberPunc: el.dataset.lineNumberPunc,
+          noEnd: el.dataset.noEnd.toLowerCase() === "true",
+          titlePrefix: el.dataset.captionPrefix,
+        };
+        pseudocode.renderElement(el.querySelector(".pseudocode"), pseudocodeOptions);
+      });
+    })(document);
+    (function(d) {
+      d.querySelectorAll(".pseudocode-container").forEach(function(el) {
+        let captionSpan = el.querySelector(".ps-root > .ps-algorithm > .ps-line > .ps-keyword")
+        if (captionSpan !== null) {
+          let captionPrefix = el.dataset.captionPrefix + " ";
+          let captionNumber = "";
+          if (el.dataset.pseudocodeNumber) {
+            captionNumber = el.dataset.pseudocodeNumber + " ";
+            if (el.dataset.chapterLevel) {
+              captionNumber = el.dataset.chapterLevel + "." + captionNumber;
+            }
+          }
+          captionSpan.innerHTML = captionPrefix + captionNumber;
+        }
+      });
+    })(document);
+    </script>
+  
+
+</body>
+
+</html>

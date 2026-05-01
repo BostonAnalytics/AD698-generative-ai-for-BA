@@ -24,6 +24,14 @@ categories: ['M04:', 'Transformers', 'Attention', 'Context Windows', 'Lecture No
 description: "Lecture notes for Module 4 covering Transformers, Attention, and Context."
 ---
 
+# Transformers, Self-Attention, and Prompt Engineering
+
+At the core of the transformer architecture lies the self-attention mechanism. As described in *Generative AI Foundations in Python*, this mechanism captures complex relationships among different elements within an ordered data sequence. The principle of attention enables a model to focus on certain pivotal aspects of the input data while potentially disregarding less significant parts. 
+
+The transformer bifurcates into two main segments: the encoder and the decoder. The encoder discerns relationships between different positions in the input sequence, while the decoder focuses on generating outputs, employing masked self-attention to prevent consideration of future outputs. To retain sequence order, the model adopts positional encoding, ensuring it preserves the initial order of data. Multi-head attention allows the model to channel attention toward multiple data points simultaneously, capturing a wider range of information from the same input words. This architecture powers the prompt-based generative tasks we rely on today.
+
+
+
 ```{python}
 #| eval: false
 import torch
@@ -76,10 +84,10 @@ The key insight is to focus selectively. Humans translate by focusing on differe
 
 Ideally, the decoder should receive only the relevant information for the word it is about to produce.
 
-![](./M04_lecture01_figures/focus_step1_bottleneck01.svg)
-![](./M04_lecture01_figures/focus_step2_bottleneck01.svg)
-![](./M04_lecture01_figures/focus_step3_bottleneck01.svg)
-![](./M04_lecture01_figures/focus_step4_bottleneck01.svg)
+![](./M04_lecture01_figures/focus_step1_bottleneck01.svg){fig-alt="Image description"}
+![](./M04_lecture01_figures/focus_step2_bottleneck01.svg){fig-alt="Image description"}
+![](./M04_lecture01_figures/focus_step3_bottleneck01.svg){fig-alt="Image description"}
+![](./M04_lecture01_figures/focus_step4_bottleneck01.svg){fig-alt="Image description"}
 
 ## From Human Intuition to a Formal Mechanism
 
@@ -113,7 +121,7 @@ Once queries, keys, and values are established, recurrence can be dropped entire
 
 Before the widespread use of Transformers, attention-like mechanisms existed in classical statistics. Nadaraya–Watson regression is one of the earliest mechanisms, using similarity between a query and keys to compute a weighted average of values. This provides a clean conceptual bridge from classical kernel methods to modern attention.
 
-![Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation.](./M04_lecture01_figures/attention-output.svg)
+![Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation.](./M04_lecture01_figures/attention-output.svg){fig-alt="Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation."}
 
 ## The Core Idea
 

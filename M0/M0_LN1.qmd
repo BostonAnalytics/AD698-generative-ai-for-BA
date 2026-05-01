@@ -35,10 +35,18 @@ By the end of this lecture, you will be able to:
 7. Move tensors between CPU and GPU and benchmark matrix operations.
 
 
+
+# The Shift to Generative AI
+
+Before diving into the tools, it's essential to understand the paradigm shift we are experiencing. Traditional machine learning models, often referred to as discriminative models, focus on predicting outputs by learning the conditional probability of some expected output given an input. They are adept at tasks like classification or regression. Generative Artificial Intelligence (GenAI), on the other hand, seeks to learn and replicate complex data distributions to synthesize entirely new and original data, mirroring human-like outputs. 
+
+According to *Generative AI Foundations in Python*, state-of-the-art generative models can behave as collaborators capable of synthetic understanding and generating sophisticated responses. The rapid growth of generative approaches fundamentally reshapes how we interact with technology. Whether you are synthesizing images with Diffusion models or generating text with Large Language Models (LLMs) based on the Transformer architecture, these models require immense computational power. This is where tools like Google Colab become indispensable for modern AI development.
+
+
 # Google Colab in AD698
 
 ## What is Google Colab?
-Google Colab is a product from Google Research that allows anyone to write and execute arbitrary Python code through the browser. It's especially well-suited for machine learning, data analysis, and educational purposes. With Colab, you can leverage the power of GPUs and TPUs for free, making it a popular choice for resource-intensive tasks.
+As highlighted in *Generative AI Foundations in Python*, Jupyter notebooks enable live code execution, visualization, and explanatory text, suitable for prototyping and data analysis. Google Colab is a cloud-based version of Jupyter Notebook specifically designed for machine learning prototyping. It provides free GPU resources and integrates directly with Google Drive for file storage and sharing, making it the perfect environment to handle the computational complexity of deep generative models.
 
 ## Why Use Google Colab?
 - **Free Access to Powerful Hardware**: Google Colab provides free access to GPUs and TPUs, which can significantly speed up computations compared to a standard CPU.
@@ -54,23 +62,23 @@ Google Colab is a product from Google Research that allows anyone to write and e
   - You will need to add a payment method, but you will not be charged until you exceed the free tier limits.
   - You will need a government-issued ID for verification purposes.
 
-![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width=80% fig-align="center"}
+![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width=80% fig-align="center" fig-alt="Colab Pro Sign Up"}
 
 ## Creating a New Notebook
 1. Once on the Colab homepage, click on the `New notebook` button. You might get a pop-up like the image below where you can click the button `New notebook` in the lower left corner. If not you can always click `File → New notebook`.
 
-![](./M0_lecture02_figures/newnotebook1.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/newnotebook1.png){width=80% fig-align="center" fig-alt="Image description"}
 
-![](./M0_lecture02_figures/newnotebook2.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/newnotebook2.png){width=80% fig-align="center" fig-alt="Image description"}
 
 2. This will open a new tab with a fresh notebook where you can start writing and executing Python code.
 
 ## Changing Run-Time
 When running deep-learning scripts, you will need to change from CPU to GPU. To do this, click `Runtime → Change runtime type`, then select `T4 GPU`. Then click `Save`.
 
-![](./M0_lecture02_figures/changeruntime1.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/changeruntime1.png){width=80% fig-align="center" fig-alt="Image description"}
 
-![](./M0_lecture02_figures/changeruntime2.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/changeruntime2.png){width=80% fig-align="center" fig-alt="Image description"}
 
 :::{.callout-important}
 You are encouraged to sign up to Google Colab with an existing Google account. If you create a new Google account, your GPU usage may be cut off.
@@ -79,15 +87,15 @@ You are encouraged to sign up to Google Colab with an existing Google account. I
 ## Run Python on Your Notebook
 1. To execute Python code, click the ‘run’ button to the left of the cell. This is the circle with the triangle inside.
 
-![](./M0_lecture02_figures/runnotebook1.png){width=20% fig-align="center"}
+![](./M0_lecture02_figures/runnotebook1.png){width=20% fig-align="center" fig-alt="Image description"}
 
 2. To change the title of your Google Colab notebook, just click on the title and rename as `AD698_your-bu-userid_SP2025_HW01.ipynb`.
 
-![](./M0_lecture02_figures/runnotebook2.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/runnotebook2.png){width=80% fig-align="center" fig-alt="Image description"}
 
 3. To save a copy of your notebook on your local computer. You can navigate to `File → Download` and pick the appropriate extension.
 
-![](./M0_lecture02_figures/runnotebook3.png){width=80% fig-align="center"}
+![](./M0_lecture02_figures/runnotebook3.png){width=80% fig-align="center" fig-alt="Image description"}
 
 ## Using GPUs and Colab Persistence
 
@@ -106,7 +114,7 @@ Navigate to: Runtime -> Change runtime type -> Hardware accelerator -> pick GPU 
 :::{.callout-warning}
 ## Warning This might create conflicts!
 - However, it's possible to push changes made in colab to the Repo (File -> Save a copy in Github):
-![colab push](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center"}
+![colab push](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center" fig-alt="colab push"}
 
 - This will make a commit to the Repository.
 :::
@@ -123,30 +131,30 @@ The first thing you need is to have a repository for the project.
 On https://github.com/new you can go ahead and set up a new repository.
 In this example it will be a public repository, but the same works for private ones.
 
-![](./M0_lecture02_figures/github-colab-step1.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step1.png){width=100% fig-alt="Image description"}
 
 For this example, we add a `README.md` file and a `.gitignore` based on a Python template under `MIT License`. Once you created the repository, we now need to make sure we can access it by Google Colab environment.
 
 ## Setting up a fine-grained access token on GitHub
 Now we need a **token**. Private access tokens are special passwords that you can configure to have different permissions to your account on GitHub. On the GitHub website, click on **settings** on the menu bar that shows up after clicking your profile photo.
 
-![](./M0_lecture02_figures/github-colab-step2.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step2.png){width=100% fig-alt="Image description"}
 
 Now scroll down the left side bar and click on **Developer settings** and then click on **Fine-grained tokens** under **Personal access tokens**.
 
-![](./M0_lecture02_figures/github-colab-step3.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step3.png){width=100% fig-alt="Image description"}
 
 This will open a new tab and you will be able to see a button for creating a new token. For this example, set up this token for 30 days and select this repository only. (For repositories under an organization, **change the resource owner** to the organization where the repository is stored.)
 
-![](./M0_lecture02_figures/github-colab-step4.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step4.png){width=100% fig-alt="Image description"}
 
 For **Repository permissions**, change the access to the **Contents** to **Read and Write**.
 
-![](./M0_lecture02_figures/github-colab-step5.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step5.png){width=100% fig-alt="Image description"}
 
 Now scroll down and click on **Generate token**. This will show you the list of tokens and you will be able to copy this one.
 
-![](./M0_lecture02_figures/github-colab-step6.png){width=100%}
+![](./M0_lecture02_figures/github-colab-step6.png){width=100% fig-alt="Image description"}
 
 Now we can go to **Google Drive** to setup our workspace and git commands.
 
@@ -238,7 +246,7 @@ The following cells are for git commands:
 
 Now you have a new folder on the Google Drive. Let's try to create a notebook there and test the git workflow.
 
-![](./M0_lecture02_figures/github-colab-step7.png){width=80%}
+![](./M0_lecture02_figures/github-colab-step7.png){width=80% fig-alt="Image description"}
 
 Every time you make a change in the repository, you can come back to this file and run the git commands to push your progress.
 

@@ -24,6 +24,14 @@ categories: ['M02:', 'Text Representation', 'Structured Text', 'NLP', 'Lecture N
 description: "Lecture notes for Module 2 covering From Words to Structured Text."
 ---
 
+# Distributed Representations and Continuous Vector Spaces
+
+Following the inception of the NNLM, NLP research was propelled toward crafting high-quality word vector representations. As detailed in *Generative AI Foundations in Python*, this period saw the emergence of Word2Vec and GloVe. These methods applied distributed representation to craft high-quality word vector representations. Distributed representation portrays items such as words not as unique identifiers but as sets of continuous values or vectors. In these vectors, each value corresponds to a specific feature or characteristic of the item. 
+
+Word2Vec uses NNs to predict surrounding words for each target word, ascertaining weights that form a vector in a continuous vector space—a mathematical space wherein each point represents a possible value a vector can take. GloVe analyzes global co-occurrence statistics to learn vector representations that capture the relationships between words. Both Word2Vec and GloVe excel at encapsulating relevant semantic information about words to represent an efficient encoding—a compact way of representing information that captures the essential features necessary for a task while reducing the dimensionality and complexity of the data.
+
+
+
 # Defining the Word
 
 ## Types, Tokens, and Vocabulary

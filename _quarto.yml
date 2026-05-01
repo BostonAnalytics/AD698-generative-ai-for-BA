@@ -23,260 +23,260 @@ execute:
 
 website:
   title: "AD 698 Applied Generative AI Business Analytics"
+  navbar: false
   # comments: 
   #   utterances:
   #       repo: BostonAnalytics/AD698-generative-ai-for-BA
   #       label: utterance # optional
   #       theme: icy-dark # optional
   #       issue-term: pathname # optional
-  navbar:
-    search: true
-    left:
-      - text: Syllabus
-        href: index.qmd
-      - text: Schedule
-        href: schedule.qmd
-      - text: Deliverables
-        href: deliverables.qmd
-      - text: "M0"
-        menu:
-          - text: "M0_A"
-            href: M0/M0_A.qmd
-          - text: "M0_LN1"
-            href: M0/M0_LN1.qmd
-          - text: "M0_LN2"
-            href: M0/M0_LN2.qmd
-          - text: "M0_LN3"
-            href: M0/M0_LN3.qmd
-          - text: "M0_Lab1"
-            href: M0/M0_Lab1.qmd
-          - text: "M0_Lab2"
-            href: M0/M0_Lab2.qmd
-          - text: "M0_Lab3"
-            href: M0/M0_Lab3.qmd
-          - text: "M0_P1"
-            href: M0/M0_P1.qmd
-          - text: "M0_P2"
-            href: M0/M0_P2.qmd
-          - text: "M0_P3"
-            href: M0/M0_P3.qmd
-          - text: "M0_Proj"
-            href: M0/M0_Proj.qmd
-          - text: "M0_T1"
-            href: M0/M0_T1.qmd
-          - text: "M0_T2"
-            href: M0/M0_T2.qmd
-          - text: "M0_T3"
-            href: M0/M0_T3.qmd
-          - text: "M0_Wrapup"
-            href: M0/M0_Wrapup.qmd
-          - text: "M0_highlights"
-            href: M0/M0_highlights.qmd
-          - text: "M0_instructor01"
-            href: M0/M0_instructor01.qmd
-      - text: "M1"
-        menu:
-          - text: "M01_A"
-            href: M1/M01_A.qmd
-          - text: "M01_LN1"
-            href: M1/M01_LN1.qmd
-          - text: "M01_LN2"
-            href: M1/M01_LN2.qmd
-          - text: "M01_Lab1"
-            href: M1/M01_Lab1.qmd
-          - text: "M01_Lab2"
-            href: M1/M01_Lab2.qmd
-          - text: "M01_P1"
-            href: M1/M01_P1.qmd
-          - text: "M01_P2"
-            href: M1/M01_P2.qmd
-          - text: "M01_Proj"
-            href: M1/M01_Proj.qmd
-          - text: "M01_Wrapup"
-            href: M1/M01_Wrapup.qmd
-          - text: "M01_highlights"
-            href: M1/M01_highlights.qmd
-          - text: "M01_participation1"
-            href: M1/M01_participation1.qmd
-          - text: "M01_participation2"
-            href: M1/M01_participation2.qmd
-      - text: "M2"
-        menu:
-          - text: "M02_A"
-            href: M2/M02_A.qmd
-          - text: "M02_LN1"
-            href: M2/M02_LN1.qmd
-          - text: "M02_LN2"
-            href: M2/M02_LN2.qmd
-          - text: "M02_Lab1"
-            href: M2/M02_Lab1.qmd
-          - text: "M02_Lab2"
-            href: M2/M02_Lab2.qmd
-          - text: "M02_P1"
-            href: M2/M02_P1.qmd
-          - text: "M02_P2"
-            href: M2/M02_P2.qmd
-          - text: "M02_Proj"
-            href: M2/M02_Proj.qmd
-          - text: "M02_T1"
-            href: M2/M02_T1.qmd
-          - text: "M02_Wrapup"
-            href: M2/M02_Wrapup.qmd
-          - text: "M02_highlights"
-            href: M2/M02_highlights.qmd
-          - text: "M02_participation1"
-            href: M2/M02_participation1.qmd
-          - text: "M02_participation2"
-            href: M2/M02_participation2.qmd
-      - text: "M3"
-        menu:
-          - text: "M03_A"
-            href: M3/M03_A.qmd
-          - text: "M03_LN1"
-            href: M3/M03_LN1.qmd
-          - text: "M03_LN2"
-            href: M3/M03_LN2.qmd
-          - text: "M03_Lab1"
-            href: M3/M03_Lab1.qmd
-          - text: "M03_Lab2"
-            href: M3/M03_Lab2.qmd
-          - text: "M03_P1"
-            href: M3/M03_P1.qmd
-          - text: "M03_P2"
-            href: M3/M03_P2.qmd
-          - text: "M03_Proj"
-            href: M3/M03_Proj.qmd
-          - text: "M03_Wrapup"
-            href: M3/M03_Wrapup.qmd
-          - text: "M03_highlights"
-            href: M3/M03_highlights.qmd
-          - text: "M03_participation1"
-            href: M3/M03_participation1.qmd
-          - text: "M03_participation2"
-            href: M3/M03_participation2.qmd
-      - text: "M4"
-        menu:
-          - text: "M04_A"
-            href: M4/M04_A.qmd
-          - text: "M04_LN1"
-            href: M4/M04_LN1.qmd
-          - text: "M04_LN2"
-            href: M4/M04_LN2.qmd
-          - text: "M04_Lab1"
-            href: M4/M04_Lab1.qmd
-          - text: "M04_Lab2"
-            href: M4/M04_Lab2.qmd
-          - text: "M04_P1"
-            href: M4/M04_P1.qmd
-          - text: "M04_P2"
-            href: M4/M04_P2.qmd
-          - text: "M04_Proj"
-            href: M4/M04_Proj.qmd
-          - text: "M04_Wrapup"
-            href: M4/M04_Wrapup.qmd
-          - text: "M04_highlights"
-            href: M4/M04_highlights.qmd
-          - text: "M04_participation1"
-            href: M4/M04_participation1.qmd
-          - text: "M04_participation2"
-            href: M4/M04_participation2.qmd
-      - text: "M5"
-        menu:
-          - text: "M05_A"
-            href: M5/M05_A.qmd
-          - text: "M05_LN1"
-            href: M5/M05_LN1.qmd
-          - text: "M05_LN2"
-            href: M5/M05_LN2.qmd
-          - text: "M05_Lab1"
-            href: M5/M05_Lab1.qmd
-          - text: "M05_Lab2"
-            href: M5/M05_Lab2.qmd
-          - text: "M05_P1"
-            href: M5/M05_P1.qmd
-          - text: "M05_P2"
-            href: M5/M05_P2.qmd
-          - text: "M05_Proj"
-            href: M5/M05_Proj.qmd
-          - text: "M05_Wrapup"
-            href: M5/M05_Wrapup.qmd
-          - text: "M05_highlights"
-            href: M5/M05_highlights.qmd
-          - text: "M05_participation1"
-            href: M5/M05_participation1.qmd
-          - text: "M05_participation2"
-            href: M5/M05_participation2.qmd
-      - text: "M6"
-        menu:
-          - text: "M06_A"
-            href: M6/M06_A.qmd
-          - text: "M06_LN1"
-            href: M6/M06_LN1.qmd
-          - text: "M06_LN2"
-            href: M6/M06_LN2.qmd
-          - text: "M06_Lab1"
-            href: M6/M06_Lab1.qmd
-          - text: "M06_Lab2"
-            href: M6/M06_Lab2.qmd
-          - text: "M06_P1"
-            href: M6/M06_P1.qmd
-          - text: "M06_P2"
-            href: M6/M06_P2.qmd
-          - text: "M06_Proj"
-            href: M6/M06_Proj.qmd
-          - text: "M06_Wrapup"
-            href: M6/M06_Wrapup.qmd
-          - text: "M06_highlights"
-            href: M6/M06_highlights.qmd
-          - text: "M06_participation1"
-            href: M6/M06_participation1.qmd
-          - text: "M06_participation2"
-            href: M6/M06_participation2.qmd
-      - text: "M7"
-        menu:
-          - text: "M07_A"
-            href: M7/M07_A.qmd
-          - text: "M07_LN1"
-            href: M7/M07_LN1.qmd
-          - text: "M07_LN2"
-            href: M7/M07_LN2.qmd
-          - text: "M07_Lab1"
-            href: M7/M07_Lab1.qmd
-          - text: "M07_Lab2"
-            href: M7/M07_Lab2.qmd
-          - text: "M07_P1"
-            href: M7/M07_P1.qmd
-          - text: "M07_P2"
-            href: M7/M07_P2.qmd
-          - text: "M07_Proj"
-            href: M7/M07_Proj.qmd
-          - text: "M07_Wrapup"
-            href: M7/M07_Wrapup.qmd
-          - text: "M07_highlights"
-            href: M7/M07_highlights.qmd
-          - text: "M07_participation1"
-            href: M7/M07_participation1.qmd
-          - text: "M07_participation2"
-            href: M7/M07_participation2.qmd
-      - text: "M8"
-        menu:
-          - text: "M08_LN1"
-            href: M8/M08_LN1.qmd
-          - text: "M08_LN2"
-            href: M8/M08_LN2.qmd
-          - text: "M08_LN3"
-            href: M8/M08_LN3.qmd
-          - text: "M08_LN4"
-            href: M8/M08_LN4.qmd
-          - text: "M08_P1"
-            href: M8/M08_P1.qmd
-          - text: "M08_P2"
-            href: M8/M08_P2.qmd
-          - text: "M08_P3"
-            href: M8/M08_P3.qmd
-          - text: "M08_P4"
-            href: M8/M08_P4.qmd
-
+  # navbar:
+  #   search: true
+  #   left:
+  #     - text: Syllabus
+  #       href: index.qmd
+  #     - text: Schedule
+  #       href: schedule.qmd
+  #     - text: Deliverables
+  #       href: deliverables.qmd
+  #     - text: "M0"
+  #       menu:
+  #         - text: "M0_A"
+  #           href: M0/M0_A.qmd
+  #         - text: "M0_LN1"
+  #           href: M0/M0_LN1.qmd
+  #         - text: "M0_LN2"
+  #           href: M0/M0_LN2.qmd
+  #         - text: "M0_LN3"
+  #           href: M0/M0_LN3.qmd
+  #         - text: "M0_Lab1"
+  #           href: M0/M0_Lab1.qmd
+  #         - text: "M0_Lab2"
+  #           href: M0/M0_Lab2.qmd
+  #         - text: "M0_Lab3"
+  #           href: M0/M0_Lab3.qmd
+  #         - text: "M0_P1"
+  #           href: M0/M0_P1.qmd
+  #         - text: "M0_P2"
+  #           href: M0/M0_P2.qmd
+  #         - text: "M0_P3"
+  #           href: M0/M0_P3.qmd
+  #         - text: "M0_Proj"
+  #           href: M0/M0_Proj.qmd
+  #         - text: "M0_T1"
+  #           href: M0/M0_T1.qmd
+  #         - text: "M0_T2"
+  #           href: M0/M0_T2.qmd
+  #         - text: "M0_T3"
+  #           href: M0/M0_T3.qmd
+  #         - text: "M0_Wrapup"
+  #           href: M0/M0_Wrapup.qmd
+  #         - text: "M0_highlights"
+  #           href: M0/M0_highlights.qmd
+  #         - text: "M0_instructor01"
+  #           href: M0/M0_instructor01.qmd
+  #     - text: "M1"
+  #       menu:
+  #         - text: "M01_A"
+  #           href: M1/M01_A.qmd
+  #         - text: "M01_LN1"
+  #           href: M1/M01_LN1.qmd
+  #         - text: "M01_LN2"
+  #           href: M1/M01_LN2.qmd
+  #         - text: "M01_Lab1"
+  #           href: M1/M01_Lab1.qmd
+  #         - text: "M01_Lab2"
+  #           href: M1/M01_Lab2.qmd
+  #         - text: "M01_P1"
+  #           href: M1/M01_P1.qmd
+  #         - text: "M01_P2"
+  #           href: M1/M01_P2.qmd
+  #         - text: "M01_Proj"
+  #           href: M1/M01_Proj.qmd
+  #         - text: "M01_Wrapup"
+  #           href: M1/M01_Wrapup.qmd
+  #         - text: "M01_highlights"
+  #           href: M1/M01_highlights.qmd
+  #         - text: "M01_participation1"
+  #           href: M1/M01_participation1.qmd
+  #         - text: "M01_participation2"
+  #           href: M1/M01_participation2.qmd
+  #     - text: "M2"
+  #       menu:
+  #         - text: "M02_A"
+  #           href: M2/M02_A.qmd
+  #         - text: "M02_LN1"
+  #           href: M2/M02_LN1.qmd
+  #         - text: "M02_LN2"
+  #           href: M2/M02_LN2.qmd
+  #         - text: "M02_Lab1"
+  #           href: M2/M02_Lab1.qmd
+  #         - text: "M02_Lab2"
+  #           href: M2/M02_Lab2.qmd
+  #         - text: "M02_P1"
+  #           href: M2/M02_P1.qmd
+  #         - text: "M02_P2"
+  #           href: M2/M02_P2.qmd
+  #         - text: "M02_Proj"
+  #           href: M2/M02_Proj.qmd
+  #         - text: "M02_T1"
+  #           href: M2/M02_T1.qmd
+  #         - text: "M02_Wrapup"
+  #           href: M2/M02_Wrapup.qmd
+  #         - text: "M02_highlights"
+  #           href: M2/M02_highlights.qmd
+  #         - text: "M02_participation1"
+  #           href: M2/M02_participation1.qmd
+  #         - text: "M02_participation2"
+  #           href: M2/M02_participation2.qmd
+  #     - text: "M3"
+  #       menu:
+  #         - text: "M03_A"
+  #           href: M3/M03_A.qmd
+  #         - text: "M03_LN1"
+  #           href: M3/M03_LN1.qmd
+  #         - text: "M03_LN2"
+  #           href: M3/M03_LN2.qmd
+  #         - text: "M03_Lab1"
+  #           href: M3/M03_Lab1.qmd
+  #         - text: "M03_Lab2"
+  #           href: M3/M03_Lab2.qmd
+  #         - text: "M03_P1"
+  #           href: M3/M03_P1.qmd
+  #         - text: "M03_P2"
+  #           href: M3/M03_P2.qmd
+  #         - text: "M03_Proj"
+  #           href: M3/M03_Proj.qmd
+  #         - text: "M03_Wrapup"
+  #           href: M3/M03_Wrapup.qmd
+  #         - text: "M03_highlights"
+  #           href: M3/M03_highlights.qmd
+  #         - text: "M03_participation1"
+  #           href: M3/M03_participation1.qmd
+  #         - text: "M03_participation2"
+  #           href: M3/M03_participation2.qmd
+  #     - text: "M4"
+  #       menu:
+  #         - text: "M04_A"
+  #           href: M4/M04_A.qmd
+  #         - text: "M04_LN1"
+  #           href: M4/M04_LN1.qmd
+  #         - text: "M04_LN2"
+  #           href: M4/M04_LN2.qmd
+  #         - text: "M04_Lab1"
+  #           href: M4/M04_Lab1.qmd
+  #         - text: "M04_Lab2"
+  #           href: M4/M04_Lab2.qmd
+  #         - text: "M04_P1"
+  #           href: M4/M04_P1.qmd
+  #         - text: "M04_P2"
+  #           href: M4/M04_P2.qmd
+  #         - text: "M04_Proj"
+  #           href: M4/M04_Proj.qmd
+  #         - text: "M04_Wrapup"
+  #           href: M4/M04_Wrapup.qmd
+  #         - text: "M04_highlights"
+  #           href: M4/M04_highlights.qmd
+  #         - text: "M04_participation1"
+  #           href: M4/M04_participation1.qmd
+  #         - text: "M04_participation2"
+  #           href: M4/M04_participation2.qmd
+  #     - text: "M5"
+  #       menu:
+  #         - text: "M05_A"
+  #           href: M5/M05_A.qmd
+  #         - text: "M05_LN1"
+  #           href: M5/M05_LN1.qmd
+  #         - text: "M05_LN2"
+  #           href: M5/M05_LN2.qmd
+  #         - text: "M05_Lab1"
+  #           href: M5/M05_Lab1.qmd
+  #         - text: "M05_Lab2"
+  #           href: M5/M05_Lab2.qmd
+  #         - text: "M05_P1"
+  #           href: M5/M05_P1.qmd
+  #         - text: "M05_P2"
+  #           href: M5/M05_P2.qmd
+  #         - text: "M05_Proj"
+  #           href: M5/M05_Proj.qmd
+  #         - text: "M05_Wrapup"
+  #           href: M5/M05_Wrapup.qmd
+  #         - text: "M05_highlights"
+  #           href: M5/M05_highlights.qmd
+  #         - text: "M05_participation1"
+  #           href: M5/M05_participation1.qmd
+  #         - text: "M05_participation2"
+  #           href: M5/M05_participation2.qmd
+  #     - text: "M6"
+  #       menu:
+  #         - text: "M06_A"
+  #           href: M6/M06_A.qmd
+  #         - text: "M06_LN1"
+  #           href: M6/M06_LN1.qmd
+  #         - text: "M06_LN2"
+  #           href: M6/M06_LN2.qmd
+  #         - text: "M06_Lab1"
+  #           href: M6/M06_Lab1.qmd
+  #         - text: "M06_Lab2"
+  #           href: M6/M06_Lab2.qmd
+  #         - text: "M06_P1"
+  #           href: M6/M06_P1.qmd
+  #         - text: "M06_P2"
+  #           href: M6/M06_P2.qmd
+  #         - text: "M06_Proj"
+  #           href: M6/M06_Proj.qmd
+  #         - text: "M06_Wrapup"
+  #           href: M6/M06_Wrapup.qmd
+  #         - text: "M06_highlights"
+  #           href: M6/M06_highlights.qmd
+  #         - text: "M06_participation1"
+  #           href: M6/M06_participation1.qmd
+  #         - text: "M06_participation2"
+  #           href: M6/M06_participation2.qmd
+  #     - text: "M7"
+  #       menu:
+  #         - text: "M07_A"
+  #           href: M7/M07_A.qmd
+  #         - text: "M07_LN1"
+  #           href: M7/M07_LN1.qmd
+  #         - text: "M07_LN2"
+  #           href: M7/M07_LN2.qmd
+  #         - text: "M07_Lab1"
+  #           href: M7/M07_Lab1.qmd
+  #         - text: "M07_Lab2"
+  #           href: M7/M07_Lab2.qmd
+  #         - text: "M07_P1"
+  #           href: M7/M07_P1.qmd
+  #         - text: "M07_P2"
+  #           href: M7/M07_P2.qmd
+  #         - text: "M07_Proj"
+  #           href: M7/M07_Proj.qmd
+  #         - text: "M07_Wrapup"
+  #           href: M7/M07_Wrapup.qmd
+  #         - text: "M07_highlights"
+  #           href: M7/M07_highlights.qmd
+  #         - text: "M07_participation1"
+  #           href: M7/M07_participation1.qmd
+  #         - text: "M07_participation2"
+  #           href: M7/M07_participation2.qmd
+  #     - text: "M8"
+  #       menu:
+  #         - text: "M08_LN1"
+  #           href: M8/M08_LN1.qmd
+  #         - text: "M08_LN2"
+  #           href: M8/M08_LN2.qmd
+  #         - text: "M08_LN3"
+  #           href: M8/M08_LN3.qmd
+  #         - text: "M08_LN4"
+  #           href: M8/M08_LN4.qmd
+  #         - text: "M08_P1"
+  #           href: M8/M08_P1.qmd
+  #         - text: "M08_P2"
+  #           href: M8/M08_P2.qmd
+  #         - text: "M08_P3"
+  #           href: M8/M08_P3.qmd
+  #         - text: "M08_P4"
+  #           href: M8/M08_P4.qmd
 format:
   html:
     theme: [cosmo, ./theme/metanalytics.scss]

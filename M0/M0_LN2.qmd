@@ -11,6 +11,14 @@ categories: ['M0:', 'Mathematics', 'Neural Networks', 'SGD', 'Lecture Notes']
 description: "Lecture notes for Module 0 covering Mathematical Foundations for Neural Networks and SGD."
 ---
 
+# Generative AI Foundations: Colab and Tensors
+
+Before diving into the tools, it's essential to understand the paradigm shift we are experiencing. Traditional machine learning models, often referred to as discriminative models, focus on predicting outputs by learning the conditional probability of some expected output given an input. They are adept at tasks like classification or regression. Generative Artificial Intelligence (GenAI), on the other hand, seeks to learn and replicate complex data distributions to synthesize entirely new and original data, mirroring human-like outputs. 
+
+According to *Generative AI Foundations in Python*, state-of-the-art generative models can behave as collaborators capable of synthetic understanding and generating sophisticated responses. The rapid growth of generative approaches fundamentally reshapes how we interact with technology. Whether you are synthesizing images with Diffusion models or generating text with Large Language Models (LLMs) based on the Transformer architecture, these models require immense computational power. This is where tools like Google Colab become indispensable for modern AI development. Jupyter notebooks enable live code execution, visualization, and explanatory text, suitable for prototyping and data analysis. Google Colab is a cloud-based version of Jupyter Notebook specifically designed for machine learning prototyping. It provides free GPU resources and integrates directly with Google Drive for file storage and sharing, making it the perfect environment to handle the computational complexity of deep generative models.
+
+
+
 # Why this chapter
 
 This lecture gives the mathematical foundation you need for the rest of AD698.

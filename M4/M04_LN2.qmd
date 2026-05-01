@@ -24,6 +24,14 @@ categories: ['M04:', 'Prompting', 'Fine-Tuning', 'Alignment', 'Lecture Notes']
 description: "Lecture notes for Module 4 covering the prompting paradigm, fine-tuning, RLHF, and parameter-efficient adaptation."
 ---
 
+# Transformers, Self-Attention, and Prompt Engineering
+
+At the core of the transformer architecture lies the self-attention mechanism. As described in *Generative AI Foundations in Python*, this mechanism captures complex relationships among different elements within an ordered data sequence. The principle of attention enables a model to focus on certain pivotal aspects of the input data while potentially disregarding less significant parts. 
+
+The transformer bifurcates into two main segments: the encoder and the decoder. The encoder discerns relationships between different positions in the input sequence, while the decoder focuses on generating outputs, employing masked self-attention to prevent consideration of future outputs. To retain sequence order, the model adopts positional encoding, ensuring it preserves the initial order of data. Multi-head attention allows the model to channel attention toward multiple data points simultaneously, capturing a wider range of information from the same input words. This architecture powers the prompt-based generative tasks we rely on today.
+
+
+
 # From Pretraining to Prompting {#sec-intro}
 
 In Module 4 Lecture 1 we saw how transformers are *pretrained*: masked language modeling

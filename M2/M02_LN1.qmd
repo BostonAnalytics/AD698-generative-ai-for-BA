@@ -24,6 +24,14 @@ categories: ['M02:', 'Mathematics', 'Language Modeling', 'Foundations', 'Lecture
 description: "Lecture notes for Module 2 covering Mathematical Foundations Through Language Modeling."
 ---
 
+# Distributed Representations and Continuous Vector Spaces
+
+Following the inception of the NNLM, NLP research was propelled toward crafting high-quality word vector representations. As detailed in *Generative AI Foundations in Python*, this period saw the emergence of Word2Vec and GloVe. These methods applied distributed representation to craft high-quality word vector representations. Distributed representation portrays items such as words not as unique identifiers but as sets of continuous values or vectors. In these vectors, each value corresponds to a specific feature or characteristic of the item. 
+
+Word2Vec uses NNs to predict surrounding words for each target word, ascertaining weights that form a vector in a continuous vector space—a mathematical space wherein each point represents a possible value a vector can take. GloVe analyzes global co-occurrence statistics to learn vector representations that capture the relationships between words. Both Word2Vec and GloVe excel at encapsulating relevant semantic information about words to represent an efficient encoding—a compact way of representing information that captures the essential features necessary for a task while reducing the dimensionality and complexity of the data.
+
+
+
 Natural language is rich, ambiguous, creative, and endlessly variable. Yet one of the most powerful ideas in modern NLP is that language can be treated as a **probability distribution over sequences of tokens**. This perspective—simple in form but profound in consequence—underlies everything from classical n‑gram models to today's large language models (LLMs). It provides a unified mathematical framework for prediction, generation, scoring, and understanding.
 
 This lecture note develops that idea carefully, beginning with the notion of language as a distribution, then contrasting classification with generative modeling, and finally examining the role of tokenization in making these models computationally feasible.

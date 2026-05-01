@@ -24,6 +24,14 @@ categories: ['M03:', 'Tokenization', 'Embeddings', 'Semantic Search', 'Lecture N
 description: "Lecture notes for Module 3 covering Tokenization, Embeddings, and Semantic Geometry."
 ---
 
+# Sequence Models and the Emergence of the Transformer
+
+According to *Generative AI Foundations in Python*, modeling long-range dependencies required more sophisticated network architectures, leading to the use of RNNs. Recurrent Neural Networks process data sequences by iterating through each element while maintaining a dynamic internal state. This was further improved by Long Short-Term Memory (LSTM) networks, which applied a unique gating architecture to control the flow of information, maintaining and accessing information over long sequences without suffering from the vanishing gradient problem.
+
+Concurrently, Convolutional Neural Networks (CNNs) were adapted for NLP to extract hierarchical features using convolutional layers over local n-gram windows. However, the true paradigm shift occurred in 2017 with the introduction of the Transformer architecture by Vaswani et al. The Transformer applied a self-attention mechanism, allowing each element in the input sequence to focus on distinct parts of the sequence, capturing dependencies regardless of their positions. This sequence-to-sequence learning model became the foundation for all modern generative language models.
+
+
+
 ```{python}
 #| echo: false
 #| eval: true

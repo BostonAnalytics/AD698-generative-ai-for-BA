@@ -11,6 +11,14 @@ categories: ['M05:', 'RAG', 'Retrieval', 'Vector Search', 'Lecture Notes']
 description: "Lecture notes for Module 5 covering RAG Foundations and Retrieval."
 ---
 
+# RAG Foundations and Domain Adaptation
+
+Generative models, while powerful, often lack specific domain knowledge or access to up-to-date information. As outlined in *Generative AI Foundations in Python*, adapting a general-purpose LLM without extensive fine-tuning is achievable through prompt engineering and Retrieval-Augmented Generation (RAG). 
+
+RAG provides techniques to ground the model's responses in factual data by retrieving relevant documents and including them in the context of the prompt. This addresses one of the primary limitations of generative models—hallucination—where models generate factually inaccurate information. By augmenting the model's inputs with additional information that is known to be factual, RAG ensures that the synthesized content is accurate, contextually relevant, and grounded in reality.
+
+
+
 # Why Retrieval-Augmented Generation Matters
 
 Large language models (LLMs) are strong general-purpose generators, but they are weak as always-current, always-grounded knowledge systems. They can answer many questions fluently while still failing on domain-specific details, recent facts, and long-tail knowledge [@longtail; @hallucination]. Retrieval-augmented generation (RAG) addresses that gap by pairing a generator with an external knowledge store.

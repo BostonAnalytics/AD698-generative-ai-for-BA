@@ -13,6 +13,14 @@ categories: ['M08:', 'BERT', 'Transformers', 'PyTorch', 'Lecture Notes']
 description: "Lecture notes for Module 8 covering Mastering BERT from Scratch with Pytorch."
 ---
 
+# Fine-Tuning, BERT, and Ethical Considerations
+
+The evolution of Transformers led to models like BERT (Bidirectional Encoder Representations from Transformers), which analyze sentences bidirectionally to capture deep semantic and syntactic nuances. While foundation models are versatile, fine-tuning them for specific tasks further enhances their capabilities. *Generative AI Foundations in Python* examines how Parameter-Efficient Fine-Tuning (PEFT) and Low-Rank Adaptation (LoRA) facilitate approachable continued training for specific tasks without the computational overhead of full fine-tuning.
+
+However, deploying these models requires rigorous ethical oversight. Generative models inevitably learn societal biases embedded in the training data and are susceptible to toxicity and accidental memorization of sensitive information. A human-centered AI governance strategy, combining technical improvements, robust guidelines, and ethical reflections, is essential to ensure fairness, accountability, and the responsible adoption of these transformative technologies.
+
+
+
 # Introduction
 
 BERT which stands for [Bidirectional Encoder Representation Transformer]{.uured-bold}, a transformer based language model published by Google Research Team at 2018, is still gaining attention and being widely applied in Data Science Project today. This is due to the incredible model performance on multiple NLP tasks including question-answering, text tagging and sentence classification.

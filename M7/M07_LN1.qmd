@@ -24,6 +24,14 @@ categories: ['M07:', 'Business Analytics', 'Dashboards', 'Applied AI', 'Lecture 
 description: "Lecture notes for Module 7 covering AI-Powered Business Dashboards."
 ---
 
+# Moving from Prototype to Production
+
+Transitioning a generative AI prototype to a production-ready deployment involves careful consideration of model size, computational complexity, and robust evaluation. *Generative AI Foundations in Python* highlights the process of setting up a robust Python environment using Docker, CI/CD pipelines, and proper monitoring. 
+
+Choosing the right pretrained generative model requires evaluating trade-offs between precision, speed, and resource constraints. It is also essential to have a strategy for evaluating model outputs. For example, using models like CLIP to evaluate the semantic alignment between text and images provides a quantitative measure of fidelity. Beyond metrics, production deployment must emphasize responsible AI practices, addressing transparency, explainability, and the mitigation of inherent biases.
+
+
+
 # From Models to Systems: The Applied AI Gap {#sec-intro}
 
 In prior modules we learned to build individual AI components: embeddings,
