@@ -17,7 +17,7 @@ Before building RAG systems, prompt pipelines, or neural NLP workflows, you need
 
 This lecture builds three foundations:
 
-1. Reliable execution in Google Colab.
+1. Reliable execution in Google Colab and Git integration.
 2. Correct GPU setup and verification.
 3. Tensor operations in PyTorch for deep learning.
 
@@ -27,52 +27,224 @@ This lecture builds three foundations:
 By the end of this lecture, you will be able to:
 
 1. Explain Colab runtime behavior and persistence limits.
-2. Configure and validate GPU runtime in Colab.
-3. Organize Drive-backed project folders for reproducibility.
-4. Create tensors of different ranks and inspect shape/dtype/device.
-5. Perform indexing, reshaping, broadcasting, and reductions.
-6. Move tensors between CPU and GPU and benchmark matrix operations.
+2. Sign up, create, and manage Colab notebooks.
+3. Configure and validate GPU runtime in Colab.
+4. Set up GitHub repositories and access tokens to sync with Google Drive.
+5. Create tensors of different ranks and inspect shape/dtype/device.
+6. Perform indexing, reshaping, broadcasting, and reductions.
+7. Move tensors between CPU and GPU and benchmark matrix operations.
 
 
 # Google Colab in AD698
 
-## What Colab is good for
+## What is Google Colab?
+Google Colab is a product from Google Research that allows anyone to write and execute arbitrary Python code through the browser. It's especially well-suited for machine learning, data analysis, and educational purposes. With Colab, you can leverage the power of GPUs and TPUs for free, making it a popular choice for resource-intensive tasks.
 
-Colab is a cloud notebook runtime that lets you run Python code in the browser with optional GPU acceleration.
+## Why Use Google Colab?
+- **Free Access to Powerful Hardware**: Google Colab provides free access to GPUs and TPUs, which can significantly speed up computations compared to a standard CPU.
+- **No Installation Required**: Being a cloud-based service, there's no need to install any software on your computer. All you need is a web browser and a Google account.
+- **Collaborative Features**: Just like Google Docs, Colab notebooks can be shared and edited by multiple users in real-time, making collaboration seamless.
+- **Integration with Google Drive**: You can save your notebooks directly to your Google Drive, ensuring easy access and sharing.
 
-In this course, Colab is especially useful for:
+## Sign Up for a Google Cloud and Colab Account
+- Use your Boston University account to sign up for Google Cloud Platform (GCP). This will give you access to various Google Cloud services, including Colab and a $300 credit for 90 days.
+- Visit [Colab Signup](https://colab.research.google.com/signup)
+  - Select Colab pro and follow the prompts along
+  - You will need your BU ID to take a picture for verification purposes.
+  - You will need to add a payment method, but you will not be charged until you exceed the free tier limits.
+  - You will need a government-issued ID for verification purposes.
 
-1. Quick setup (no local CUDA installation).
-2. Running deep learning exercises on GPU.
-3. Sharing notebook-based experiments.
+![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width=80% fig-align="center"}
 
-## What Colab is not
+## Creating a New Notebook
+1. Once on the Colab homepage, click on the `New notebook` button. You might get a pop-up like the image below where you can click the button `New notebook` in the lower left corner. If not you can always click `File → New notebook`.
 
-Colab is not persistent local development.
-Session storage under `/content` is temporary.
+![](./M0_lecture02_figures/newnotebook1.png){width=80% fig-align="center"}
 
-:::{.callout-warning}
-Anything not saved to Google Drive (or committed to GitHub) can be lost after runtime reset.
+![](./M0_lecture02_figures/newnotebook2.png){width=80% fig-align="center"}
+
+2. This will open a new tab with a fresh notebook where you can start writing and executing Python code.
+
+## Changing Run-Time
+When running deep-learning scripts, you will need to change from CPU to GPU. To do this, click `Runtime → Change runtime type`, then select `T4 GPU`. Then click `Save`.
+
+![](./M0_lecture02_figures/changeruntime1.png){width=80% fig-align="center"}
+
+![](./M0_lecture02_figures/changeruntime2.png){width=80% fig-align="center"}
+
+:::{.callout-important}
+You are encouraged to sign up to Google Colab with an existing Google account. If you create a new Google account, your GPU usage may be cut off.
 :::
 
-## Recommended working model
+## Run Python on Your Notebook
+1. To execute Python code, click the ‘run’ button to the left of the cell. This is the circle with the triangle inside.
 
+![](./M0_lecture02_figures/runnotebook1.png){width=20% fig-align="center"}
+
+2. To change the title of your Google Colab notebook, just click on the title and rename as `AD698_your-bu-userid_SP2025_HW01.ipynb`.
+
+![](./M0_lecture02_figures/runnotebook2.png){width=80% fig-align="center"}
+
+3. To save a copy of your notebook on your local computer. You can navigate to `File → Download` and pick the appropriate extension.
+
+![](./M0_lecture02_figures/runnotebook3.png){width=80% fig-align="center"}
+
+## Using GPUs and Colab Persistence
+
+Colab is a cloud notebook runtime, but its local storage (under `/content`) is temporary. Anything not saved to Google Drive (or committed to GitHub) can be lost after runtime reset.
+
+:::{.callout-warning}
+## This will reload your runtime!
+Navigate to: Runtime -> Change runtime type -> Hardware accelerator -> pick GPU (or TPU) 
+:::
+
+1. It is more convenient to work on your code locally (e.g. Using JupyterLab or VS Code)
+2. Use Colab only to execute the code on GPU and do some small changes (e.g. Hyper parameters tuning).
+3. Unfortunately there is no `git pull` functionality natively via UI in Colab, so once you push new changes into the Repository you have to reopen your notebook (File ⇾ Open notebook ⇾ GITHUB ⇾ Open notebook in new tab).
+4. The downside is that the runtime has to be reloaded.
+
+:::{.callout-warning}
+## Warning This might create conflicts!
+- However, it's possible to push changes made in colab to the Repo (File -> Save a copy in Github):
+![colab push](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center"}
+
+- This will make a commit to the Repository.
+:::
+
+# Setting up GitHub with Colab
+
+The recommended working model is:
 1. Develop long-form projects in VS Code.
 2. Use Colab for GPU experiments and notebook execution.
 3. Save stable outputs in Drive and version-controlled repositories.
 
+## Setting up a repository
+The first thing you need is to have a repository for the project.
+On https://github.com/new you can go ahead and set up a new repository.
+In this example it will be a public repository, but the same works for private ones.
 
-# Runtime Setup and GPU Validation
+![](./M0_lecture02_figures/github-colab-step1.png){width=100%}
 
-## Configure GPU runtime
+For this example, we add a `README.md` file and a `.gitignore` based on a Python template under `MIT License`. Once you created the repository, we now need to make sure we can access it by Google Colab environment.
 
-In Colab:
+## Setting up a fine-grained access token on GitHub
+Now we need a **token**. Private access tokens are special passwords that you can configure to have different permissions to your account on GitHub. On the GitHub website, click on **settings** on the menu bar that shows up after clicking your profile photo.
 
-1. `Runtime -> Change runtime type`
-2. Set hardware accelerator to `T4 GPU` (or available GPU)
-3. Save
+![](./M0_lecture02_figures/github-colab-step2.png){width=100%}
 
-## Validate hardware from Python
+Now scroll down the left side bar and click on **Developer settings** and then click on **Fine-grained tokens** under **Personal access tokens**.
+
+![](./M0_lecture02_figures/github-colab-step3.png){width=100%}
+
+This will open a new tab and you will be able to see a button for creating a new token. For this example, set up this token for 30 days and select this repository only. (For repositories under an organization, **change the resource owner** to the organization where the repository is stored.)
+
+![](./M0_lecture02_figures/github-colab-step4.png){width=100%}
+
+For **Repository permissions**, change the access to the **Contents** to **Read and Write**.
+
+![](./M0_lecture02_figures/github-colab-step5.png){width=100%}
+
+Now scroll down and click on **Generate token**. This will show you the list of tokens and you will be able to copy this one.
+
+![](./M0_lecture02_figures/github-colab-step6.png){width=100%}
+
+Now we can go to **Google Drive** to setup our workspace and git commands.
+
+## Setting up Google Drive and Colab
+On Google Drive, setup a folder for your repositories. You might create a folder called **Shared**. Now create a new **Google Colab** file in this folder. This colab file will run the git commands. You can call it **Git.ipynb**.
+
+The fist cell of this notebook will **mount** your **Google Drive**:
+
+```{python}
+#| eval: false
+from google.colab import drive
+drive.mount('/content/drive')
+```
+
+The next cell will **clone** the **repository** and **configure** the **global variables** for git.
+
+```{python}
+#| eval: false
+import os
+import subprocess
+
+# Repository name
+repository = "ColabTesting"
+
+# Base path
+base = "/content/drive/MyDrive/Shared"
+
+# Specify the folder path
+folder_path = f"{base}/{repository}"
+
+# Username, email, name, and token
+username = "<your-username>"
+email = "<your-email>"
+name = "<your-full-name>"
+token = "<token>"
+owner = username
+
+# Move to the repository folder
+%cd {base}
+
+# Check if folder exists
+if not os.path.exists(folder_path):
+    clone_url = f'https://{username}:{token}@github.com/{owner}/{repository}.git'
+    !git clone {clone_url}
+else:
+    print(f"Folder '{folder_path}' already exists.")
+
+# Move to folder
+%cd {folder_path}
+
+!git pull
+
+# Update .gitconfig using subprocess
+subprocess.run(['git', 'config', '--global', 'user.email', email], check=True)
+subprocess.run(['git', 'config', '--global', 'user.name', name], check=True)
+```
+
+The following cells are for git commands:
+
+**Pulling changes from remote:**
+```{python}
+#| eval: false
+!git pull
+```
+
+**Checking the status:**
+```{python}
+#| eval: false
+!git status
+```
+
+**Staging all local changes:**
+```{python}
+#| eval: false
+!git add --all
+```
+
+**Comment on the changes:**
+```{python}
+#| eval: false
+!git commit -m "Update"
+```
+
+**Push it back to remote:**
+```{python}
+#| eval: false
+!git push
+```
+
+Now you have a new folder on the Google Drive. Let's try to create a notebook there and test the git workflow.
+
+![](./M0_lecture02_figures/github-colab-step7.png){width=80%}
+
+Every time you make a change in the repository, you can come back to this file and run the git commands to push your progress.
+
+# Runtime Validation and GPU Verification
+
+You should validate your hardware from Python using PyTorch. Most deep learning workloads are dominated by linear algebra kernels (matrix multiplications, convolutions) and GPUs accelerate these operations through massive parallelism.
 
 ```{python}
 #| eval: false
@@ -86,46 +258,6 @@ if torch.cuda.is_available():
     print("GPU name:", torch.cuda.get_device_name(0))
 ```
 
-## Why GPU helps
-
-Most deep learning workloads are dominated by linear algebra kernels (matrix multiplications, convolutions). GPUs accelerate these operations through massive parallelism.
-
-
-# Drive Mount and Course Folder Layout
-
-## Mount Google Drive
-
-```{python}
-#| eval: false
-from google.colab import drive
-
-drive.mount('/content/drive')
-```
-
-## Suggested Module 0 folder structure
-
-```text
-MyDrive/
-  AD698/
-    M0/
-      notebooks/
-      data/
-      outputs/
-```
-
-## Create folders programmatically
-
-```{python}
-#| eval: false
-import os
-
-base = "/content/drive/MyDrive/AD698/M0"
-os.makedirs(f"{base}/notebooks", exist_ok=True)
-os.makedirs(f"{base}/data", exist_ok=True)
-os.makedirs(f"{base}/outputs", exist_ok=True)
-```
-
-
 # Tensor Concepts You Need Now
 
 Tensors generalize familiar data structures:
@@ -136,12 +268,10 @@ Tensors generalize familiar data structures:
 4. Higher-rank tensor: rank 3+
 
 A tensor is defined by:
-
 1. Rank (number of axes)
 2. Shape (size per axis)
 3. Dtype (numeric type)
 4. Device (cpu or cuda)
-
 
 ## Constructing tensors from raw data
 
@@ -162,7 +292,6 @@ print(rank3)
 ```
 
 This mirrors a common deep learning pattern: same raw values, different structural meaning after reshape.
-
 
 # Core Tensor Operations
 
@@ -229,7 +358,6 @@ print("sum dim=0 (column sums):", x.sum(dim=0))
 print("mean dim=1 (row means):", x.mean(dim=1))
 ```
 
-
 # CPU vs GPU Benchmark (Simple)
 
 ```{python}
@@ -258,7 +386,6 @@ else:
     print(f"CPU: {cpu_s:.4f}s | GPU not available")
 ```
 
-
 # Common Errors and Quick Fixes
 
 ## CUDA unavailable
@@ -277,14 +404,14 @@ else:
 
 1. Save to Drive often.
 2. Export `.ipynb` snapshots for critical milestones.
-
+3. Rely on GitHub workflow for persisting work.
 
 # Summary
 
 You now have a practical baseline for deep learning notebook work:
 
-1. Colab environment setup and persistence workflow.
+1. Colab environment setup and persistence workflow via GitHub.
 2. GPU verification and device-aware tensor execution.
 3. Core tensor manipulations used in later PyTorch models.
 
-These are the exact prerequisites for Module 0 lab and the first neural-model exercises.
+These are the exact prerequisites for Module 0 labs and the first neural-model exercises.

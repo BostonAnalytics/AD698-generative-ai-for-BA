@@ -45,7 +45,7 @@ from schedules.semester_planner import build_section_schedules
 # =================================================
 semester = "Summer"
 year = 2026
-modalities = ["oncampus", "o1", "o2"]
+modalities = ["o1"]
 
 start_dates_by_semester = {
     "Spring": {
@@ -54,7 +54,7 @@ start_dates_by_semester = {
     },
     "Summer": {
         "oncampus": "2026-05-18",
-        "o1": "2026-05-19",
+        "o1": "2026-05-05",
         "o2": "2026-05-18",
     },
     "Fall": {
@@ -110,7 +110,7 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 - All Labs (for online) will open **in the first two weeks** and are ungraded.
 
 
-## Online Deliverables (Selected Semester)
+## Online Deliverables
 
 ```{python}
 #| echo: false
@@ -119,28 +119,12 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 import pandas as pd
 from IPython.display import HTML
 from schedules.semester_planner import build_section_schedules
-from schedules.deliverables.apply import apply_deliverables
+from schedules.deliverables.online_deliverables import apply_online_deliverables
 from schedules.presentation import format_deliverables_view
 
-semester = "Summer"
-year = 2026
-modalities = ["o1", "o2"]
+from schedules.config import semester, year, start_dates_by_semester
 
-start_dates_by_semester = {
-    "Spring": {
-        "oncampus": "2026-01-26",
-        "o2": "2026-01-29",
-    },
-    "Summer": {
-        "oncampus": "2026-05-18",
-        "o1": "2026-05-19",
-        "o2": "2026-05-18",
-    },
-    "Fall": {
-        "oncampus": "2026-09-14",
-        "o1": "2026-09-17",
-    },
-}
+modalities = ["O1"]
 
 section_plan = build_section_schedules(
     semester=semester,
@@ -151,13 +135,14 @@ section_plan = build_section_schedules(
 
 frames = []
 for section, plan in section_plan.items():
+    if plan.modality == "oncampus":
+        continue
     schedule_df = pd.DataFrame({
         "Date": [d.strftime("%d-%b (%a)") for d in plan.lecture_dates],
     })
-    schedule_df = apply_deliverables(
+    schedule_df = apply_online_deliverables(
         schedule_df,
         plan.lecture_dates,
-        mode="online",
     )
     schedule_df = format_deliverables_view(schedule_df)
     schedule_df.insert(0, "Section", section)
@@ -167,15 +152,15 @@ online_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 HTML(online_df.to_html(index=False))
 
-
 ```
 
 
-## On Campus Deliverables (Selected Semester)
+## On Campus Deliverables
 
 ```{python}
-# | echo: false
-# | tbl-colwidths: [10,10,15,15]
+#| echo: false
+#| tbl-colwidths: [10,10,15,15]
+#| eval: false
 
 import pandas as pd
 from schedules.deliverables.oncampus_deliverables import apply_oncampus_deliverables
@@ -195,25 +180,9 @@ from schedules.semester_planner import build_section_schedules
 # ==================================================
 # USER INPUT
 # ==================================================
-semester = "Summer"
-year = 2026
-modalities = ["oncampus"]
+from schedules.config import semester, year, start_dates_by_semester
 
-start_dates_by_semester = {
-    "Spring": {
-        "oncampus": "2026-01-26",
-        "o2": "2026-01-29",
-    },
-    "Summer": {
-        "oncampus": "2026-05-18",
-        "o1": "2026-05-19",
-        "o2": "2026-05-18",
-    },
-    "Fall": {
-        "oncampus": "2026-09-14",
-        "o1": "2026-09-17",
-    },
-}
+modalities = ["oncampus"]
 
 section_plan = build_section_schedules(
     semester=semester,

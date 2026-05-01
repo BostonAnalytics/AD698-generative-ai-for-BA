@@ -31,6 +31,8 @@ In this lab you apply the neural network concepts from Lecture 3 to two real dat
 
 You will implement the full ML pipeline for each: data loading → preprocessing → model definition → training → evaluation.
 
+> **Note**: For instructions on using Google Colab, Tensors, and Google Drive syncing via GitHub, please refer to [Module 0: Lecture Note 1 (M0_LN1.qmd)](./M0_LN1.qmd).
+
 **Required packages** (already installed in the course environment):
 
 ```python
@@ -751,6 +753,8 @@ plt.show()
 
 ## Summary {.unnumbered}
 
+For an introduction to the Google Colab environment, see [M0_LN1.qmd](M0_LN1.qmd).
+
 | Step | Ames Housing (Regression) | Palmer Penguins (Classification) |
 |------|--------------------------|----------------------------------|
 | **Target** | `log(1+MedHouseVal)` | Species (3 classes, integer) |
@@ -764,44 +768,6 @@ plt.show()
 
 ::: {#refs}
 :::
-
-
-
-## What is Google Colab?
-Google Colab is a cloud-based Jupyter notebook environment from Google Research. With its simple and easy-to-use interface, Colab helps you get started with your data science journey with almost no setup.
-
-If you're interested in data science with Python, Colab is a great place to kickstart your data science projects without worrying about configuring your environment. Google Colab facilitates writing and execution of Python code right from your browser, and also comes with some of the most popular Python data science libraries pre-installed.
-
-In the subsequent sections, you'll learn more about Google Colab's features.
-
-## Creating your first Google Colab notebook
-The best way to understand something is to try it yourself. Let's start by creating our very first colab notebook:
-
-Head over to colab.research.google.com. You'll see the following screen. To be able to write and run code, you need to sign in with your Google credentials. This is the only step that's required from your end. No other configuration is needed.
-
-![Creating your first Google Colab notebook](./M0_lecture03_figures/image1_jpvmyx.jpg)
-
-Once you've signed in to Colab, you can create a new notebook by clicking on 'File' → 'New notebook', as shown below:
-Creating your first Google Colab notebook 2
-
-After you've created a new notebook, you can rename the notebook to a name of your choice. You're now all set to code your way through the project.
-
-Google Colab is a self-contained environment. It allows you to write Python code as well as text—using markdown cells—to include rich text and media, as shown below. This helps in adding instructions for a step-by-step walkthrough of the project, thereby improving readability.
-Creating your first Google Colab notebook 3
-
-Now that you've learned how to create a Colab notebook, let's look at its advantages in the next sections.
-
-## Why you should consider using Google Colab
-Apart from being a browser-based environment that requires a simple Google sign-in, Colab has several useful features that make it helpful for the data science community. The following are some of the advantages:
-
-## Pre-installed data science libraries
-Easy sharing and collaboration
-Seamless integration with GitHub
-Working with data from various sources
-Automatic storage and version control
-Access to hardware accelerators such as GPUs and TPUs
-Pre-installed data science libraries
-Pre-installed libraries are one of the reasons why Colab is a popular choice to set up your data science project almost instantly.
 
 Colab comes with pre-installed Python libraries for data analysis and visualization, such as NumPy, pandas, matplotlib, and seaborn. This means you can go straight ahead and import them into your current project, and use any of the modules as needed without having to install them.
 
@@ -918,6 +884,7 @@ Set the hardware accelerator to either GPU or TPU as needed.Access to computer h
 So far, you've learned about useful features of Colab for data science.If this sounds exciting at all, you might also be interested in checking DataLab. You start using DataLab by signing up for a free DataCamp account.
 
 ## Limitations of Google Colab
+
 Although Colab makes things easier, the following are some limitations that you should be aware of:
 
 The free instance of Colab suffices for small to medium-scale projects. However, there's a constraint on the use of GPUs. The typical duration for which you can train your models on the GPU is 12 hours, after which the runtime gets disconnected. For extended usage of GPUs and TPUs, you'll have to upgrade to Colab Pro for enhanced usage.

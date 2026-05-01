@@ -79,29 +79,12 @@ for m in list(sys.modules):
         del sys.modules[m]
 
 from schedules.semester_planner import build_section_schedules, get_lecture_catalog
+from schedules.config import semester, year, start_dates_by_semester
 
 # =================================================
 # USER INPUT (only edit this section)
 # =================================================
-semester = "Summer"
-year = 2026
 modalities = ["oncampus", "o1", "o2"]
-
-start_dates_by_semester = {
-    "Spring": {
-        "oncampus": "2026-01-26",
-        "o2": "2026-01-29",
-    },
-    "Summer": {
-        "oncampus": "2026-05-18",
-        "o1": "2026-05-05",
-        "o2": "2026-05-18",
-    },
-    "Fall": {
-        "oncampus": "2026-09-14",
-        "o1": "2026-09-17",
-    },
-}
 
 section_plan = build_section_schedules(
     semester=semester,

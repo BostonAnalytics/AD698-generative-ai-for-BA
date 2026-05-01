@@ -199,6 +199,29 @@ Your presentation **must include**:
    - One critique
    - One open research question
 
+:::{.callout-important}
+[Online Students]{.uured-bold}: Please submit a one page pdf/word independently [per week]{.uured-bold} with answers to the following questions by the end of the week. Please include the name of the paper and the authors in your submission.
+
+On the second page of the document, please include your AI disclosure and the output (actual output) from the AI tool you used. Failure to disclose AI usage will result in a 50% penalty.
+
+1. Core Idea
+   1. What problem does the paper solve?
+   2. What is the model/system contribution?
+2. Mechanism
+   1. How does it work (pipeline / architecture)?
+   2. Key equation / concept / diagram
+3. Critical Evaluation
+   1. Where does it fail?
+   2. Assumptions that break in real-world systems
+   3. Application Layer (important for your course)
+4. How would this be used in:
+    1. RAG systems?
+    2. Agents?
+    3. Business pipelines?
+5. What would you Improve in the papers model/approach? (don't say more data or bigger model) 
+
+:::
+
 
 ## Hints and Best Practices
 
