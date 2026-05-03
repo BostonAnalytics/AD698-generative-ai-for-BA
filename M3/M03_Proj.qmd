@@ -45,9 +45,36 @@ for d in [CHUNKED_DIR, EMBEDDINGS_DIR, VECTOR_STORE_DIR]:
 
 # Implementation Guidance
 
+## Recommended Notebook Structure for `03_embeddings_and_rag_preparation`
+
+The strongest student notebooks in this phase behave like clean engineering pipelines, not exploratory scratchpads. Keep the notebook modular and use markdown headings that make the retrieval build easy to audit.
+
+Recommended internal section flow:
+
+1. **Install dependencies and mount Drive**
+2. **Load cleaned item data and define paths**
+3. **State the section scope and chunking rationale**
+4. **Chunk text and attach metadata**
+5. **Inspect corpus statistics before embedding**
+6. **Generate embeddings and save them**
+7. **Build and save the vector index**
+8. **Implement retrieval function**
+9. **Run top-k retrieval sanity checks on at least 5 domain questions**
+10. **Document failure patterns and parameter choices**
+
+For each major section, include a short markdown note answering:
+
+- What was done?
+- Why was it done this way?
+- What artifact was saved for later use?
+
+This structure preserves the original AD698 project flow while making it easier for graders and teammates to understand the notebook quickly.
+
 ## Chunking
 
 Use token-aware chunking with overlap. Keep chunk sizes consistent for stable retrieval.
+
+Strong prior work suggests students should explicitly justify both `chunk_size` and `overlap` rather than treating them as arbitrary constants. Require them to explain the tradeoff between retrieval precision, context continuity, and prompt budget.
 
 Minimum metadata per chunk:
 
@@ -73,9 +100,34 @@ Allowed options:
 Preferred: FAISS
 Optional: Chroma
 
+Students should save not only the index itself but also enough metadata to reconstruct retrieval outputs later. At minimum, persist:
+
+- chunk text table
+- chunk metadata table
+- embedding matrix shape or manifest
+- index type and similarity metric used
+
+Example engineering pattern worth encouraging:
+
+- normalized embeddings
+- cosine-style retrieval via FAISS inner product
+- explicit `top_k` constant with rationale
+
 # Retrieval Validation
 
 Run at least 5 test questions and inspect top-k chunk quality manually.
+
+Have students include a small retrieval audit table for each test question with:
+
+- question text
+- retrieved `chunk_id`
+- company/ticker
+- filing year
+- item number
+- similarity score
+- short judgment: `relevant`, `partially relevant`, or `not relevant`
+
+This gives them an explainability trail before generation is even introduced.
 
 # Required Outputs for Step 3
 
@@ -90,6 +142,9 @@ Run at least 5 test questions and inspect top-k chunk quality manually.
 - [ ] Embeddings generated successfully
 - [ ] Vector index built and saved
 - [ ] Top-k retrieval examples included and reviewed
+- [ ] Corpus summary shown before embedding (counts, section distribution, token statistics)
+- [ ] Retrieval audit table included for at least 5 test questions
+- [ ] Key parameter choices justified (`chunk_size`, `overlap`, embedding model, `top_k`)
 
 # Weekly Team Standup
 

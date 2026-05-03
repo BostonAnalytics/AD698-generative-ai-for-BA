@@ -151,6 +151,31 @@ Required package components:
 - Vector index artifacts in `data/vector_store/`
 - Short written final report (see below)
 
+## Recommended Notebook Organization
+
+Keep the original four-notebook AD698 structure, but make each notebook read like a production pipeline rather than a raw experiment log.
+
+Recommended notebook naming and purpose:
+
+- `01_industry_company_selection_and_10k_download`
+  Capture NAICS scope, company selection logic, filing download, and metadata export.
+- `02_item_selection_cleaning_and_eda`
+  Show item-scoping rationale, cleaning decisions, EDA, and data-quality diagnostics.
+- `03_embeddings_and_rag_preparation`
+  Build chunked corpus, embeddings, vector index, retrieval function, and retrieval audit checks.
+- `04_rag_generation_and_evaluation`
+  Assemble prompts, generate grounded answers, evaluate them, document failure cases, and connect findings to market behavior.
+
+Within each notebook, use a repeated internal pattern:
+
+1. Setup and paths
+2. Core implementation
+3. Artifact save step
+4. Validation or inspection
+5. Short markdown interpretation
+
+This keeps the final package consistent across teams and makes debugging much easier.
+
 :::{.callout-note}
 GitHub is optional. Teams can submit a Google Drive folder link plus report if not using GitHub.
 :::
@@ -169,6 +194,12 @@ Each notebook must begin with:
 - Drive mount cell
 - `BASE_DIR` path cell
 - NAICS code and industry label documented in a markdown cell
+
+Each notebook should also end with:
+
+- a short artifact summary block
+- a note on known limitations or open issues
+- links or filenames for the outputs created in that notebook
 
 ## Security Checklist
 
@@ -192,7 +223,7 @@ Each notebook must begin with:
 
 ## Final Report Requirements
 
-The written report should be 1,500-2,500 words and organized as follows:
+The written report should be 1,500-2,500 words, written in **APA 7** format, and submitted alongside the complete project notebooks. Organize it as follows:
 
 1. **Product Description** — What is the product, who is the target user, and what NAICS industry does it serve?
 2. **Data and Scope** — Companies selected, filing years covered, Items used, and data quality notes
@@ -201,6 +232,49 @@ The written report should be 1,500-2,500 words and organized as follows:
 5. **Market Analysis** — Key findings from the Yahoo Finance price analysis and at least one filing-to-market connection
 6. **Limitations and Risks** — What does the product not handle well? What would need to change before deployment?
 7. **Recommendations** — If this were a real FinTech product, what would the next development sprint focus on?
+
+## Strong Report Pattern to Encourage
+
+A strong final report often adds one extra layer of clarity beyond the seven required sections:
+
+- briefly state **what was done**
+- explain **why that design choice was made**
+- show **what evidence supports the result**
+
+Students should avoid turning the report into a notebook transcript. Instead, they should summarize the engineering logic, the most important retrieval and generation evidence, and the business implications.
+
+At minimum, the report should follow APA 7 expectations for title page, headings, figure/table labeling, in-text citations where appropriate, and references.
+
+Recommended evidence blocks to require or encourage:
+
+- corpus statistics table
+- retrieval audit example
+- one grounded answer with citations
+- one evaluation summary table or chart
+- failure analysis table with future fixes
+- one market-analysis figure tying filings to behavior
+
+## Post-Generation Explainability Extension
+
+Post-generation explainability is encouraged as a final-project extension, but students should use methods that match the component being explained.
+
+Good fits:
+
+- retrieval provenance tables showing which chunks drove the answer
+- citation coverage or answer-to-chunk alignment review
+- reranker score comparisons before and after reordering
+- SHAP, LIME, or Microsoft/InterpretML explainability on any auxiliary classifier, scoring model, or market-response model built alongside the RAG system
+
+Important caution:
+
+Do **not** claim that SHAP or LIME directly "explains the whole LLM answer." If students use explainability tools, they must clearly state whether they are explaining:
+
+- retrieval ranking
+- reranker decisions
+- a downstream classifier or regression model
+- a market-feature model
+
+This distinction matters for methodological honesty.
 
 ## Final Checklist
 
@@ -211,6 +285,9 @@ The written report should be 1,500-2,500 words and organized as follows:
 - [ ] Yahoo Finance prices downloaded and market analysis complete
 - [ ] Final report addresses all seven sections
 - [ ] Team contribution clearly documented
+- [ ] Notebook 3 includes retrieval audit examples before generation begins
+- [ ] Notebook 4 includes grounded-answer examples, evaluation results, and failure analysis
+- [ ] Report includes at least one explicit discussion of explainability, provenance, or auditability
 
 # Weekly Team Standup
 
@@ -257,4 +334,3 @@ Use this template:
 :::{.callout-note}
 The final Module 5 standup (last week before submission) should confirm that all checklist items above are complete. If anything is missing, flag it in the standup rather than discovering it on submission day.
 :::
-

@@ -1,8 +1,8 @@
 {
-  "hash": "4ffb59e9ce304a88aa9cbdcd3cf15946",
+  "hash": "8036c3d0831010e253610c2e82404792",
   "result": {
     "engine": "jupyter",
-    "markdown": "---\ntitle: \"AD698 - Applied Generative AI\"\nsubtitle: \"AI-Powered Business Dashboards\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['M07:', 'Lab']\ndescription: \"Hands-on lab for Module 7 focused on AI-Powered Business Dashboards.\"\n---\n\n",
+    "markdown": "---\ntitle: \"AD698 - Applied Generative AI\"\nsubtitle: \"AI-Powered Business Dashboards\"\nnumber-sections: true\ndate: \"2024-11-21\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['M07:', 'Lab']\ndescription: \"Hands-on lab for Module 7 focused on AI-Powered Business Dashboards.\"\n---\n\n# Lab Overview\n\nThis lab should follow the same lightweight course pattern:\n\n1. Setup\n2. Core task blocks\n3. Validation after each major step\n4. Short interpretation or reflection\n\n## Lab Validation Standard\n\nStudents should show intermediate evidence, not only final dashboards. Good checks include data summaries, chart previews, metric tables, and one short note explaining what the display reveals.\n\nIf this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.\n\n",
     "supporting": [
       "M07_Lab1_files\\figure-html"
     ],

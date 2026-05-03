@@ -11,10 +11,12 @@ project:
     - "!data/"
     - "!help-code/"
     - "!deliverables-solutions/"
+    - "!M7/"
+    - "!M8/"
 editor:  
   preview: true
   markdown:
-    wrap: 72
+    wrap: 70
 
 execute:
   fig-align: center

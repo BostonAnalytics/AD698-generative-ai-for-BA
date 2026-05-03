@@ -17,7 +17,7 @@ description: "Hands-on lab for Module 1 focused on Early Neural Networks & Natur
 
 In this lab, you will:
 
-- Connect **Google Colab** to **VS Code**
+- Use **Google Colab in the browser**
 - Load real-world corporate text data (SEC 10-K filings)
 - Implement a **classical NLP preprocessing pipeline**
 - Answer **exploratory questions** about corporate disclosures using text analytics
@@ -38,45 +38,31 @@ These filings contain rich textual information about:
 In this lab, we treat each 10-K as **raw text data** and apply a standard NLP pipeline to prepare it for analysis.
 
 
-## Connecting Google Colab to VS Code {.unnumbered}
+## Using Google Colab on the Web {.unnumbered}
 
-You will use **Google Colab as the execution backend** while working inside **VS Code**.
+Use **Google Colab in your browser** for this lab. This is the cleanest option for AD698 and avoids local environment setup issues.
 
-### Install the Colab Extension {.unnumbered}
+### Open Colab {.unnumbered}
 
-Install the **Google Colab extension** in VS Code from one of the following:
+- Go to [Google Colab](https://colab.research.google.com/)
+- Sign in with your Google account
+- Create a new notebook or upload the notebook file for this lab
 
-- Visual Studio Marketplace  
-- Open VSX Registry  
+### Save to Drive {.unnumbered}
 
-Search for **“Colab”** and install the official extension.
+- Rename the notebook clearly
+- Save it in your Google Drive so your work persists between sessions
 
-### Open or Create a Notebook {.unnumbered}
+### Runtime Guidance {.unnumbered}
 
-In VS Code:
+- Use the default runtime for this lab
+- If a later lab or assignment requires GPU, switch runtimes in Colab using `Runtime -> Change runtime type`
 
-- Open an existing `.ipynb` file  
-  **or**
-- Create a new Jupyter Notebook
+### Recommended Workflow {.unnumbered}
 
-
-### Sign In to Google  {.unnumbered}
-    
-When prompted:
-
-- Sign in using your Google account
-- Authorize Colab access
-
-
-### Select the Colab Kernel {.unnumbered}
-
-In the notebook interface:
-
-- Click **Select Kernel**
-- Choose **Colab**
-- Select **New Colab Server**
-
-Your notebook is now running on Google Colab 
+- Keep the notebook open in Colab while you run cells
+- Use Google Drive for input and output files when needed
+- Re-run cells from top to bottom if your session resets
 
 ## Dataset Overview {.unnumbered}
 
@@ -104,6 +90,26 @@ You are **not** training a model yet. Instead, think of this lab as **asking str
 - How does preprocessing change the text representation?
 
 Your answers will be supported by **intermediate outputs**, not final predictions.
+
+## Recommended Notebook Pattern {.unnumbered}
+
+Keep the notebook structured as a sequence of small, auditable steps:
+
+1. Setup and data access
+2. One NLP transformation at a time
+3. Validation output after each transformation
+4. Short interpretation of what the transformation changed
+
+## Lab Validation Standard {.unnumbered}
+
+After each major NLP step, show at least one of the following:
+
+- sample text before and after processing
+- token counts or sentence counts
+- POS or dependency examples
+- a short note explaining what the intermediate output tells you
+
+If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
 
 ## NLP Processing Pipeline {.unnumbered}
 

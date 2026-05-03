@@ -28,12 +28,63 @@ Expected flow:
 5. Evaluation results and failure cases — honest assessment of product performance
 6. Practical recommendations — what would the next sprint look like for this product
 
+## Recommended Slide Structure
+
+A strong AD698 project presentation should feel like a product walkthrough, not a notebook recap. One especially effective structure is:
+
+1. **Title and product framing** — team, NAICS industry, target user, business problem
+2. **System architecture overview** — one pipeline diagram from filings to grounded answer
+3. **Data acquisition and section scoping** — which SEC Items were used and why
+4. **Cleaning, chunking, and corpus inspection** — chunking strategy, metadata, corpus scale, and quality checks
+5. **Embeddings and vector store** — model choice, index type, and why those choices fit the product
+6. **Retrieval and re-ranking** — how the system finds evidence and improves precision
+7. **Generation design** — prompt strategy, citation format, refusal behavior, and grounded answer logic
+8. **Query experiments** — representative industry questions and why those questions matter
+9. **Evaluation** — retrieval relevance, grounding, citation accuracy, hallucination risk, and refusal behavior
+10. **Failure cases and improvements** — honest limitations plus next-sprint fixes
+11. **Business recommendations** — what this system is useful for now, and what must improve before deployment
+
+This structure is strong because it moves from architecture to implementation to evidence to business value in a way non-technical stakeholders can follow.
+
+## Recommended Slide Design Pattern
+
+When possible, make each technical section answer two questions:
+
+- **What did we build?**
+- **Why does this design choice matter?**
+
+That pattern worked especially well in strong prior RAG presentations because it prevented the slides from becoming a code dump.
+
 # Required Evidence in Slides
 
 - at least one data quality table
 - at least one retrieval quality example
 - at least one grounded answer with citations
 - one evaluation summary chart
+- one explainability or provenance slide showing how the team audited the system
+- one architecture or pipeline overview slide
+
+## Recommended Explainability / Audit Slide
+
+Because this is a RAG product, the most defensible explainability evidence is usually provenance rather than a generic "black box explanation." A strong slide can show one of the following:
+
+- retrieved chunks with similarity or reranker scores
+- answer text aligned to cited chunks
+- failure case with explanation of why retrieval or generation failed
+- SHAP/LIME/InterpretML output for an auxiliary classifier or market model, if the team built one
+
+If teams use SHAP, LIME, or Microsoft explainability tools, they must clearly say **what model** is being explained. These tools are appropriate for a classifier, ranker, or tabular market model; they should not be described as a complete explanation of the generative model itself.
+
+## Presentation Evidence Tips
+
+Strong prior project presentations also did a good job of using compact evidence blocks instead of dense text. Encourage teams to show:
+
+- a pipeline diagram instead of a paragraph of architecture description
+- a chunking or corpus table instead of only describing data quality verbally
+- one top-k retrieval example with scores and metadata
+- one grounded answer that visibly points back to cited chunks
+- one evaluation slide that separates `faithfulness` from `relevance`
+- one failure-analysis slide with `what happened`, `why it matters`, and `future fix`
 
 # Teamwork Expectations
 
@@ -64,3 +115,5 @@ Expected flow:
 
 Primary platform is Google Colab plus Google Drive.
 GitHub can be used optionally, but it is not required for AD698 project completion.
+
+All written paper deliverables in the project sequence should use **APA 7** formatting and be submitted in addition to the complete project notebooks.

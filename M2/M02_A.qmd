@@ -48,7 +48,7 @@ These are graded as part of your technical evidence. Undocumented DataFrames and
 
 Submit three files on Blackboard:
 
-1. **Word Report (`.docx`)** — maximum 10 pages, APA formatted
+1. **Word Report (`.docx`)** — maximum 10 pages, APA 7 formatted
    - Answers to Q1–Q3 and Business Recommendation
    - Include a title page and references in APA style
    - Embed all required tables and figures inline and label them clearly
@@ -77,7 +77,7 @@ Submit three files on Blackboard:
 
 ## Word Report Expectations
 
-Use the report to communicate business findings, not to narrate every coding step. Format the report in APA style. A strong report usually follows this structure:
+Use the report to communicate business findings, not to narrate every coding step. Format the report in APA 7 style. A strong report usually follows this structure:
 
 1. **Executive framing (short paragraph)** — state the business problem, the two companies, and why semantic embeddings matter in this module
 2. **Q1: Model comparison** — report exact performance differences across TF-IDF, scratch Word2Vec, and pretrained GloVe

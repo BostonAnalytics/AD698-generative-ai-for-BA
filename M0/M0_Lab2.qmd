@@ -18,6 +18,27 @@ This lab reinforces the bridge between mathematical ideas in Lecture Notes 2 and
 Complete 5 problems.
 Include short interpretations, not just code.
 
+## Recommended Notebook Pattern
+
+Keep the notebook modular:
+
+1. Setup
+2. Problem statement
+3. Code solution
+4. Validation output
+5. Short interpretation
+
+## Lab Validation Standard
+
+For each problem, include at least one quick correctness check such as:
+
+- reported shapes
+- probability sums or loss values
+- plotted behavior with labeled axes
+- one sentence explaining what the output shows
+
+If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+
 
 # Setup
 

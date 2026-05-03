@@ -55,8 +55,24 @@ Use this checklist to confirm your team's status before Module 5.
 3. Run at least 3 additional retrieval test queries and note any failure patterns
 4. Write one paragraph per team member summarizing their contribution so far
 
+## Checkpoint Evidence to Bring Forward
+
+For the checkpoint, teams should be prepared to show concrete notebook evidence, not only verbal status updates. Bring forward:
+
+- one corpus summary table from Step 2 or Step 3
+- one example of chunk-level metadata
+- one embedding or vector-index summary
+- one retrieval sanity-check table with top-k results
+- one short list of known failure patterns or open design decisions
+
+If your retrieval is weak, say so clearly. Honest diagnosis at this stage is more valuable than moving to generation with a brittle foundation.
+
 :::{.callout-note}
 If your team is behind on Steps 1-3, use Module 4 entirely for catch-up. Do not advance to Step 4 with an incomplete retrieval foundation — generation quality depends entirely on retrieval quality.
+:::
+
+:::{.callout-tip}
+Teams can borrow a useful practice from strong prior SEC RAG projects: each notebook section should briefly explain `what was done`, `why it was done`, and `what artifact was saved`. This makes the final four-notebook package much easier to grade and reuse.
 :::
 
 # Weekly Team Standup
@@ -108,6 +124,5 @@ Use this template:
 :::{.callout-important}
 The Module 4 standup document should be your most detailed one. Instructors use it to decide whether to approve a team's readiness for Step 4 or recommend targeted catch-up work.
 :::
-
 
 

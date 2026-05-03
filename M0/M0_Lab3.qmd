@@ -41,6 +41,29 @@ pandas, numpy, matplotlib, seaborn, scikit-learn, torch
 
 **Submission**: Run all cells and submit the rendered HTML.
 
+## Recommended Notebook Pattern {.unnumbered}
+
+Structure each problem as:
+
+1. Setup and data loading
+2. Preprocessing
+3. Model definition
+4. Training
+5. Evaluation
+6. Short interpretation
+
+## Lab Validation Standard {.unnumbered}
+
+For each major section, include at least one validation output such as:
+
+- dataset shape or class counts
+- preprocessing confirmation
+- training-loss trace
+- evaluation metric table
+- confusion matrix or diagnostic plot
+
+If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+
 ---
 
 ## Setup

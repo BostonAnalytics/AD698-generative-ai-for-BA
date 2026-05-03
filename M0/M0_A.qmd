@@ -21,16 +21,39 @@ description: "Assignment for Module 0 focused on End-to-End Deep Learning with P
 
 # Submission Instructions {.unnumbered}
 
-Submit the following on Blackboard:
+Submit three files on Blackboard:
 
 1. **Jupyter Notebook** (`.ipynb`)
    - Fully executable with all cell outputs present
    - Organized by question (Q1–Q7)
    - All figures saved and displayed inline
-2. **Written Report** (`.pdf` or `.docx`, max 4 pages)
+2. **Written Report** (`.pdf` or `.docx`, max 10 pages, APA 7 formatted)
    - Answers to all reflection questions
    - Key figures reproduced with captions
+   - Include a title page and references in APA style
    - Business interpretation of results — no raw code
+3. **AI Disclosure Document**
+   - Submit as a separate file
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+
+## Assignment Notebook Pattern
+
+A strong assignment notebook should follow a repeatable structure:
+
+1. Setup and imports
+2. Data loading and inspection
+3. Core implementation
+4. Validation and diagnostics
+5. Short interpretation of what the output means
+6. Artifact save or export step where relevant
+
+## Report Expectations
+
+The written report should summarize the business question, exact model results, the most important tables and figures, the main limitations, and a clear recommendation or next step. Keep report claims aligned exactly with executed notebook outputs.
+
+## AI Use Guidance
+
+If you use AI tools, include the complete prompt and the corresponding output excerpt or exported response, not just a short summary. When available, include a share link or export from tools such as ChatGPT, Claude, Gemini, or Perplexity.
 
 # Objective {.unnumbered}
 
