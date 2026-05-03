@@ -1,23 +1,54 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "M07 Lab2"
+title: "Module 7 - Lab 2"
+subtitle: "Evaluate an AI Dashboard for Trust and Usefulness"
+number-sections: true
+date: "2026-04-20"
+date-modified: today
+date-format: long
+engine: jupyter
 categories: ['M07:', 'Lab']
-description: "Hands-on lab for Module 7 focused on M07 Lab2."
+description: "Hands-on lab for Module 7 focused on evaluating dashboard trust, drill-down logic, and stakeholder communication."
 ---
 
-# M07 Lab02
+# Lab Overview
+
+This lab extends the first Module 7 lab by asking whether a dashboard is actually useful, auditable, and understandable to a stakeholder.
+
+## Alignment with Module 7
+
+- `M07_LN2`: evaluation, trust, and human-AI interaction
+- `M07_T2`: commentary, trust flags, and drill-down examples
+- `M07_A`: business recommendations grounded in dashboard evidence
 
 ## Lab Notebook Pattern
 
-When you build this lab out, use a lightweight structure:
-
-1. Setup
-2. Core task blocks
-3. Validation output after each block
-4. Short interpretation
+1. Load dashboard-ready artifact
+2. Add trust or quality flags
+3. Build one drill-down example
+4. Write concise interpretation
+5. Reflect on dashboard limitations
 
 ## Lab Validation Standard
 
-Students should show intermediate evidence, not only final outputs. Typical checks include sample rows, chart outputs, comparison tables, or one short reflection on limitations.
+Students should show intermediate evidence, not only final outputs. Typical checks include:
+
+- summary table
+- trust labels
+- one drill-down evidence example
+- one short reflection on limitations or stakeholder risk
 
 If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

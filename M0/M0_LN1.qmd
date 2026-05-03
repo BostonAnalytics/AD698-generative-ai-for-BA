@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Colab + GPU + Tensors (Detailed)"
+subtitle: "Colab, GPU, and Tensors"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
@@ -423,3 +423,4 @@ You now have a practical baseline for deep learning notebook work:
 3. Core tensor manipulations used in later PyTorch models.
 
 These are the exact prerequisites for Module 0 labs and the first neural-model exercises.
+

@@ -1975,10 +1975,37 @@ This lecture built a complete conceptual and implementation stack from linear mo
 - **Tutorial (T3)**: hands-on comparison of single-layer perceptron vs. 3-layer MLP on simulated regression data — watch how adding hidden layers captures non-linear patterns
 - **Lab (L3)**: apply MLP regression to the **Ames Housing** dataset and MLP classification to the **Palmer Penguins** dataset — real-world validation of everything learned here
 
+## Bridge to Module 1
+
+Before moving into Module 1, it is useful to make one final conceptual jump: the same neural machinery used here for regression and classification becomes the foundation of early neural NLP.
+
+In text settings:
+
+- a **vocabulary** defines the feature space
+- **one-hot**, Bag-of-Words, or TF-IDF vectors play the role of model inputs
+- **logits** become scores over document classes or vocabulary items
+- **softmax** converts those scores into probabilities
+- **cross-entropy** trains the model by rewarding correct predictions
+
+That means the core transition into Module 1 is not a new theory stack. It is the reuse of the same deep-learning logic on language data:
+
+$$
+\text{text} \rightarrow \text{tokens} \rightarrow \text{vector representation} \rightarrow \text{MLP or embedding model} \rightarrow \text{softmax probabilities}
+$$
+
+For a simple neural language model, the prediction target becomes the next word:
+
+$$
+P(w_t \mid w_1, w_2, \ldots, w_{t-1})
+$$
+
+So the ideas in this chapter about hidden layers, softmax, generalization, and regularization are exactly the ideas students will need when they begin neural NLP in Module 1.
+
 ## References {.unnumbered}
 
 ::: {#refs}
 :::
+
 
 
 

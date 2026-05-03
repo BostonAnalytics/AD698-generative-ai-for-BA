@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Neural Networks — Regression and Classification"
+subtitle: "From Linear Models to Multilayer Perceptrons"
 logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
 date-modified: today
@@ -14,412 +14,251 @@ author:
         state: MA
 embed-resources: true
 self-contained: true
-format: 
-    revealjs:
-        theme: [../theme/presentation.scss]
-        html-math-method: katex
-        slide-number: c/t
+format:
+  revealjs:
+    theme: [../theme/presentation.scss]
+    html-math-method: katex
+    slide-number: c/t
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
-execute: 
+  data-background-image: "../theme/blank_red.png"
+  data-background-size: 103% auto
+  data-background-opacity: "0.95"
+execute:
   echo: false
-  eval: true
+  eval: false
   warning: false
   message: false
 categories: ['M0:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 0 on Neural Networks — Regression and Classification."
+description: "Presentation slides for Module 0 on From Linear Models to Multilayer Perceptrons."
 ---
 
-## Roadmap for Today
+## Roadmap
 
-::: {.incremental}
-- From **data → prediction**: the linear regression model
-- **Optimization**: gradient descent and stochastic gradient descent
-- **Multi-class classification**: the softmax function
-- **Deep networks**: multi-layer perceptrons (MLPs)
-- **Activation functions** and what they contribute
-- **Backpropagation**: how networks learn
-- **Regularization**: preventing overfitting
-:::
+- Linear regression as the simplest neural model
+- Loss functions and optimization
+- Softmax regression for classification
+- MLP architecture and nonlinearity
+- Backpropagation and regularization
+- How this maps into PyTorch workflows
 
 ---
 
-## Why Neural Networks?
+## Why This Lecture Matters
 
-> "A neural network is a universal function approximator — given enough parameters and data it can learn *any* mapping from inputs to outputs."
+This lecture connects the math from the previous chapter to actual model families students will build in AD698.
 
-::: {.columns}
-::: {.column width="55%"}
-**Classic ML limitations**
+The main progression is:
 
-- Hand-crafted features
-- Linear decision boundaries (mostly)
-- Poor scaling to raw text/image/audio
-:::
-::: {.column width="45%"}
-**Neural networks**
-
-- Learn features automatically
-- Non-linear boundaries
-- Foundation of modern GenAI
-:::
-:::
+1. Linear model
+2. Classification model
+3. Multi-layer neural network
+4. Practical PyTorch implementation
 
 ---
 
 ## Linear Regression
 
 $$
-\begin{align}
-\hat{y} &= \mathbf{w}^\top \mathbf{x} + b
-\end{align}
+\hat{y} = \mathbf{w}^\top \mathbf{x} + b
 $$
 
-- $\mathbf{x} \in \mathbb{R}^d$: input features
-- $\mathbf{w} \in \mathbb{R}^d$: learned weights
-- $b \in \mathbb{R}$: bias term
-- $\hat{y} \in \mathbb{R}$: predicted output
+This is the simplest neural model:
 
-This is a **single-layer network** with no activation function.
+- one affine transformation
+- no hidden layer
+- continuous output
+
+It is a useful baseline and a conceptual starting point for deeper networks.
 
 ---
 
-## Linear Regression as a Graph
+## Linear Regression as a Network
 
 ![A single neuron computing a weighted sum of inputs.](./M0_lecture03_figures/fig_linear_nn.png){width="80%"}
 
-Each input $x_i$ is multiplied by weight $w_i$; results are summed and a bias is added.
+This is just one neuron:
+
+- inputs
+- weights
+- bias
+- output
 
 ---
 
-## MSE Loss
+## Loss and Optimization
+
+For regression, a common loss is mean squared error:
 
 $$
-\begin{align}
-\mathcal{L}(\mathbf{w}, b) &= \frac{1}{n} \sum_{i=1}^{n} \left( \hat{y}^{(i)} - y^{(i)} \right)^2
-\end{align}
+\mathcal{L}(\mathbf{w}, b)=\frac{1}{2n}\|\hat{\mathbf{y}}-\mathbf{y}\|^2
 $$
 
-- Penalizes large deviations quadratically
-- Differentiable everywhere → amenable to gradient-based optimization
-- Assumes errors are **Gaussian** (derived via MLE)
+We minimize this with gradient-based optimization rather than solving everything analytically in large systems.
 
 ---
 
-## Gradient Descent
+## Linear Regression Fit
 
-$$
-\begin{align}
-\mathbf{w} &\leftarrow \mathbf{w} - \eta \, \nabla_{\mathbf{w}} \mathcal{L}
-\end{align}
-$$
+![Simulated linear regression: true line vs. fitted model after SGD.](./M0_lecture03_figures/fig_linear_regression.png){width="90%"}
 
-- $\eta$ — **learning rate** (step size)
-- $\nabla_{\mathbf{w}} \mathcal{L}$ — direction of steepest ascent; we step *opposite* to it
-- Repeat until convergence
+This figure helps students see both:
 
-::: {.callout-tip}
-Think of gradient descent as rolling a ball down a loss surface toward the lowest point.
-:::
+- the data/model fit
+- the parameter-space view of optimization
 
 ---
 
-## SGD vs. Full-Batch
-
-| | Full Batch | Mini-Batch SGD |
-|---|---|---|
-| **Data per update** | All $n$ samples | $B$ samples (e.g., 32–256) |
-| **Gradient estimate** | Exact | Noisy but unbiased |
-| **Speed per epoch** | Slow (large data) | Fast |
-| **Memory** | High | Low |
-
-In practice: **mini-batch SGD** is the default.
-
----
-
-## SGD Path on a Loss Surface
+## SGD Path on the Loss Surface
 
 ![SGD optimization path converging toward the minimum of a 2-D loss surface.](./M0_lecture03_figures/fig_sgd_path.png){width="80%"}
 
-Noisy updates help escape shallow local minima.
+Optimization is easier to understand when students can see the path, not just the final answer.
 
 ---
 
-## Softmax Classification
+## From Regression to Classification
 
-For $K$ classes, produce a **probability distribution** over classes:
+Regression predicts a continuous value.
+Classification predicts a class label.
+
+For multiclass classification we use logits plus softmax:
 
 $$
-\begin{align}
-\hat{p}_k &= \frac{e^{o_k}}{\sum_{j=1}^{K} e^{o_j}}, \quad k = 1, \ldots, K
-\end{align}
+\hat{p}_k = \frac{e^{o_k}}{\sum_{j=1}^{K} e^{o_j}}
 $$
-
-- $o_k = \mathbf{w}_k^\top \mathbf{x} + b_k$ — raw logit for class $k$
-- Outputs sum to 1 and are all positive ✓
 
 ---
 
-## Softmax: Intuition
+## Softmax Intuition
 
 ![Softmax converts raw scores (logits) into a probability distribution over classes.](./M0_lecture03_figures/fig_softmax.png){width="85%"}
 
+Students should learn to interpret logits as raw scores and softmax outputs as normalized class probabilities.
+
 ---
 
-## Cross-Entropy Loss
+## Why We Need Hidden Layers
 
-$$
-\begin{align}
-\mathcal{L} &= -\sum_{k=1}^{K} y_k \log \hat{p}_k
-\end{align}
-$$
+One linear layer can only express linear boundaries.
 
-- $y_k \in \{0, 1\}$ — one-hot true label
-- Heavily penalizes confident wrong predictions
-- Equivalent to **maximum likelihood** for categorical data
+To model complex patterns, we need:
+
+- hidden layers
+- nonlinear activation functions
+
+That is the step from linear models to multilayer perceptrons.
 
 ---
 
 ## MLP Architecture
 
 $$
-\begin{align}
-\mathbf{h}^{(1)} &= \sigma\!\left( \mathbf{W}^{(1)} \mathbf{x} + \mathbf{b}^{(1)} \right) \\
-\mathbf{h}^{(2)} &= \sigma\!\left( \mathbf{W}^{(2)} \mathbf{h}^{(1)} + \mathbf{b}^{(2)} \right) \\
-\hat{\mathbf{y}} &= \text{softmax}\!\left( \mathbf{W}^{(3)} \mathbf{h}^{(2)} + \mathbf{b}^{(3)} \right)
-\end{align}
+\mathbf{h}^{(1)} = \sigma(\mathbf{W}^{(1)}\mathbf{x}+\mathbf{b}^{(1)})
 $$
 
-Hidden layers introduce **non-linearity** via $\sigma(\cdot)$.
+$$
+\hat{\mathbf{y}} = \text{softmax}(\mathbf{W}^{(L)}\mathbf{h}^{(L-1)}+\mathbf{b}^{(L)})
+$$
+
+Each hidden layer transforms the representation before the final prediction.
 
 ---
 
-## MLP Architecture (Diagram)
+## MLP Diagram
 
 ![Multi-layer perceptron with two hidden layers connecting input features to output classes.](./M0_lecture03_figures/fig_mlp_arch.png){width="85%"}
 
----
-
-## Why Activation Functions?
-
-Without non-linearity:
-
-$$
-\begin{align}
-\mathbf{W}^{(2)}\!\left(\mathbf{W}^{(1)} \mathbf{x}\right) = \underbrace{\mathbf{W}^{(2)}\mathbf{W}^{(1)}}_{\text{one matrix}} \mathbf{x}
-\end{align}
-$$
-
-Multiple linear layers collapse into **one linear layer** — no extra expressive power!
-
-Activation functions break this linearity.
+This is the core architecture students will implement in Lab 3 and Assignment 0.
 
 ---
 
-## Common Activation Functions
+## Activation Functions Revisited
 
-![Sigmoid, Tanh, ReLU, and GELU activation functions plotted side by side.](./M0_lecture03_figures/fig_activations.png){width="90%"}
+![Sigmoid, Tanh, ReLU, and GELU activation functions plotted side by side.](./M0_lecture03_figures/fig_activations.png){width="88%"}
 
-| Function | Formula | Range |
-|---|---|---|
-| **Sigmoid** | $\frac{1}{1+e^{-z}}$ | $(0, 1)$ |
-| **Tanh** | $\frac{e^z - e^{-z}}{e^z + e^{-z}}$ | $(-1, 1)$ |
-| **ReLU** | $\max(0, z)$ | $[0, \infty)$ |
+Why it matters here:
 
----
-
-## The Vanishing Gradient Problem
-
-![Deep networks with saturating activations suffer vanishing gradients in early layers.](./M0_lecture03_figures/fig_vanishing.png){width="80%"}
-
-- Sigmoid/Tanh saturate → gradients near **zero** for large $|z|$
-- Gradients multiply through layers → exponentially **small** in early layers
-- Solution: **ReLU** and its variants (Leaky ReLU, GELU, SiLU)
+- activations prevent layer collapse
+- ReLU is a practical default for hidden layers
+- output activation depends on the task
 
 ---
 
 ## Backpropagation
 
-For a composition $\mathcal{L} = f(g(h(\mathbf{x})))$:
+Backpropagation computes gradients efficiently through the network by chaining local derivatives.
 
-$$
-\begin{align}
-\frac{\partial \mathcal{L}}{\partial \mathbf{x}} &= \frac{\partial \mathcal{L}}{\partial f} \cdot \frac{\partial f}{\partial g} \cdot \frac{\partial g}{\partial h} \cdot \frac{\partial h}{\partial \mathbf{x}}
-\end{align}
-$$
+Students do not need to derive every expression by hand every time, but they do need to understand:
 
-**Backprop** = efficient application of the chain rule over a computational graph.
+- what the gradients represent
+- why deeper models can be harder to optimize
+- how PyTorch automates the gradient bookkeeping
 
 ---
 
-## Forward and Backward Pass
+## Regularization and Overfitting
 
-![Computational graph showing forward pass (left→right) and backward pass (right→left) for gradient computation.](./M0_lecture03_figures/fig_backprop.png){width="85%"}
+When networks get more expressive, they can overfit.
 
-::: {.incremental}
-1. **Forward pass** — compute predictions and loss
-2. **Backward pass** — propagate gradients from output to input
-3. **Parameter update** — apply gradient descent step
-:::
+Key ideas students should know:
 
----
+- train/validation/test split
+- early stopping
+- dropout
+- weight decay
 
-## Bias–Variance Tradeoff
-
-$$
-\begin{align}
-\text{Expected Error} &= \text{Bias}^2 + \text{Variance} + \text{Noise}
-\end{align}
-$$
-
-![Bias–variance decomposition showing underfitting and overfitting regimes.](./M0_lecture03_figures/fig_bias_variance.png){width="80%"}
-
-- **High bias (underfitting)**: model too simple
-- **High variance (overfitting)**: model memorizes training data
+These show up directly in later labs and assignments.
 
 ---
 
-## Weight Decay
+## PyTorch Mapping
 
-Add a penalty on parameter magnitude to the loss:
+The lecture-note progression maps directly to PyTorch:
 
-$$
-\begin{align}
-\mathcal{L}_{\text{reg}} &= \mathcal{L} + \frac{\lambda}{2} \|\mathbf{w}\|^2
-\end{align}
-$$
+- parameters -> `nn.Parameter`
+- model blocks -> `nn.Module`
+- forward computation -> `forward()`
+- training loop -> loss, backward, optimizer step
 
-- $\lambda$ controls regularization strength
-- Encourages **smaller** weights → smoother functions
-- Equivalent to a **Gaussian prior** on weights (Bayesian view)
+This is why Module 0 moves from math to code so quickly.
 
 ---
 
-## Weight Decay Effect
+## Course Alignment
 
-![Weight decay shrinks learned weights toward zero, reducing model complexity.](./M0_lecture03_figures/fig_weight_decay.png){width="80%"}
+This presentation now lines up with:
 
----
-
-## Dropout
-
-During training, randomly **zero out** hidden units with probability $p$:
-
-$$
-\begin{align}
-\tilde{\mathbf{h}} &= \mathbf{m} \odot \mathbf{h}, \quad m_i \sim \text{Bernoulli}(1-p)
-\end{align}
-$$
-
-At test time: **no dropout** — use full network (scale by $1-p$).
-
-![Dropout randomly disabling units during training forces redundant representations.](./M0_lecture03_figures/fig_dropout.png){width="75%"}
+- **Lecture Note 3**: linear models to MLPs
+- **Tutorial 3**: single-layer perceptron vs. 3-layer MLP
+- **Lab 3**: California Housing regression and Penguins classification
+- **Assignment 0**: end-to-end PyTorch regression and classification workflows
+- **Module 1**: early neural NLP, embeddings, and text classification
 
 ---
 
-## Learning Curves
+## Bridge to Module 1
 
-![Training and validation loss curves showing underfitting, good fit, and overfitting regimes.](./M0_lecture03_figures/fig_learning_curves.png){width="80%"}
+In the next module, the same architecture logic is applied to text:
 
-Key diagnostics:
+- tokens become vectors
+- hidden layers transform text representations
+- logits score classes or vocabulary items
+- softmax produces probabilities
+- cross-entropy drives learning
 
-- **Train loss ↓, Val loss ↓**: still learning — keep going
-- **Train loss ↓, Val loss ↑**: overfitting — add regularization or stop early
-- **Both losses high**: underfitting — increase model capacity
-
----
-
-## MLP from Scratch
-
-```python
-import torch
-
-# Parameters (registered manually)
-W1 = torch.randn(784, 256, requires_grad=True) * 0.01
-b1 = torch.zeros(256, requires_grad=True)
-W2 = torch.randn(256, 10,  requires_grad=True) * 0.01
-b2 = torch.zeros(10,  requires_grad=True)
-
-params = [W1, b1, W2, b2]
-
-def net(X):
-    H = torch.relu(X @ W1 + b1)   # hidden layer
-    return H @ W2 + b2             # output logits
-```
-
-::: {.callout-note}
-Explicit parameter tensors give full visibility into the forward computation — no hidden layers of abstraction.
-:::
-
----
-
-## Training from Scratch
-
-```python
-def cross_entropy(y_hat, y):
-    """Numerically stable cross-entropy from raw logits."""
-    log_sum = torch.log(y_hat.exp().sum(dim=1, keepdim=True))
-    return -(y_hat - log_sum)[range(len(y)), y].mean()
-
-def sgd(params, lr):
-    with torch.no_grad():
-        for p in params:
-            p -= lr * p.grad
-            p.grad.zero_()
-
-for epoch in range(num_epochs):
-    for X_b, y_b in train_iter:
-        l = cross_entropy(net(X_b), y_b)
-        l.backward()
-        sgd(params, lr=0.1)
-```
-
-Three-step pattern: **forward → backward → update**.
-
----
-
-## Fashion-MNIST: Benchmark Dataset
-
-![Sample images from Fashion-MNIST showing 10 clothing categories.](./M0_lecture03_figures/fig_fashion_mnist_samples.png){width="85%"}
-
-10 classes, 28×28 grayscale images — canonical benchmark for classification models.
+So Module 1 is best understood as **neural networks for language**, not as a separate mathematical world.
 
 ---
 
 ## Key Takeaways
 
-::: {.incremental}
-- **Linear regression** is a single-neuron network; loss is MSE
-- **Softmax** converts logits to probabilities for multi-class problems
-- **MLPs** stack linear + activation layers to learn non-linear functions
-- **Backprop** = chain rule on a computational graph
-- **Overfitting** is controlled with weight decay and dropout
-- **ReLU** avoids vanishing gradients that plague sigmoid/tanh
-:::
-
----
-
-## Looking Ahead
-
-| Module | Topic |
-|---|---|
-| **M1** | Text representation — Bag of Words, TF-IDF |
-| **M2** | Word embeddings — Word2Vec, GloVe |
-| **M3** | Sequence models — RNNs, LSTMs |
-| **M4** | Transformers & Attention |
-| **M5** | Large Language Models |
-| **M6** | Retrieval-Augmented Generation |
-| **M7** | Fine-tuning & Alignment |
-
----
-
-## How to Print These Slides
-
-![Instructions for printing Reveal.js slides to PDF via the browser print dialog.](../syllabus-images/Printing_Revealjs_Slides.png){width="80%"}
+- Linear regression is the simplest neural baseline
+- Softmax extends the framework to multiclass classification
+- Hidden layers plus activations create expressive nonlinear models
+- Backpropagation and SGD make training practical
+- PyTorch turns these mathematical ideas into reusable code patterns
 

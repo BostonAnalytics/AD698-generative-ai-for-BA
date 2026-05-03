@@ -1,0 +1,130 @@
+---
+title: "Module 6 - Tutorial 2"
+subtitle: "From Single-Agent Workflow to Coordinated SEC Analysis"
+number-sections: true
+date: "2026-04-10"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+categories: ["M06:", "Tutorial", "Multi-Agent", "SEC Text"]
+description: "Tutorial for splitting an SEC analysis workflow into specialized agent roles with traceable outputs."
+---
+
+## Module Learning Objectives
+
+By the end of Module 6, students should be able to:
+
+1. distinguish between single-agent and role-based workflows
+2. decompose complex text analysis tasks into coordinated responsibilities
+3. inspect traces and review loops as part of responsible AI practice
+4. connect orchestration logic to later project presentation work
+
+## Tutorial Learning Objectives
+
+Build a lightweight multi-role workflow over SEC filing text. Instead of one monolithic agent, separate responsibilities into:
+
+1. a retrieval role
+2. an analyst role
+3. a reviewer role
+
+This mirrors the orchestration logic discussed in `M06_LN2` while staying grounded in course text data.
+
+## Recommended Pattern
+
+Use simple Python functions first. You do not need a full framework to learn the architecture.
+
+## How This Tutorial Connects
+
+- `M06_T1` establishes the single-agent baseline.
+- `M06_Lab2` can compare role separation against that baseline.
+- `M06_A` and `M06_Proj` both benefit from explicit role, trace, and review structures.
+
+## Step 1: Retrieval role
+
+```python
+def retrieval_agent(question: str, chunks_df, top_k: int = 5):
+    hits = chunks_df.head(top_k).copy()
+    hits["question"] = question
+    return hits
+```
+
+## Step 2: Analyst role
+
+```python
+def analyst_agent(question: str, retrieved_rows) -> str:
+    context = "\n\n".join(retrieved_rows["chunk_text"].astype(str).tolist())
+    return (
+        "TODO: call your model to compare the retrieved SEC evidence and draft a grounded answer. "
+        "Require citations by ticker, year, or item."
+    )
+```
+
+## Step 3: Reviewer role
+
+```python
+def reviewer_agent(answer: str, retrieved_rows) -> dict:
+    review = {
+        "grounding_ok": "TODO",
+        "missing_evidence": "TODO",
+        "revision_needed": "TODO",
+    }
+    return review
+```
+
+## Step 4: Orchestrate the workflow
+
+```python
+def coordinated_sec_workflow(question: str, chunks_df) -> dict:
+    retrieved = retrieval_agent(question, chunks_df)
+    answer = analyst_agent(question, retrieved)
+    review = reviewer_agent(answer, retrieved)
+
+    return {
+        "question": question,
+        "retrieved": retrieved,
+        "answer": answer,
+        "review": review,
+    }
+```
+
+## Step 5: Export a trace
+
+```python
+def workflow_trace(result: dict) -> pd.DataFrame:
+    trace = result["retrieved"].copy()
+    trace["answer_preview"] = str(result["answer"])[:120]
+    trace["review_status"] = result["review"].get("revision_needed")
+    return trace
+```
+
+## What students should learn here
+
+The point is not to over-engineer the framework. The point is to see that:
+
+- role separation improves clarity
+- traces are easier to audit than hidden prompting
+- reviewer logic creates a bridge to explainability and governance
+
+## Bridge to the module deliverables
+
+- `M06_Lab2` should compare different orchestration choices
+- `M06_A` should require explicit evidence, provenance, and validation
+- `M06_Proj` should present the system as a structured product rather than a prompt demo
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

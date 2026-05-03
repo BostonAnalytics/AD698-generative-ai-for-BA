@@ -61,7 +61,7 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 :::{.callout-tip}
@@ -145,7 +145,7 @@ with open("/content/drive/MyDrive/assignment01/vocab.json") as f:
 print(f"Assignment 1 vocabulary size: {len(a1_vocab)}")
 ```
 
-📊 **Required:** Stacked bar chart of chunk counts by company and by item type (Item 1A vs Item 7).
+ðŸ“Š **Required:** Stacked bar chart of chunk counts by company and by item type (Item 7 vs Item 7A vs Item 8).
 
 # Train a Word2Vec Embedding from Scratch {#sec-word2vec}
 
@@ -191,7 +191,7 @@ neighbors_df.describe()
 neighbors_df.head(20)
 ```
 
-📊 **Required:** For two of the five terms, show a horizontal bar chart of the top-10 nearest neighbors sorted by similarity. Label axes and include the term in the chart title.
+ðŸ“Š **Required:** For two of the five terms, show a horizontal bar chart of the top-10 nearest neighbors sorted by similarity. Label axes and include the term in the chart title.
 
 ## Per-Company Nearest Neighbors
 
@@ -276,7 +276,7 @@ class MLPClassifier(nn.Module):
 
 Train for 30 epochs with AdamW optimizer and cross-entropy loss. Plot the training loss curve for both models.
 
-📊 **Required:** Training loss curve with Word2Vec model and GloVe model on the same chart.
+ðŸ“Š **Required:** Training loss curve with Word2Vec model and GloVe model on the same chart.
 
 Evaluate both models and build a 3-row accuracy comparison table including the Assignment 1 BoW baseline:
 
@@ -288,7 +288,7 @@ comparison_df = pd.DataFrame({
 print(comparison_df)
 ```
 
-📊 **Required:** Horizontal bar chart of all three method accuracies.
+ðŸ“Š **Required:** Horizontal bar chart of all three method accuracies.
 
 Save GloVe MLP weights:
 
@@ -318,9 +318,9 @@ proj_df.describe()
 proj_df.head()
 ```
 
-📊 **Required Plot 1:** 2D scatter plot colored by company. Title: "Embedding Space by Company." Do the two rivals form separate clusters or overlap?
+ðŸ“Š **Required Plot 1:** 2D scatter plot colored by company. Title: "Embedding Space by Company." Do the two rivals form separate clusters or overlap?
 
-📊 **Required Plot 2:** 2D scatter plot colored by item type (Item 1A vs Item 7). Title: "Embedding Space by 10-K Section." Which section separates more cleanly?
+ðŸ“Š **Required Plot 2:** 2D scatter plot colored by item type (Item 7 vs Item 7A vs Item 8). Title: "Embedding Space by 10-K Section." Which section separates more cleanly?
 
 # Yahoo Finance Annual Return Quintile Analysis {#sec-returns}
 
@@ -349,7 +349,7 @@ returns_df
 
 Merge a `return_quintile` column (1=lowest, 5=highest annual return) onto `proj_df` by year and company.
 
-📊 **Required Plot 3:** 2D scatter plot colored by `return_quintile`. Title: "Embedding Space by Return Quintile." Do high-return-year filings cluster differently from low-return-year filings?
+ðŸ“Š **Required Plot 3:** 2D scatter plot colored by `return_quintile`. Title: "Embedding Space by Return Quintile." Do high-return-year filings cluster differently from low-return-year filings?
 
 # Q1: Does Moving from TF-IDF to Embeddings Improve Discrimination? {#sec-q1}
 
@@ -361,7 +361,7 @@ Report all three accuracy numbers in the comparison table:
 | A2: Word2Vec scratch MLP | |
 | A2: GloVe pretrained MLP | |
 
-📊 **Required:** Include the accuracy bar chart from Section 5 in your Word document.
+ðŸ“Š **Required:** Include the accuracy bar chart from Section 5 in your Word document.
 
 **Answer in your Word document:** Does the switch from TF-IDF to learned embeddings improve company discrimination? Does using pretrained GloVe outperform scratch Word2Vec? What does the pattern suggest about whether these companies' 10-K language is already well-represented in general English corpora?
 
@@ -370,7 +370,7 @@ Report all three accuracy numbers in the comparison table:
 
 Refer to your two UMAP scatter plots (by company and by item type).
 
-**Answer in your Word document:** Do the two rivals cluster separately or overlap in the embedding space? Which 10-K section (Item 1A or Item 7) produces cleaner separation? Does this match the section-level accuracy result from Assignment 1? Explain the alignment or discrepancy in 2–3 sentences.
+**Answer in your Word document:** Do the two rivals cluster separately or overlap in the embedding space? Which 10-K section (Item 7, Item 7A, or Item 8) produces cleaner separation? Does this match the section-level accuracy result from Assignment 1? Explain the alignment or discrepancy in 2–3 sentences.
 
 
 # Q3: What Does an Analyst Gain and Lose With Semantic Search? {#sec-q3}
@@ -379,7 +379,7 @@ Refer to your two UMAP scatter plots (by company and by item type).
 
 Your Word2Vec model trained on 5 years of 10-K filings has implicitly encoded each company's strategic vocabulary. If a financial analyst used nearest-neighbor queries in this embedding space instead of reading raw filings:
 
-**Answer in your Word document (≤1 page):**
+**Answer in your Word document (â‰¤1 page):**
 
 - What types of questions could they answer quickly using nearest-neighbor search?
 - What would they miss that a careful reader would catch?
@@ -410,7 +410,17 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Identify which AI-generated outputs were used in the final submission and which were discarded or corrected
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When possible, preserve the original interaction using a share link or export feature. Examples include:
+When possible, preserve the original interaction using a direct share link or export feature.
+
+- Prefer **one continuous chat** for the full assignment workflow so a reviewer can see the reasoning trail in one place
+- If you used multiple chats, share **all chats directly related** to the assignment
+- Do not include confidential, personal, or restricted information in shared chats
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+Examples include:
 
 - **Gemini:** export the response to Google Docs or share the chat if available
 - **ChatGPT:** submit a ChatGPT shared link
@@ -431,5 +441,10 @@ Your AI disclosure should include the following fields:
 8. Corrections you made after validation
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
+
+
+
+
+
 
 

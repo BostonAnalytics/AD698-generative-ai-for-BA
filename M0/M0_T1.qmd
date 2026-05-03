@@ -1,6 +1,6 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Colab + GPU + Tensors (Detailed)"
+title: "Module 0 - Tutorial 1"
+subtitle: "Colab + GPU + Tensors"
 number-sections: true
 date: "2026-01-01"
 date-modified: today
@@ -9,16 +9,29 @@ categories: ['M0:', 'Tutorial']
 description: "Tutorial for Module 0 focused on Colab + GPU + Tensors (Detailed)."
 ---
 
-# Tutorial Goal {.unnumbered}
+# Module Learning Objectives {.unnumbered}
 
-This tutorial helps you become operational in Colab and comfortable with basic tensor operations in PyTorch.
+Module 0 builds the computational and mathematical foundation for the rest of AD698. By the end of this module, students should be able to:
 
-By the end, you should be able to:
+1. work reliably in Google Colab and Google Drive
+2. inspect and manipulate tensors in PyTorch
+3. connect mathematical objects such as vectors, matrices, and tensors to code
+4. prepare for later neural-network, NLP, and generative AI workflows
+
+## Tutorial Learning Objectives {.unnumbered}
+
+By the end of this tutorial, you should be able to:
 
 1. Start and validate a GPU runtime.
 2. Mount and organize Google Drive for AD698.
 3. Build and manipulate tensors of different ranks.
 4. Run a simple CPU vs GPU comparison.
+
+## How This Tutorial Connects {.unnumbered}
+
+- `M0_Lab1` expects students to use Colab cleanly and understand runtime behavior.
+- `M0_A` depends on basic notebook execution, tensor fluency, and file organization.
+- Later modules reuse this workflow for text modeling, embeddings, and generative AI experiments.
 
 
 # Part 1: Colab Setup
@@ -246,3 +259,17 @@ except ModuleNotFoundError:
 1. [Google Colab](https://colab.research.google.com/)
 2. [PyTorch Tensor Docs](https://pytorch.org/docs/stable/tensors.html)
 3. [Tensor Notes Reference](https://notes.101ai.net/basics/tensors)
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](./M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](./M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

@@ -191,3 +191,4 @@ Use this template:
 :::{.callout-note}
 Retrieval quality issues discovered in Step 3 are far easier to fix now than after the RAG generation pipeline is built. Use standup to report retrieval test results and decide whether chunking or embedding parameters need adjustment.
 :::
+

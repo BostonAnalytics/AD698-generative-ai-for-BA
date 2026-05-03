@@ -1,0 +1,126 @@
+---
+title: "Module 4 - Tutorial 1"
+subtitle: "Transformer Classification on Sentence Polarity Text"
+number-sections: true
+date: "2026-03-12"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+categories: ['M04:', 'Tutorial']
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+---
+
+## Module Learning Objectives
+
+By the end of Module 4, students should be able to:
+
+1. explain how transformer-style models differ from simpler neural classifiers
+2. implement a small text-first contextual modeling workflow
+3. compare contextual models with earlier count-based or shallow-neural baselines
+4. prepare for later adaptation and fine-tuning logic
+
+## Tutorial Learning Objectives
+
+This tutorial gives students a text-first transformer workflow before they move into the lab and assignment.
+
+Use:
+
+- `sentence polarity`
+- `yelp`
+- or a similarly small text classification dataset from the course `data` folder
+
+## How This Tutorial Connects
+
+- `M04_Lab1` and `M04_Lab2` develop attention and transformer-style modeling further.
+- `M04_A` moves toward contextual modeling and model comparison.
+- Module 4 participation work can use the same text-first transformer intuition.
+
+## Setup
+
+```{python}
+import torch
+import torch.nn as nn
+from torch.utils.data import DataLoader, TensorDataset
+```
+
+## Step 1: Create a Tiny Text Dataset
+
+```{python}
+texts = [
+    "earnings exceeded expectations and outlook improved",
+    "regulatory pressure increased and costs rose sharply",
+    "management reaffirmed guidance and demand stayed stable",
+]
+labels = [1, 0, 1]
+```
+
+In the full lab, students should replace this with a text dataset such as `sentence polarity` or `yelp`.
+
+## Step 2: Tokenize to Integer IDs
+
+```{python}
+vocab = {"<pad>": 0}
+for txt in texts:
+    for tok in txt.split():
+        if tok not in vocab:
+            vocab[tok] = len(vocab)
+
+def encode(text, max_len=12):
+    ids = [vocab[t] for t in text.split()]
+    ids = ids[:max_len] + [0] * max(0, max_len - len(ids))
+    return ids
+
+X = torch.tensor([encode(t) for t in texts])
+y = torch.tensor(labels)
+X.shape, y.shape
+```
+
+## Step 3: Minimal Transformer Classifier
+
+```{python}
+class TinyTransformerClassifier(nn.Module):
+    def __init__(self, vocab_size, embed_dim=32, heads=4, num_classes=2):
+        super().__init__()
+        self.embed = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
+        self.attn = nn.MultiheadAttention(embed_dim, heads, batch_first=True)
+        self.norm = nn.LayerNorm(embed_dim)
+        self.head = nn.Linear(embed_dim, num_classes)
+
+    def forward(self, x):
+        h = self.embed(x)
+        a, _ = self.attn(h, h, h)
+        h = self.norm(h + a)
+        pooled = h.mean(dim=1)
+        return self.head(pooled)
+```
+
+## Connection to the Module
+
+This tutorial uses text data and a minimal transformer-style classifier so students can:
+
+- understand attention over token sequences
+- keep the task grounded in NLP
+- arrive at the labs ready to reason about contextual models instead of only synthetic examples
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

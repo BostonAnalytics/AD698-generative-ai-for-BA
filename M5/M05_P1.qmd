@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "M05 Lecture Note 01: RAG Foundations and Retrieval"
+subtitle: "RAG Foundations and Retrieval"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -231,3 +231,4 @@ RAG quality depends heavily on retrieval quality. If retrieval fails, generation
 - Evaluation matrix design
 - LLM-as-a-judge workflows
 - Deploying retriever/generator endpoints
+

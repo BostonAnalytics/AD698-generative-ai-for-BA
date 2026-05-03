@@ -1,0 +1,124 @@
+---
+title: "Module 7 - Tutorial 1"
+subtitle: "Build a Dashboard-Ready Text Analytics Table"
+number-sections: true
+date: "2026-04-20"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+categories: ["M07:", "Tutorial", "Dashboards", "SEC Text"]
+description: "Tutorial for transforming text-analysis outputs into dashboard-ready summary tables using SEC or review-text data."
+---
+
+## Module Learning Objectives
+
+By the end of Module 7, students should be able to:
+
+1. turn model outputs into business-facing metrics and tables
+2. design dashboard-ready artifacts from text-analysis workflows
+3. connect technical outputs to stakeholder interpretation
+4. prepare auditable summaries for reports and project work
+
+## Tutorial Learning Objectives
+
+Convert text-analysis artifacts into a dashboard-ready table.
+
+Use one of these data sources:
+
+- SEC chunk or answer outputs from earlier modules
+- `data/corpora/sentence-polarity`
+- `data/corpora/yelp`
+
+## How This Tutorial Connects
+
+- `M07_Lab1` builds the actual dashboard-ready dataset.
+- `M07_A` interprets results in business terms rather than only technical terms.
+- `M07_Proj` benefits from the same metrics-and-interface framing.
+
+## Step 1: Load a text-analysis artifact
+
+```python
+from pathlib import Path
+import pandas as pd
+
+artifact_path = Path("/content/drive/MyDrive/assignment04/tutorial_eval_results.csv")
+
+if artifact_path.exists():
+    df = pd.read_csv(artifact_path)
+else:
+    print("Load a saved SEC or review-text artifact for dashboard preparation.")
+```
+
+## Step 2: Build a summary table
+
+```python
+dashboard_df = (
+    df.groupby("topic", dropna=False)
+      .agg(
+          n_questions=("question", "count"),
+          avg_relevance=("relevance", "mean"),
+      )
+      .reset_index()
+)
+
+dashboard_df
+```
+
+## Step 3: Add a business-facing label
+
+```python
+def health_label(score: float) -> str:
+    if score >= 0.75:
+        return "strong"
+    if score >= 0.5:
+        return "mixed"
+    return "needs review"
+
+
+dashboard_df["status"] = dashboard_df["avg_relevance"].apply(health_label)
+dashboard_df
+```
+
+## Step 4: Preview the dashboard visuals
+
+```python
+import matplotlib.pyplot as plt
+
+dashboard_df.plot.bar(x="topic", y="avg_relevance", legend=False, figsize=(8, 4))
+plt.title("Average relevance by topic")
+plt.ylabel("Average relevance")
+plt.show()
+```
+
+## What to validate
+
+Before moving on:
+
+1. every metric shown in the dashboard can be traced to notebook outputs
+2. labels are understandable to a non-technical stakeholder
+3. one chart and one table tell a coherent story
+4. the final dataset can be exported cleanly
+
+## Export artifact
+
+```python
+dashboard_df.to_csv("/content/drive/MyDrive/module07/dashboard_ready_metrics.csv", index=False)
+```
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

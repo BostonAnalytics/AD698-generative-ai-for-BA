@@ -15,7 +15,7 @@ description: "Assignment for Module 4 focused on Transformers, Encoder vs. Decod
 
 # Important Reminder {.unnumbered}
 
-- This assignment must be completed using **Google Colab with a GPU runtime** (Runtime → Change runtime type → T4 GPU).
+- This assignment must be completed using **Google Colab with a GPU runtime** (Runtime â†’ Change runtime type â†’ T4 GPU).
 - You must use the **same two rival companies and NAICS vertical** as Assignments 1 and 2.
 
 :::{.callout-important}
@@ -50,7 +50,7 @@ Submit three files on Blackboard:
 
 1. **Word Report (`.docx`)** — maximum 10 pages, APA 7 formatted
    - Answers to Q1–Q4 and Business Recommendation
-   - Encoder vs. Decoder conceptual comparison (≤1 page)
+   - Encoder vs. Decoder conceptual comparison (â‰¤1 page)
    - Include a title page and references in APA style
    - Embed all required figures and tables inline and label them clearly
    - No code
@@ -62,7 +62,7 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 :::{.callout-tip}
@@ -117,7 +117,7 @@ Assignments 1 and 2 used frequency counts and distributional word embeddings to 
 **Core question:** What do transformer models see in 10-K financial language that frequency-based and distributional models miss — and what does the encoder vs. decoder split reveal about how companies write?
 :::
 
-**Encoder vs. Decoder — conceptual framing (required in Word document, ≤1 page):**
+**Encoder vs. Decoder — conceptual framing (required in Word document, â‰¤1 page):**
 
 | | Encoder (BERT) | Decoder (GPT-2) |
 |--|--|--|
@@ -142,7 +142,7 @@ chunks_df.describe(include="all")
 chunks_df.head()
 ```
 
-📊 **Required:** Bar chart of chunk counts per company and per item type.
+ðŸ“Š **Required:** Bar chart of chunk counts per company and per item type.
 
 # BERT Attention Visualization {#sec-attention}
 
@@ -156,7 +156,7 @@ bert = BertModel.from_pretrained("bert-base-uncased", output_attentions=True)
 bert.eval()
 ```
 
-Select one matched sentence pair — one sentence from Company A's Item 1A and one topically similar sentence from Company B's Item 1A (same risk topic, different wording). Each sentence should be 15–30 tokens.
+Select one matched sentence pair — one sentence from Company A's Item 7 or Item 7A and one topically similar sentence from Company B's matching section (same financial-performance or market-risk topic, different wording). Each sentence should be 15–30 tokens.
 
 ```python
 sentence_a = "PASTE YOUR COMPANY A SENTENCE HERE"
@@ -220,7 +220,7 @@ plot_attention_heatmap(attn_b, tokens_b, layer=11, head=0,
                        title=f"{company_b} — Layer 12, Head 1")
 ```
 
-📊 **Required:** All four heatmaps with token labels on both axes.
+ðŸ“Š **Required:** All four heatmaps with token labels on both axes.
 
 # BERT Fine-Tuned Classifier {#sec-bert-cls}
 
@@ -265,7 +265,7 @@ plt.ylabel("True")
 plt.show()
 ```
 
-📊 **Required:** Confusion matrix heatmap with company names on axes.
+ðŸ“Š **Required:** Confusion matrix heatmap with company names on axes.
 
 Save classification head weights:
 
@@ -315,7 +315,7 @@ ppl_df.describe()
 ppl_df.head()
 ```
 
-📊 **Required:** Box plot of perplexity by company, with a second panel by item type (Item 1A vs Item 7).
+ðŸ“Š **Required:** Box plot of perplexity by company, with a second panel by item type (Item 7 vs Item 7A vs Item 8).
 
 Save:
 
@@ -371,7 +371,7 @@ risk_df.describe()
 risk_df
 ```
 
-📊 **Required:** Show this table in your Word document. You will use beta and return in Q3 and Q4.
+ðŸ“Š **Required:** Show this table in your Word document. You will use beta and return in Q3 and Q4.
 
 # 4-Method Accuracy Comparison {#sec-compare}
 
@@ -392,7 +392,7 @@ comparison_df = pd.DataFrame({
 print(comparison_df)
 ```
 
-📊 **Required:** Horizontal bar chart of all five methods sorted by accuracy.
+ðŸ“Š **Required:** Horizontal bar chart of all five methods sorted by accuracy.
 
 # Q1: Which Attention Layer Focuses on More Meaningful Tokens? {#sec-q1}
 
@@ -419,7 +419,7 @@ Refer to your GPT-2 perplexity box plot and your Yahoo Finance risk metrics tabl
 
 A FinTech compliance team needs to flag unusual risk language in 500 new 10-K filings per quarter on a **$5,000/quarter cloud budget**.
 
-**Answer in your Word document (≤1 page):** Which of the five methods in your comparison table would you recommend? Your answer must explicitly reference:
+**Answer in your Word document (â‰¤1 page):** Which of the five methods in your comparison table would you recommend? Your answer must explicitly reference:
 
 - At least two accuracy values from the comparison table
 - Estimated compute cost or processing time (rough order of magnitude)
@@ -450,7 +450,17 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Identify which AI-generated outputs were used in the final submission and which were discarded or corrected
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When possible, preserve the original interaction using a share link or export feature. Examples include:
+When possible, preserve the original interaction using a direct share link or export feature.
+
+- Prefer **one continuous chat** for the full assignment workflow so a reviewer can see the reasoning trail in one place
+- If you used multiple chats, share **all chats directly related** to the assignment
+- Do not include confidential, personal, or restricted information in shared chats
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+Examples include:
 
 - **Gemini:** export the response to Google Docs or share the chat if available
 - **ChatGPT:** submit a ChatGPT shared link
@@ -471,3 +481,8 @@ Your AI disclosure should include the following fields:
 8. Corrections you made after validation
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
+
+
+
+
+

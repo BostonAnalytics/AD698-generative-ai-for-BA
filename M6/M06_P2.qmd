@@ -1,6 +1,6 @@
 ---
-title: "M06 Presentation 02"
-subtitle: "Building Agentic AI: A Practical Walkthrough"
+title: "AD698 - Applied Generative AI"
+subtitle: "Building Agentic AI"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -604,4 +604,5 @@ class MasterFinancialAgent:
 * Hugging Face gives it retrieval infrastructure and model flexibility.
 * LangChain and LangGraph give it a workflow architecture.
 * Together, they turn an SEC downloader into an agentic financial intelligence system.
+
 

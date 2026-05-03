@@ -1,5 +1,5 @@
 ---
-title: "AD698 - Applied Generative AI"
+title: "Module 0 - Tutorial 3"
 subtitle: "Single-Layer Perceptron vs. 3-Layer MLP on Simulated Data"
 author:
   - name: Nakul R. Padalkar
@@ -35,6 +35,21 @@ By the end of this tutorial you will be able to:
 4. Compare the two models on training loss, test loss, and prediction quality
 5. Produce key training visualisations: loss curves, scatter fits, and a gradient-descent animation
 6. Recognise the effect of model depth on expressiveness
+
+## Module Learning Objectives {.unnumbered}
+
+By the end of Module 0, students should be able to:
+
+1. move from linear models to multi-layer neural networks
+2. interpret training, validation, and overfitting behavior
+3. connect architecture choices to model capacity and generalization
+4. reuse this workflow in later NLP and generative AI settings
+
+## How This Tutorial Connects {.unnumbered}
+
+- `M0_Lab3` applies the same modeling logic on real datasets.
+- `M0_A` expects students to build full regression and classification workflows.
+- `M01` reuses this exact modeling logic on language data.
 
 ---
 
@@ -668,7 +683,32 @@ print("Saved fig_T3_regularisation.png")
 4. Remove `weight_decay` and increase training epochs to 2000.  What do the residuals look like?
 5. Add a `nn.Dropout(p=0.3)` layer after each hidden activation in the big MLP.  Does it help?
 
+## Bridge to Module 1 {.unnumbered}
+
+Even though this tutorial uses regression data, the training logic transfers directly to neural NLP:
+
+1. replace numeric features with token or document vectors
+2. keep the linear layers and nonlinear activations
+3. use softmax when the output is a class or next-token choice
+4. train with cross-entropy instead of regression loss
+
+This is the conceptual handoff from Module 0 into Module 1.
+
 ## References {.unnumbered}
 
 ::: {#refs}
 :::
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](./M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](./M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

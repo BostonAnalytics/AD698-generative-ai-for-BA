@@ -31,7 +31,7 @@ Load and inspect `chunks.csv` at the start of your notebook. Your corpus from As
 :::
 
 :::{.callout-warning}
-**API key security:** Store your API key in Colab Secrets (left panel → key icon) or in a `.env` file on Drive. Never paste a key directly into a code cell. Never commit a key to GitHub.
+**API key security:** Store your API key in Colab Secrets (left panel â†’ key icon) or in a `.env` file on Drive. Never paste a key directly into a code cell. Never commit a key to GitHub.
 :::
 
 :::{.callout-important}
@@ -52,8 +52,8 @@ These are graded as part of your technical evidence. Undocumented DataFrames and
 Submit three files on Blackboard:
 
 1. **Word Report (`.docx`)** — maximum 10 pages, APA 7 formatted
-   - All 9 LLM answers (3 questions × 3 methods) as a formatted table or appendix
-   - 3×3 evaluation matrix
+   - All 9 LLM answers (3 questions Ã— 3 methods) as a formatted table or appendix
+   - 3Ã—3 evaluation matrix
    - Answers to Q1–Q4 and Business Recommendation
    - Include a title page and references in APA style
    - Embed all required figures and tables inline and label them clearly
@@ -66,7 +66,7 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 :::{.callout-tip}
@@ -105,8 +105,8 @@ Suggested notebook structure:
 2. Load Assignment 1 corpus and inspect
 3. Embed chunks and build FAISS index
 4. Implement three answering functions
-5. Run all 9 answers (3 questions × 3 methods)
-6. Build and fill the 3×3 evaluation matrix
+5. Run all 9 answers (3 questions Ã— 3 methods)
+6. Build and fill the 3Ã—3 evaluation matrix
 7. Q1–Q4 analysis and Business Recommendation
 
 :::{.callout-note}
@@ -164,7 +164,7 @@ chunks_df.describe(include="all")
 chunks_df.head()
 ```
 
-📊 **Required:** Stacked bar chart of chunk counts by company and by year.
+ðŸ“Š **Required:** Stacked bar chart of chunk counts by company and by year.
 
 ## Load API Key Securely
 
@@ -346,9 +346,9 @@ answers_df.to_csv(
     "/content/drive/MyDrive/assignment04/comparison_answers.csv", index=False)
 ```
 
-📊 **Required:** Display all 9 answers as a formatted table in your notebook (one row per question, three answer columns). Truncate to 200 characters per cell if needed for readability.
+ðŸ“Š **Required:** Display all 9 answers as a formatted table in your notebook (one row per question, three answer columns). Truncate to 200 characters per cell if needed for readability.
 
-# Build the 3×3 Evaluation Matrix {#sec-eval}
+# Build the 3Ã—3 Evaluation Matrix {#sec-eval}
 
 For each of the 9 answers, manually fill in the evaluation scores. The schema is:
 
@@ -379,17 +379,17 @@ eval_df.describe()
 eval_df
 ```
 
-Fill in all `None` values manually by reading each answer and the corresponding retrieved chunks. This is the **3×3 evaluation matrix** required in your Word document.
+Fill in all `None` values manually by reading each answer and the corresponding retrieved chunks. This is the **3Ã—3 evaluation matrix** required in your Word document.
 
 **Grounding score calculation (for RAG answers):**
 
-Count the number of sentences in the RAG answer that explicitly reference a filing year, item (e.g., "Item 1A"), or company name divided by the total sentence count.
+Count the number of sentences in the RAG answer that explicitly reference a filing year, item (e.g., "Item 7", "Item 7A", or "Item 8"), or company name divided by the total sentence count.
 
 $$\text{Grounding Score} = \frac{\text{sentences with citation}}{\text{total sentences in answer}}$$
 
 # Q1: For Which Question Does RAG Most Outperform Zero-Shot? {#sec-q1}
 
-**Answer in your Word document:** Identify the question where RAG produces the most noticeably better answer than zero-shot prompting. Show the two answers side by side (≤3 sentences each). Show `.head()` of the retrieved chunks that enabled the RAG answer. Explain in 2–3 sentences why the retrieved context mattered — what specific information did the chunks provide that the zero-shot answer lacked?
+**Answer in your Word document:** Identify the question where RAG produces the most noticeably better answer than zero-shot prompting. Show the two answers side by side (â‰¤3 sentences each). Show `.head()` of the retrieved chunks that enabled the RAG answer. Explain in 2–3 sentences why the retrieved context mattered — what specific information did the chunks provide that the zero-shot answer lacked?
 
 # Q2: What Does the Grounding Score Reveal About RAG Quality? {#sec-q2}
 
@@ -408,7 +408,7 @@ Refer to your `pretrain_agreement` and `pretrain_discrepancy` columns in `eval_d
 
 A compliance officer at an asset management firm must justify every claim about a company's risk profile. They need answers that are **auditable** — traceable to a specific document, year, and section.
 
-**Answer in your Word document (≤1 page):** Based on your 3×3 evaluation matrix, which of the three methods produces the most auditable answers? Your answer must reference:
+**Answer in your Word document (â‰¤1 page):** Based on your 3Ã—3 evaluation matrix, which of the three methods produces the most auditable answers? Your answer must reference:
 
 - At least two specific cells from the evaluation matrix (cite question number and method)
 - The tradeoff between answer quality (faithfulness) and answer coverage (what the method can say)
@@ -422,7 +422,7 @@ A compliance officer at an asset management firm must justify every claim about 
 | `faiss_index.bin` | `/assignment04/` on Drive |
 | `embeddings.npy` | `/assignment04/` on Drive |
 | `comparison_answers.csv` | `/assignment04/` on Drive |
-| 3×3 evaluation matrix (`eval_df`) | In notebook + Word doc |
+| 3Ã—3 evaluation matrix (`eval_df`) | In notebook + Word doc |
 | 9-answer comparison table | In notebook + Word doc |
 | Chunk count bar chart | In notebook + Word doc |
 | Retrieval diagnostics table | In notebook + Word doc |
@@ -440,7 +440,17 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Identify which AI-generated outputs were used in the final submission and which were discarded or corrected
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When possible, preserve the original interaction using a share link or export feature. Examples include:
+When possible, preserve the original interaction using a direct share link or export feature.
+
+- Prefer **one continuous chat** for the full assignment workflow so a reviewer can see the reasoning trail in one place
+- If you used multiple chats, share **all chats directly related** to the assignment
+- Do not include confidential, personal, or restricted information in shared chats
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+Examples include:
 
 - **Gemini:** export the response to Google Docs or share the chat if available
 - **ChatGPT:** submit a ChatGPT shared link
@@ -461,3 +471,8 @@ Your AI disclosure should include the following fields:
 8. Corrections you made after validation
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
+
+
+
+
+

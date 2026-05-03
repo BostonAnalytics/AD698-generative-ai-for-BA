@@ -1,0 +1,144 @@
+---
+title: "Module 1 - Tutorial 2"
+subtitle: "From Clean SEC Text to TF-IDF Features"
+number-sections: true
+date: "2026-02-01"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    code-overflow: wrap
+categories: ["M01:", "Tutorial", "SEC Text", "TF-IDF"]
+description: "Tutorial for Module 1 focused on turning cleaned SEC text into a simple feature matrix that supports the labs and Assignment 1."
+execute:
+  echo: true
+  eval: false
+---
+
+## Module Learning Objectives {.unnumbered}
+
+By the end of Module 1, students should be able to:
+
+1. preprocess SEC text consistently
+2. build interpretable count-based feature representations
+3. compare classical and neural-ready text pipelines
+4. prepare reusable artifacts for assignment work
+
+## Tutorial Learning Objectives {.unnumbered}
+
+By the end of this tutorial you will be able to:
+
+1. Load a small SEC text sample for one or two companies.
+2. Clean and tokenize text consistently.
+3. Build a vocabulary and simple document-term counts.
+4. Convert those counts into TF-IDF features.
+5. Interpret top words before moving to the full Assignment 1 workflow.
+
+## Recommended Dataset {.unnumbered}
+
+Use one of the following:
+
+- a small sample of SEC 10-K text for a single company
+- a few files from `data/SEC-10K-2024`
+- a few extracted sections from Item 1A or Item 7
+
+The goal is to learn the workflow on a small scale before the full assignment corpus.
+
+## How This Tutorial Connects {.unnumbered}
+
+- `M01_Lab1` focuses on preprocessing discipline and text inspection.
+- `M01_Lab2` introduces representation learning and embeddings.
+- `M01_A` expects students to build reusable SEC text features at larger scale.
+- Module 1 participation work can use the same cleaned text and vocabulary logic.
+
+## Setup {.unnumbered}
+
+```{python}
+from pathlib import Path
+from collections import Counter
+import re
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+```
+
+## Step 1: Load a Small SEC Sample {.unnumbered}
+
+```{python}
+sample_dir = Path("../data/SEC-10K-2024")
+txt_files = sorted(sample_dir.glob("*.txt"))[:3]
+
+docs = []
+for f in txt_files:
+    text = f.read_text(encoding="utf-8", errors="ignore")
+    docs.append({"source": f.stem, "text": text[:12000]})
+
+sample_df = pd.DataFrame(docs)
+sample_df.head()
+```
+
+## Step 2: Clean the Text {.unnumbered}
+
+```{python}
+def clean_text(text: str) -> str:
+    text = text.lower()
+    text = re.sub(r"[^a-z0-9\\s]", " ", text)
+    text = re.sub(r"\\s+", " ", text).strip()
+    return text
+
+sample_df["clean_text"] = sample_df["text"].apply(clean_text)
+sample_df[["source", "clean_text"]].head()
+```
+
+## Step 3: Build a Simple Vocabulary View {.unnumbered}
+
+```{python}
+all_tokens = " ".join(sample_df["clean_text"]).split()
+token_counts = Counter(all_tokens)
+pd.DataFrame(token_counts.most_common(20), columns=["token", "count"])
+```
+
+## Step 4: Create TF-IDF Features {.unnumbered}
+
+```{python}
+vectorizer = TfidfVectorizer(max_features=500, stop_words="english")
+X = vectorizer.fit_transform(sample_df["clean_text"])
+
+tfidf_df = pd.DataFrame(X.toarray(), columns=vectorizer.get_feature_names_out())
+tfidf_df.insert(0, "source", sample_df["source"])
+tfidf_df.head()
+```
+
+## Step 5: Interpret Top Terms {.unnumbered}
+
+```{python}
+mean_scores = tfidf_df.drop(columns="source").mean().sort_values(ascending=False).head(20)
+mean_scores
+```
+
+## What Students Should Notice {.unnumbered}
+
+- Cleaning choices strongly affect which terms dominate.
+- TF-IDF emphasizes distinctive terms instead of just frequent ones.
+- This small-scale workflow is the same pattern students will use in `M01_A`, just with a much larger SEC corpus.
+
+## Connection to the Module {.unnumbered}
+
+- `Tutorial 1` introduces raw text to tensor thinking
+- `Tutorial 2` turns cleaned SEC text into numeric features
+- `Lab 1` and `Lab 2` reinforce preprocessing and representation ideas
+- `Assignment 1` scales the same logic to a multi-year rival-company corpus
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Training Paradigms and Fine-Tuning Pipelines"
+subtitle: "Fine-Tuning Pipelines"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: "2026-03-12"
 date-modified: today
@@ -237,3 +237,4 @@ $$\Delta W = B \cdot A \quad \text{where } B \in \mathbb{R}^{d \times r},\; A \i
 - **Lab**: Implement a fine-tuning training loop in PyTorch with a classification head
 - **Tutorial**: Build a LoRA-style adapter from scratch
 - **Assignment**: Fine-tune a model on SEC 10-K risk classification
+

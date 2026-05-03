@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Building Agentic AI: A Practical Walkthrough"
+subtitle: "Building Agentic AI"
 author:
   - name: Nakul R. Padalkar
     affiliations:
@@ -216,3 +216,4 @@ class MasterFinancialAgent:
 # Conclusion
 
 By building the Financial Agent, we demonstrated the practical implementation of the **Neural/Generative Paradigm**. The system exhibits true agency through dynamic task formulation, autonomous tool use, and structured multi-agent coordination. This hands-on curriculum solidifies the transition from basic ML scripting to architecting orchestrator-driven, agentic AI ecosystems.
+

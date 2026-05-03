@@ -1,0 +1,242 @@
+---
+title: "Module 1 - Tutorial 1"
+subtitle: "PyTorch Tensor Foundations for SEC Text"
+number-sections: true
+date: "2026-01-21"
+date-modified: today
+date-format: long
+format:
+    html:
+        code-overflow: wrap
+categories: ["M01:", "Tutorial", "PyTorch", "SEC Text"]
+description: "Step-by-step tutorial introducing PyTorch tensors, vocabulary building, and simple neural text features using small SEC text examples."
+---
+
+## Module Learning Objectives {.unnumbered}
+
+By the end of Module 1, students should be able to:
+
+1. explain the transition from count-based NLP to neural NLP
+2. build simple text representations from SEC-style language
+3. connect vocabularies, vectors, logits, and softmax to early neural text models
+4. prepare text artifacts for later embeddings and classification work
+
+## Tutorial Learning Objectives {.unnumbered}
+
+This tutorial introduces the core PyTorch and text-representation ideas that support:
+
+- `M01_Lab1`: preprocessing SEC 10-K text
+- `M01_Lab2`: moving from counts to learned word vectors
+- `M01_A`: building a first classifier from company filing language
+
+Use a **small sample of SEC text** here so the mechanics stay visible before you scale up in the labs and assignment.
+
+This tutorial is also the first concrete bridge from Module 0 neural-network foundations into early neural NLP.
+
+## How This Tutorial Connects {.unnumbered}
+
+- `M01_Lab1` focuses on preprocessing and text inspection.
+- `M01_Lab2` moves from count-based features into learned representations.
+- `M01_A` asks students to build a first SEC-based classification workflow.
+- `M01_participation1` and `M01_participation2` can draw on the same vocabulary and representation ideas.
+
+## Setup {.unnumbered}
+
+```python
+import re
+from collections import Counter
+
+import torch
+import torch.nn as nn
+```
+
+If you are in Google Colab, PyTorch is already available. Use Colab in the browser for this tutorial.
+
+## Tiny SEC Sample Corpus {.unnumbered}
+
+We start with a miniature filing-style corpus so the tensor logic is easy to inspect.
+
+```python
+sec_sentences = [
+    "Revenue increased due to higher subscription demand.",
+    "Risk factors include supply chain disruption and inflation.",
+    "Management expects continued investment in cloud infrastructure.",
+    "The company recorded impairment charges in the fourth quarter.",
+]
+
+print(sec_sentences[0])
+```
+
+## Tensors as the Foundation {.unnumbered}
+
+Every model input eventually becomes a tensor.
+
+```python
+v = torch.tensor([1.0, 2.0, 3.0])
+M = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
+
+print(v.shape)
+print(M.shape)
+```
+
+## Clean and Tokenize Text {.unnumbered}
+
+```python
+def tokenize(text: str) -> list[str]:
+    text = text.lower()
+    text = re.sub(r"[^a-z\\s]", " ", text)
+    return [tok for tok in text.split() if len(tok) >= 3]
+
+
+tokenized = [tokenize(s) for s in sec_sentences]
+tokenized[:2]
+```
+
+## Build a Vocabulary {.unnumbered}
+
+We map tokens to integer ids so later models can consume them.
+
+```python
+class Vocabulary:
+    PAD = "<PAD>"
+    UNK = "<UNK>"
+
+    def __init__(self, min_freq: int = 1):
+        self.min_freq = min_freq
+        self.token2idx = {self.PAD: 0, self.UNK: 1}
+        self.idx2token = {0: self.PAD, 1: self.UNK}
+
+    def build(self, token_lists: list[list[str]]) -> None:
+        counts = Counter(tok for row in token_lists for tok in row)
+        for token, freq in sorted(counts.items()):
+            if freq >= self.min_freq and token not in self.token2idx:
+                idx = len(self.token2idx)
+                self.token2idx[token] = idx
+                self.idx2token[idx] = token
+
+    def encode(self, tokens: list[str]) -> list[int]:
+        return [self.token2idx.get(tok, 1) for tok in tokens]
+
+    def __len__(self) -> int:
+        return len(self.token2idx)
+
+
+vocab = Vocabulary(min_freq=1)
+vocab.build(tokenized)
+print("Vocabulary size:", len(vocab))
+print(vocab.token2idx)
+```
+
+## Convert Tokens to Tensors {.unnumbered}
+
+```python
+sample_tokens = tokenize(sec_sentences[1])
+sample_ids = vocab.encode(sample_tokens)
+sample_tensor = torch.tensor(sample_ids, dtype=torch.long)
+
+print(sample_tokens)
+print(sample_tensor)
+```
+
+## One-Hot and Bag-of-Words Features {.unnumbered}
+
+Before embeddings, it helps to understand the count-based representation used in Module 1.
+
+```python
+def one_hot(idx: int, vocab_size: int) -> torch.Tensor:
+    vec = torch.zeros(vocab_size)
+    vec[idx] = 1.0
+    return vec
+
+
+def sentence_bow(tokens: list[str], vocab: Vocabulary) -> torch.Tensor:
+    ids = vocab.encode(tokens)
+    return torch.stack([one_hot(i, len(vocab)) for i in ids]).sum(dim=0)
+
+
+bow = sentence_bow(sample_tokens, vocab)
+print("BoW shape:", bow.shape)
+print(bow[:12])
+```
+
+## A Simple Neural Layer {.unnumbered}
+
+This is the first step from raw text features toward the classifier in `M01_A`.
+
+```python
+linear = nn.Linear(len(vocab), 2)
+logits = linear(bow)
+
+print("Logits:", logits)
+```
+
+## From Logits to Probabilities {.unnumbered}
+
+For text classification or next-token prediction, raw scores are usually converted into probabilities with **softmax**.
+
+```python
+probs = torch.softmax(logits, dim=0)
+print("Probabilities:", probs)
+print("Sum:", probs.sum())
+```
+
+## Why Cross-Entropy Matters {.unnumbered}
+
+If the correct label were class `1`, a standard loss would be cross-entropy:
+
+```python
+target = torch.tensor([1], dtype=torch.long)
+loss_fn = nn.CrossEntropyLoss()
+loss = loss_fn(logits.unsqueeze(0), target)
+print("Cross-entropy loss:", float(loss))
+```
+
+This is the same loss logic used in early neural NLP:
+
+- predict the right class for a text example
+- or predict the right next token in a language model
+
+## Neural NLP Bridge {.unnumbered}
+
+The key Module 1 transition is:
+
+`count vectors -> neural features -> logits -> softmax -> cross-entropy`
+
+That is why this tutorial sits between:
+
+- `M01_Lab1`, which focuses on preprocessing and interpretable text inspection
+- `M01_Lab2`, which moves into embeddings and learned semantic representations
+- `M01_A`, which asks you to classify company language
+
+## Why This Matters for Module 1 {.unnumbered}
+
+- `M01_Lab1` asks you to inspect and preprocess SEC filing language.
+- `M01_Lab2` asks you to move beyond counts into learned vector representations.
+- `M01_A` asks you to classify competing companies using features derived from filing text.
+
+This tutorial gives you the representation pipeline underneath all three:  
+`text -> tokens -> ids -> tensor -> features -> model input`
+
+## Recommended Practice {.unnumbered}
+
+Before moving on:
+
+1. Replace the tiny sample corpus with 10-20 sentences from one real SEC filing.
+2. Rebuild the vocabulary and compare vocabulary size.
+3. Inspect which words dominate the Bag-of-Words vector.
+4. Write a short markdown note explaining why this representation loses word order.
+5. Add `torch.softmax` and `CrossEntropyLoss` to your example and explain what each does.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

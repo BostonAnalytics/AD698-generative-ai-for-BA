@@ -1,6 +1,6 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Early Neural Networks & Natural Language Processing"
+title: "Module 1 - Lab 1"
+subtitle: "SEC 10-K NLP Preprocessing Pipeline"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -91,6 +91,8 @@ You are **not** training a model yet. Instead, think of this lab as **asking str
 
 Your answers will be supported by **intermediate outputs**, not final predictions.
 
+At the same time, this lab should prepare you for later neural NLP work. The goal is to understand what your text looks like before you turn it into vectors, embeddings, or classification inputs.
+
 ## Recommended Notebook Pattern {.unnumbered}
 
 Keep the notebook structured as a sequence of small, auditable steps:
@@ -99,6 +101,7 @@ Keep the notebook structured as a sequence of small, auditable steps:
 2. One NLP transformation at a time
 3. Validation output after each transformation
 4. Short interpretation of what the transformation changed
+5. One short bridge note explaining how the cleaned output could later support a neural model
 
 ## Lab Validation Standard {.unnumbered}
 
@@ -108,6 +111,7 @@ After each major NLP step, show at least one of the following:
 - token counts or sentence counts
 - POS or dependency examples
 - a short note explaining what the intermediate output tells you
+- one short note connecting the cleaned representation to later vectorization or classification
 
 If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
 
@@ -163,6 +167,16 @@ digraph NLP {
 ```
 
 Each stage produces **artifacts** that help you answer analytical questions.
+
+## Bridge to Neural NLP {.unnumbered}
+
+By the end of this lab, students should be able to explain how cleaned SEC text could later become:
+
+1. a Bag-of-Words or TF-IDF matrix
+2. an input to a neural text classifier
+3. a source corpus for embeddings or language modeling
+
+This matters because later Module 1 work does not start from raw text again. It builds directly on the preprocessing discipline established here.
 
 
 ## Load and Inspect the Data {.unnumbered}
@@ -325,4 +339,15 @@ Submit word document with answering the questions in addition to the Jupyter not
 > we must first **discipline text into structure**.
 
 This pipeline is the foundation upon which **Bag of Words, TF-IDF, embeddings, and generative models** are built.
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
 

@@ -1,0 +1,180 @@
+---
+title: "Module 5 - Tutorial 1"
+subtitle: "From SEC Chunks to a Working RAG Chain"
+number-sections: true
+date: "2026-03-12"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+categories: ['M05:', 'Tutorial', 'RAG', 'SEC Text']
+---
+
+## Module Learning Objectives
+
+By the end of Module 5, students should be able to:
+
+1. build a retrieval pipeline over course-aligned text data
+2. combine retrieval and generation in a grounded workflow
+3. inspect retrieval quality rather than assuming retrieval works
+4. save reusable RAG artifacts for later evaluation
+
+## Tutorial Learning Objectives
+
+Build a minimum viable RAG pipeline over **course-aligned text data** so you can reuse it in `M05_Lab1`, `M05_Lab2`, and `M05_A`.
+
+Use one of these sources:
+
+- your saved `assignment01/chunks.csv`
+- a small SEC text corpus in `data/SEC-10K-2024`
+- a curated text set in `data/corpora`
+
+## How This Tutorial Connects
+
+- `M05_Lab1` extends this into retrieval diagnostics and chunking comparison.
+- `M05_T2` adds evaluation and auditability.
+- `M05_A` compares prompt-only, RAG, and pretraining-only methods.
+- `M05_Proj` can reuse the same retrieval design decisions in a larger system.
+
+## Architecture
+
+1. Load corpus
+2. Chunk or reuse chunks
+3. Embed and index
+4. Retrieve context
+5. Generate answer
+6. Save retrieval evidence
+
+## Step 1: Load SEC-aligned text
+
+```python
+from pathlib import Path
+import pandas as pd
+
+chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+
+if chunks_path.exists():
+    chunks_df = pd.read_csv(chunks_path)
+    print(chunks_df.head())
+else:
+    print("Fallback: load a small text corpus from data/corpora or SEC files.")
+```
+
+## Step 2: Build document objects
+
+```python
+from langchain_core.documents import Document
+
+docs = [
+    Document(
+        page_content=row["chunk_text"],
+        metadata={
+            "ticker": row.get("ticker"),
+            "year": row.get("year"),
+            "item": row.get("item"),
+            "chunk_id": row.get("chunk_id"),
+        },
+    )
+    for _, row in chunks_df.head(500).iterrows()
+]
+
+print("Documents prepared:", len(docs))
+```
+
+## Step 3: Embeddings + FAISS
+
+```python
+from langchain_community.vectorstores import FAISS
+
+# Replace with your provider or sentence-transformer embedding model.
+# vectorstore = FAISS.from_documents(docs, embed_model)
+
+print("Create a FAISS vectorstore from SEC chunk documents.")
+```
+
+## Step 4: Retriever Interface
+
+```python
+def format_docs(retrieved_docs):
+    return "\n\n".join(
+        f"[{d.metadata.get('ticker')} {d.metadata.get('year')} Item {d.metadata.get('item')}]\n{d.page_content}"
+        for d in retrieved_docs
+    )
+```
+
+## Step 5: Prompt + Chain
+
+```python
+from langchain.prompts import ChatPromptTemplate
+
+prompt = ChatPromptTemplate.from_template(
+    """
+    Answer the question using only the SEC filing context below.
+    If the evidence is missing or weak, say that you do not have enough filing support.
+
+    Question: {question}
+
+    Context:
+    {context}
+    """
+)
+
+print("Wire your chosen chat model to this prompt.")
+```
+
+## Step 6: Query Function
+
+```python
+def ask_rag(question: str) -> str:
+    # retrieved = retriever.get_relevant_documents(question)
+    # context = format_docs(retrieved)
+    # return chain.invoke({"question": question, "context": context})
+    return "TODO: implement with your retriever and model"
+```
+
+## Suggested Practice Queries
+
+Use company-comparison questions that resemble the assignment:
+
+1. How do the two companies describe supply chain risk differently?
+2. Which company emphasizes capital expenditure more strongly in Item 7?
+3. What evidence exists for regulatory or litigation risk?
+
+## Quality Checklist
+
+Before moving on:
+
+1. At least one retrieved chunk is clearly relevant for each test query.
+2. Retrieved metadata identifies company, year, and section.
+3. The answer abstains when the evidence is weak.
+4. You save one retrieval evidence table for later reporting.
+
+## Output Artifact
+
+Export one notebook or script with:
+
+- `ask_rag(question)` function
+- config block (`chunk_size`, `overlap`, `k`)
+- at least three SEC-focused sample Q&A runs
+- one small retrieval evidence table
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

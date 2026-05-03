@@ -1,0 +1,151 @@
+---
+title: "Module 6 - Tutorial 1"
+subtitle: "Designing a Single-Agent SEC Research Workflow"
+number-sections: true
+date: "2026-04-10"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+categories: ["M06:", "Tutorial", "Agentic AI", "SEC Text"]
+description: "Tutorial for building a simple single-agent workflow over SEC filing text with explicit tools, memory, and provenance."
+---
+
+## Module Learning Objectives
+
+By the end of Module 6, students should be able to:
+
+1. explain what makes a system agentic rather than one-shot
+2. design simple tool-using workflows over text evidence
+3. expose provenance and trace information for later review
+4. prepare for multi-role orchestration and project communication
+
+## Tutorial Learning Objectives
+
+Build a simple single-agent system that:
+
+1. receives a financial analysis task
+2. retrieves SEC evidence
+3. drafts a grounded response
+4. records what evidence it used
+
+This stays grounded in the Module 6 sequence while keeping the first build simple.
+
+## Recommended Data
+
+Use one of these:
+
+- `assignment01/chunks.csv`
+- a small saved SEC corpus from earlier modules
+- `data/SEC-10K-2024` with pre-extracted sections
+
+## Agent Pattern for This Module
+
+Keep the first build simple:
+
+1. planner step
+2. retrieval tool
+3. answer synthesis step
+4. audit log step
+
+## How This Tutorial Connects
+
+- `M06_Lab1` pressure-tests trace, evidence, and answer quality.
+- `M06_Lab2` extends the workflow into coordinated roles.
+- `M06_A` expects reproducible, auditable agentic analysis.
+- `M06_Proj` turns the same workflow into a more polished product story.
+
+## Step 1: Load course-aligned SEC artifacts
+
+```python
+from pathlib import Path
+import pandas as pd
+
+chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+chunks_df = pd.read_csv(chunks_path)
+chunks_df.head()
+```
+
+## Step 2: Define a retrieval tool
+
+```python
+def retrieve_sec_chunks(question: str, chunks_df: pd.DataFrame, top_k: int = 5) -> pd.DataFrame:
+    # Replace this placeholder with your actual retrieval logic from M05.
+    sample = chunks_df.head(top_k).copy()
+    sample["query"] = question
+    return sample[["query", "ticker", "year", "item", "chunk_text"]]
+```
+
+## Step 3: Define the single-agent workflow
+
+```python
+def single_agent_sec_analysis(question: str) -> dict:
+    retrieved = retrieve_sec_chunks(question, chunks_df, top_k=5)
+
+    plan = [
+        "retrieve evidence from SEC chunks",
+        "compare the evidence across companies",
+        "draft a grounded answer with limitations",
+    ]
+
+    answer = "TODO: call your model with the retrieved evidence and produce a grounded answer."
+
+    return {
+        "question": question,
+        "plan": plan,
+        "retrieved_rows": retrieved,
+        "answer": answer,
+    }
+```
+
+## Step 4: Add provenance fields
+
+```python
+def build_audit_log(agent_output: dict) -> pd.DataFrame:
+    retrieved = agent_output["retrieved_rows"].copy()
+    retrieved["used_by_agent"] = True
+    return retrieved
+```
+
+## Step 5: Test on one realistic question
+
+```python
+question = "How do the two rival companies describe inflation or supply chain risk differently?"
+result = single_agent_sec_analysis(question)
+
+print(result["plan"])
+print(result["answer"])
+```
+
+## What to inspect
+
+Before moving on, verify:
+
+1. the agent plan is explicit rather than hidden
+2. retrieved evidence is visible in a table
+3. the final answer makes only supportable claims
+4. provenance can be exported as a dataframe
+
+## Why this aligns with Module 6
+
+- `M06_LN1` gives the theoretical language of autonomy, tool use, and orchestration.
+- `M06_LN2` emphasizes practical agent design patterns.
+- `M06_Lab1` should pressure-test the trace, evidence, and answer quality.
+- `M06_A` should extend this into a more complete auditable workflow.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

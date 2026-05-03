@@ -1,0 +1,134 @@
+---
+title: "Module 3 - Tutorial 1"
+subtitle: "SEC Chunk Retrieval Foundations"
+description: "Build a lightweight semantic retriever over SEC text to prepare for the retrieval-focused lab and assignment workflow."
+number-sections: true
+date: "2026-02-15"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+categories: ['M03:', 'Tutorial']
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+---
+
+## Module Learning Objectives
+
+By the end of Module 3, students should be able to:
+
+1. explain how embeddings support retrieval over text corpora
+2. build a simple retrieval layer over SEC chunks
+3. inspect whether retrieved evidence is actually useful
+4. prepare retrieval artifacts for later prompting and project work
+
+## Tutorial Learning Objectives
+
+By the end of this tutorial, you will:
+
+1. Load a small SEC chunk corpus.
+2. Embed those chunks.
+3. Build a FAISS index.
+4. Retrieve the top passages for analyst-style questions.
+5. Inspect whether the retrieved evidence is actually useful.
+
+## How This Tutorial Connects
+
+- `M03_Lab1` extends this into more deliberate retrieval experiments.
+- `M03_Lab2` and `M03_A` build on the same evidence-first workflow.
+- `M03_Proj` can reuse the same retrieval design ideas in a larger product context.
+
+## Setup
+
+```{python}
+from pathlib import Path
+import pandas as pd
+import numpy as np
+import faiss
+from sentence_transformers import SentenceTransformer
+```
+
+## Step 1: Load SEC Chunks
+
+```{python}
+chunks_df = pd.read_csv("../data/assignment01/chunks.csv")
+chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(300)
+chunks_df.head()
+```
+
+## Step 2: Embed the Corpus
+
+```{python}
+embedder = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = embedder.encode(
+    chunks_df["chunk_text"].tolist(),
+    batch_size=32,
+    convert_to_numpy=True,
+    normalize_embeddings=True
+).astype("float32")
+embeddings.shape
+```
+
+## Step 3: Build the Index
+
+```{python}
+index = faiss.IndexFlatIP(embeddings.shape[1])
+index.add(embeddings)
+print("Indexed vectors:", index.ntotal)
+```
+
+## Step 4: Retrieval Function
+
+```{python}
+def retrieve(query: str, k: int = 5) -> pd.DataFrame:
+    q = embedder.encode([query], normalize_embeddings=True).astype("float32")
+    scores, idxs = index.search(q, k)
+    rows = chunks_df.iloc[idxs[0]].copy()
+    rows["score"] = scores[0]
+    return rows[["chunk_id", "company", "item", "score", "chunk_text"]]
+```
+
+## Step 5: Test Queries
+
+```{python}
+queries = [
+    "cybersecurity and data privacy risk",
+    "supply chain disruption and vendor dependency",
+    "regulatory uncertainty and litigation exposure",
+]
+
+for q in queries:
+    print("\\nQUERY:", q)
+    print(retrieve(q, k=3)[["chunk_id", "company", "item", "score"]])
+```
+
+## Why This Matters
+
+This tutorial gives students the retrieval intuition they need before they start prompt design.
+
+It also reinforces an important course habit:
+
+- validate retrieval quality before adding generation
+
+That same logic carries directly into `M03_Lab1` and later project work.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

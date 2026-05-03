@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Colab + GPU + Tensors (Detailed)"
+subtitle: "Colab, GPU, and Tensors"
 logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
 date-modified: today
@@ -14,517 +14,236 @@ author:
         state: MA
 embed-resources: true
 self-contained: true
-format: 
-    revealjs:
-        theme: [../theme/presentation.scss]
-        html-math-method: katex
-        slide-number: c/t
+format:
+  revealjs:
+    theme: [../theme/presentation.scss]
+    html-math-method: katex
+    slide-number: c/t
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
-execute: 
+  data-background-image: "../theme/blank_red.png"
+  data-background-size: 103% auto
+  data-background-opacity: "0.95"
+execute:
   echo: false
-  eval: true
+  eval: false
   warning: false
   message: false
 categories: ['M0:', 'Slides', 'Presentation']
 description: "Presentation slides for Module 0 on Colab + GPU + Tensors (Detailed)."
 ---
 
-## How to print Revealjs slides
+## Why This Lecture Matters
 
-![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+Before students can build neural models, RAG pipelines, or generative AI systems, they need three foundations:
+
+1. A reliable runtime
+2. Correct GPU usage
+3. Basic tensor fluency
+
+Module 0 starts there.
 
 ---
 
-## Has this happened to you?
+## Roadmap
+
+- Why Colab is the default AD698 runtime
+- Runtime setup and persistence rules
+- Google Drive workflow
+- Verifying GPU access
+- Tensor ranks, shapes, and devices
+- Indexing, reshaping, broadcasting, and reductions
+- Why this matters for later labs, assignments, and projects
+
+---
+
+## The Shift to Generative AI
+
+Traditional ML often predicts labels from fixed features.
+Generative AI systems learn richer data distributions and require much more compute.
+
+Why this matters for AD698:
+
+- LLMs, transformers, and embedding models are compute-heavy
+- We need an environment students can access quickly
+- We want the whole course to run in a shared, reproducible notebook workflow
+
+---
+
+## Why Google Colab in AD698?
 
 :::{.columns}
+:::{.column width="55%"}
 
-:::{.column}
-
-- Nakul_Doc_1
-- Nakul_Doc_2_edited
-- Nakul_Doc_3_final
-- Nakul_Doc_4_final_final
-- Nakul_Doc_5_final_final_v1_wednesday
-
- 
-:::
-
-:::{.column}
-![My Life Story Before Git](./M0_lecture01_figures//final.png){width="80%" fig-align="center"}
+- No local CUDA setup required
+- Fast start for Python notebooks
+- GPU access for deep learning
+- Tight integration with Google Drive
+- Easy sharing and reproducibility
+- Works well with the course notebook format
 
 :::
+:::{.column width="45%"}
+
+![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width="90%"}
 
 :::
-
----
-
-## Then this tutorial is for you! 
-
-:::{.columns}
-
-:::{.column}
-
-- We will focus on the tools you _actually_ need to start working collaboratively and putting your work under version control.
-- Git is extremely powerful and sophisticated,
-- and you can do fun things with it (as fun as programming gets!).
-- The :notebook: [documentation](https://git-scm.com/book/en/v2) is very thorough,
-- but can often be overwhelming :exploding_head: if you are just starting.
-
-:::
-
-:::{.column}
-
-![GitHub mascot Professortocat wearing a graduation cap](https://octodex.github.com/images/Professortocat_v2.png){width="60%" fig-align="center"}
-
-:::
-
 :::
 
 ---
 
-## What is Git? 
+## The Basic Colab Workflow
 
-- A distributed version control system for code
-- [Version control]{.uured-bold}: every change you make is tracked and versioned, so it's easy to rollback to an older state, or to keep multiple states in parallel without overwriting each other
-- [Distributed]{.uured-bold}: your copy of the code is but one of many possible copies. 
-- Git provides mechanisms for multiple authors to work on the same code at the same time and to merge their changes together
-
----
-
-## Why you should use Git 
-
-- To be kind to yourself
-- To be kind to your collaborators
-- To ensure your work is reproducible
-
-
-### And because it's fun!
-
-- :man_scientist: :triangular_ruler: It imposes a certain discipline to your programming.
-- :nerd_face::fire: You can be braver when you code: if your new feature breaks, you can revert back to a version that worked!
-- :space_invader: :file_folder: Keeps multiple (older and newer) versions of everything (not just source code)
+1. Open [Google Colab](https://colab.research.google.com/)
+2. Create a new notebook
+3. Rename it clearly
+4. Save it in Drive
+5. Change runtime to GPU when needed
+6. Run cells top to bottom
+7. Save outputs to Drive-backed folders, not just `/content`
 
 ---
 
-## What it can do for you 
+## Runtime and Persistence
 
-:::{.columns}
+Colab is convenient, but it is not persistent by default.
 
-:::{.column width="50%"}
+Key rule:
 
-- [Version Control]{.uured-bold}: Easily track changes to code, data, & notebooks for efficient management & experimentation.
-- [Collaboration]{.uured-bold}: Enable seamless teamwork, code sharing, & joint analysis with colleagues.
-- [Experiment Tracking]{.uured-bold}: Keep records of model iterations, hyperparameters, & analysis approaches.
-- [Reproducibilit & Code Sharing]{.uured-bold}: Document & reproduce results by capturing code & data changes.
-- [Code Sharing]{.uured-bold}: Share reusable code snippets, preprocessing steps, & models.
+- anything stored only in `/content` can disappear after runtime reset
 
-:::
+Students should save:
 
+- notebooks in Drive
+- outputs in Drive-backed folders
+- final deliverables outside the temporary runtime
 
-:::{.column width="50%"}
-
-- [Branching]{.uured-bold}: Experiment with new ideas & analysis directions without disrupting the main workflow.
-- [Integration]{.uured-bold}: Integrate with CI/CD pipelines for automated testing & deployment.
-- [Documentation]{.uured-bold}: Use commits as documentation for analysis steps, aiding reporting.
-- [Career Growth]{.uured-bold}: Mastering Git enhances collaboration, contributing to career advancement.
-
-:::
-
+:::{.callout-warning}
+Restarting the runtime clears variables and temporary files.
 :::
 
 ---
 
+## Switching to GPU
 
-## What we will cover
+When deep-learning code appears in the course, students should:
 
-- [Git](https://git-scm.com/downloads)
-  - The software that allows us to do version control. 
-  - Like the "Track Changes" feature from Microsoft Word, but more rigorous, powerful, and scaled up to multiple files.
-- [GitHub](https://github.com/)
-  - Hosting service for git projects — essentially Dropbox for git projects.
-  - You can host [remote]{.uured-bold} repositories on [GitHub](https://github.com/). 
-  - You edit and work on your content in your [local]{.uured-bold} repository on your computer, and then you send your changes to the remote.
-  - Through the [Command Line Interface (CLI)]{.uured-bold} using [Github-CLI](https://cli.github.com/) or [Git Bash](https://git-scm.com/downloads).
-  - You can interact with Git using the [Graphical User Interface (GUI)]{.uured-bold} provided by [GitHub Desktop](https://desktop.github.com/download/)
-  - You can also use third-party GUIs like [Tower Git](https://www.git-tower.com/) or [GitKraken](https://www.gitkraken.com/git-client).
-- I like [Git CLI](https://cli.github.com/) and [GitKraken](https://www.gitkraken.com/git-client), both are available through [Github Education](https://education.github.com/pack)
+1. Click `Runtime -> Change runtime type`
+2. Select `T4 GPU`
+3. Save and reconnect
+4. Verify the device inside Python
 
----
-
-## Stop and execute
-
-[Have you installed the following on your computer?]{.uured-bold}
-
-1. **Set Up Git Locally**:
-   1. Install Git: [Git Installation](https://git-scm.com/)
-   2. Connect GitHub with Git: [Connecting GitHub to Git](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
-2. **Download GitHub Desktop** (Optional): If you prefer a graphical interface: [GitHub Desktop](https://desktop.github.com/)
-3. **Learn Git and GitHub Basics**: - GitHub offers excellent beginner tutorials: [GitHub Docs - Getting Started](https://docs.github.com/en/get-started)
-
-
-## Setting up Github Education Account
-
-Step 1: Go to the GitHub website: 
-
-- [GitHub Sign-up](https://github.com/signup?source=login)
-
-![GitHub sign-up welcome page showing the account creation form](./M0_lecture01_figures//welcome-sign-up-github-account.png){width="75%" fig-align="center"}
-
-
---- 
-
-## Signing up
-
-### Step 2: Enter Your Details
-
-- Fill in the following details:
-  - **Email Address** -  Provide a valid email address.
-    - Use your personal email address, not your university email address.
-    - We will add your university email address later.
-  - **Password** -  Create a strong password.
-  - **Username** - Choose a unique username for your account.
-  - Select the **Start Puzzle** button to do so, and then follow the prompts.
-
-![GitHub sign-up form prompting for email address and password](./M0_lecture01_figures//welcome-github-enter-email.png){width="75%" fig-align="center"}
-
----
-
-
-## Verifying your account
-
-### Step 3: Verify Your Email Address
-
-  1. GitHub will send a verification email to the address you provided.
-  2. Next, GitHub sends a launch code to your email address. Type that launch code in the **Enter code** dialog, and then press **Enter**.
-  3. After you verify your account, select the **Create account** button.
-
-### Step 4: Choose Your Plan
-
-1. After email verification, GitHub will ask you to choose a plan:
-   - [Free]{.uugreen-bold} - For personal projects and open source contributions.
-   - [Paid]{.uugreen-bold} - For additional features like private repositories for teams.
-   - Most people start with the free plan: [GitHub Pricing](https://github.com/pricing).
-2. Let's Set-up Github Education Benefits: [GitHub Education](https://education.github.com/pack)
-
----
-
-
-## Github Configuration
-
-![Diagram of the Git workflow showing local commits and push to remote repository](./M0_lecture01_figures//git-workflow-simple-vers.webp){width="95%"}
-
-## Setting up Git 
-
-- As a first-time set up, you need to tell Git who you are
-- Open Git Bash and type the following commands:
-  - In case of Windows, open windows terminal and type `Git Bash`
-  - In case of Mac, open terminal and type `Git Bash`
-- Enter (type don't copy and paste) these lines one by one (with appropriate changes):
-  - Go to your [GitHub account email page](https://github.com/settings/emails) and copy your name and email address
-  - use the one that looks like `487492+yourusername@users.noreply.github.com` 
-
-```bash
-git config --global user.name "Nakul Padalkar" 
-git config --global user.email "2807210+nakulpadalkar@users.noreply.github.com "
-```
-
-- Make sure that you include here the same email you used for signing up on GitHub.
-- Test if this worked by typing
-- You only need to do this once on each computer you use once.
-
-``bash
-git config --list
+```python
+import torch
+print(torch.cuda.is_available())
+if torch.cuda.is_available():
+    print(torch.cuda.get_device_name(0))
 ```
 
 ---
 
-## Installation (CLI)
+## Drive Mount Pattern
 
-### Git for Windows
-- [Git for Windows](https://gitforwindows.org/)
+This is the basic pattern we want students to reuse across the course:
 
-
-### MacOS
-
-- [Download Git for MacOS](https://tinyurl.com/git-mac)
-- Alternate: `brew install git`
-
----
-
-## SSH key generation & setup
-
-1. Check if your computer is already connected to GitHub
-
-```bash
-ssh -T git@github.com
+```python
+from google.colab import drive
+drive.mount('/content/drive')
 ```
 
-2. If it gives an error, then you're not connected.
-3. Check what key pairs already exist on your computer.
-  
-```bash
-ls -al ~/.ssh
-```
+And then define stable folders:
 
-4. If SSH has been set up on the computer you’re using, the public and private key pairs will be listed. 
-  1. The file names are either `id_ed25519`/`id_ed25519.pub` or `id_rsa`/`id_rsa.pub` depending on how the key pairs were set up.
-  2. If they don’t exist on your computer, use procedure on the next slide to create them.
-
----
-
-## Generating SSH Keys
-
-5. Use following lines on command line or bash to generate your keys
-
-:::{.panel-tabset}
-
-### Windows
-
-- Run `windows Terminal`, `Powershell`, or `command line`.
-- `ssh-keygen`
-- you will be asked to specify file location. Hit `Enter` on keyboard, this will use default location.
--  Once the key is generated you will be asked to generate a passphrase. You can skip this by hitting `Enter` on keyboard.
-- Repeat the `passphrase` if you entered one, if not then hit `Enter` again.
--  This will generate the key for your computer
-
-### MacOS
-
-- Open a Terminal window. in Macintosh operating systems, find Terminal in the Dock or in the Utilities folder.
-- Enter the following command: `ssh-keygen -b 2048 -t rsa -C "your_username"`.
-- Make sure to replace `your_username` with your own value.
-  - Example: `ssh-keygen -b 2048 -t rsa -C "jsmith"`.
-  - Select enter and follow prompts.
-  - A passphrase isn't required. Supply a passphrase or leave blank and select enter to continue.
-- When successfully generated, you see these messages:
-  - `Your identification has been saved in filename`.
-  - `Your public key has been saved in filename.pub`.
-- Search for the public and private key files in Finder.
-- The two key files are named `id_rsa` and `id_rsa.pub`.
-:::
-
----
-
-## Adding SSH key to GitHub
-
-- Now that we have generated the SSH keys, we will find the SSH files when we check.
- 
-```bash 
-ls -al ~/.ssh
-```
-
-- Follow the steps at [add the SSH key to GitHub](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
-- Copy the public key to GitHub
-
-```bash
-cat ~/.ssh/id_ed25519.pub
+```python
+base = "/content/drive/MyDrive/AD698/M0"
 ```
 
 ---
 
-## Adding SSH key to GitHub
+## Tensor Vocabulary
 
-- Now that we’ve set that up, let’s check our authentication again from the command line.
+- Scalar: one value
+- Vector: 1D tensor
+- Matrix: 2D tensor
+- Tensor: general n-dimensional array
 
-```bash
-ssh -T git@github.com
+In deep learning, dimensions usually encode meaning:
+
+- batch
+- features or channels
+- sequence or time
+- height and width for images
+
+---
+
+## Tensor Shapes Matter
+
+From the lecture notes:
+
+```python
+import torch
+
+x_vec = torch.arange(6)
+x_mat = torch.arange(12).reshape(3, 4)
+x_tensor3 = torch.arange(24).reshape(2, 3, 4)
 ```
 
-It should say, 
-```bash
-Hi <Your Name>! You have successfully authenticated, but GitHub does not provide shell access.
-```
+Students should always inspect:
+
+- rank
+- shape
+- dtype
+- device
 
 ---
 
-# Using GitHub Desktop
+## Common Tensor Operations
 
-## The basic workflow 
+The tutorial and Lab 1 reinforce four operations students must become comfortable with:
 
-### First time
+1. Reshaping
+2. Indexing and slicing
+3. Broadcasting
+4. Reductions such as `sum()` and `mean()`
 
-1. [Clone]{.uured-bold} the repository that you want to work on from GitHub onto your local machine
-2. Work on the files/scripts
-3. Next, you will [commit]{.uured-bold} your changes and include an informative message, e.g. "Plot distribution of precipitation"
-4. Then, you will [push]{.uured-bold} your changes to the remote repository
-
-### Subsequent times
-
-1. [Pull]{.uured-bold} any changes from the remote repository that your collaborators might have made
-2. Repeat steps 2-4 above
+These show up everywhere later in PyTorch models.
 
 ---
 
-## Working with GitHub
+## Why Tensors Matter for Neural Networks
 
-There are two ways to work with GitHub projects.
+Neural networks are just tensor programs with learned parameters.
 
-- Create the repository on GitHub, clone it to your PC, and work on it.[Recommended]{.uured-bold}
-- Work on your project locally then create the repository on GitHub and push it to remote.
+Examples:
 
----
+- input batches are tensors
+- model weights are tensors
+- logits are tensors
+- gradients are tensors
 
-## Create a repo on GitHub {#sec-new-repo}
-
-A More Descriptive Procedure is available at [Create a New Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository)
-
-:::{.columns}
-:::{.column width="50%" .incremental}
-
-1. In the upper-right corner of any page, select `+`, then click New repository.
-2. Optionally, to create a repository with the directory structure and files of an existing repository. See [@sec-template-repo] for more details.
-3. Use the Owner dropdown menu to select the account you want to own the repository.
-4. Choose a repository visibility to be [Public]{.uured-bold}.
-5. Click Create repository.
-6. At the bottom of the resulting Quick Setup page, under "Import code from an old repository".
-7. You can choose to import a project to your new repository. To do so, click Import code.
-
-
-:::
-
-:::{.column width="50%"}
-:::{.r-stack}
-
-![GitHub navigation bar showing the + button to create a new repository](https://docs.github.com/assets/cb-29762/mw-1440/images/help/repository/repo-create-global-nav-update.webp){.fragment .fade-out width="50%" fig-align="center"}
-
-![Repository owner dropdown menu for selecting the account that will own the repo](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
-
-![Repository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
-
-:::
-:::
-:::
+If students do not understand shapes, debugging later models becomes much harder.
 
 ---
 
-## Create a template-repo on GitHub {#sec-template-repo}
+## Course Alignment
 
-A More Descriptive Procedure is available at [Template Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template)
+Module 0 uses this foundation immediately:
 
-:::{.columns}
-:::{.column width="50%" .incremental}
+- **Tutorial 1**: Colab setup, Drive, tensors
+- **Lab 1**: tensor operations and environment checks
+- **Later labs and assignments**: PyTorch models, GPU execution, and reproducible notebooks
 
-1. On GitHub, navigate to the main page of the repository.
-2. Above the file list, click [Use this template]{.uured-bold}.
-3. Select [Create a new repository]{.uured-bold}.
-4. Use the [Owner]{.uured-bold} dropdown menu to select the account you want to own the repository.
-5. Type a name for your repository, and an optional description.
-6. Choose a repository with visibility [Public]{.uured-bold}.
-7. Click [Create repository from template]{.uured-bold}.
-
-
-:::
-
-:::{.column width="50%"}
-:::{.r-stack}
-
-![Use this template button on a GitHub repository page](https://docs.github.com/assets/cb-76823/mw-1440/images/help/repository/use-this-template-button.webp){.fragment .fade-out width="50%" fig-align="center"}
-
-![Repository owner dropdown menu for selecting the account that will own the repo](https://docs.github.com/assets/cb-26656/mw-1440/images/help/repository/create-repository-owner.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
-
-![Repository name text field on the GitHub create repository formRepository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment .fade-in-then-out width="50%" fig-align="center"}
-
-:::
-:::
-:::
+This is why Module 0 begins with infrastructure and tensor fluency instead of jumping directly into models.
 
 ---
 
-## Cloning
+## Key Takeaways
 
-A More Descriptive Procedure is available at [Cloning a Repo](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository)
-
-:::{.columns}
-:::{.column width="50%" .incremental}
-
-1. On GitHub, navigate to the main page of the repository.
-2. Above the list of files, click [**Code**]{.uured-bold}.
-3. Copy the URL for the repository, choosing between HTTPS, SSH, or GitHub CLI.
-4. Open **Git Bash** (for Windows) or **Terminal** (for Mac/Linux).
-5. Change the current working directory to the location where you want the cloned directory.
-6. Type `git clone`, and paste the URL you copied:
-  
-```bash
-git clone https://github.com/YOUR-USERNAME/YOUR-REPOSITORY
-```
-7. Press **Enter** to create your local clone:
-
-:::
-
-:::{.column width="50%"}
-
-:::{.r-stack}
-
-![GitHub Code button dropdown showing the HTTPS clone URL for a repository](https://docs.github.com/assets/cb-13128/images/help/repository/code-button.png){.fragment width="80%" fig-align="center" .fade-out}
-
-![HTTPS URL displayed in the GitHub clone dialog for copying the repository URL](https://docs.github.com/assets/cb-60499/images/help/repository/https-url-clone-cli.png){.fragment width="80%" fig-align="center" .fade-in}
-
-![Repository name text field on the GitHub create repository form](https://docs.github.com/assets/cb-61121/mw-1440/images/help/repository/create-repository-name.webp){.fragment width="80%" fig-align="center" .fade-in-then-out}
-
-:::
-:::
-:::
-
----
-
-## Commit your changes
-
-- Use an informative commit message
-  - (Not great) "Analyze data" 😔
-  - (Better) "Estimate logistic regression" 🎉
-
-- Have a consistent style
-  - Start with an action verb
-  - Capitalize message
-
-- Commits are _cheap_, use them often!
-
-
----
-
-## Push your changes
-
-![Git flow diagram showing cloning, staging, committing, and pushing to remote](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
-
-
-# Using the command line (CLI)
-
-## Working on local machine
-
-- Clone the repository
-
-```bash
-git clone URL
-git clone https://github.com/nakulpadalkar/git-tutorial.git
-```
-
-- Stage your files
-```bash
-git add .
-```
-
-- Commit your change
-
-```bash
-git commit -m "Add example code"
-```
-
-- Push your changes
- 
-```bash
-git push
-```
-
----
-
-## Adding your files to git repository
-
-![Git flow diagram showing cloning, staging, committing, and pushing to remote](./M0_lecture01_figures//gitflow-create-repo.jpg){width="65%" fig-align="center"}
+- Colab is the primary execution environment for AD698 notebooks
+- GPU setup should be deliberate and verified
+- Drive-backed storage is essential for persistence
+- Tensor shape and device awareness are core deep-learning skills
+- Students who master this workflow early move much faster in later modules
 

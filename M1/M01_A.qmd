@@ -61,9 +61,10 @@ Submit three files on Blackboard:
    - Save all required intermediate artifacts to Drive
 
 3. **AI Disclosure Document**
-   - Submit as a separate file
    - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - 
    - This is graded as part of responsible AI use and reproducibility
+   - Submit as a separate file
 
 :::{.callout-tip}
 ## What Strong Submissions Consistently Do Well
@@ -188,7 +189,7 @@ market_df.to_csv("/content/drive/MyDrive/assignment01/company_context.csv")
 
 ## Download 10-K Filings Programmatically
 
-Use the SEC EDGAR submissions API to retrieve the filing index for each company, then download Item 1A (Risk Factors) and Item 7 (MD&A) for years 2020–2024.
+Use the SEC EDGAR submissions API to retrieve the filing index for each company, then download Item 7 (MD&A), Item 7A (Quantitative and Qualitative Disclosures About Market Risk), and Item 8 (Financial Statements and Supplementary Data) for years 2020–2024.
 
 ```python
 import requests
@@ -214,7 +215,7 @@ def get_10k_index(cik: str) -> list:
     return [r for r in records if 2020 <= r["year"] <= 2024]
 ```
 
-For each filing, extract Item 1A and Item 7 text. Store each extracted section as one row in a corpus DataFrame:
+For each filing, extract Item 7, Item 7A, and Item 8 text. Store each extracted section as one row in a corpus DataFrame:
 
 ```python
 corpus_records = []
@@ -224,7 +225,7 @@ corpus_records.append({
     "ticker": ticker,
     "naics_code": naics_code,
     "year": year,
-    "item": item_label,       # "1A" or "7"
+    "item": item_label,       # "7", "7A", or "8"
     "raw_text": extracted_text,
     "char_count": len(extracted_text)
 })
@@ -320,14 +321,14 @@ pd.DataFrame(X.toarray(), columns=vocab).to_csv(
 
 ## Cosine Similarity Between Matched Sections
 
-For each year (2020–2024), compute cosine similarity between the mean TF-IDF vector for Company A's Item 1A and Company B's Item 1A. Repeat for Item 7.
+For each year (2020–2024), compute cosine similarity between the mean TF-IDF vector for Company A and Company B for each target section: Item 7, Item 7A, and Item 8.
 
 ```python
 from sklearn.metrics.pairwise import cosine_similarity
 
 sim_records = []
 for year in range(2020, 2025):
-    for item in ["1A", "7"]:
+    for item in ["7", "7A", "8"]:
         mask_a = (chunks_df["company"] == company_a) & \
                  (chunks_df["year"] == year) & (chunks_df["item"] == item)
         mask_b = (chunks_df["company"] == company_b) & \
@@ -346,7 +347,7 @@ sim_df.describe()
 sim_df.head()
 ```
 
-📊 **Required:** Line chart of cosine similarity over years, with Item 1A and Item 7 as separate lines. Label axes and include a legend.
+📊 **Required:** Line chart of cosine similarity over years, with Item 7, Item 7A, and Item 8 as separate lines. Label axes and include a legend.
 
 # PyTorch BoW Classifier {#sec-classifier}
 
@@ -430,16 +431,17 @@ print(baseline_results)
 
 # Q1: Which 10-K Section Best Separates the Two Rivals? {#sec-q1}
 
-Retrain your PyTorch BoW classifier separately on Item 1A chunks only and on Item 7 chunks only. Report accuracy for each run.
+Retrain your PyTorch BoW classifier separately on Item 7 chunks only, Item 7A chunks only, and Item 8 chunks only. Report accuracy for each run.
 
 | Section | Accuracy |
 |---------|----------|
-| Item 1A – Risk Factors | |
 | Item 7 – MD&A | |
+| Item 7A – Market Risk Disclosures | |
+| Item 8 – Financial Statements | |
 
 📊 **Required:** Bar chart of accuracy by section.
 
-**Answer in your Word document:** Which section produces higher classification accuracy? What does this suggest about where these two companies differentiate their language — operational risk versus strategic narrative?
+**Answer in your Word document:** Which section produces higher classification accuracy? What does this suggest about where these two companies differentiate their language for financial performance modeling across management discussion, market-risk disclosures, and audited financial statements?
 
 
 # Q2: Does a Neural Classifier Outperform a Similarity Baseline? {#sec-q2}
@@ -488,7 +490,17 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Identify which AI-generated outputs were used in the final submission and which were discarded or corrected
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When possible, preserve the original interaction using a share link or export feature. Examples include:
+When possible, preserve the original interaction using a direct share link or export feature.
+
+- Prefer **one continuous chat** for the full assignment workflow so a reviewer can see the reasoning trail in one place
+- If you used multiple chats, share **all chats directly related** to the assignment
+- Do not include confidential, personal, or restricted information in shared chats
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+Examples include:
 
 - **Gemini:** export the response to Google Docs or share the chat if available
 - **ChatGPT:** submit a ChatGPT shared link

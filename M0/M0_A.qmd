@@ -15,7 +15,7 @@ description: "Assignment for Module 0 focused on End-to-End Deep Learning with P
 
 # Important Reminder {.unnumbered}
 
-- This assignment may be completed locally or on [Google Colab]{.uublue-bold} (GPU runtime recommended: Runtime → Change runtime type → T4 GPU).
+- This assignment may be completed locally or on [Google Colab]{.uublue-bold} (GPU runtime recommended: Runtime â†’ Change runtime type â†’ T4 GPU).
 - [The assignment involves both implementation and interpretation. Start early — training takes time.]{.uublue-bold}
 - You may use any generative AI tool, but you must [build and explain the pipeline yourself]{.uugreen-bold}.
 
@@ -34,7 +34,7 @@ Submit three files on Blackboard:
    - Business interpretation of results — no raw code
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
 
 ## Assignment Notebook Pattern
 
@@ -53,14 +53,17 @@ The written report should summarize the business question, exact model results, 
 
 ## AI Use Guidance
 
-If you use AI tools, include the complete prompt and the corresponding output excerpt or exported response, not just a short summary. When available, include a share link or export from tools such as ChatGPT, Claude, Gemini, or Perplexity.
+If you use AI tools, include the complete prompt and the corresponding output excerpt or exported response, not just a short summary. When available, include a direct share link or export from tools such as ChatGPT, Claude, Gemini, or Perplexity. When possible, use one continuous chat for the assignment; if you used multiple chats, share all related chats.
+
+![](./M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+![](./M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
 
 # Objective {.unnumbered}
 
 :::{.callout-note}
 This assignment builds your first complete **data science pipeline** using neural networks, following each stage of the data science life cycle:
 
-**Understand → Collect → Explore → Prepare → Model → Evaluate**
+**Understand â†’ Collect â†’ Explore â†’ Prepare â†’ Model â†’ Evaluate**
 :::
 
 You will apply this lifecycle to two canonical problems:
@@ -103,7 +106,7 @@ print(df.shape)   # (1460, 80) — 79 features + target
 
 ## MNIST {.unnumbered}
 
-[MNIST](http://yann.lecun.com/exdb/mnist/) contains 70,000 grayscale images (28 × 28 pixels) of handwritten digits 0–9:
+[MNIST](http://yann.lecun.com/exdb/mnist/) contains 70,000 grayscale images (28 Ã— 28 pixels) of handwritten digits 0–9:
 60,000 training samples and 10,000 test samples.
 The classification target is the digit class (integer 0–9).
 
@@ -197,7 +200,7 @@ train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=64, shuffle=True
 
 Build an MLP regressor by subclassing `nn.Module`. Requirements:
 
-- At least **3 hidden layers** (suggested: Linear(in → 256), Linear(256 → 128), Linear(128 → 64), Linear(64 → 1))
+- At least **3 hidden layers** (suggested: Linear(in â†’ 256), Linear(256 â†’ 128), Linear(128 â†’ 64), Linear(64 â†’ 1))
 - **`nn.BatchNorm1d`** after the first two linear layers
 - **`nn.ReLU`** activations
 - **`nn.Dropout`** (rate 0.2–0.3) for regularization
@@ -210,7 +213,7 @@ class AmesRegressor(nn.Module):
     def __init__(self, in_features):
         super().__init__()
         # TODO: define your layers here
-        # Suggested: 256 → 128 → 64 → 1 with BatchNorm and Dropout
+        # Suggested: 256 â†’ 128 â†’ 64 â†’ 1 with BatchNorm and Dropout
         pass
 
     def forward(self, x):
@@ -298,14 +301,14 @@ for epoch in range(NUM_EPOCHS):
 ### Instructions
 
 1. **Loss curves**: Plot training and validation MSE vs. epoch on a single figure. Add a dashed vertical line at the best epoch.
-2. **RMSE on original scale**: After running predictions on the test set, convert predictions back to dollars using `np.expm1()`. Compute and print RMSE and R².
-3. **True vs. Predicted scatter**: Scatter `y_true` (x-axis) vs. `y_pred` (y-axis), both in original dollars. Add a red dashed diagonal (perfect-prediction line). Annotate with RMSE and R².
+2. **RMSE on original scale**: After running predictions on the test set, convert predictions back to dollars using `np.expm1()`. Compute and print RMSE and RÂ².
+3. **True vs. Predicted scatter**: Scatter `y_true` (x-axis) vs. `y_pred` (y-axis), both in original dollars. Add a red dashed diagonal (perfect-prediction line). Annotate with RMSE and RÂ².
 
 ### Expected Outputs
 
 - Loss curve figure
 - True vs. Predicted scatter plot
-- Printed metrics: `Test RMSE: $XX,XXX` and `R²: 0.XXXX`
+- Printed metrics: `Test RMSE: $XX,XXX` and `RÂ²: 0.XXXX`
 
 :::{.callout-note}
 **Interpret your results in the report**: Does the model underfit or overfit? Are errors larger for expensive or inexpensive houses? What might explain this pattern?
@@ -320,14 +323,14 @@ for epoch in range(NUM_EPOCHS):
 ### Instructions
 
 1. Load MNIST using `torchvision.datasets.MNIST` as shown in the Datasets section.
-2. Report: total training samples, test samples, image shape (C × H × W), number of classes.
-3. **Sample image grid**: Display a 2-row × 10-column grid showing 2 examples per digit class (0–9). Label each image with its class number.
+2. Report: total training samples, test samples, image shape (C Ã— H Ã— W), number of classes.
+3. **Sample image grid**: Display a 2-row Ã— 10-column grid showing 2 examples per digit class (0–9). Label each image with its class number.
 4. **Class distribution**: Bar chart of the number of training examples per digit class. Is the dataset balanced? Comment in your report.
 5. Split the training set into 85% train / 15% validation, and wrap all three splits (train, val, test) in `DataLoader` with `batch_size=128`.
 
 ### Expected Outputs
 
-- 2×10 image grid
+- 2Ã—10 image grid
 - Class distribution bar chart
 - Printed dataset statistics
 
@@ -337,8 +340,8 @@ for epoch in range(NUM_EPOCHS):
 
 Build an MLP classifier by subclassing `nn.Module`. Requirements:
 
-- **`nn.Flatten()`** to convert each 28×28 image to a 784-vector
-- At least **3 hidden layers** (suggested: 512 → 256 → 128 → 10)
+- **`nn.Flatten()`** to convert each 28Ã—28 image to a 784-vector
+- At least **3 hidden layers** (suggested: 512 â†’ 256 â†’ 128 â†’ 10)
 - **`nn.BatchNorm1d`** and **`nn.ReLU`** after each hidden layer
 - **`nn.Dropout`** for regularization
 - **10 output neurons** with **no activation** — `nn.CrossEntropyLoss` applies log-softmax internally
@@ -377,16 +380,16 @@ Accuracy per batch = `(logits.argmax(dim=1) == y_batch).float().mean()`
 ### Instructions
 
 1. **Training curves**: Two side-by-side plots — (a) loss vs. epoch and (b) accuracy vs. epoch — for both train and validation sets.
-2. **Confusion matrix**: Compute and display the 10×10 confusion matrix on the test set using `sklearn.metrics.ConfusionMatrixDisplay`. Which two digits are most frequently confused?
+2. **Confusion matrix**: Compute and display the 10Ã—10 confusion matrix on the test set using `sklearn.metrics.ConfusionMatrixDisplay`. Which two digits are most frequently confused?
 3. **ROC curves + AUC**: Using a **one-vs-rest** strategy, plot all 10 ROC curves on a single figure. Report the AUC for each digit and the macro-average AUC.
-4. **Sample predictions**: Display a 4-row × 8-column grid (32 images) from the test set. Show the true label and predicted label for each image. Color correct predictions **green** and incorrect ones **red**.
+4. **Sample predictions**: Display a 4-row Ã— 8-column grid (32 images) from the test set. Show the true label and predicted label for each image. Color correct predictions **green** and incorrect ones **red**.
 
 ### Expected Outputs
 
 - Loss + accuracy curves figure (2 subplots)
-- 10×10 confusion matrix heatmap
+- 10Ã—10 confusion matrix heatmap
 - ROC curve figure with per-class AUC in the legend
-- 4×8 sample prediction grid
+- 4Ã—8 sample prediction grid
 
 :::{.callout-tip}
 For ROC curves, use `sklearn.preprocessing.label_binarize` and `sklearn.metrics.roc_curve`.
@@ -407,4 +410,8 @@ Answer these in your written report (3–5 sentences each):
 4. **Confusion patterns**: Identify the most confused digit pair in the MNIST confusion matrix. Why might a neural network struggle to distinguish these two digits? What architectural change might help?
 
 5. **Business decision**: A colleague proposes deploying the MNIST model immediately since test accuracy exceeds 97%. What additional information would you want before agreeing to deployment? Think about edge cases, error costs, and monitoring.
+
+
+
+
 

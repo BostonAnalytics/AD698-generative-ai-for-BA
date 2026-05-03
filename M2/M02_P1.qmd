@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Mathematical Foundations Through Language Modeling"
+subtitle: "Math for Language Modeling"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -1105,3 +1105,4 @@ This is where vanishing/exploding gradients arise.
 - Computes gradients through time  
 - Suffers from vanishing/exploding gradients  
 - Motivates LSTMs, GRUs, Transformers  
+

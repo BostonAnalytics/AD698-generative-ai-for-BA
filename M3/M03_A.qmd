@@ -7,6 +7,8 @@ description: "Assignment for Module 3 focused on M03 A."
 
 # M03 Assignment
 
+Use the same SEC 10-K evaluation scope established in prior modules: Item 7, Item 7A, and Item 8 for both rival companies.
+
 # Submission Instructions {.unnumbered}
 
 Submit three files on Blackboard:
@@ -23,7 +25,7 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 ## Word Report Expectations
@@ -44,6 +46,11 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Include a shared conversation link when the tool supports sharing; if it does not, say so explicitly
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When possible, preserve the original interaction using a share link or export feature. Examples include Gemini export to Google Docs, ChatGPT shared links, Claude shared chat links, and Perplexity shared thread links.
+When\ possible,\ preserve\ the\ original\ interaction\ using\ a\ direct\ share\ link\ or\ export\ feature\.\n-\ Prefer\ \*\*one\ continuous\ chat\*\*\ for\ the\ full\ assignment\ workflow\ so\ a\ reviewer\ can\ see\ the\ reasoning\ trail\ in\ one\ place\n-\ If\ you\ used\ multiple\ chats,\ share\ \*\*all\ chats\ directly\ related\*\*\ to\ the\ assignment\n-\ Do\ not\ include\ confidential,\ personal,\ or\ restricted\ information\ in\ shared\ chats\nExamples\ include\ Gemini\ shared\ chats\ or\ exports,\ ChatGPT\ shared\ links,\ Claude\ shared\ chat\ links,\ and\ Perplexity\ shared\ thread\ links\.
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
+
+
+
+
+

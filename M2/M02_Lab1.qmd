@@ -1,6 +1,6 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Mathematical Foundations Through Language Modeling"
+title: "Module 2 - Lab 1"
+subtitle: "SEC HTML Section Extraction and Corpus Validation"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -441,3 +441,17 @@ Based on your experiment:
 (a) What are two limitations of the word-level LSTM approach for this use case?
 (b) How would replacing the LSTM with a transformer encoder-decoder address these limitations?
 (c) What additional training data (beyond abstracts) would improve performance on patent claims specifically?
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

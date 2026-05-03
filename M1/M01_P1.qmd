@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Early Neural Networks & Natural Language Processing"
+subtitle: "Early Neural Networks and NLP"
 logo: "../theme/figures/met_logotype_black.png"
 date: 03/12/2024
 date-modified: today
@@ -919,6 +919,39 @@ $$
 
 ---
 
+## Softmax and Cross-Entropy in NLP
+
+Why do softmax and cross-entropy matter so much here?
+
+- softmax converts vocabulary or class scores into probabilities
+- cross-entropy rewards the model for assigning high probability to the correct target
+
+These are the same training mechanics behind both:
+
+- text classification
+- neural language modeling
+
+---
+
+## Early Neural Language Model Intuition
+
+The core language-modeling task is:
+
+$$
+P(w_t \mid w_1, w_2, \ldots, w_{t-1})
+$$
+
+The model predicts the next word by:
+
+- representing context words numerically
+- transforming them through learned layers
+- producing logits over the vocabulary
+- applying softmax
+
+This is the bridge from classical NLP to modern LLMs.
+
+---
+
 ## From Classical NLP to Deep Learning
 
 | Era | Method | Strength | Weakness |
@@ -929,3 +962,18 @@ $$
 | 2017+ | Transformers (BERT, GPT) | Context-aware | High compute cost |
 
 > **Key insight**: Each era builds on the last. TF-IDF vectors are still used to initialize or fine-tune modern models in low-resource settings.
+
+---
+
+## Generalization and Domain Shift
+
+Text models can overfit or fail under domain shift just like other neural systems.
+
+This matters in AD698 because later work moves from generic text into:
+
+- business documents
+- SEC filings
+- domain-specific vocabulary
+
+So accuracy on one text source is never the whole story.
+

@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Prompting: Pre-Train, Prompt, and Predict"
+subtitle: "Prompting and Prediction"
 number-sections: true
 date: "2026-03-12"
 date-modified: today
@@ -545,3 +545,4 @@ print(f"Trainable params: {total:,}  vs  768×768 = {768*768:,}")
 
 ::: {#refs}
 :::
+

@@ -1,0 +1,113 @@
+---
+title: "Module 4 - Tutorial 2"
+subtitle: "LoRA-Style Adaptation on Yelp or Sentence Polarity Text"
+number-sections: true
+date: "2026-03-12"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+categories: ['M04:', 'Tutorial']
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+---
+
+## Module Learning Objectives
+
+By the end of Module 4, students should be able to:
+
+1. understand why full retraining is not always necessary for language models
+2. explain the purpose of parameter-efficient adaptation
+3. connect adaptation strategies to practical model tradeoffs
+4. prepare for later applied transformer workflows
+
+## Tutorial Learning Objectives
+
+This tutorial introduces parameter-efficient adaptation in a way that stays connected to text classification.
+
+Recommended dataset:
+
+- `sentence polarity`
+- `yelp`
+
+## How This Tutorial Connects
+
+- `M04_Lab2` and `M04_A` ask students to reason about contextual modeling choices.
+- Later modules benefit when students understand efficient adaptation before jumping into larger model workflows.
+
+## Step 1: LoRA Intuition
+
+Instead of updating a full weight matrix $W$, we learn a low-rank update:
+
+$$
+W' = W + BA
+$$
+
+with rank $r$ much smaller than the full dimension.
+
+## Step 2: Minimal LoRA Layer
+
+```{python}
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class LoRALinear(nn.Module):
+    def __init__(self, in_features, out_features, rank=4, alpha=8):
+        super().__init__()
+        self.weight = nn.Parameter(torch.randn(out_features, in_features) * 0.02, requires_grad=False)
+        self.bias = nn.Parameter(torch.zeros(out_features), requires_grad=False)
+        self.A = nn.Parameter(torch.randn(rank, in_features) * 0.01)
+        self.B = nn.Parameter(torch.zeros(out_features, rank))
+        self.scaling = alpha / rank
+
+    def forward(self, x):
+        base = F.linear(x, self.weight, self.bias)
+        delta = F.linear(F.linear(x, self.A), self.B)
+        return base + self.scaling * delta
+```
+
+## Step 3: Use It in a Small Text Classifier
+
+```{python}
+class LoRAClassifier(nn.Module):
+    def __init__(self, input_dim=32, hidden_dim=64, num_classes=2):
+        super().__init__()
+        self.fc1 = LoRALinear(input_dim, hidden_dim)
+        self.act = nn.ReLU()
+        self.fc2 = LoRALinear(hidden_dim, num_classes)
+
+    def forward(self, x):
+        return self.fc2(self.act(self.fc1(x)))
+```
+
+## What Students Should Learn
+
+- parameter-efficient tuning changes only a small subset of weights
+- this is useful when models are large or compute budgets are limited
+- the idea connects naturally to modern transformer workflows, even if the tutorial uses a simplified text setting
+
+## Connection to the Module
+
+This tutorial supports the labs by keeping the focus on text data and adaptation logic rather than generic tabular examples.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

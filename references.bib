@@ -889,15 +889,6 @@
   eprint        = {2302.00923}
 }
 
-@article{Liu2023ContextWindow,
-  title         = {Lost in the Middle: How Language Models Use Long Contexts},
-  author        = {Liu, Nelson F. and others},
-  journal       = {arXiv preprint arXiv:2307.03172},
-  year          = {2023},
-  archiveprefix = {arXiv},
-  eprint        = {2307.03172}
-}
-
 @article{Ding2023LongNet,
   title         = {LongNet: Scaling Transformers to 1,000,000,000 Tokens},
   author        = {Ding, Shuai and others},
@@ -28694,4 +28685,24 @@ Say Goodbye to Irrelevant Search Results: Cohere Rerank Is Here
   author={Mialon, Gr{\'e}goire and Fourrier, Cl{\'e}mentine and Wolf, Thomas and LeCun, Yann and Scialom, Thomas},
   booktitle={The Twelfth International Conference on Learning Representations},
   year={2023}
+}
+
+@article{liu2023pretrain,
+author = {Liu, Pengfei and Yuan, Weizhe and Fu, Jinlan and Jiang, Zhengbao and Hayashi, Hiroaki and Neubig, Graham},
+title = {Pre-train, Prompt, and Predict: A Systematic Survey of Prompting Methods in Natural Language Processing},
+year = {2023},
+issue_date = {September 2023},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {55},
+number = {9},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3560815},
+doi = {10.1145/3560815},
+abstract = {This article surveys and organizes research works in a new paradigm in natural language processing, which we dub “prompt-based learning.” Unlike traditional supervised learning, which trains a model to take in an input x and predict an output y as P(y|x), prompt-based learning is based on language models that model the probability of text directly. To use these models to perform prediction tasks, the original input x is modified using a template into a textual string prompt x′ that has some unfilled slots, and then the language model is used to probabilistically fill the unfilled information to obtain a final string x̂, from which the final output y can be derived. This framework is powerful and attractive for a number of reasons: It allows the language model to be pre-trained on massive amounts of raw text, and by defining a new prompting function the model is able to perform few-shot or even zero-shot learning, adapting to new scenarios with few or no labeled data. In this article, we introduce the basics of this promising paradigm, describe a unified set of mathematical notations that can cover a wide variety of existing work, and organize existing work along several dimensions, e.g.,&nbsp;the choice of pre-trained language models, prompts, and tuning strategies. To make the field more accessible to interested beginners, we not only make a systematic review of existing works and a highly structured typology of prompt-based concepts but also release other resources, e.g., a website  including constantly updated survey and paperlist.},
+journal = {ACM Comput. Surv.},
+month = jan,
+articleno = {195},
+numpages = {35},
+keywords = {Pre-trained language models, prompting}
 }

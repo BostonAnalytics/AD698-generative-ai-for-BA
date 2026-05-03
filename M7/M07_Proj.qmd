@@ -1,10 +1,55 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "M07 Project Milestone"
+subtitle: "Project Instructions VII - Dashboard, Evaluation, and Deployment Framing"
 number-sections: true
-date: "2024-11-21"
+date: "2026-04-20"
 date-modified: today
 date-format: long
 categories: ['M07:', 'Project']
-description: "Project guidance for Module 7 focused on M07 Project Milestone."
+description: "Project guidance for Module 7 focused on turning the course project into an auditable dashboard and evaluation story."
 ---
+
+# Project Focus
+
+In this final module, teams should frame the project not only as a model or notebook pipeline, but as a **business-facing AI system** with an interface, metrics, and evaluation logic.
+
+## Alignment with Module 7
+
+- `M07_LN1`: layered pipeline and dashboard architecture
+- `M07_LN2`: evaluation, trust, and human-AI interaction
+- `M07_T1` and `M07_T2`: dashboard metrics, narrative, and trust flags
+- `M07_Lab1` and `M07_Lab2`: evidence tables, drill-downs, and stakeholder framing
+
+## Required Project Additions
+
+Teams should add the following to the project package:
+
+1. one dashboard-ready metrics table
+2. one stakeholder-facing summary chart
+3. one drill-down or provenance view that links a metric back to source evidence
+4. one short evaluation section discussing usefulness, trust, and limitations
+
+## Recommended Final Framing
+
+Present the project as:
+
+1. a business problem
+2. a text-data pipeline
+3. an AI or retrieval system
+4. an evaluation framework
+5. a decision-support interface
+
+## Evidence Expectations
+
+Strong final project materials should include:
+
+- exact metrics tied to executed notebook outputs
+- one dashboard or scorecard view
+- one explainability or provenance example
+- one honest failure case
+- one business recommendation based on the dashboard evidence
+
+## Final Reminder
+
+Any written paper deliverable associated with this project should be formatted in **APA 7** and submitted in addition to the complete Jupyter notebook or notebooks.
+

@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Language Modeling Foundations, Transformer Mechanics, and Semantic Geometry"
+subtitle: "Transformer Mechanics and Semantic Geometry"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -1346,3 +1346,4 @@ We now have a richer picture of prompting:
 The next question is:
 
 > How do these prompt-based methods connect to transformer computation, in-context learning, and alignment?
+

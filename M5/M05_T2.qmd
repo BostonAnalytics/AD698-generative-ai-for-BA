@@ -1,0 +1,160 @@
+---
+title: "Module 5 - Tutorial 2"
+subtitle: "Evaluate and Audit Your SEC RAG Pipeline"
+number-sections: true
+date: "2026-03-12"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+    docx:
+        reference-doc: ../theme/APA7.docx
+bibliography: ../references.bib
+csl: ../mis-quarterly.csl
+categories: ['M05:', 'Tutorial', 'Evaluation', 'Auditability']
+---
+
+## Module Learning Objectives
+
+By the end of Module 5, students should be able to:
+
+1. evaluate a retrieval-augmented workflow rather than only running it
+2. identify retrieval, grounding, and answer-quality failures
+3. organize evidence in a way that supports business interpretation
+4. prepare auditable outputs for assignments and project work
+
+## Tutorial Learning Objectives
+
+Take the RAG chain from `M05_T1` and add:
+
+1. an evaluation set
+2. simple scoring hooks
+3. failure logging
+4. reproducible outputs that can feed `M05_Lab2` and `M05_A`
+
+## How This Tutorial Connects
+
+- `M05_Lab2` compares systems and labels failure cases.
+- `M05_A` asks students to defend which answering method is most reliable for business use.
+- `M05_Proj` benefits from the same auditability and failure-analysis habits.
+
+## Step 1: Define an SEC-focused evaluation dataset
+
+```python
+import pandas as pd
+
+eval_set = pd.DataFrame([
+    {
+        "question": "How does Company A describe supply chain risk?",
+        "reference": "Answer should cite filing evidence from the relevant risk section.",
+        "topic": "risk",
+    },
+    {
+        "question": "What does Company B emphasize in management discussion about growth?",
+        "reference": "Answer should ground claims in Item 7 language.",
+        "topic": "md&a",
+    },
+])
+
+print(eval_set)
+```
+
+## Step 2: Build a simple scoring function
+
+```python
+def overlap_relevance(answer: str, reference: str) -> float:
+    a = set(answer.lower().split())
+    r = set(reference.lower().split())
+    return len(a.intersection(r)) / max(1, len(r))
+```
+
+## Step 3: Evaluate the RAG Chain
+
+```python
+def evaluate_rag(ask_fn, dataset: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for _, row in dataset.iterrows():
+        q = row["question"]
+        ref = row["reference"]
+        ans = ask_fn(q)
+        rows.append({
+            "question": q,
+            "topic": row["topic"],
+            "reference": ref,
+            "answer": ans,
+            "relevance": overlap_relevance(ans, ref),
+        })
+    return pd.DataFrame(rows)
+```
+
+## Step 4: Log failure cases
+
+```python
+def tag_failure(answer: str) -> str:
+    lower = answer.lower()
+    if "not enough filing support" in lower or "insufficient evidence" in lower:
+        return "abstained"
+    if len(answer.strip()) < 30:
+        return "under_answered"
+    if "according to" not in lower and "item" not in lower:
+        return "weak_grounding"
+    return "needs_review"
+```
+
+## Step 5: Add a retrieval audit table
+
+```python
+def build_retrieval_audit(question: str, retrieved_docs) -> pd.DataFrame:
+    rows = []
+    for rank, doc in enumerate(retrieved_docs, start=1):
+        rows.append({
+            "question": question,
+            "rank": rank,
+            "ticker": doc.metadata.get("ticker"),
+            "year": doc.metadata.get("year"),
+            "item": doc.metadata.get("item"),
+            "preview": doc.page_content[:180],
+        })
+    return pd.DataFrame(rows)
+```
+
+## Step 6: Save outputs for the lab and assignment
+
+```python
+# results = evaluate_rag(ask_rag, eval_set)
+# results["failure_tag"] = results["answer"].apply(tag_failure)
+# results.to_csv("/content/drive/MyDrive/assignment04/tutorial_eval_results.csv", index=False)
+```
+
+## What a strong output looks like
+
+Your notebook should include:
+
+1. a compact evaluation table
+2. at least one retrieval audit table
+3. at least one clearly labeled failure case
+4. a short interpretation note explaining whether the failure came from retrieval, prompting, or unsupported reasoning
+
+## Bridge Forward
+
+Reuse these artifacts directly in:
+
+- `M05_Lab2` for comparative scoring
+- `M05_A` for the 3x3 answer matrix, grounding discussion, and business recommendation
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

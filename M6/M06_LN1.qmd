@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Agentic AI: A Theoretical Framework for Building Autonomous Systems"
+subtitle: "Agentic AI Foundations"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -780,5 +780,6 @@ The review across applications, taxonomy, governance, and future directions lead
 That is why hybrid systems now matter so much. The next important stage of agentic AI is likely to involve architectures that can combine symbolic reliability with neural adaptability without collapsing one into the other. Achieving that will require better evaluation methods, more architecture-aware governance, stronger coordination protocols, and more deliberate system design.
 
 Ultimately, agentic AI is not only a technical development but a sociotechnical one. Its future depends on whether we can build systems that are not just capable, but trustworthy. That means designing agents that are not only powerful, but governable; not only flexible, but accountable; not only intelligent in performance, but sound in deployment. The long-term challenge is therefore not simply to make agents more capable. It is to make them reliable collaborators within the institutions, infrastructures, and domains in which they will operate.
+
 
 

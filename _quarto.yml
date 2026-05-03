@@ -11,6 +11,8 @@ project:
     - "!data/"
     - "!help-code/"
     - "!deliverables-solutions/"
+    - "!.jupyter_cache/"
+    - "!.venv/"
     - "!M7/"
     - "!M8/"
 editor:  

@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Mathematical Foundations Through Language Modeling"
+subtitle: "Math for Language Modeling"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -336,4 +336,5 @@ print("Generated text samples:")
 for start in ["the", "machine", "companies"]:
     print(f"  [{start}] → {generate_text(start)}")
 ```
+
 

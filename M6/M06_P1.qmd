@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Agentic AI: A Theoretical Framework for Building Autonomous Systems"
+subtitle: "Agentic AI Foundations"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -459,3 +459,4 @@ description: "Presentation slides for Module 6 on Agentic AI: A Theoretical Fram
 - Implement robust AgentOps practices: trace everything, enforce sandboxed execution, and monitor component latency.
 - Utilize standardized protocols like MCP to build scalable, flexible tool networks.
 - The true power of Agentic AI lies in orchestrated, multi-agent workflows operating securely within the Enterprise AI Factory.
+

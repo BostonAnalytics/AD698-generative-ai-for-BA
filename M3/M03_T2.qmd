@@ -1,0 +1,125 @@
+---
+title: "Module 3 - Tutorial 2"
+subtitle: "Prompt Design Over Retrieved SEC Evidence"
+description: "Build prompt templates that work with retrieved SEC passages and support the module's retrieval-to-generation workflow."
+number-sections: true
+date: "2026-02-15"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+categories: ['M03:', 'Tutorial']
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
+---
+
+## Module Learning Objectives
+
+By the end of Module 3, students should be able to:
+
+1. move from retrieval alone to retrieval plus prompting
+2. design prompts that stay grounded in retrieved evidence
+3. recognize when abstention is preferable to unsupported synthesis
+4. prepare prompt patterns for labs, assignments, and project work
+
+## Tutorial Learning Objectives
+
+This tutorial picks up where `M03_T1` leaves off.
+Instead of retrieving SEC chunks only, we now ask:
+
+- how should those chunks be passed into a prompt?
+- what instructions improve groundedness?
+- when should the model abstain?
+
+## How This Tutorial Connects
+
+- `M03_T1` provides the retrieval step.
+- `M03_Lab2` and `M03_A` depend on grounded prompt design.
+- `M03_Proj` can reuse these prompt patterns in a more complete pipeline.
+
+## Step 1: Example Retrieved Context
+
+```{python}
+example_chunks = [
+    {"chunk_id": "c1", "company": "ExampleCo", "item": "1A",
+     "text": "The company faces increasing cybersecurity risks and data privacy obligations."},
+    {"chunk_id": "c2", "company": "ExampleCo", "item": "7",
+     "text": "Management discussed investments in digital infrastructure and internal systems."},
+]
+question = "What technology-related risks are disclosed and how are they being addressed?"
+```
+
+## Step 2: Build a Grounded Prompt
+
+```{python}
+def make_grounded_prompt(question: str, chunks: list[dict]) -> str:
+    context = []
+    for i, c in enumerate(chunks, 1):
+        context.append(
+            f"[Chunk {i} | {c['company']} | Item {c['item']} | {c['chunk_id']}]\n{c['text']}"
+        )
+    joined = "\\n\\n".join(context)
+    return f\"\"\"You are a financial analysis assistant.
+Use only the retrieved SEC evidence below.
+If the answer is not supported, say that the evidence is insufficient.
+
+Question:
+{question}
+
+Retrieved context:
+{joined}
+
+Answer with short citations to the chunk labels.\"\"\"
+
+print(make_grounded_prompt(question, example_chunks))
+```
+
+## Step 3: Compare Weak vs Strong Prompting
+
+```{python}
+weak_prompt = f"Answer this question: {question}"
+strong_prompt = make_grounded_prompt(question, example_chunks)
+print("Weak prompt length:", len(weak_prompt))
+print("Strong prompt length:", len(strong_prompt))
+```
+
+## Step 4: Prompt Design Checklist
+
+A strong retrieval-grounded prompt should:
+
+1. define the assistant role
+2. restrict the model to retrieved evidence
+3. instruct abstention when evidence is weak
+4. require citations or provenance markers
+5. keep context organized and easy to scan
+
+## Why This Matters
+
+This tutorial is intentionally close to `M03_Lab1` and the module assignment logic:
+
+- retrieval quality matters
+- prompt structure matters
+- groundedness matters
+
+The combination of retrieval plus careful prompting becomes the foundation for later RAG work in Modules 5 and the final project.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

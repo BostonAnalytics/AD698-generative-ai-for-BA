@@ -1,5 +1,5 @@
 ---
-title: "AD698 - Applied Generative AI"
+title: "Module 0 - Tutorial 2"
 subtitle: "Hands-On Math for Neural Networks: Activations and SGD"
 number-sections: true
 date: "2026-01-01"
@@ -11,16 +11,28 @@ categories: ['M0:', 'Tutorial']
 description: "Tutorial for Module 0 focused on Hands-On Math for Neural Networks: Activations and SGD."
 ---
 
-# Tutorial goals
+# Module Learning Objectives {.unnumbered}
 
-This tutorial operationalizes Lecture Notes 2 with short, reproducible experiments.
+Module 0 prepares students to read, implement, and debug neural-network training logic. By the end of the module, students should be able to:
 
-You will:
+1. interpret the math behind gradients, activations, and optimization
+2. connect those ideas directly to PyTorch code
+3. reason about learning behavior before moving into larger models and text workflows
+
+## Tutorial Learning Objectives {.unnumbered}
+
+By the end of this tutorial, you should be able to:
 
 1. Visualize activation behavior.
 2. Explore gradients and chain rule numerically.
 3. Compare learning rates in SGD.
 4. Build intuition needed for Lab 2.
+
+## How This Tutorial Connects {.unnumbered}
+
+- `M0_Lab2` asks students to work with the same activation, gradient, and optimization ideas in a more applied way.
+- `M0_A` depends on students being able to explain why models train differently under different settings.
+- Later modules reuse softmax, gradients, and optimization in text classification and language modeling.
 
 
 # Setup
@@ -204,3 +216,17 @@ Before starting Lab 2, verify that you can:
 
 
 # References
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](./M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](./M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

@@ -1,0 +1,130 @@
+---
+title: "Module 2 - Tutorial 2"
+subtitle: "From SEC Chunks to Semantic Neighbors"
+number-sections: true
+date: "2026-02-01"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    code-overflow: wrap
+    toc: true
+    toc-depth: 3
+categories: ['M02:', 'Tutorial']
+description: "Tutorial for Module 2 focused on semantic text representations over SEC chunks."
+execute:
+  echo: true
+  eval: false
+---
+
+## Module Learning Objectives
+
+By the end of Module 2, students should be able to:
+
+1. move from cleaned text to structured representations
+2. compare sparse and dense text representations
+3. interpret semantic similarity in a business-text setting
+4. save representation artifacts for later assignments
+
+## Tutorial Learning Objectives
+
+By the end of this tutorial, you will:
+
+1. Load a small set of SEC chunks.
+2. Build or load dense embeddings.
+3. Compare cosine neighbors for a few finance-related terms or passages.
+4. Interpret what semantic proximity captures that TF-IDF does not.
+
+## Recommended Dataset
+
+Use one of the following:
+
+- `assignment01/chunks.csv` from the SEC 10-K workflow
+- a small local sample of Item 1A or Item 7 chunks
+- a small text subset built from `data/SEC-10K-2024`
+
+## How This Tutorial Connects
+
+- `M02_Lab1` and `M02_Lab2` prepare the text artifacts used here.
+- `M02_A` asks students to reason about whether learned representations improve over count-based features.
+- Later retrieval and RAG modules depend on students understanding semantic neighborhoods early.
+
+## Setup
+
+```{python}
+import pandas as pd
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+from sentence_transformers import SentenceTransformer
+```
+
+## Step 1: Load Chunked SEC Text
+
+```{python}
+chunks_df = pd.read_csv("../data/assignment01/chunks.csv")
+chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(200)
+chunks_df.head()
+```
+
+## Step 2: Build Dense Embeddings
+
+```{python}
+model = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = model.encode(
+    chunks_df["chunk_text"].tolist(),
+    batch_size=32,
+    convert_to_numpy=True,
+    normalize_embeddings=True
+)
+embeddings.shape
+```
+
+## Step 3: Run Similarity Search
+
+```{python}
+query = "cybersecurity risk and data privacy concerns"
+q_vec = model.encode([query], normalize_embeddings=True)
+scores = cosine_similarity(q_vec, embeddings)[0]
+
+top_idx = np.argsort(scores)[-5:][::-1]
+neighbor_df = chunks_df.iloc[top_idx].copy()
+neighbor_df["score"] = scores[top_idx]
+neighbor_df[["chunk_id", "company", "item", "score"]]
+```
+
+## Step 4: Interpret the Neighbors
+
+```{python}
+for _, row in neighbor_df.iterrows():
+    print("=" * 80)
+    print(row["chunk_id"], row["company"], row["item"], round(row["score"], 3))
+    print(row["chunk_text"][:500])
+```
+
+## What Students Should Notice
+
+- Dense embeddings can retrieve meaningfully related chunks even when wording changes.
+- SEC text often groups around risk themes like regulation, privacy, litigation, or macroeconomic uncertainty.
+- Semantic neighbors are useful, but they can also blur distinctions between rival companies if the disclosures are too generic.
+
+## Connection to the Module
+
+- `Tutorial 1` focuses on building the SEC text pipeline
+- `Tutorial 2` shows what semantic proximity looks like on those chunks
+- `Labs` reinforce representation-building and validation
+- `Assignment 2` scales this up to a formal comparison of learned embeddings versus simpler baselines
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Early Neural Networks & Natural Language Processing"
+subtitle: "Early Neural Networks and NLP"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
@@ -196,6 +196,73 @@ plt.tight_layout()
 plt.show()
 ```
 
+## From MLPs to Neural NLP
+
+At this point, the historical story connects directly to the neural-network foundations from Module 0. Once we have:
+
+- vector inputs
+- hidden layers
+- nonlinear activations
+- softmax outputs
+- cross-entropy training
+
+we have the essential ingredients for early neural NLP.
+
+The major conceptual shift is that words are no longer treated only as counts. They can be treated as trainable vectors inside a predictive model.
+
+### The Neural Language Model Idea
+
+The core task of an early neural language model is:
+
+$$
+P(w_t \mid w_1, w_2, \ldots, w_{t-1})
+$$
+
+Instead of relying only on hand-built rules, the model:
+
+1. converts words into vector representations
+2. combines them through hidden layers
+3. produces logits over the vocabulary
+4. applies **softmax** to obtain a probability distribution over next-word candidates
+
+This is exactly where the softmax and cross-entropy ideas from Module 0 become essential in NLP.
+
+### Why This Also Matters for Text Classification
+
+The same pipeline supports document classification:
+
+$$
+\text{text} \rightarrow \text{tokens} \rightarrow \text{vector representation} \rightarrow \text{MLP} \rightarrow \text{softmax over classes}
+$$
+
+So a neural classifier over SEC text is not conceptually separate from a neural language model. Both use learned representations and probabilistic outputs; they differ mainly in the prediction target.
+
+## Count-Based NLP vs Neural NLP
+
+The course begins with count-based methods because they remain useful, interpretable, and computationally simple. But they also have limits:
+
+- Bag-of-Words loses order
+- TF-IDF captures salience but not true semantics
+- sparse vectors do not naturally encode similarity between related words
+
+Neural NLP begins to address these limits by learning **dense representations**:
+
+- similar words can have similar vectors
+- hidden layers can combine local features into richer signals
+- outputs can be trained directly against task objectives with cross-entropy loss
+
+This is the practical bridge from classical NLP to embeddings, language models, and eventually transformers.
+
+## A Short Generalization Note for NLP
+
+Text models can overfit just as easily as any other model. A model that performs well on one corpus may not generalize well to another if:
+
+- the vocabulary changes
+- the genre changes
+- the domain shifts from generic text to business or SEC filings
+
+That is why later modules emphasize validation, error analysis, and domain-aware corpora rather than only training accuracy.
+
 ## Why Neural Networks Stalled Again (1990s)
 
 Despite backpropagation's power, networks struggled through the 1990s due to limited data, insufficient compute, unstable optimization, and competing methods (SVMs). This led to the **second AI Winter**.
@@ -252,3 +319,4 @@ Understanding these limitations — grounded in the history of how these systems
 
 ::: {#refs}
 :::
+

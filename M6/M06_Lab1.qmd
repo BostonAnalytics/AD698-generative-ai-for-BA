@@ -1,26 +1,60 @@
 ---
-title: "AD698 - Applied Generative AI"
-subtitle: "Agentic AI: A Theoretical Framework for Building Autonomous Systems"
+title: "Module 6 - Lab 1"
+subtitle: "Agent Trace and Provenance over SEC Filing Evidence"
 number-sections: true
-date: "2024-11-21"
+date: "2026-04-10"
 date-modified: today
 date-format: long
 engine: jupyter
 categories: ['M06:', 'Lab']
-description: "Hands-on lab for Module 6 focused on Agentic AI: A Theoretical Framework for Building Autonomous Systems."
+description: "Hands-on lab for Module 6 focused on building and auditing a simple agent workflow over SEC text."
 ---
 
 # Lab Overview
 
-This lab should follow the same lightweight course pattern:
+This lab turns Module 6 theory into a small auditable workflow. Students should use SEC filing text from earlier modules and show how an agent:
 
-1. Setup
-2. Core task blocks
-3. Validation after each major step
-4. Short interpretation or reflection
+1. receives a task
+2. retrieves evidence
+3. drafts an answer
+4. exposes its trace
+
+## Alignment with Module 6
+
+- `M06_LN1`: theoretical foundations of agency, autonomy, and coordination
+- `M06_LN2`: practical agent design patterns
+- `M06_T1`: single-agent SEC research workflow
+- `M06_A`: reproducible and responsible agentic analysis
+
+## Recommended Notebook Pattern
+
+1. Setup and data loading
+2. Retrieval tool definition
+3. Single-agent workflow
+4. Trace or audit table
+5. Short reflection on strengths and failure modes
 
 ## Lab Validation Standard
 
-Students should show intermediate evidence, not only final answers. Good checks include workflow traces, tool outputs, comparison tables, or short failure notes when relevant.
+Students should show intermediate evidence, not only final answers. Good checks include:
+
+- retrieved chunk table
+- explicit plan or task list
+- answer plus cited evidence
+- short note on one failure or limitation
 
 If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

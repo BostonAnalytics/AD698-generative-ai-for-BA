@@ -1,0 +1,113 @@
+---
+title: "Module 7 - Tutorial 2"
+subtitle: "Evaluate and Narrate an AI Dashboard"
+number-sections: true
+date: "2026-04-20"
+date-modified: today
+date-format: long
+format:
+    html:
+        toc: true
+        toc-depth: 3
+        code-overflow: wrap
+categories: ["M07:", "Tutorial", "Evaluation", "Dashboards"]
+description: "Tutorial for evaluating a dashboard-driven AI workflow and writing concise business-facing interpretations."
+---
+
+## Module Learning Objectives
+
+By the end of Module 7, students should be able to:
+
+1. evaluate AI dashboards for usefulness and trust
+2. connect summary metrics back to supporting evidence
+3. write concise stakeholder-facing interpretations
+4. distinguish technical performance from decision-support quality
+
+## Tutorial Learning Objectives
+
+Take a dashboard-ready table and add:
+
+1. interpretation text
+2. a trust or quality flag
+3. one drill-down example
+4. an evaluation note for end users
+
+This keeps Module 7 grounded in the lecture-note emphasis on both analytics and human use.
+
+## Step 1: Load the dashboard metrics
+
+```python
+import pandas as pd
+
+dashboard_df = pd.read_csv("/content/drive/MyDrive/module07/dashboard_ready_metrics.csv")
+dashboard_df.head()
+```
+
+## Step 2: Add a stakeholder-facing commentary column
+
+```python
+def build_commentary(row) -> str:
+    if row["status"] == "strong":
+        return f"{row['topic']} appears stable and suitable for business use."
+    if row["status"] == "mixed":
+        return f"{row['topic']} is useful but should be reviewed with supporting evidence."
+    return f"{row['topic']} needs additional inspection before decisions rely on it."
+
+
+dashboard_df["commentary"] = dashboard_df.apply(build_commentary, axis=1)
+dashboard_df
+```
+
+## Step 3: Add a trust flag
+
+```python
+def trust_flag(row) -> str:
+    if row["avg_relevance"] >= 0.75 and row["n_questions"] >= 3:
+        return "high"
+    if row["avg_relevance"] >= 0.5:
+        return "medium"
+    return "low"
+
+
+dashboard_df["trust_flag"] = dashboard_df.apply(trust_flag, axis=1)
+dashboard_df
+```
+
+## Step 4: Create one drill-down example
+
+Show one example where a stakeholder could move from summary metric to supporting evidence.
+
+```python
+example_topic = dashboard_df.loc[0, "topic"]
+print("Prepare one supporting evidence table or answer example for:", example_topic)
+```
+
+## Step 5: Write the business narrative
+
+Each dashboard should answer:
+
+1. What is performing well?
+2. What needs review?
+3. What should the stakeholder do next?
+
+Add a markdown cell in the notebook that interprets the table in 1-2 short paragraphs.
+
+## How This Tutorial Connects
+
+- `M07_Lab2` pressure-tests the dashboard logic and narrative.
+- `M07_A` turns notebook evidence into an APA 7 report plus full notebook.
+- `M07_Proj` should present a polished, auditable AI decision-support flow.
+
+## AI Use and Share Links {.unnumbered}
+
+If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+
+![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+
+![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+
+When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+
+Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+
+

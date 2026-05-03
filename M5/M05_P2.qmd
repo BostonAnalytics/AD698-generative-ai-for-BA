@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "M05 P2 - RAG Generation, Evaluation, and Production"
+subtitle: "Generation, Evaluation, and Production RAG"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -263,4 +263,5 @@ For `M05_A.qmd`, your pipeline should include:
 - Evaluation must cover quality and operations
 - Production RAG requires traceability, not just fluency
 - Assignment 4 should demonstrate comparative reasoning, not only code
+
 
