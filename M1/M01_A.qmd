@@ -47,14 +47,67 @@ These are graded as part of your technical evidence. Undocumented DataFrames and
 
 # Submission Instructions {.unnumbered}
 
-Submit two files on Blackboard:
+Submit three files on Blackboard:
 
-1. **Word Document (`.docx`)** — maximum 5 pages (excluding cover page and references)
+1. **Word Report (`.docx`)** — maximum 10 pages, APA formatted
    - Answers to Q1–Q3 and Business Recommendation
-   - All required tables and figures embedded inline
+   - Include a title page and references in APA style
+   - Embed all required tables and figures inline and label them clearly
    - No code in this document
 
-2. **Jupyter Notebook (`.ipynb`)** — fully executable on Colab, organized by section
+2. **Jupyter Notebook (`.ipynb`)** — complete and fully executable on Colab, organized by section
+   - Include all required code, outputs, tables, and charts
+   - The notebook must run top-to-bottom in a fresh Colab runtime
+   - Save all required intermediate artifacts to Drive
+
+3. **AI Disclosure Document**
+   - Submit as a separate file
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - This is graded as part of responsible AI use and reproducibility
+
+:::{.callout-tip}
+## What Strong Submissions Consistently Do Well
+
+- Keep the report concise and executive-facing rather than turning it into a notebook transcript
+- Make every number in the report match executed notebook output exactly
+- Save intermediate artifacts cleanly so later questions reuse the same corpus, chunks, vocabulary, and model outputs
+- Show quality checks for extraction, section lengths, and misclassifications instead of only reporting final accuracy
+- Disclose AI use specifically: which tool, for which step, with what prompt, and how the output was verified
+- Preserve enough prompt-and-output context that a grader can understand your reasoning process
+:::
+
+## Word Report Expectations
+
+Use the report to communicate business findings, not to narrate every coding step. Format the report in APA style. A strong report usually follows this structure:
+
+1. **Executive framing (short paragraph)** — state the industry vertical, the two companies, and the business question
+2. **Q1: Corpus construction** — explain what was extracted, what was filtered, and why the corpus is analytically usable
+3. **Q2: Representation and model evidence** — compare TF-IDF vs. classifier results using exact metrics and figures from the notebook
+4. **Q3: Reliability and failure cases** — discuss at least 3 concrete failure modes using notebook evidence
+5. **Business recommendation** — make a portfolio or monitoring recommendation grounded in both text evidence and Yahoo Finance context
+
+For full credit, your report should:
+
+- Use exact values copied from the executed notebook, not rounded guesses or rewritten claims
+- Reference the most important tables and charts directly in the surrounding prose
+- Interpret the evidence in business language, not only technical language
+- Present figures and tables with readable titles, labels, and captions
+- Avoid contradictions between the report and the notebook
+- End with a clear recommendation, limitation, and next step
+
+## Notebook Reproducibility Standard
+
+`Fully executable on Colab` means a grader can run the notebook from top to bottom in a fresh runtime without repairing hidden state. Your notebook should:
+
+- Mount Drive once and define paths once near the top
+- Install and import packages in a single setup section
+- Execute in linear order without duplicated blocks that redefine core variables inconsistently
+- Save intermediate artifacts (`company_context.csv`, `corpus.csv`, `chunks.csv`, `tfidf_matrix.csv`, `vocab.json`, model weights) before later sections reuse them
+- Include short markdown cells that explain what each major section is doing and how to interpret outputs
+- Show extraction-quality diagnostics such as missing-section counts, section-length summaries, and sample extracted rows
+- Show model-evaluation evidence such as accuracy, confusion matrix, and a small misclassification table
+
+Avoid notebooks that depend on manually rerunning cells out of order, local file paths, hidden variables from earlier experiments, or report claims that are not supported by executed outputs.
 
 Suggested notebook structure:
 
@@ -421,14 +474,39 @@ Refer to your top-20 discriminating terms bar chart (Section 4) and your Yahoo F
 | Top-20 TF-IDF terms chart | In notebook + Word doc |
 | Cosine similarity over years chart | In notebook + Word doc |
 | Confusion matrix heatmap | In notebook + Word doc |
+| AI disclosure document | Blackboard submission |
 
 # Use of Generative AI {.unnumbered}
 
 You may use generative AI tools for code assistance, debugging, and explanation. You must:
 
 - List every tool used
+- State exactly which task each tool supported (for example: regex debugging, notebook refactoring, narrative editing, chart caption drafting)
 - Include the prompts you submitted
-- Explain how you validated the output
+- Include a shared conversation link when the tool supports sharing; if it does not, say so explicitly
+- Include the complete prompt and the corresponding output excerpt or exported response, not only a one-line summary
+- Identify which AI-generated outputs were used in the final submission and which were discarded or corrected
+- Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-Submit AI disclosure as a separate document or as an appendix to your Word submission.
+When possible, preserve the original interaction using a share link or export feature. Examples include:
+
+- **Gemini:** export the response to Google Docs or share the chat if available
+- **ChatGPT:** submit a ChatGPT shared link
+- **Claude:** submit a Claude shared chat link
+- **Perplexity:** submit a shared thread link
+
+If a share link is not available, include the full prompt and the relevant output in the disclosure document as screenshots or copied text.
+
+Your AI disclosure should include the following fields:
+
+1. Tool name and provider
+2. Date used
+3. Task supported
+4. Complete prompt(s)
+5. Share link(s), if available
+6. Output excerpt(s) or exported response used in final submission
+7. Validation steps you performed
+8. Corrections you made after validation
+
+Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
 

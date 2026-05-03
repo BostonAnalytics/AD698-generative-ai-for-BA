@@ -6,3 +6,44 @@ description: "Assignment for Module 6 focused on M06 A."
 ---
 
 # M06 Assignment
+
+# Submission Instructions {.unnumbered}
+
+Submit three files on Blackboard:
+
+1. **Word Report (`.docx`)** — maximum 10 pages, APA formatted
+   - Include a title page and references in APA style
+   - Embed all required figures and tables inline and label them clearly
+   - Use professional business writing; no code in this document
+
+2. **Jupyter Notebook (`.ipynb`)** — complete and fully executable on Colab, organized by section
+   - Include all required code, outputs, tables, and charts
+   - The notebook must run top-to-bottom in a fresh Colab runtime
+   - Save all required intermediate artifacts to Drive
+
+3. **AI Disclosure Document**
+   - Submit as a separate file
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and share links when available
+   - This is graded as part of responsible AI use and reproducibility
+
+## Word Report Expectations
+
+Use the report to communicate business findings, not to narrate every coding step. A strong report should use exact values from the executed notebook, reference the most important charts and tables directly in the prose, interpret the evidence in business language, and end with a clear recommendation, limitation, and next step.
+
+## Notebook Reproducibility Standard
+
+`Fully executable on Colab` means a grader can run the notebook from top to bottom in a fresh runtime without repairing hidden state. Avoid local paths, hidden variables, duplicated blocks that redefine core objects, or report claims that are not supported by executed outputs.
+
+# Use of Generative AI {.unnumbered}
+
+You may use generative AI tools for code assistance, debugging, and explanation. You must:
+
+- List every tool used
+- State exactly which task each tool supported
+- Include the complete prompt and the corresponding output excerpt or exported response
+- Include a shared conversation link when the tool supports sharing; if it does not, say so explicitly
+- Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
+
+When possible, preserve the original interaction using a share link or export feature. Examples include Gemini export to Google Docs, ChatGPT shared links, Claude shared chat links, and Perplexity shared thread links.
+
+Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
