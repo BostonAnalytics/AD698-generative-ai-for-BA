@@ -1,0 +1,209 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Module 2 - Tutorial 2\"\n",
+        "subtitle: \"From SEC Chunks to Semantic Neighbors\"\n",
+        "number-sections: true\n",
+        "date: \"2026-02-01\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "format:\n",
+        "  html:\n",
+        "    code-overflow: wrap\n",
+        "    toc: true\n",
+        "    toc-depth: 3\n",
+        "categories: ['M02:', 'Tutorial']\n",
+        "description: \"Tutorial for Module 2 focused on semantic text representations over SEC chunks.\"\n",
+        "execute:\n",
+        "  echo: true\n",
+        "  eval: false\n",
+        "---\n",
+        "\n",
+        "## Module Learning Objectives\n",
+        "\n",
+        "By the end of Module 2, students should be able to:\n",
+        "\n",
+        "1. move from cleaned text to structured representations\n",
+        "2. compare sparse and dense text representations\n",
+        "3. interpret semantic similarity in a business-text setting\n",
+        "4. save representation artifacts for later assignments\n",
+        "\n",
+        "## Tutorial Learning Objectives\n",
+        "\n",
+        "By the end of this tutorial, you will:\n",
+        "\n",
+        "1. Load a small set of SEC chunks.\n",
+        "2. Build or load dense embeddings.\n",
+        "3. Compare cosine neighbors for a few finance-related terms or passages.\n",
+        "4. Interpret what semantic proximity captures that TF-IDF does not.\n",
+        "\n",
+        "## Recommended Dataset\n",
+        "\n",
+        "Use one of the following:\n",
+        "\n",
+        "- `assignment01/chunks.csv` from the SEC 10-K workflow\n",
+        "- a small local sample of Item 1A or Item 7 chunks\n",
+        "- a small text subset built from `data/SEC-10K-2024`\n",
+        "\n",
+        "## How This Tutorial Connects\n",
+        "\n",
+        "- `M02_Lab1` and `M02_Lab2` prepare the text artifacts used here.\n",
+        "- `M02_A` asks students to reason about whether learned representations improve over count-based features.\n",
+        "- Later retrieval and RAG modules depend on students understanding semantic neighborhoods early.\n",
+        "\n",
+        "## Setup"
+      ],
+      "id": "5837b227"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "from sklearn.metrics.pairwise import cosine_similarity\n",
+        "from sentence_transformers import SentenceTransformer"
+      ],
+      "id": "14e592b1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 1: Load Chunked SEC Text"
+      ],
+      "id": "98e3a4bf"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "chunks_df = pd.read_csv(\"../data/assignment01/chunks.csv\")\n",
+        "chunks_df = chunks_df[[\"chunk_id\", \"company\", \"item\", \"chunk_text\"]].dropna().head(200)\n",
+        "chunks_df.head()"
+      ],
+      "id": "c8f91e80",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 2: Build Dense Embeddings"
+      ],
+      "id": "4868112c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "model = SentenceTransformer(\"all-MiniLM-L6-v2\")\n",
+        "embeddings = model.encode(\n",
+        "    chunks_df[\"chunk_text\"].tolist(),\n",
+        "    batch_size=32,\n",
+        "    convert_to_numpy=True,\n",
+        "    normalize_embeddings=True\n",
+        ")\n",
+        "embeddings.shape"
+      ],
+      "id": "678045a0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 3: Run Similarity Search"
+      ],
+      "id": "565eacf9"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "query = \"cybersecurity risk and data privacy concerns\"\n",
+        "q_vec = model.encode([query], normalize_embeddings=True)\n",
+        "scores = cosine_similarity(q_vec, embeddings)[0]\n",
+        "\n",
+        "top_idx = np.argsort(scores)[-5:][::-1]\n",
+        "neighbor_df = chunks_df.iloc[top_idx].copy()\n",
+        "neighbor_df[\"score\"] = scores[top_idx]\n",
+        "neighbor_df[[\"chunk_id\", \"company\", \"item\", \"score\"]]"
+      ],
+      "id": "9a3ea8c7",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 4: Interpret the Neighbors"
+      ],
+      "id": "e6c2a60b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "for _, row in neighbor_df.iterrows():\n",
+        "    print(\"=\" * 80)\n",
+        "    print(row[\"chunk_id\"], row[\"company\"], row[\"item\"], round(row[\"score\"], 3))\n",
+        "    print(row[\"chunk_text\"][:500])"
+      ],
+      "id": "7f6c85d1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## What Students Should Notice\n",
+        "\n",
+        "- Dense embeddings can retrieve meaningfully related chunks even when wording changes.\n",
+        "- SEC text often groups around risk themes like regulation, privacy, litigation, or macroeconomic uncertainty.\n",
+        "- Semantic neighbors are useful, but they can also blur distinctions between rival companies if the disclosures are too generic.\n",
+        "\n",
+        "## Connection to the Module\n",
+        "\n",
+        "- `Tutorial 1` focuses on building the SEC text pipeline\n",
+        "- `Tutorial 2` shows what semantic proximity looks like on those chunks\n",
+        "- `Labs` reinforce representation-building and validation\n",
+        "- `Assignment 2` scales this up to a formal comparison of learned embeddings versus simpler baselines\n",
+        "\n",
+        "## AI Use and Share Links {.unnumbered}\n",
+        "\n",
+        "If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.\n",
+        "\n",
+        "![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width=\"80%\" fig-align=\"center\"}\n",
+        "\n",
+        "![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width=\"80%\" fig-align=\"center\"}\n",
+        "\n",
+        "When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.\n",
+        "\n",
+        "Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.\n"
+      ],
+      "id": "ce22ced2"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

@@ -56,7 +56,10 @@ In deep learning, dimensions encode meaning:
 A shape mismatch error is usually a math-model mismatch, not just a coding bug.
 
 ```{python}
-#| label: fig-shape-demo
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: shape-demo
 #| fig-cap: "Tensor shape examples used in neural pipelines"
 #| fig-alt: "Text output showing shape attributes of a 1D vector (6,), 2D matrix (3, 4), and 3D tensor (2, 3, 4) in PyTorch."
 import torch
@@ -75,7 +78,9 @@ print("3D tensor shape:", x_tensor3.shape)
 For a linear model:
 
 $$
+\begin{align}
 \hat{y} = Xw + b
+\end{align}
 $$
 
 where $X \in \mathbb{R}^{n \times d}$, $w \in \mathbb{R}^{d}$, and $b \in \mathbb{R}$.
@@ -91,7 +96,9 @@ A derivative gives local slope in 1D.
 A gradient is the vector of partial derivatives:
 
 $$
+\begin{align}
 \nabla f(\theta) = \left[\frac{\partial f}{\partial \theta_1}, \dots, \frac{\partial f}{\partial \theta_p}\right]^\top
+\end{align}
 $$
 
 The negative gradient points toward steepest local decrease.
@@ -101,7 +108,9 @@ The negative gradient points toward steepest local decrease.
 If $L$ depends on $z$, and $z$ depends on $w$:
 
 $$
+\begin{align}
 \frac{\partial L}{\partial w} = \frac{\partial L}{\partial z}\frac{\partial z}{\partial w}
+\end{align}
 $$
 
 Backpropagation applies this rule layer-by-layer [@Goodfellow.Bengio.Courville.2016].
@@ -109,13 +118,14 @@ Backpropagation applies this rule layer-by-layer [@Goodfellow.Bengio.Courville.2
 
 # Activation functions and why they matter
 
-Without nonlinear activations, stacked layers collapse to one linear map.
-Activations create expressive function classes.
+Without nonlinear activations, stacked layers collapse to one linear map. Activations create expressive function classes.
 
 ## Sigmoid
 
 $$
+\begin{align}
 \sigma(x)=\frac{1}{1+e^{-x}}
+\end{align}
 $$
 
 Range $(0,1)$, useful for binary probability outputs.
@@ -124,7 +134,9 @@ Can saturate for large $|x|$ and produce tiny gradients.
 ## Tanh
 
 $$
+\begin{align}
 \tanh(x)=\frac{e^x-e^{-x}}{e^x+e^{-x}}
+\end{align}
 $$
 
 Range $(-1,1)$, centered around zero.
@@ -133,18 +145,21 @@ Still saturates at extremes.
 ## ReLU
 
 $$
+\begin{align}
 \mathrm{ReLU}(x)=\max(0,x)
+\end{align}
 $$
 
-Computationally simple, sparse activations, strong default in hidden layers.
-Potential issue: dead ReLU neurons.
+Computationally simple, sparse activations, strong default in hidden layers.  Potential issue: dead ReLU neurons.
 
 ## Softmax
 
 For logits $z_i$:
 
 $$
+\begin{align}
 \mathrm{softmax}(z_i)=\frac{e^{z_i}}{\sum_j e^{z_j}}
+\end{align}
 $$
 
 Maps logits to a probability simplex for multiclass tasks.
@@ -152,23 +167,23 @@ Maps logits to a probability simplex for multiclass tasks.
 ```{python}
 #| label: fig-activations
 #| fig-cap: "Sigmoid, tanh, and ReLU on a shared input grid"
-#| fig-alt: "Line plot comparing three activation functions over the range -6 to 6: sigmoid (S-curve bounded 0 to 1), tanh (S-curve bounded -1 to 1), and ReLU (zero for negative inputs, linear for positive inputs)."
+#| fig-alt: "Line plot comparing three activation functions over the range -3 to 3: sigmoid (S-curve bounded 0 to 1), tanh (S-curve bounded -1 to 1), and ReLU (zero for negative inputs, linear for positive inputs)."
 import numpy as np
 import matplotlib.pyplot as plt
 
-x = np.linspace(-6, 6, 400)
+x = np.linspace(-3, 3, 400)
 sigmoid = 1 / (1 + np.exp(-x))
 tanh = np.tanh(x)
 relu = np.maximum(0, x)
 
-plt.figure(figsize=(9, 5))
+plt.figure(figsize=(6.5, 4.5))
 plt.plot(x, sigmoid, label="sigmoid")
 plt.plot(x, tanh, label="tanh")
 plt.plot(x, relu, label="relu")
 plt.axhline(0, linewidth=1, linestyle="--")
-plt.title("Common Activation Functions")
-plt.xlabel("x")
-plt.ylabel("activation(x)")
+plt.title("Common Activation Functions", fontsize=12, fontweight="bold", loc="left")
+plt.xlabel("x", fontsize=12, fontweight="bold")
+plt.ylabel("activation(x)", fontsize=12, fontweight="bold")
 plt.legend()
 plt.grid(alpha=0.25)
 plt.show()
@@ -184,11 +199,11 @@ import matplotlib.pyplot as plt
 logits = torch.tensor([1.2, 0.3, -0.7, 2.0])
 probs = torch.softmax(logits, dim=0)
 
-plt.figure(figsize=(7, 4))
-plt.bar(range(len(probs)), probs.numpy())
-plt.title("Softmax Output")
-plt.xlabel("Class index")
-plt.ylabel("Probability")
+plt.figure(figsize=(6.5, 4.5))
+plt.bar(range(len(probs)), probs.numpy(), width =0.5)
+plt.title("Softmax Output", fontsize=12, fontweight="bold", loc="left")
+plt.xlabel("Class index", fontsize=12, fontweight="bold")
+plt.ylabel("Probability", fontsize=12, fontweight="bold")
 plt.ylim(0, 1)
 plt.grid(axis="y", alpha=0.25)
 plt.show()
@@ -205,13 +220,17 @@ print("Sum:", probs.sum())
 Training minimizes empirical risk:
 
 $$
+\begin{align}
 \min_\theta \; J(\theta)=\frac{1}{n}\sum_{i=1}^{n}\ell(f_\theta(x_i), y_i)
+\end{align}
 $$
 
 ## Full-batch gradient descent
 
 $$
+\begin{align}
 \theta_{t+1}=\theta_t-\eta\nabla J(\theta_t)
+\end{align}
 $$
 
 Uses all data each step. Stable but expensive for large datasets.
@@ -221,7 +240,9 @@ Uses all data each step. Stable but expensive for large datasets.
 SGD uses one sample (or a mini-batch) per update:
 
 $$
+\begin{align}
 \theta_{t+1}=\theta_t-\eta\nabla J_{\mathcal{B}_t}(\theta_t)
+\end{align}
 $$
 
 where $\mathcal{B}_t$ is a sampled mini-batch.
@@ -270,7 +291,7 @@ y = np.linspace(-3, 3, 200)
 X, Y = np.meshgrid(x, y)
 Z = (X-2)**2 + 4*(Y+1)**2
 
-fig, axes = plt.subplots(1, 2, figsize=(12, 5), sharex=True, sharey=True)
+fig, axes = plt.subplots(2, 1, figsize=(5.75, 10), sharex=True, sharey=True)
 for ax, path, ttl in [
     (axes[0], path_small_lr, "Smaller learning rate"),
     (axes[1], path_large_lr, "Larger learning rate"),
@@ -278,9 +299,9 @@ for ax, path, ttl in [
     ax.contour(X, Y, Z, levels=25)
     ax.plot(path[:, 0], path[:, 1], marker="o", markersize=2)
     ax.scatter([2], [-1], c="red", label="minimum")
-    ax.set_title(ttl)
-    ax.set_xlabel("theta_1")
-    ax.set_ylabel("theta_2")
+    ax.set_title(ttl, fontsize=12, fontweight="bold", loc="left")
+    ax.set_xlabel(r'$\theta_1$', fontsize=12, fontweight="bold")
+    ax.set_ylabel(r'$\theta_2$', fontsize=12, fontweight="bold")
     ax.grid(alpha=0.2)
 
 plt.tight_layout()
@@ -298,6 +319,7 @@ Interpretation:
 
 ```{python}
 #| eval: false
+#| echo: true
 import torch
 
 model = torch.nn.Sequential(
@@ -323,7 +345,7 @@ Each line maps directly to the equations above.
 # Common beginner mistakes
 
 1. Shape mismatch between logits and labels.
-2. Applying softmax before CrossEntropyLoss in PyTorch.
+2. Applying `softmax` before `CrossEntropyLoss` in PyTorch.
 3. Forgetting `optimizer.zero_grad()` each step.
 4. Using a learning rate that is too high.
 5. Treating decreasing training loss as sufficient evidence of generalization.

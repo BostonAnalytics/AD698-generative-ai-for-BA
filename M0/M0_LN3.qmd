@@ -147,7 +147,7 @@ X_aug = np.column_stack([X, np.ones(n)])
 theta = np.linalg.lstsq(X_aug, y, rcond=None)[0]
 w_hat, b_hat = theta[0], theta[1]
 
-fig, axes = plt.subplots(1, 2, figsize=(10.5, 5))
+fig, axes = plt.subplots(1, 2, figsize=(11, 5))
 ax = axes[0]
 ax.scatter(X, y, alpha=0.4, color='steelblue', label='Data')
 xs = np.linspace(X.min(), X.max(), 100)
@@ -279,7 +279,8 @@ $$
 $$
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
 import torch, time
 
 n, d = 10_000, 512
@@ -336,32 +337,52 @@ Minimizing the negative log-likelihood **is equivalent** to Minimizing MSE.  The
 #| fig-cap: "Gaussian noise model. Different σ values produce different 'tightness' around the regression line — motivating why larger σ corresponds to less confidence (higher loss)."
 #| fig-alt: "Two panels. Left: scatter plot with regression line and shaded Gaussian noise bands for two sigma values (narrow and wide). Right: negative log-likelihood as a function of residuals for both sigma values, showing the connection between noise variance and MSE loss."
 #| eval: true
-#| echo: true
-import numpy as np, matplotlib
+#| echo: false
 
+import numpy as np
 import matplotlib.pyplot as plt
 import os
+
 fig_dir = "M0_lecture03_figures"
 os.makedirs(fig_dir, exist_ok=True)
 
 x = np.linspace(-4, 4, 500)
-fig, axes = plt.subplots(1, 2, figsize=(10.5, 4))
-for sigma, color in zip([0.5, 1.0, 2.0], ['blue','orange','green']):
-    pdf = (1/(np.sqrt(2*np.pi)*sigma)) * np.exp(-x**2/(2*sigma**2))
-    axes[0].plot(x, pdf, color=color, lw=1, label=f'σ={sigma}')
-axes[0].set_xlabel('Residual ε = y - ŷ'); axes[0].set_ylabel('Density')
-axes[0].set_title('Gaussian Noise Assumption'); axes[0].legend()
+sigmas = [0.5, 1.0, 2.0]
+colors = ['blue', 'orange', 'green']
 
-# Negative log-likelihood as function of residuals
+fig, axes = plt.subplots(2, 1, figsize=(6.5, 11))
+
+# -----------------------------
+# 1. Gaussian PDFs
+# -----------------------------
+for sigma, color in zip(sigmas, colors):
+    pdf = (1/(np.sqrt(2*np.pi)*sigma)) * np.exp(-x**2/(2*sigma**2))
+    axes[0].plot(x, pdf, color=color, lw=1.4, label=f'σ={sigma}')
+
+axes[0].set_xlabel('Residual ε = y − ŷ', fontsize=12)
+axes[0].set_ylabel('Density', fontsize=12)
+axes[0].set_title('Gaussian Noise Assumption', fontsize=14)
+axes[0].legend()
+
+# -----------------------------
+# 2. Negative Log-Likelihood
+# -----------------------------
 residuals = np.linspace(-4, 4, 200)
-for sigma, color in zip([0.5, 1.0, 2.0], ['blue','orange','green']):
+
+for sigma, color in zip(sigmas, colors):
     nll = residuals**2 / (2*sigma**2) + np.log(np.sqrt(2*np.pi)*sigma)
-    axes[1].plot(residuals, nll, color=color, lw=1, label=f'σ={sigma}')
-axes[1].set_xlabel('Residual'); axes[1].set_ylabel('−log p(y|x)')
-axes[1].set_title('Negative Log-Likelihood (= scaled MSE)'); axes[1].legend()
+    axes[1].plot(residuals, nll, color=color, lw=1.4, label=f'σ={sigma}')
+
+axes[1].axhline(0, color='gray', lw=0.5, alpha=0.5)
+axes[1].set_xlabel('Residual', fontsize=12)
+axes[1].set_ylabel('−log p(y|x)', fontsize=12)
+axes[1].set_title('Negative Log-Likelihood (= scaled MSE)', fontsize=14)
+axes[1].legend()
+
 plt.tight_layout()
 plt.savefig(f"{fig_dir}/fig_normal_dist.png", dpi=130, bbox_inches='tight')
 plt.show()
+
 ```
 
 ## Linear Regression as a Neural Network {#sec-linreg-as-nn}
@@ -383,46 +404,185 @@ This view is crucial because it directly generalizes:
 #| fig-cap: "Linear regression drawn as a single-layer neural network. All d input nodes connect to a single output with linear activation."
 #| fig-alt: "Network diagram with input layer nodes labeled x1 through xd (plus a bias node), each connected by weighted edges to a single output node labeled y-hat, representing linear regression as a one-layer neural network."
 #| eval: true
-#| echo: true
-import numpy as np, matplotlib
+#| echo: false
+# import numpy as np, matplotlib
 
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+# import os
+# fig_dir = "M0_lecture03_figures"
+# os.makedirs(fig_dir, exist_ok=True)
+
+# fig, ax = plt.subplots(figsize=(9, 5))
+# ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis('off')
+
+# # Input nodes
+# input_y = [2, 4, 6, 8]
+# d = len(input_y)
+# for i, y in enumerate(input_y):
+#     circle = plt.Circle((2, y), 0.4, color='steelblue', zorder=5)
+#     ax.add_patch(circle)
+#     label = f'$x_{i+1}$' if i < d-1 else f'$x_d$'
+#     ax.text(1.1, y, label, ha='center', va='center', fontsize=13)
+
+# # Output node
+# out_y = 5
+# circle = plt.Circle((8, out_y), 0.5, color='tomato', zorder=5)
+# ax.add_patch(circle)
+# ax.text(8, out_y, r'$\hat{y}$', ha='center', va='center', fontsize=13, color='white', fontweight='bold')
+
+# # Connections
+# for y in input_y:
+#     ax.annotate('', xy=(7.5, out_y), xytext=(2.4, y),
+#                 arrowprops=dict(arrowstyle='->', color='gray', lw=1.2))
+#     ax.text(4.5, (y + out_y)/2 + 0.1, f'$w_i$', fontsize=9, color='gray', ha='center')
+
+# # Bias
+# ax.text(8, 2.5, f'$+b$', fontsize=12, ha='center', color='dimgray')
+# ax.text(2, 9.3, 'Input Layer\n(d features)', ha='center', fontsize=11)
+# ax.text(8, 9.3, 'Output Layer\n(linear act.)', ha='center', fontsize=11)
+# ax.set_title('Linear Regression as a Single-Layer Neural Network', fontsize=13)
+# plt.tight_layout()
+# plt.savefig(f"{fig_dir}/fig_linear_nn.png", dpi=130, bbox_inches='tight')
+# plt.show()
+from IPython.display import SVG
+import svgwrite
 import os
-fig_dir = "M0_lecture03_figures"
-os.makedirs(fig_dir, exist_ok=True)
 
-fig, ax = plt.subplots(figsize=(9, 5))
-ax.set_xlim(0, 10); ax.set_ylim(0, 10); ax.axis('off')
+def linear_regression_nn_svg(
+    path="M0_lecture03_figures/fig_linear_nn.svg",
+    input_y=None,
+    input_labels=None,
+    output_y=5,
+    node_r=22,
+    colors=None
+):
+    # -----------------------------
+    # Setup
+    # -----------------------------
+    os.makedirs(os.path.dirname(path), exist_ok=True)
 
-# Input nodes
-input_y = [2, 4, 6, 8]
-d = len(input_y)
-for i, y in enumerate(input_y):
-    circle = plt.Circle((2, y), 0.4, color='steelblue', zorder=5)
-    ax.add_patch(circle)
-    label = f'$x_{i+1}$' if i < d-1 else f'$x_d$'
-    ax.text(1.1, y, label, ha='center', va='center', fontsize=13)
+    if input_y is None:
+        input_y = [2, 4, 6, 8]
 
-# Output node
-out_y = 5
-circle = plt.Circle((8, out_y), 0.5, color='tomato', zorder=5)
-ax.add_patch(circle)
-ax.text(8, out_y, r'$\hat{y}$', ha='center', va='center', fontsize=13, color='white', fontweight='bold')
+    if input_labels is None:
+        d = len(input_y)
+        input_labels = [f"x_{i+1}" if i < d-1 else "x_d" for i in range(d)]
 
-# Connections
-for y in input_y:
-    ax.annotate('', xy=(7.5, out_y), xytext=(2.4, y),
-                arrowprops=dict(arrowstyle='->', color='gray', lw=1.2))
-    ax.text(4.5, (y + out_y)/2 + 0.1, f'$w_i$', fontsize=9, color='gray', ha='center')
+    if colors is None:
+        colors = {
+            "input": "steelblue",
+            "output": "tomato",
+            "arrow": "gray",
+            "text": "black"
+        }
 
-# Bias
-ax.text(8, 2.5, f'$+b$', fontsize=12, ha='center', color='dimgray')
-ax.text(2, 9.3, 'Input Layer\n(d features)', ha='center', fontsize=11)
-ax.text(8, 9.3, 'Output Layer\n(linear act.)', ha='center', fontsize=11)
-ax.set_title('Linear Regression as a Single-Layer Neural Network', fontsize=13)
-plt.tight_layout()
-plt.savefig(f"{fig_dir}/fig_linear_nn.png", dpi=130, bbox_inches='tight')
-plt.show()
+    dwg = svgwrite.Drawing(path, size=("900px", "500px"))
+
+    # -----------------------------
+    # Title + Layer Labels
+    # -----------------------------
+    dwg.add(dwg.text(
+        "Linear Regression as a Single-Layer Neural Network",
+        insert=("50%", 40),
+        text_anchor="middle",
+        font_size="22px",
+        font_family="Arial"
+    ))
+
+    dwg.add(dwg.text(
+        "Input Layer (d features)",
+        insert=(150, 80),
+        text_anchor="middle",
+        font_size="16px"
+    ))
+
+    dwg.add(dwg.text(
+        "Output Layer (linear act.)",
+        insert=(750, 80),
+        text_anchor="middle",
+        font_size="16px"
+    ))
+
+    # -----------------------------
+    # Define arrow marker (correct svgwrite pattern)
+    # -----------------------------
+    arrow = dwg.marker(id="arrow", insert=(10, 5), size=(10, 10), orient="auto")
+    arrow.add(dwg.path(d="M0,0 L10,5 L0,10 z", fill=colors["arrow"]))
+    dwg.defs.add(arrow)
+
+    # -----------------------------
+    # Output node position
+    # -----------------------------
+    out_cy = 100 + output_y * 40
+
+    # -----------------------------
+    # Draw input nodes + connections
+    # -----------------------------
+    for label, y in zip(input_labels, input_y):
+        cy = 100 + y * 40
+
+        # Input node
+        dwg.add(dwg.circle(center=(150, cy), r=node_r, fill=colors["input"]))
+
+        # Label
+        dwg.add(dwg.text(
+            f"${label}$",
+            insert=(110, cy + 5),
+            font_size="18px",
+            font_family="Arial"
+        ))
+
+        # Arrow to output
+        dwg.add(dwg.line(
+            start=(150 + node_r, cy),
+            end=(750 - node_r, out_cy),
+            stroke=colors["arrow"],
+            stroke_width=2,
+            **{"marker-end": "url(#arrow)"}
+        ))
+
+        # Weight label
+        mid_x = (150 + node_r + 750 - node_r) / 2
+        mid_y = (cy + out_cy) / 2
+        dwg.add(dwg.text(
+            "$w_i$",
+            insert=(mid_x, mid_y - 5),
+            font_size="14px",
+            fill=colors["arrow"]
+        ))
+
+    # -----------------------------
+    # Output node
+    # -----------------------------
+    dwg.add(dwg.circle(center=(750, out_cy), r=node_r + 5, fill=colors["output"]))
+    dwg.add(dwg.text(
+        "$\\hat{y}$",
+        insert=(750, out_cy + 6),
+        text_anchor="middle",
+        font_size="20px",
+        fill="white",
+        font_family="Arial"
+    ))
+
+    # Bias
+    dwg.add(dwg.text(
+        "$+b$",
+        insert=(750, out_cy + 60),
+        text_anchor="middle",
+        font_size="18px",
+        fill="dimgray"
+    ))
+
+    # -----------------------------
+    # Save SVG
+    # -----------------------------
+    dwg.save()
+    return dwg.tostring()
+
+
+# Generate the figure
+lr_nn = linear_regression_nn_svg()
+SVG(lr_nn)
 ```
 
 

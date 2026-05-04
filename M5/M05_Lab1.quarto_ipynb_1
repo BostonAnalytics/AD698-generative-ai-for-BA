@@ -1,0 +1,279 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Module 5 - Lab 1\"\n",
+        "subtitle: \"RAG Retrieval Diagnostics and Chunking Evaluation\"\n",
+        "number-sections: true\n",
+        "date: \"2026-03-12\"\n",
+        "date-modified: today\n",
+        "date-format: long\n",
+        "engine: jupyter\n",
+        "format:\n",
+        "    html:\n",
+        "        toc: true\n",
+        "        toc-depth: 3\n",
+        "        code-overflow: wrap\n",
+        "    docx:\n",
+        "        reference-doc: ../theme/APA7.docx\n",
+        "bibliography: ../references.bib\n",
+        "csl: ../mis-quarterly.csl\n",
+        "execute:\n",
+        "    echo: true\n",
+        "    eval: false\n",
+        "    warning: false\n",
+        "    message: false\n",
+        "categories: ['M05:', 'Lab']\n",
+        "description: \"Hands-on lab for Module 5 focused on M05 Lecture Note 01: RAG Foundations and Retrieval.\"\n",
+        "---\n",
+        "\n",
+        "## Learning Objectives\n",
+        "\n",
+        "By the end of this lab, you will be able to:\n",
+        "\n",
+        "1. Build a retrieval corpus from course-aligned documents.\n",
+        "2. Compare chunking strategies and explain tradeoffs.\n",
+        "3. Create a vector index and retriever using FAISS.\n",
+        "4. Produce retrieval diagnostics required for Assignment 4.\n",
+        "\n",
+        "## Why This Lab Matters\n",
+        "\n",
+        "Assignment 4 asks you to compare Prompt-only, RAG, and Pretraining-only systems. A weak retriever leads to weak RAG answers, even with a strong model.\n",
+        "\n",
+        "## Recommended Notebook Pattern\n",
+        "\n",
+        "Structure the notebook as:\n",
+        "\n",
+        "1. Setup\n",
+        "2. Document loading\n",
+        "3. Chunking strategy comparison\n",
+        "4. Vector index construction\n",
+        "5. Retrieval benchmark\n",
+        "6. Export diagnostics\n",
+        "7. Short interpretation\n",
+        "\n",
+        "## Lab Validation Standard\n",
+        "\n",
+        "For each major stage, include at least one validation output such as:\n",
+        "\n",
+        "- document counts\n",
+        "- chunk counts\n",
+        "- index size\n",
+        "- latency table\n",
+        "- one short note on retrieval quality and tradeoffs\n",
+        "\n",
+        "If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.\n",
+        "\n",
+        "## Step 0: Setup"
+      ],
+      "id": "5574a431"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "from pathlib import Path\n",
+        "import time\n",
+        "import pandas as pd\n",
+        "\n",
+        "from langchain_community.document_loaders import DirectoryLoader\n",
+        "from langchain.text_splitter import RecursiveCharacterTextSplitter\n",
+        "from langchain_community.vectorstores import FAISS\n",
+        "\n",
+        "# If using NVIDIA endpoints, uncomment:\n",
+        "# from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings\n",
+        "\n",
+        "DATA_DIR = Path(\"./data/corpora\")\n",
+        "print(\"Data dir exists:\", DATA_DIR.exists())"
+      ],
+      "id": "a235d223",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 1: Load Documents"
+      ],
+      "id": "3a4cce13"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "loader = DirectoryLoader(str(DATA_DIR), glob=\"**/*.txt\")\n",
+        "docs = loader.load()\n",
+        "print(\"Documents loaded:\", len(docs))\n",
+        "print(\"First doc chars:\", len(docs[0].page_content) if docs else 0)"
+      ],
+      "id": "89043f58",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 2: Create Two Chunking Strategies"
+      ],
+      "id": "365529af"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "splitter_small = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=80)\n",
+        "splitter_large = RecursiveCharacterTextSplitter(chunk_size=900, chunk_overlap=120)\n",
+        "\n",
+        "chunks_small = splitter_small.split_documents(docs)\n",
+        "chunks_large = splitter_large.split_documents(docs)\n",
+        "\n",
+        "print(\"Small chunks:\", len(chunks_small))\n",
+        "print(\"Large chunks:\", len(chunks_large))"
+      ],
+      "id": "6c28866e",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 3: Build Vector Indexes"
+      ],
+      "id": "27ccd439"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# Replace with your embedding model/provider.\n",
+        "# embed = NVIDIAEmbeddings(model=\"nvidia/nv-embedqa-e5-v5\")\n",
+        "\n",
+        "# Example placeholder: use any embedding class available in your environment.\n",
+        "# vs_small = FAISS.from_documents(chunks_small, embed)\n",
+        "# vs_large = FAISS.from_documents(chunks_large, embed)\n",
+        "\n",
+        "print(\"Create FAISS indexes for both chunking strategies.\")"
+      ],
+      "id": "df3d6264",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 4: Retrieval Test Harness"
+      ],
+      "id": "5f652067"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "queries = [\n",
+        "\t\"What is the main difference between naive and modular RAG?\",\n",
+        "\t\"How does HNSW improve retrieval speed?\",\n",
+        "\t\"When should we abstain instead of answering confidently?\",\n",
+        "]\n",
+        "\n",
+        "def run_retrieval_benchmark(retriever, query_list, k=5):\n",
+        "\trows = []\n",
+        "\tfor q in query_list:\n",
+        "\t\tt0 = time.time()\n",
+        "\t\thits = retriever.get_relevant_documents(q)\n",
+        "\t\tdt_ms = (time.time() - t0) * 1000\n",
+        "\t\trows.append({\n",
+        "\t\t\t\"query\": q,\n",
+        "\t\t\t\"latency_ms\": round(dt_ms, 2),\n",
+        "\t\t\t\"k\": k,\n",
+        "\t\t\t\"top_hit_chars\": len(hits[0].page_content) if hits else 0,\n",
+        "\t\t\t\"hit_count\": len(hits),\n",
+        "\t\t})\n",
+        "\treturn pd.DataFrame(rows)"
+      ],
+      "id": "c96a1c80",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Step 5: Export Retrieval Diagnostics"
+      ],
+      "id": "342507ac"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| eval: false\n",
+        "# df_small = run_retrieval_benchmark(vs_small.as_retriever(search_kwargs={\"k\": 5}), queries)\n",
+        "# df_large = run_retrieval_benchmark(vs_large.as_retriever(search_kwargs={\"k\": 5}), queries)\n",
+        "\n",
+        "# df_small.to_csv(\"M05_lab1_retrieval_small.csv\", index=False)\n",
+        "# df_large.to_csv(\"M05_lab1_retrieval_large.csv\", index=False)\n",
+        "\n",
+        "print(\"Exported diagnostics for Assignment 4 appendix tables.\")"
+      ],
+      "id": "4c4f5f15",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Deliverable for This Lab\n",
+        "\n",
+        "Submit:\n",
+        "\n",
+        "1. One paragraph justifying your final chunking strategy.\n",
+        "2. One CSV table with retrieval latency and hit stats.\n",
+        "3. Two examples where retrieval succeeded and two where it failed.\n",
+        "\n",
+        "## Bridge to Assignment 4\n",
+        "\n",
+        "Reuse these artifacts directly in `M05_A.qmd`:\n",
+        "\n",
+        "1. Final chunking configuration.\n",
+        "2. Retriever configuration (`k`, filter logic, embedding model).\n",
+        "3. Retrieval diagnostics table and failure examples.\n",
+        "\n",
+        "## AI Use and Share Links {.unnumbered}\n",
+        "\n",
+        "If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.\n",
+        "\n",
+        "![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width=\"80%\" fig-align=\"center\"}\n",
+        "\n",
+        "![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width=\"80%\" fig-align=\"center\"}\n",
+        "\n",
+        "When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.\n",
+        "\n",
+        "Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.\n"
+      ],
+      "id": "fbf05792"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "D:\\Repositories\\AD698-generative-ai-for-BA\\.venv\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

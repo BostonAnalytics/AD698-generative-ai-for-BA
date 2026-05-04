@@ -8,7 +8,7 @@ date-format: long
 engine: jupyter
 bibliography: ../references.bib
 categories: ['M0:', 'Colab', 'GPU', 'Tensors', 'Lecture Notes']
-description: "Lecture notes for Module 0 covering Colab + GPU + Tensors (Detailed)."
+description: "Lecture notes for Module 0 covering Colab + GPU + Tensors."
 ---
 
 # Why This Lecture Matters
@@ -62,23 +62,24 @@ As highlighted in *Generative AI Foundations in Python*, Jupyter notebooks enabl
   - You will need to add a payment method, but you will not be charged until you exceed the free tier limits.
   - You will need a government-issued ID for verification purposes.
 
-![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width=80% fig-align="center" fig-alt="Colab Pro Sign Up"}
+![Colab Pro Sign Up](./M0_lecture02_figures/colab-signup.jpeg){width=80% fig-align="center" fig-alt="Colab Pro Sign Up" #fig-colab-signup}
 
 ## Creating a New Notebook
+
 1. Once on the Colab homepage, click on the `New notebook` button. You might get a pop-up like the image below where you can click the button `New notebook` in the lower left corner. If not you can always click `File → New notebook`.
 
-![](./M0_lecture02_figures/newnotebook1.png){width=80% fig-align="center" fig-alt="Image description"}
+![Google Colab Console](./M0_lecture02_figures/newnotebook1.png){width=80% fig-align="center" fig-alt="Google Colab Console" #fig-colab-console}
 
-![](./M0_lecture02_figures/newnotebook2.png){width=80% fig-align="center" fig-alt="Image description"}
+![Create New Notebook](./M0_lecture02_figures/newnotebook2.png){width=60% fig-align="center" fig-alt="Create New Notebook" #fig-newnotebook}
 
 2. This will open a new tab with a fresh notebook where you can start writing and executing Python code.
 
 ## Changing Run-Time
 When running deep-learning scripts, you will need to change from CPU to GPU. To do this, click `Runtime → Change runtime type`, then select `T4 GPU`. Then click `Save`.
 
-![](./M0_lecture02_figures/changeruntime1.png){width=80% fig-align="center" fig-alt="Image description"}
+![Change Runtime](./M0_lecture02_figures/changeruntime1.png){width=80% fig-align="center" fig-alt="Change Runtime" #fig-change-runtime1}
 
-![](./M0_lecture02_figures/changeruntime2.png){width=80% fig-align="center" fig-alt="Image description"}
+![Change Runtime CPU vs GPU](./M0_lecture02_figures/changeruntime2.png){width=80% fig-align="center" fig-alt="Change Runtime CPU vs GPU" #fig-change-runtime2}
 
 :::{.callout-important}
 You are encouraged to sign up to Google Colab with an existing Google account. If you create a new Google account, your GPU usage may be cut off.
@@ -87,15 +88,15 @@ You are encouraged to sign up to Google Colab with an existing Google account. I
 ## Run Python on Your Notebook
 1. To execute Python code, click the ‘run’ button to the left of the cell. This is the circle with the triangle inside.
 
-![](./M0_lecture02_figures/runnotebook1.png){width=20% fig-align="center" fig-alt="Image description"}
+![Run Python Notebook](./M0_lecture02_figures/runnotebook1.png){width=40% fig-align="center" fig-alt="Run Python Notebook" #fig-run-notebook}
 
 2. To change the title of your Google Colab notebook, just click on the title and rename as `AD698_your-bu-userid_SP2025_HW01.ipynb`.
 
-![](./M0_lecture02_figures/runnotebook2.png){width=80% fig-align="center" fig-alt="Image description"}
+![Rename Notebook](./M0_lecture02_figures/runnotebook2.png){width=80% fig-align="center" fig-alt="Rename Notebook" #fig-rename-notebook}
 
 3. To save a copy of your notebook on your local computer. You can navigate to `File → Download` and pick the appropriate extension.
 
-![](./M0_lecture02_figures/runnotebook3.png){width=80% fig-align="center" fig-alt="Image description"}
+![Download Notebook](./M0_lecture02_figures/runnotebook3.png){width=80% fig-align="center" fig-alt="Download Notebook" #fig-download-notebook}
 
 ## Using GPUs and Colab Persistence
 
@@ -114,7 +115,7 @@ Navigate to: Runtime -> Change runtime type -> Hardware accelerator -> pick GPU 
 :::{.callout-warning}
 ## Warning This might create conflicts!
 - However, it's possible to push changes made in colab to the Repo (File -> Save a copy in Github):
-![colab push](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center" fig-alt="colab push"}
+![colab push to GitHub](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center" fig-alt="colab push to github" #fig-colab-push}
 
 - This will make a commit to the Repository.
 :::
@@ -131,30 +132,30 @@ The first thing you need is to have a repository for the project.
 On https://github.com/new you can go ahead and set up a new repository.
 In this example it will be a public repository, but the same works for private ones.
 
-![](./M0_lecture02_figures/github-colab-step1.png){width=100% fig-alt="Image description"}
+![Github Colab Create Repository](./M0_lecture02_figures/github-colab-step1.png){width=90% fig-alt="Github Colab Create Repository" #fig-github-colab-step1}
 
 For this example, we add a `README.md` file and a `.gitignore` based on a Python template under `MIT License`. Once you created the repository, we now need to make sure we can access it by Google Colab environment.
 
 ## Setting up a fine-grained access token on GitHub
 Now we need a **token**. Private access tokens are special passwords that you can configure to have different permissions to your account on GitHub. On the GitHub website, click on **settings** on the menu bar that shows up after clicking your profile photo.
 
-![](./M0_lecture02_figures/github-colab-step2.png){width=100% fig-alt="Image description"}
+![GitHub Colab Step 2](./M0_lecture02_figures/github-colab-step2.png){width=100% fig-alt="GitHub Colab Step 2" #fig-github-colab-step2}
 
 Now scroll down the left side bar and click on **Developer settings** and then click on **Fine-grained tokens** under **Personal access tokens**.
 
-![](./M0_lecture02_figures/github-colab-step3.png){width=100% fig-alt="Image description"}
+![GitHub Colab Step 3](./M0_lecture02_figures/github-colab-step3.png){width=100% fig-alt="GitHub Colab Step 3" #fig-github-colab-step3}
 
 This will open a new tab and you will be able to see a button for creating a new token. For this example, set up this token for 30 days and select this repository only. (For repositories under an organization, **change the resource owner** to the organization where the repository is stored.)
 
-![](./M0_lecture02_figures/github-colab-step4.png){width=100% fig-alt="Image description"}
+![Repository Permissions on github for ColabTesting](./M0_lecture02_figures/github-colab-step4.png){width=100% fig-alt="Repository Permissions on github for ColabTesting" #fig-github-colab-step4}
 
 For **Repository permissions**, change the access to the **Contents** to **Read and Write**.
 
-![](./M0_lecture02_figures/github-colab-step5.png){width=100% fig-alt="Image description"}
+![Repository Permissions on github for ColabTesting](./M0_lecture02_figures/github-colab-step5.png){width=100% fig-alt="Repository Permissions on github for ColabTesting" #fig-github-colab-step5}
 
 Now scroll down and click on **Generate token**. This will show you the list of tokens and you will be able to copy this one.
 
-![](./M0_lecture02_figures/github-colab-step6.png){width=100% fig-alt="Image description"}
+![Generate Token](./M0_lecture02_figures/github-colab-step6.png){width=100% fig-alt="Generate Token" #fig-github-colab-step6}
 
 Now we can go to **Google Drive** to setup our workspace and git commands.
 
@@ -246,7 +247,7 @@ The following cells are for git commands:
 
 Now you have a new folder on the Google Drive. Let's try to create a notebook there and test the git workflow.
 
-![](./M0_lecture02_figures/github-colab-step7.png){width=80% fig-alt="Image description"}
+![GitHub Colab Step 7](./M0_lecture02_figures/github-colab-step7.png){width=80% fig-alt="GitHub Colab Step 7" #fig-github-colab-step7}
 
 Every time you make a change in the repository, you can come back to this file and run the git commands to push your progress.
 
@@ -255,7 +256,11 @@ Every time you make a change in the repository, you can come back to this file a
 You should validate your hardware from Python using PyTorch. Most deep learning workloads are dominated by linear algebra kernels (matrix multiplications, convolutions) and GPUs accelerate these operations through massive parallelism.
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: gpu-check
+
 import torch
 
 print("PyTorch:", torch.__version__)
@@ -265,6 +270,9 @@ print("CUDA device count:", torch.cuda.device_count())
 if torch.cuda.is_available():
     print("GPU name:", torch.cuda.get_device_name(0))
 ```
+
+
+If your runtime is correctly configured with GPU access, you should see `CUDA available: True` and the name of the GPU. If not, you will need to revisit the runtime settings and ensure you have selected a GPU accelerator. [This is specifically an issue with Local runs but can also happen in Colab if you have multiple Google accounts or if your Colab Pro subscription has expired.]{.uured-bold}
 
 # Tensor Concepts You Need Now
 
@@ -276,15 +284,20 @@ Tensors generalize familiar data structures:
 4. Higher-rank tensor: rank 3+
 
 A tensor is defined by:
-1. Rank (number of axes)
-2. Shape (size per axis)
-3. Dtype (numeric type)
-4. Device (cpu or cuda)
+
+1. `Rank` (number of axes)
+2. `Shape` (size per axis)
+3. `Dtype` (numeric type)
+4. `Device` (cpu or cuda)
 
 ## Constructing tensors from raw data
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-construction
+
 import torch
 
 raw = torch.arange(16)
@@ -306,7 +319,11 @@ This mirrors a common deep learning pattern: same raw values, different structur
 ## Inspect and move tensors
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-inspect
+
 x = torch.arange(12).reshape(3, 4).float()
 print("shape:", x.shape, "dtype:", x.dtype, "device:", x.device)
 
@@ -318,7 +335,11 @@ print("moved device:", x_dev.device)
 ## Indexing and slicing
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-indexing
+
 x = torch.arange(12).reshape(3, 4)
 
 print("first row:", x[0])
@@ -329,7 +350,11 @@ print("submatrix:\n", x[1:, 1:3])
 ## Reshape, transpose, squeeze/unsqueeze
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-reshape
+
 x = torch.arange(24)
 a = x.reshape(2, 3, 4)
 b = a.transpose(1, 2)
@@ -345,20 +370,29 @@ print("squeeze:", v.unsqueeze(0).squeeze(0).shape)
 
 ## Broadcasting
 
+The 1D tensor `bias` is automatically expanded across rows.
+
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-broadcasting
+
 m = torch.arange(12).reshape(3, 4)
 bias = torch.tensor([10, 20, 30, 40])
 
 print("m + bias:\n", m + bias)
 ```
 
-The 1D tensor `bias` is automatically expanded across rows.
 
 ## Reductions
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-reductions
+
 x = torch.arange(12).reshape(3, 4).float()
 
 print("sum all:", x.sum())
@@ -369,7 +403,11 @@ print("mean dim=1 (row means):", x.mean(dim=1))
 # CPU vs GPU Benchmark (Simple)
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| label: tensor-benchmark
+
 import time
 import torch
 

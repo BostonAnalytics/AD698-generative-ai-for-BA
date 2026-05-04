@@ -41,10 +41,7 @@ dependencies = [
     # "torch>=2.10.0+cu130",
     # "torchaudio>=2.10.0+cu130",
     # "torchvision>=0.25.0+cu130",
-    "torch>=2.10.0",
-    "torchaudio>=2.10.0",
     "torchtext>=0.18.0",
-    "torchvision>=0.25.0",
     "tqdm>=4.67.3",
     "transformers>=5.0.0",
     "wandb>=0.25.1",
@@ -55,13 +52,31 @@ dependencies = [
 
 # Specific versions of torch, torchvision, and torchaudio are installed based on the extra feature
 [project.optional-dependencies]
-cpu = ["torch>=2.10.0", "torchvision>=0.25.0", "torchaudio>=2.10.0"]
-cu130 = ["torch>=2.10.0", "torchvision>=0.25.0", "torchaudio>=2.10.0"]
+cpu = [
+  "torch>=2.2.0",
+  "torchvision>=0.17.0",
+  "torchaudio>=2.2.0",
+]
 
+cu128 = [
+  "torch>=2.2.0",
+  "torchvision>=0.17.0",
+  "torchaudio>=2.2.0",
+]
+
+cu130 = [
+  "torch>=2.2.0",
+  "torchvision>=0.17.0",
+  "torchaudio>=2.2.0",
+]
 
 [tool.uv]
 # The cpu and cu130 extras are mutually exclusive, you can't use both at the same time
-conflicts = [[{ extra = "cpu" }, { extra = "cu130" }]]
+conflicts = [
+  [{ extra = "cpu" }, { extra = "cu128" }],
+  [{ extra = "cpu" }, { extra = "cu130" }],
+  [{ extra = "cu128" }, { extra = "cu130" }],
+]
 
 # The package is only installed on Linux systems
 # environments = ["sys_platform == 'linux' and os_name == 'posix'"]
@@ -70,22 +85,33 @@ conflicts = [[{ extra = "cpu" }, { extra = "cu130" }]]
 # The torch, torchvision, and torchaudio packages are installed from the pytorch-cpu and pytorch-cu130 indexes
 torch = [
   { index = "pytorch-cpu", extra = "cpu" },
-  { index = "pytorch-cu130", extra = "cu130" },
+  { index = "pytorch-cu128", extra = "cu128", marker = "sys_platform == 'win32'" },
+  { index = "pytorch-cu130", extra = "cu130", marker = "sys_platform == 'linux'" },
 ]
+
 torchvision = [
   { index = "pytorch-cpu", extra = "cpu" },
-  { index = "pytorch-cu130", extra = "cu130" },
+  { index = "pytorch-cu128", extra = "cu128", marker = "sys_platform == 'win32'" },
+  { index = "pytorch-cu130", extra = "cu130", marker = "sys_platform == 'linux'" },
 ]
+
 torchaudio = [
   { index = "pytorch-cpu", extra = "cpu" },
-  { index = "pytorch-cu130", extra = "cu130" },
+  { index = "pytorch-cu128", extra = "cu128", marker = "sys_platform == 'win32'" },
+  { index = "pytorch-cu130", extra = "cu130", marker = "sys_platform == 'linux'" },
 ]
+
 
 
 [[tool.uv.index]]
 # The pytorch-cpu index is used to install the torch, torchvision, and torchaudio packages
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
 [[tool.uv.index]]
