@@ -9,8 +9,8 @@ format:
     docx: 
         reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
-categories: ['M01:', 'Neural Networks', 'NLP', 'History of AI', 'Lecture Notes']
-description: "Lecture notes for Module 1 covering Early Neural Networks & Natural Language Processing."
+categories: ['neural networks', 'perceptron', 'McCulloch–Pitts neuron', 'backpropagation', 'multilayer perceptron (MLP)', 'distributed representations', 'early NLP', 'symbolic vs. connectionist models', 'language modeling', 'embeddings', 'generative modeling foundations']
+description: "This lecture introduces the foundational ideas that shaped modern generative AI by tracing the evolution from early neural computation to the first statistical approaches to language. We explore the McCulloch–Pitts neuron, the perceptron, multilayer networks, and the emergence of backpropagation as the breakthrough that enabled deep learning. In parallel, we examine early NLP methods—from symbolic rules to probabilistic language models—and show how these ideas converge into the architectures that power today’s generative systems. The goal is to give students a conceptual and historical grounding that makes contemporary LLMs feel less like magic and more like the natural continuation of decades of ideas in representation, learning, and language."
 ---
 
 # Foundations of NLP and Early Generative Systems
@@ -18,8 +18,6 @@ description: "Lecture notes for Module 1 covering Early Neural Networks & Natura
 In *Generative AI Foundations in Python*, the evolution of NLP is traced from simple count-based methods to the advanced neural networks we see today. Before the widespread use of neural networks (NNs) in language processing, NLP was largely grounded in methods that counted words. Two particularly notable techniques were count vectors and Term Frequency-Inverse Document Frequency (TF-IDF). These count-based methods were successful for tasks such as searching and categorizing, but they could not capture the semantic relationships between words, meaning they could not interpret the nuanced meanings of words in context. 
 
 This challenge paved the way for exploring NNs, offering a deeper and more nuanced way to understand and represent text. In 2003, Yoshua Bengio's team introduced the Neural Network Language Model (NNLM), designed to predict the next word in a sequence based on prior words using hidden layers that learned word embeddings. These embeddings are compact vector representations capturing the core semantic meanings of words. This marked a monumental shift in the field's capability to understand and process language.
-
-
 
 # What Is Generative AI?
 
@@ -47,13 +45,55 @@ The conceptual journey toward modern AI began in 1943 with Warren McCulloch and 
 
 McCulloch, a neuroscientist, and Pitts, a logician, proposed that neurons could be modeled as **binary threshold units**: an artificial neuron receives multiple binary inputs, computes a weighted sum, and fires if the sum exceeds a threshold.
 
+
+```{python}
+#| echo: false
+#| eval: true
+#| code-fold: true
+#| fig-cap: "The McCulloch-Pitts neuron. It computes a weighted sum of binary inputs and applies a hard threshold to produce a binary output."
+#| fig-align: center
+#| fig-alt: "A diagram of a McCulloch-Pitts neuron with binary inputs, synaptic weights, a summation node, and a threshold function leading to a binary output."
+#| label: fig-mcculloch-pitts
+
+import sys
+from pathlib import Path
+
+# Add project root to sys.path
+project_root = Path.cwd().parent
+sys.path.insert(0, str(project_root))
+
+from project_root import add_to_path
+add_to_path()
+
+from utils.nn_diagrams import make_mlp_svg, make_mp_neuron_svg
+from IPython.display import SVG
+
+# svg_path = make_mlp_svg(
+#     layers=[4, 5, 3],
+#     layer_labels=[
+#         "Input\\n(features)",
+#         "Hidden\\n(learned)",
+#         "Output\\n(classes)"
+#     ],
+#     output="./M01_lecture01_figures/mlp_architecture.svg"
+# )
+
+svg_path = make_mp_neuron_svg(
+    n_inputs=4,
+    output="M01_lecture01_figures/mp_neuron.svg"
+)
+
+SVG(filename=str(svg_path))
+```
+
+
 $$
 y = \begin{cases} 1 & \text{if } \sum_{i=1}^{n} w_i x_i \geq \theta \\ 0 & \text{otherwise} \end{cases}
 $$
 
 where $x_i$ are input signals, $w_i$ are synaptic weights, and $\theta$ is the threshold.
 
-The profound insight: networks of such neurons could compute **any logical function** — they were Turing complete.
+The profound insight was that the networks of such neurons could compute **any logical function** — they were Turing complete.
 However, the weights were manually set (not learned), and the model used hard thresholds rather than smooth activations.
 
 ## The Perceptron: Learning Emerges (1958)

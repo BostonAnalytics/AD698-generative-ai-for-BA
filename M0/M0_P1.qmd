@@ -162,6 +162,18 @@ base = "/content/drive/MyDrive/AD698/M0"
 
 ---
 
+## AD698 Notebook Workflow
+
+- Use **Google Colab in the browser** as the default runtime
+- Save notebooks and outputs in **Google Drive**
+- Re-run notebooks top to bottom after reconnecting
+- Export checkpoint copies of important notebooks before major edits
+- Treat reproducibility as part of the deliverable, not an afterthought
+
+GitHub may still be useful for personal portfolio work, but it is **not** the required course submission workflow.
+
+---
+
 ## Tensor Vocabulary
 
 - Scalar: one value
@@ -236,6 +248,19 @@ Module 0 uses this foundation immediately:
 - **Later labs and assignments**: PyTorch models, GPU execution, and reproducible notebooks
 
 This is why Module 0 begins with infrastructure and tensor fluency instead of jumping directly into models.
+
+---
+
+## How This Supports Course Activities
+
+This setup pays off across the grading structure shown in the course schedule:
+
+- **AWS Academy participation** depends on steady browser-based workflow habits
+- **Assignments** require complete notebooks, written reports, and AI disclosure files
+- **Project milestones** depend on saving artifacts cleanly so later modules can reuse them
+- **Presentations and demos** become easier when figures, tables, and outputs already live in organized Drive folders
+
+Module 0 is therefore not just setup. It is the reproducibility layer for the whole course.
 
 ---
 

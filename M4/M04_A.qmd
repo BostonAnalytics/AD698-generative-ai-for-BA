@@ -15,7 +15,7 @@ description: "Assignment for Module 4 focused on Transformers, Encoder vs. Decod
 
 # Important Reminder {.unnumbered}
 
-- This assignment must be completed using **Google Colab with a GPU runtime** (Runtime â†’ Change runtime type â†’ T4 GPU).
+- This assignment must be completed using **Google Colab with a GPU runtime** (`Runtime -> Change runtime type -> T4 GPU`).
 - You must use the **same two rival companies and NAICS vertical** as Assignments 1 and 2.
 
 :::{.callout-important}
@@ -50,7 +50,7 @@ Submit three files on Blackboard:
 
 1. **Word Report (`.docx`)** — maximum 10 pages, APA 7 formatted
    - Answers to Q1–Q4 and Business Recommendation
-   - Encoder vs. Decoder conceptual comparison (â‰¤1 page)
+   - Encoder vs. Decoder conceptual comparison (<=1 page)
    - Include a title page and references in APA style
    - Embed all required figures and tables inline and label them clearly
    - No code
@@ -62,7 +62,10 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available
+   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place
+   - If you used multiple chats, share all chats directly related to the assignment
+   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 :::{.callout-tip}
@@ -117,7 +120,7 @@ Assignments 1 and 2 used frequency counts and distributional word embeddings to 
 **Core question:** What do transformer models see in 10-K financial language that frequency-based and distributional models miss — and what does the encoder vs. decoder split reveal about how companies write?
 :::
 
-**Encoder vs. Decoder — conceptual framing (required in Word document, â‰¤1 page):**
+**Encoder vs. Decoder — conceptual framing (required in Word document, <=1 page):**
 
 | | Encoder (BERT) | Decoder (GPT-2) |
 |--|--|--|
@@ -419,7 +422,7 @@ Refer to your GPT-2 perplexity box plot and your Yahoo Finance risk metrics tabl
 
 A FinTech compliance team needs to flag unusual risk language in 500 new 10-K filings per quarter on a **$5,000/quarter cloud budget**.
 
-**Answer in your Word document (â‰¤1 page):** Which of the five methods in your comparison table would you recommend? Your answer must explicitly reference:
+**Answer in your Word document (<=1 page):** Which of the five methods in your comparison table would you recommend? Your answer must explicitly reference:
 
 - At least two accuracy values from the comparison table
 - Estimated compute cost or processing time (rough order of magnitude)

@@ -18,7 +18,6 @@ The evolution of Transformers led to models like BERT (Bidirectional Encoder Rep
 However, deploying these models requires rigorous ethical oversight. Generative models inevitably learn societal biases embedded in the training data and are susceptible to toxicity and accidental memorization of sensitive information. A human-centered AI governance strategy, combining technical improvements, robust guidelines, and ethical reflections, is essential to ensure fairness, accountability, and the responsible adoption of these transformative technologies.
 
 
-
 {{< include "./m08_l01_content/1.neural-network-regression.qmd" >}}
 
 <!-- {{< include "./m08_l01_content/1.linear-regression.md" >}}

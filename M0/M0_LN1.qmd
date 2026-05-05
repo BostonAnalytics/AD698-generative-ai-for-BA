@@ -17,7 +17,7 @@ Before building RAG systems, prompt pipelines, or neural NLP workflows, you need
 
 This lecture builds three foundations:
 
-1. Reliable execution in Google Colab and Git integration.
+1. Reliable execution in Google Colab with Google Drive persistence.
 2. Correct GPU setup and verification.
 3. Tensor operations in PyTorch for deep learning.
 
@@ -29,7 +29,7 @@ By the end of this lecture, you will be able to:
 1. Explain Colab runtime behavior and persistence limits.
 2. Sign up, create, and manage Colab notebooks.
 3. Configure and validate GPU runtime in Colab.
-4. Set up GitHub repositories and access tokens to sync with Google Drive.
+4. Organize notebooks and outputs in Google Drive for reproducible coursework.
 5. Create tensors of different ranks and inspect shape/dtype/device.
 6. Perform indexing, reshaping, broadcasting, and reductions.
 7. Move tensors between CPU and GPU and benchmark matrix operations.
@@ -100,156 +100,63 @@ You are encouraged to sign up to Google Colab with an existing Google account. I
 
 ## Using GPUs and Colab Persistence
 
-Colab is a cloud notebook runtime, but its local storage (under `/content`) is temporary. Anything not saved to Google Drive (or committed to GitHub) can be lost after runtime reset.
+Colab is a cloud notebook runtime, but its local storage (under `/content`) is temporary. Anything not saved to Google Drive can be lost after runtime reset.
 
 :::{.callout-warning}
 ## This will reload your runtime!
 Navigate to: Runtime -> Change runtime type -> Hardware accelerator -> pick GPU (or TPU) 
 :::
 
-1. It is more convenient to work on your code locally (e.g. Using JupyterLab or VS Code)
-2. Use Colab only to execute the code on GPU and do some small changes (e.g. Hyper parameters tuning).
-3. Unfortunately there is no `git pull` functionality natively via UI in Colab, so once you push new changes into the Repository you have to reopen your notebook (File ⇾ Open notebook ⇾ GITHUB ⇾ Open notebook in new tab).
-4. The downside is that the runtime has to be reloaded.
+1. Use Colab in the browser as the default runtime for AD698.
+2. Save notebooks, exported files, and intermediate artifacts to Google Drive.
+3. Re-run notebooks from top to bottom after reconnecting to avoid hidden state.
+4. Export checkpoint copies of important notebooks before major edits.
 
-:::{.callout-warning}
-## Warning This might create conflicts!
-- However, it's possible to push changes made in colab to the Repo (File -> Save a copy in Github):
-![colab push to GitHub](./M0_lecture02_figures/colab_push.png){width="60%" fig-align="center" fig-alt="colab push to github" #fig-colab-push}
+# AD698 Working Pattern
 
-- This will make a commit to the Repository.
-:::
+The recommended working model in this course is:
 
-# Setting up GitHub with Colab
+1. Build and run notebooks directly in **Google Colab**.
+2. Use **Google Drive** as the persistent storage location for notebooks, reports, and artifacts.
+3. Keep each deliverable reproducible enough that it can be executed from a fresh Colab runtime.
 
-The recommended working model is:
-1. Develop long-form projects in VS Code.
-2. Use Colab for GPU experiments and notebook execution.
-3. Save stable outputs in Drive and version-controlled repositories.
+GitHub can still be useful for personal portfolio work, but it is **not** the required submission workflow for AD698 course deliverables.
 
-## Setting up a repository
-The first thing you need is to have a repository for the project.
-On https://github.com/new you can go ahead and set up a new repository.
-In this example it will be a public repository, but the same works for private ones.
+## Recommended Drive Structure
 
-![Github Colab Create Repository](./M0_lecture02_figures/github-colab-step1.png){width=90% fig-alt="Github Colab Create Repository" #fig-github-colab-step1}
+Use a stable folder structure in Drive so later modules can reuse earlier artifacts:
 
-For this example, we add a `README.md` file and a `.gitignore` based on a Python template under `MIT License`. Once you created the repository, we now need to make sure we can access it by Google Colab environment.
+```text
+MyDrive/
+  AD698/
+    M0/
+    M1/
+    M2/
+    assignments/
+    labs/
+    projects/
+```
 
-## Setting up a fine-grained access token on GitHub
-Now we need a **token**. Private access tokens are special passwords that you can configure to have different permissions to your account on GitHub. On the GitHub website, click on **settings** on the menu bar that shows up after clicking your profile photo.
-
-![GitHub Colab Step 2](./M0_lecture02_figures/github-colab-step2.png){width=100% fig-alt="GitHub Colab Step 2" #fig-github-colab-step2}
-
-Now scroll down the left side bar and click on **Developer settings** and then click on **Fine-grained tokens** under **Personal access tokens**.
-
-![GitHub Colab Step 3](./M0_lecture02_figures/github-colab-step3.png){width=100% fig-alt="GitHub Colab Step 3" #fig-github-colab-step3}
-
-This will open a new tab and you will be able to see a button for creating a new token. For this example, set up this token for 30 days and select this repository only. (For repositories under an organization, **change the resource owner** to the organization where the repository is stored.)
-
-![Repository Permissions on github for ColabTesting](./M0_lecture02_figures/github-colab-step4.png){width=100% fig-alt="Repository Permissions on github for ColabTesting" #fig-github-colab-step4}
-
-For **Repository permissions**, change the access to the **Contents** to **Read and Write**.
-
-![Repository Permissions on github for ColabTesting](./M0_lecture02_figures/github-colab-step5.png){width=100% fig-alt="Repository Permissions on github for ColabTesting" #fig-github-colab-step5}
-
-Now scroll down and click on **Generate token**. This will show you the list of tokens and you will be able to copy this one.
-
-![Generate Token](./M0_lecture02_figures/github-colab-step6.png){width=100% fig-alt="Generate Token" #fig-github-colab-step6}
-
-Now we can go to **Google Drive** to setup our workspace and git commands.
-
-## Setting up Google Drive and Colab
-On Google Drive, setup a folder for your repositories. You might create a folder called **Shared**. Now create a new **Google Colab** file in this folder. This colab file will run the git commands. You can call it **Git.ipynb**.
-
-The fist cell of this notebook will **mount** your **Google Drive**:
+Mount Drive once near the top of the notebook, then define reusable paths:
 
 ```{python}
 #| eval: false
 from google.colab import drive
 drive.mount('/content/drive')
+
+BASE_DIR = "/content/drive/MyDrive/AD698/M0"
 ```
 
-The next cell will **clone** the **repository** and **configure** the **global variables** for git.
+## How This Connects to Course Work
 
-```{python}
-#| eval: false
-import os
-import subprocess
+Module 0 is infrastructure, but it supports every major class activity that follows:
 
-# Repository name
-repository = "ColabTesting"
+1. **AWS Academy participation work** requires steady notebook habits and browser-based tooling.
+2. **Assignments** require complete Jupyter notebooks plus written deliverables and AI disclosure files.
+3. **Project milestones** depend on saving artifacts cleanly so later modules can build on earlier work.
+4. **Presentations and demos** are easier when notebook outputs, charts, and figures already live in organized Drive folders.
 
-# Base path
-base = "/content/drive/MyDrive/Shared"
-
-# Specify the folder path
-folder_path = f"{base}/{repository}"
-
-# Username, email, name, and token
-username = "<your-username>"
-email = "<your-email>"
-name = "<your-full-name>"
-token = "<token>"
-owner = username
-
-# Move to the repository folder
-%cd {base}
-
-# Check if folder exists
-if not os.path.exists(folder_path):
-    clone_url = f'https://{username}:{token}@github.com/{owner}/{repository}.git'
-    !git clone {clone_url}
-else:
-    print(f"Folder '{folder_path}' already exists.")
-
-# Move to folder
-%cd {folder_path}
-
-!git pull
-
-# Update .gitconfig using subprocess
-subprocess.run(['git', 'config', '--global', 'user.email', email], check=True)
-subprocess.run(['git', 'config', '--global', 'user.name', name], check=True)
-```
-
-The following cells are for git commands:
-
-**Pulling changes from remote:**
-```{python}
-#| eval: false
-!git pull
-```
-
-**Checking the status:**
-```{python}
-#| eval: false
-!git status
-```
-
-**Staging all local changes:**
-```{python}
-#| eval: false
-!git add --all
-```
-
-**Comment on the changes:**
-```{python}
-#| eval: false
-!git commit -m "Update"
-```
-
-**Push it back to remote:**
-```{python}
-#| eval: false
-!git push
-```
-
-Now you have a new folder on the Google Drive. Let's try to create a notebook there and test the git workflow.
-
-![GitHub Colab Step 7](./M0_lecture02_figures/github-colab-step7.png){width=80% fig-alt="GitHub Colab Step 7" #fig-github-colab-step7}
-
-Every time you make a change in the repository, you can come back to this file and run the git commands to push your progress.
+The goal here is not just to run code once. It is to build a workflow that remains usable across the semester.
 
 # Runtime Validation and GPU Verification
 
@@ -450,13 +357,13 @@ else:
 
 1. Save to Drive often.
 2. Export `.ipynb` snapshots for critical milestones.
-3. Rely on GitHub workflow for persisting work.
+3. Keep deliverables and artifacts in stable Drive-backed folders.
 
 # Summary
 
 You now have a practical baseline for deep learning notebook work:
 
-1. Colab environment setup and persistence workflow via GitHub.
+1. Colab environment setup and persistence workflow via Google Drive.
 2. GPU verification and device-aware tensor execution.
 3. Core tensor manipulations used in later PyTorch models.
 

@@ -243,16 +243,15 @@ styled
 
 ---
 
-## GitHub Repository and Portfolio
+## Notebook and Submission Workflow
 
-- [Lecture 0.1]{.uured-bold}, [Lecture 0.2]{.uured-bold}, [Lecture 0.3]{.uured-bold} videos cover basic portfolio creation using GitHub.
-- Follow the video and submit the repository link in the assignment.
-- This will be also used for submitting
-  - Assignments
-  - Projects
-  - Weekly Quizzes, Presentations, and Problems solving exercises AKA Labs
+- Use **Google Colab** as the primary notebook runtime
+- Save notebooks, reports, and artifacts in **Google Drive**
+- Submit deliverables through the course workflow, not through a required GitHub repository
+- Include the required report and **AI disclosure document** alongside the notebook when assigned
+- Keep one reproducible notebook per assignment or project milestone whenever possible
 
-![](./M01_lecture01_figures/brian-marion-aaron-project.png){width="55%" fig-align="center"}
+This course is built around evidence, reproducibility, and clean deliverables rather than repository management.
 
 ---
 
@@ -283,14 +282,14 @@ styled
 
 ## Group Project
 
-- [Lecture 0.1]{.uured-bold} and [Lecture 0.2]{.uured-bold} videos cover basic portfolio creation using GitHub.
-- Focuses on equipping students with the knowledge to explore a dataset and extract meaningful insights. Throughout this assignment, you’ll complete the following:
+- The project is completed through staged milestones, a final managerial report with application demo, a presentation, and group feedback.
+- Milestones are intended to build progressively rather than appear all at once at the end of the semester.
 
 | **Component**                     | **Points** | **Description**                                                                                                                                    |
 |-----------------------------------|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| Project Milestones through GitHub | 70         | This includes Corpus Familiarization & Chatbot Scope, Text Structuring & Retrieval Units, Embeddings & Retrieval Baseline, Grounded Generation & Guardrails |   
-| Presentation                      | 40         | Effectively communicates the project findings and technical work.                                                                                  |
-| Group Feedback                    | 40         | Includes peer feedback and team collaboration evaluation.                                                                                          |
+| Managerial report with application demo | 70   | Includes milestone progression across corpus familiarization and scope, text structuring and retrieval units, embeddings and retrieval baseline, and grounded generation with guardrails |
+| Presentation                      | 40         | Effectively communicates the project findings and technical work                                                                                  |
+| Group Feedback                    | 40         | Includes peer feedback and team collaboration evaluation                                                                                          |
 | **Total**                         | **150**    |                                                                                                                                                    |
 
 

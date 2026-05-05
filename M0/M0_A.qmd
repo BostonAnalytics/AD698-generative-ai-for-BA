@@ -15,7 +15,7 @@ description: "Assignment for Module 0 focused on End-to-End Deep Learning with P
 
 # Important Reminder {.unnumbered}
 
-- This assignment may be completed locally or on [Google Colab]{.uublue-bold} (GPU runtime recommended: Runtime â†’ Change runtime type â†’ T4 GPU).
+- This assignment may be completed locally or on [Google Colab]{.uublue-bold} (GPU runtime recommended: `Runtime -> Change runtime type -> T4 GPU`).
 - [The assignment involves both implementation and interpretation. Start early — training takes time.]{.uublue-bold}
 - You may use any generative AI tool, but you must [build and explain the pipeline yourself]{.uugreen-bold}.
 
@@ -34,7 +34,10 @@ Submit three files on Blackboard:
    - Business interpretation of results — no raw code
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available
+   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place
+   - If you used multiple chats, share all chats directly related to the assignment
+   - Do not include confidential, personal, or restricted information in shared chats
 
 ## Assignment Notebook Pattern
 
@@ -63,7 +66,7 @@ If you use AI tools, include the complete prompt and the corresponding output ex
 :::{.callout-note}
 This assignment builds your first complete **data science pipeline** using neural networks, following each stage of the data science life cycle:
 
-**Understand â†’ Collect â†’ Explore â†’ Prepare â†’ Model â†’ Evaluate**
+**Understand -> Collect -> Explore -> Prepare -> Model -> Evaluate**
 :::
 
 You will apply this lifecycle to two canonical problems:
@@ -106,7 +109,7 @@ print(df.shape)   # (1460, 80) — 79 features + target
 
 ## MNIST {.unnumbered}
 
-[MNIST](http://yann.lecun.com/exdb/mnist/) contains 70,000 grayscale images (28 Ã— 28 pixels) of handwritten digits 0–9:
+[MNIST](http://yann.lecun.com/exdb/mnist/) contains 70,000 grayscale images (28 x 28 pixels) of handwritten digits 0–9:
 60,000 training samples and 10,000 test samples.
 The classification target is the digit class (integer 0–9).
 
@@ -200,7 +203,7 @@ train_loader = DataLoader(TensorDataset(X_tr, y_tr), batch_size=64, shuffle=True
 
 Build an MLP regressor by subclassing `nn.Module`. Requirements:
 
-- At least **3 hidden layers** (suggested: Linear(in â†’ 256), Linear(256 â†’ 128), Linear(128 â†’ 64), Linear(64 â†’ 1))
+- At least **3 hidden layers** (suggested: `Linear(in -> 256)`, `Linear(256 -> 128)`, `Linear(128 -> 64)`, `Linear(64 -> 1)`)
 - **`nn.BatchNorm1d`** after the first two linear layers
 - **`nn.ReLU`** activations
 - **`nn.Dropout`** (rate 0.2–0.3) for regularization
@@ -213,7 +216,7 @@ class AmesRegressor(nn.Module):
     def __init__(self, in_features):
         super().__init__()
         # TODO: define your layers here
-        # Suggested: 256 â†’ 128 â†’ 64 â†’ 1 with BatchNorm and Dropout
+        # Suggested: 256 -> 128 -> 64 -> 1 with BatchNorm and Dropout
         pass
 
     def forward(self, x):
@@ -341,7 +344,7 @@ for epoch in range(NUM_EPOCHS):
 Build an MLP classifier by subclassing `nn.Module`. Requirements:
 
 - **`nn.Flatten()`** to convert each 28Ã—28 image to a 784-vector
-- At least **3 hidden layers** (suggested: 512 â†’ 256 â†’ 128 â†’ 10)
+- At least **3 hidden layers** (suggested: `512 -> 256 -> 128 -> 10`)
 - **`nn.BatchNorm1d`** and **`nn.ReLU`** after each hidden layer
 - **`nn.Dropout`** for regularization
 - **10 output neurons** with **no activation** — `nn.CrossEntropyLoss` applies log-softmax internally

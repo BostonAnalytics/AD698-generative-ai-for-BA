@@ -47,7 +47,7 @@ import subprocess
 import textwrap
 from pathlib import Path
 from typing import Sequence
-
+import svgwrite
 
 # ─── Shared colour palette ─────────────────────────────────────────────────────
 COLORS: dict[str, str] = {
@@ -58,6 +58,7 @@ COLORS: dict[str, str] = {
     "lightgray":  "D9D9D9",   # gray   – faded / background
 }
 
+SVG_COLORS = {k: "#" + v for k, v in COLORS.items()}
 
 # ─── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -472,6 +473,243 @@ def make_mlp_diagram(
     if compile_pdf:
         compile_tex(output)
 
+    return output
+
+def make_mp_neuron_svg(
+    n_inputs=4,
+    title="McCulloch–Pitts Neuron",
+    output="mp_neuron.svg",
+    x_spacing=80,
+    y_spacing=40,
+):
+    output = Path(output)
+    output.parent.mkdir(parents=True, exist_ok=True)
+
+    # Unicode helpers
+    sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+
+    def x_label(i):   # x₁, x₂, …
+        return f"x{str(i).translate(sub)}"
+
+    def w_label(i):   # wₖ₁, wₖ₂, …
+        return f"wₖ{str(i).translate(sub)}"
+
+    b_label = "bₖ"
+    y_label = "yₖ"
+    phi_label = "φ(·)"
+    sigma_label = "Σ"
+
+    ys = _neuron_ys(n_inputs, y_spacing)
+    y_max, y_min = max(ys), min(ys)
+    height = (y_max - y_min) + 4 * y_spacing
+    width  = 5 * x_spacing
+
+    dwg = svgwrite.Drawing(str(output), size=(width, height))
+    center_y = height / 2
+    y_offset = center_y - (y_max + y_min) / 2
+
+    x_inputs = x_spacing
+    x_sum    = 2 * x_spacing
+    x_act    = 3 * x_spacing
+    x_out    = 4 * x_spacing
+
+    # Inputs + weights
+    for i, y in enumerate(ys, start=1):
+        cy = y + y_offset
+
+        dwg.add(dwg.text(
+            x_label(i),
+            insert=(x_inputs - 25, cy + 4),
+            font_size="14px"
+        ))
+
+        dwg.add(dwg.line(
+            start=(x_inputs, cy),
+            end=(x_sum - 20, cy),
+            stroke="black",
+            stroke_width=1.2
+        ))
+
+        dwg.add(dwg.text(
+            w_label(i),
+            insert=((x_inputs + x_sum) / 2 - 10, cy - 6),
+            font_size="12px"
+        ))
+
+    # Σ node
+    sum_r = 18
+    sum_cy = center_y
+
+    dwg.add(dwg.circle(
+        center=(x_sum, sum_cy),
+        r=sum_r,
+        fill="white",
+        stroke="black",
+        stroke_width=1.5
+    ))
+
+    dwg.add(dwg.text(
+        sigma_label,
+        insert=(x_sum, sum_cy + 5),
+        text_anchor="middle",
+        font_size="18px"
+    ))
+
+    # Bias bₖ
+    dwg.add(dwg.text(
+        b_label,
+        insert=(x_sum, sum_cy - 30),
+        text_anchor="middle",
+        font_size="12px"
+    ))
+
+    dwg.add(dwg.line(
+        start=(x_sum, sum_cy - 25),
+        end=(x_sum, sum_cy - sum_r),
+        stroke="black",
+        stroke_width=1
+    ))
+
+    # vₖ arrow (just label vₖ)
+    dwg.add(dwg.text(
+        "vₖ",
+        insert=((x_sum + x_act) / 2, sum_cy - 8),
+        font_size="12px"
+    ))
+
+    dwg.add(dwg.line(
+        start=(x_sum + sum_r, sum_cy),
+        end=(x_act - 15, sum_cy),
+        stroke="black",
+        stroke_width=1.2
+    ))
+
+    # Activation φ(·)
+    act_w, act_h = 40, 26
+    act_x, act_y = x_act - act_w / 2, sum_cy - act_h / 2
+
+    dwg.add(dwg.rect(
+        insert=(act_x, act_y),
+        size=(act_w, act_h),
+        fill="white",
+        stroke="black",
+        stroke_width=1.5
+    ))
+
+    dwg.add(dwg.text(
+        phi_label,
+        insert=(x_act, sum_cy + 5),
+        text_anchor="middle",
+        font_size="14px"
+    ))
+
+    # Output yₖ
+    dwg.add(dwg.line(
+        start=(x_act + act_w / 2, sum_cy),
+        end=(x_out, sum_cy),
+        stroke="black",
+        stroke_width=1.4
+    ))
+
+    dwg.add(dwg.text(
+        y_label,
+        insert=(x_out + 10, sum_cy + 5),
+        font_size="14px"
+    ))
+
+    # Title
+    dwg.add(dwg.text(
+        title,
+        insert=(width / 2, 25),
+        text_anchor="middle",
+        font_size="18px",
+        font_weight="bold"
+    ))
+
+    dwg.save()
+    return output
+
+def make_mlp_svg(
+    layers: Sequence[int],
+    layer_labels: Sequence[str] | None = None,
+    title: str = "Multi-Layer Perceptron (MLP)",
+    output: str | Path = "mlp.svg",
+    x_spacing: float = 120.0,
+    y_spacing: float = 40.0,
+    neuron_r: float = 18.0,
+) -> Path:
+    output = Path(output)
+    n_layers = len(layers)
+    layer_xs = [i * x_spacing for i in range(n_layers)]
+    all_ys   = [_neuron_ys(n, y_spacing) for n in layers]
+    y_max    = max(max(ys) for ys in all_ys)
+    y_min    = min(min(ys) for ys in all_ys)
+
+    if layer_labels is None:
+        layer_labels = [f"Layer {i}" for i in range(n_layers)]
+
+    width  = layer_xs[-1] + 2 * x_spacing
+    height = (y_max - y_min) + 4 * y_spacing
+
+    dwg = svgwrite.Drawing(str(output), size=(width, height))
+    center_y = height / 2.0
+    y_offset = center_y - (y_max + y_min) / 2.0
+
+    # Neurons
+    for li in range(n_layers):
+        x = layer_xs[li] + x_spacing
+        for ni, y in enumerate(all_ys[li]):
+            cy = y + y_offset
+            color = (
+                SVG_COLORS["nodeblue"] if li == 0
+                else SVG_COLORS["forward"] if li == n_layers - 1
+                else SVG_COLORS["nodeorange"]
+            )
+            dwg.add(dwg.circle(
+                center=(x, cy),
+                r=neuron_r,
+                fill="white",
+                stroke=color,
+                stroke_width=2,
+                id=_nname(li, ni),
+            ))
+
+    # Connections
+    for li in range(n_layers - 1):
+        x1 = layer_xs[li] + x_spacing
+        x2 = layer_xs[li + 1] + x_spacing
+        for src in range(layers[li]):
+            y1 = all_ys[li][src] + y_offset
+            for dst in range(layers[li + 1]):
+                y2 = all_ys[li + 1][dst] + y_offset
+                dwg.add(dwg.line(
+                    start=(x1 + neuron_r, y1),
+                    end=(x2 - neuron_r, y2),
+                    stroke=SVG_COLORS["lightgray"],
+                    stroke_width=1,
+                ))
+
+    # Layer labels
+    label_y = center_y + (y_max - y_min) / 2.0 + 1.5 * y_spacing
+    for li, (x, lbl) in enumerate(zip(layer_xs, layer_labels)):
+        dwg.add(dwg.text(
+            lbl.replace("\\n", "\n"),
+            insert=(x + x_spacing, label_y),
+            text_anchor="middle",
+            font_size="12px",
+        ))
+
+    # Title
+    title_y = center_y - (y_max - y_min) / 2.0 - 1.5 * y_spacing
+    dwg.add(dwg.text(
+        title,
+        insert=(width / 2.0, title_y),
+        text_anchor="middle",
+        font_size="16px",
+        font_weight="bold",
+    ))
+
+    dwg.save()
     return output
 
 

@@ -61,7 +61,10 @@ Submit three files on Blackboard:
 
 3. **AI Disclosure Document**
    - Submit as a separate file
-   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available`r`n   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place`r`n   - If you used multiple chats, share all chats directly related to the assignment`r`n   - Do not include confidential, personal, or restricted information in shared chats
+   - Document all AI tools used, complete prompts, output excerpts, validation steps, and direct share links when available
+   - When possible, use one continuous chat for the assignment so the full reasoning path can be reviewed in one place
+   - If you used multiple chats, share all chats directly related to the assignment
+   - Do not include confidential, personal, or restricted information in shared chats
    - This is graded as part of responsible AI use and reproducibility
 
 :::{.callout-tip}
@@ -379,7 +382,7 @@ Refer to your two UMAP scatter plots (by company and by item type).
 
 Your Word2Vec model trained on 5 years of 10-K filings has implicitly encoded each company's strategic vocabulary. If a financial analyst used nearest-neighbor queries in this embedding space instead of reading raw filings:
 
-**Answer in your Word document (â‰¤1 page):**
+**Answer in your Word document (<=1 page):**
 
 - What types of questions could they answer quickly using nearest-neighbor search?
 - What would they miss that a careful reader would catch?
