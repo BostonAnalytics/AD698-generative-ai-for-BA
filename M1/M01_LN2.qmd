@@ -17,7 +17,7 @@ bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 execute:
     echo: true
-    eval: false
+    eval: true
     warning: false
     message: false
 categories: ['M01:', 'Language Models', 'Probability', 'Generative AI', 'Lecture Notes']
@@ -40,7 +40,7 @@ Text analytics is the discipline concerned with extracting meaningful informatio
 
 The figure below provides a high‑level overview of the text mining landscape, illustrating how raw text is processed, analyzed, and converted into actionable insights.
 
-![Text Analytics [@talib2016text]](./M01_lecture02_figures/text_mining_overview.jpg){width=80% fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+![Text Analytics [@talib2016text]](./M01_lecture02_figures/text_mining_overview.jpg){width=80% fig-align: "center" #fig-text-mining-overview fig-alt: "Text Mining Overview"}
 
 Text analytics draws from multiple fields — including information retrieval, machine learning, statistics, and linguistics — to build systems that can understand and interpret human language at scale. It is often used interchangeably with *text mining*, though the two terms have subtle differences that we will clarify shortly.
 
@@ -51,6 +51,12 @@ Text mining refers to the computational process of discovering patterns, extract
 The diagram below illustrates a typical NLP pipeline used in text mining systems:
 
 ```{dot}
+//| label: fig-nlp-pipeline 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "General NLP Pipeline"
+//| caption: "General NLP Pipeline"
+
 digraph NLP_Pipeline {
 
     /* =========================
@@ -279,7 +285,7 @@ These applications demonstrate the versatility of text mining in both academic a
 
 The following figure provides a general overview of the NLP pipeline that underlies most text mining and analytics systems:
 
-![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
+![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align: "center" #fig-nlp-pipeline fig-alt: "General NLP Pipeline"}
 
 This pipeline typically includes:
 - Text preprocessing  
@@ -297,7 +303,7 @@ Sentiment analysis is one of the most widely used applications of text mining. I
 
 The figure below illustrates the major tasks, tools, and methods used in sentiment analysis:
 
-![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align="center" fig-alt="Sentiment Analysis Process" #fig-sentiment-analysis}
+![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align: "center" fig-alt: "Sentiment Analysis Process" #fig-sentiment-analysis}
 
 ### Methods
 Sentiment analysis can be approached using several methodological families:
@@ -322,6 +328,12 @@ Two major categories of challenges arise:
 The following DOT diagram summarizes the major families of sentiment classification algorithms:
 
 ```{dot}
+//| label: fig-sentiment-approaches 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Sentiment Analysis Approaches"
+//| caption: "Sentiment Analysis Approaches"
+
 digraph Sentiment_Approaches {
 
     /* =========================
@@ -529,13 +541,13 @@ Sentiment analysis can be specialized into several sub‑tasks:
 
 The following sequence of images illustrates these types:
 
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 1.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 1.png){width=80% fig-align: "center" fig-alt: "Types of Sentiment Analysis"}
 
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 2.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 2.png){width=80% fig-align: "center" fig-alt: "Types of Sentiment Analysis"}
 
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align: "center" fig-alt: "Types of Sentiment Analysis"}
 
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis"}
+![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align: "center" fig-alt: "Types of Sentiment Analysis"}
 
 
 # Web Mining, Personalization, and Social Analytics
@@ -553,6 +565,12 @@ At a high level, web mining can be divided into three major categories:
 The following diagram illustrates a typical workflow for weblog mining, one of the most common forms of web usage mining:
 
 ```{dot}
+//| label: fig-weblog-mining 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Web Mining Process"
+//| caption: "Web Mining Process"
+
 digraph Weblog_Mining_Process {
 
   /* =========================
@@ -716,6 +734,11 @@ Social analytics encompasses two major subfields:
 The diagram below captures this conceptual division:
 
 ```{dot}
+//| label: fig-social-analytics 
+//| echo: false
+//| fig-align: center
+//| fig-alt: "Social Analytics Overview"
+//| caption: "Social Analytics Overview"
 digraph Social_Analytics {
 
     /* =========================
@@ -823,6 +846,11 @@ Key capabilities include:
 At its core, NLP involves learning a function that maps an input $X$ to an output $Y$, where either or both involve language. The table below illustrates common NLP tasks:
 
 ```{dot}
+//| label: fig-nlp-tasks 
+//| echo: false
+//| fig-align: center
+//| fig-alt: "NLP Tasks Overview"
+//| caption: "NLP Tasks Overview"
 digraph NLP_Tasks {
   node [shape=plaintext]
 
@@ -892,9 +920,15 @@ def classify(x: str) -> str:
 ```
 
 ### Prompting
+
 Prompting uses a language model without training:
 
 ```{dot}
+//| label: fig-prompting 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Prompting Example"
+//| caption: "Prompting Example"
 digraph PromptLogic {
   rankdir=LR
   node [shape=plaintext]
@@ -920,6 +954,11 @@ digraph PromptLogic {
 Fine‑tuning trains a model on paired examples $\langle X, Y \rangle$:
 
 ```{dot}
+//| label: fig-fine-tuning 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Fine-tuning Example"
+//| caption: "Fine-tuning Example"
 digraph TextClassificationTraining {
     rankdir=LR
 
@@ -966,6 +1005,11 @@ Different approaches require different amounts of data:
 - **Fine‑tuning**: large labeled datasets; performance improves with scale  
 
 ```{dot}
+//| label: fig-data-split 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Data Split Example"
+//| caption: "Data Split Example"
 digraph DataSplit {
   rankdir=LR
   node [shape=plaintext]
@@ -995,6 +1039,11 @@ digraph DataSplit {
 The NLP pipeline transforms raw text into structured representations and downstream outputs. It typically includes data ingestion, parsing, cleaning, feature engineering, and consumption by models or analytics systems.
 
 ```{dot}
+//| label: fig-nlp-pipeline 
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "General NLP Pipeline"
+//| caption: "General NLP Pipeline"
 digraph Pipeline {
 
   rankdir=LR;
@@ -1124,6 +1173,11 @@ digraph Pipeline {
 Text summarization condenses long documents into concise, informative summaries. The process includes preprocessing, feature extraction, sentence ranking, and summary construction.
 
 ```{dot}
+//| label: fig-summarization-pipeline
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Summarization Pipeline"
+//| caption: "Summarization Pipeline"
 digraph SummarizationPipeline {
 
   rankdir=LR;
@@ -1278,7 +1332,7 @@ NLP encompasses a wide range of tasks, including:
 
 To avoid redundancy, only one representative version of each diagram is kept.
 
-![](./M01_lecture02_figures/classical_nlp_and_deep_learning_based_nlp_layouts.jpg){width=80% fig-align="center" fig-alt="Classical vs. Deep Learning NLP"}
+![Classical vs. Deep Learning NLP](./M01_lecture02_figures/classical_nlp_and_deep_learning_based_nlp_layouts.jpg){width=80% fig-align="center" #fig-nlp-layouts fig-alt="Classical vs. Deep Learning NLP"}
 
 
 # Sentiment Classification
@@ -1288,7 +1342,8 @@ Sentiment analysis determines whether text expresses positive, negative, or neut
 ## Text Information
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: false
 def read_xy_data(filename: str) -> tuple[list[str], list[int]]:
     x_data = []
     y_data = []
@@ -1311,6 +1366,8 @@ print("Label:-", y_train[0])
 ## Segmentation, Tokenization, and Cleaning
 
 ```{python}
+#| eval: true
+#| echo: false
 
 def extract_features(x: str) -> dict[str, float]:
     features = {}
@@ -1340,6 +1397,8 @@ feature_weights = {'good_word_count': 1.0, 'bad_word_count': -1.0, 'bias': 0.5}
 ## Decision Algorithm
 
 ```{python}
+#| eval: true
+#| echo: false
 def run_classifier(x: str) -> int:
     score = 0
     for feat_name, feat_value in extract_features(x).items():
@@ -1365,6 +1424,8 @@ def calculate_accuracy(x_data: list[str], y_data: list[int]) -> float:
 ## Results
 
 ```{python}
+#| eval: true
+#| echo: false
 label_count = {}
 for y in y_test:
     if y not in label_count:
@@ -1387,7 +1448,8 @@ print(f'Dev/test accuracy: {test_accuracy:.4f}')
 ## Model Evaluation
 
 ```{python}
-
+#| eval: true
+#| echo: false
 import random
 
 def find_errors(x_data, y_data):
@@ -1436,7 +1498,7 @@ Consider how feature engineering or modern embeddings can address these issues.
 
 Topic modeling uncovers latent themes in large text corpora.
 
-![Probabilistic Topic Modeling](M01_lecture02_figures/Probabilistic-Topic-Modeling.png){width=80% fig-align="center" #fig-topic-modeling fig-alt="screenshot of papers from Science magazine about topic modeling"}
+![Probabilistic Topic Modeling](M01_lecture02_figures/Probabilistic-Topic-Modeling.png){width=80% fig-align="center" #fig-topic-modeling fig-alt= "screenshot of papers from Science magazine about topic modeling"}
 
 
 ## Machine Learning Foundations
@@ -1468,6 +1530,8 @@ Cleaned: despite suffering a sense of humour failure...
 ```
 
 ```{python}
+#| eval: true
+#| echo: false
 import random
 
 def sample_sentences(x, y, n=4, seed=42):
@@ -1486,7 +1550,8 @@ Cleaning typically includes lowercasing, removing punctuation, and optional stop
 ## Tokenization and CountVectorizer
 
 ```{python}
-
+#| eval: true
+#| echo: false
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 
@@ -1516,7 +1581,7 @@ BoW produces a document‑term matrix (DTM) where rows are documents and columns
 
 ```{python}
 #| echo: false
-#| 
+#| eval: true
 
 import pandas as pd
 import seaborn as sns
@@ -1625,7 +1690,7 @@ Words that are **frequent in one document** but **rare across the corpus** recei
 ## TF-IDF in Practice
 
 ```{python}
-#| eval: false
+#| eval: true
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
@@ -1644,7 +1709,8 @@ tfidf_df = pd.DataFrame(
     columns=vectorizer.get_feature_names_out(),
     index=[f"Doc{i+1}" for i in range(len(corpus))]
 )
-tfidf_df
+tfidf_df.style.hide(axis="index")
+
 ```
 
 ## Comparing BoW and TF-IDF
@@ -1670,7 +1736,9 @@ This bridges **classical NLP feature engineering** and **deep learning**.
 The architecture is a simple **Multi-Layer Perceptron (MLP)**:
 
 $$
+\begin{align}
 \hat{y} = \text{softmax}(W_2 \cdot \text{ReLU}(W_1 x + b_1) + b_2)
+\end{align}
 $$
 
 where $x$ is the TF-IDF vector for a document.
@@ -1678,7 +1746,11 @@ where $x$ is the TF-IDF vector for a document.
 ## TextMLP in PyTorch
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: true
+#| fig-align: "center"
+#| code-overflow: wrap
+#| code-fold: true
 import torch
 import torch.nn as nn
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -1762,7 +1834,7 @@ F_1 = 2 \cdot \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \t
 $$
 
 ```{python}
-#| eval: false
+#| eval: true
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -1810,6 +1882,11 @@ The MLP above sits at the **transition row** — it uses classical features (TF-
 ## BoW in Practice (Sentiment Analysis)
 
 ```{dot}
+//| label: fig-sentiment-pipeline
+//| echo: false
+//| fig-align: "center"
+//| fig-alt: "Sentiment Pipeline"
+//| caption: "Sentiment Pipeline"
 digraph SentimentPipeline {
 
     rankdir=LR;
