@@ -20,10 +20,10 @@ monospace !default;
 $body-bg: #ffffff !default;
 $title-color: #ffac00;
 $subtitle-color: #Ffd1b0 !default;
-$h2-color: #a51c30;
+$h2-color: #003366;
 $code-color: #e64f1e;
 $name-color: #CC5B23;
-$accent: #003366;
+$accent: #a51c30;
 $accent2: #06A2CB;
 $accent3: #993366;
 $dark-gray: #565656;
@@ -389,11 +389,10 @@ figure.quarto-float img {
 .quarto-float-caption 
 .caption{
   text-align: center; // center caption text
-  font-size: 0.9rem;
   color: #a51c30;
   margin-top: 0.5rem;
   font-style: italic; // keep italic
-  font-size: 14pt !important;
+  font-size: 11pt !important;
 }
 
 /* Keep the label (Figure, number, period) bold */ 

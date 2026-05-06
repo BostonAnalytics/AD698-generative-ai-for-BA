@@ -39,6 +39,8 @@ categories: ['M01:', 'Slides', 'Presentation']
 description: "Presentation slides for Module 1 on Early Neural Networks & Natural Language Processing."
 ---
 
+# Welcome to AD698 - Applied Generative AI
+
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
@@ -262,6 +264,7 @@ This course is built around evidence, reproducibility, and clean deliverables ra
   - Presentation length: approximately **15 minutes**
   - Each presentation will be followed by **guided class discussion**
   - All students are expected to read the assigned paper(s), regardless of whether they are presenting
+- [Online Students]{.uured-bold}: Please submit a one page pdf/word independently [per week, see details at the end]{.uured-bold}
 - Presentations focus on:
   - The problem the paper addresses
   - The technical or conceptual contribution
@@ -318,9 +321,11 @@ This course is built around evidence, reproducibility, and clean deliverables ra
 
 - [Python]{.uured-bold}: dominant AI/ML language with simple, fast prototyping.  
 - [PyTorch / TensorFlow]{.uured-bold}: core deep‑learning frameworks for GenAI.  
-- [Hugging Face Transformers]{.uured-bold}: key library for LLMs, text generation, and RAG.  
-- [OpenCV & PIL]{.uured-bold}: essential for image/video processing in GenAI.
-
+- [Hugging Face Transformers]{.uured-bold}: key library for LLMs, text generation, and RAG. 
+- [OpenAI API]{.uured-bold}: access to GPT models for generation and fine-tuning.
+- [LangChain]{.uured-bold}: framework for building LLM-powered applications and agents.
+- [Cohere]{.uured-bold}: alternative LLM provider with strong NLP capabilities. 
+- [Google Colab]{.uured-bold}: free cloud notebooks with GPU support for development and experimentation.
 
 ## What is Generative AI?
 
@@ -369,7 +374,7 @@ This course is built around evidence, reproducibility, and clean deliverables ra
 
 
 
-## Simulation, Emulation, and AI
+## Simulation, Machine Learning, and AI
 
 - Given a function/process that exists with complex logical pathways, can it be mimicked by computers?
   - Economical transactions of a small city?
@@ -377,9 +382,9 @@ This course is built around evidence, reproducibility, and clean deliverables ra
   - Weather patterns over a region?
   - Train of thought of researcher doing their job?
 - [Simulation]{.uured-bold}: The imitation of a process, function, or environment that could exist or at least makes sense.
-- [Artificial Intelligence]{.uured-bold}: The implementation of systems that perform tasks that seemingly require human skills.
 - [Machine Learning]{.uured-bold}: The use of algorithms and statistics to identify, act on, and/or mimic patterns.
 - [Deep Learning]{.uured-bold}: The use of neural networks to create function approximators with machine learning patterns.
+- [Artificial Intelligence]{.uured-bold}: The implementation of systems that perform tasks that seemingly require human skills.
 
 ## Deep Learning - History
 
@@ -413,15 +418,26 @@ This course is built around evidence, reproducibility, and clean deliverables ra
 
 ## 1969 - Analysis of Perceptrons Minsky \& Papert
 
+
+::: {.columns}
+
+::: {.column}
+
 - [Minsky and Papert’s book *Perceptrons*]{.uured-bold} analyzed the strengths and limits of Rosenblatt’s perceptron, emphasizing its inability to solve non‑linearly separable problems like [XOR]{.uured-bold}.  
 - Their critique slowed neural‑network research and contributed to the [AI Winter]{.uured-bold}.  
 - The work also paved the way for later breakthroughs, including [backpropagation]{.uured-bold} in the 1980s, which enabled training multilayer networks and revived interest in neural nets.
+
+:::
+
+::: {.column}
 
 ```{python}
 #| echo: false
 #| eval: true
 #| label: fig-XOR-Problem
-#| output-location: slide
+#| code-fold: true
+#| fig-align: center
+#| fig-cap: "The XOR problem: a simple example of a non-linearly separable function that the original perceptron could not learn."
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -484,6 +500,11 @@ plt.show()
 
 
 
+:::
+
+:::
+
+
 ---
 
 ## 1974-1980 - $1^{\text {st }}$ AI Winter
@@ -524,6 +545,33 @@ plt.show()
 ## 1980s — Backpropagation Popularized
 
 ![](./M01_lecture01_figures/backprop.png){width="75%" fig-align="center"}
+
+
+::: {.columns}
+
+::: {.column}
+
+$$
+\begin{align}
+% Regression equation
+y &= \beta_0 + \sum_{i=1}^n \beta_i x_i \\
+\end{align}
+$$
+
+:::
+
+::: {.column}
+
+$$
+\begin{align}
+% Weights and activations in a neural network
+a^{(l)} &= \sigma(W^{(l)} a^{(l-1)} + b^{(l)}) \\
+\end{align}
+$$
+:::
+
+:::
+
 
 
 ---
@@ -975,4 +1023,8 @@ This matters in AD698 because later work moves from generic text into:
 - domain-specific vocabulary
 
 So accuracy on one text source is never the whole story.
+
+## References
+
+
 
