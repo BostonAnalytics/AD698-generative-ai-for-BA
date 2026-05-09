@@ -107,6 +107,18 @@ Why this matters for AD698:
 
 ---
 
+## Important Limits to Remember
+
+- Colab resources are dynamic, not guaranteed
+- GPU type may change over time
+- Idle runtimes can disconnect
+- Standard runtimes have a maximum lifetime
+- Colab is optimized for interactive notebook work, not long-running background services
+
+These are normal parts of the platform, not signs that a student did something wrong.
+
+---
+
 ## Runtime and Persistence
 
 Colab is convenient, but it is not persistent by default.
@@ -127,6 +139,25 @@ Restarting the runtime clears variables and temporary files.
 
 ---
 
+## What Sharing a Notebook Means
+
+If a notebook is shared, the following can be shared:
+
+- code
+- markdown
+- saved outputs
+- comments
+
+What is **not** shared:
+
+- the active runtime
+- temporary files in `/content`
+- one-off package installs unless setup cells are included
+
+That is why AD698 emphasizes reproducible setup cells.
+
+---
+
 ## Switching to GPU
 
 When deep-learning code appears in the course, students should:
@@ -142,6 +173,17 @@ print(torch.cuda.is_available())
 if torch.cuda.is_available():
     print(torch.cuda.get_device_name(0))
 ```
+
+---
+
+## Drive Mount Cautions
+
+- Keep `My Drive` organized into subfolders
+- Avoid placing too many directly stored items in one folder
+- Prefer a few larger files over thousands of tiny file reads
+- Expect Drive I/O to be slower than local VM storage
+
+This reduces common `drive.mount()` failures and I/O timeouts.
 
 ---
 
@@ -171,6 +213,17 @@ base = "/content/drive/MyDrive/AD698/M0"
 - Treat reproducibility as part of the deliverable, not an afterthought
 
 GitHub may still be useful for personal portfolio work, but it is **not** the required course submission workflow.
+
+---
+
+## Efficient Colab Use
+
+- Use GPU only when the notebook actually benefits from it
+- Switch back to CPU when GPU is unnecessary
+- Close unused Colab tabs when finished
+- Save checkpoints before major edits or long runs
+
+These habits reduce friction later in the semester.
 
 ---
 

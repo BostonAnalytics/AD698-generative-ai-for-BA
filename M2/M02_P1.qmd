@@ -1,6 +1,6 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Math for Language Modeling"
+subtitle: "Language Modeling and Neural Networks"
 logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
@@ -377,15 +377,15 @@ $$
 documents containing “Boston hotel”
 - But motel and hotel are orthogonal vectors in one-hot representation
 - There is no natural notion of similarity for one-hot vectors!
-- Solution:
-- Rely on WordNet’s list of synonyms to get similarity?
-- But it is well-known to fail badly: incompleteness, and exhaustive list
-- Learn to encode similarity in the vectors themselves
+- [Solution?]{.uured-bold}:
+  - Rely on WordNet’s list of synonyms to get similarity?
+  - But it is well-known to fail badly: incompleteness, and exhaustive list
+  - Learn to encode similarity in the vectors themselves
 
 ## Representing words by their context
 
 - Distributional semantics: A word’s meaning is given by the words that frequently appear close-by
-- "You shall know a word by the company it keeps" (J. R. Firth 1957: 11)
+- "[You shall know a word by the company it keeps]{.uublue-bold}" (J. R. Firth 1957: 11)
 - When a word w appears in a text, its [context]{.uured-bold} is the set of words that appear nearby (within a fixed-size window).
 - We use the many contexts of $w$ to build up a representation of $w$
 
@@ -515,12 +515,12 @@ This visually reinforces the idea of semantic neighborhoods.
 
 ---
 
-## Example: Building a Co‑Occurrence Matrix
+## Building a Co‑Occurrence Matrix
 
 ```{python}
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
-
+import pandas as pd
 corpus = [
     "the bank approved the loan",
     "the river overflowed near the bank",
@@ -531,8 +531,11 @@ vectorizer = CountVectorizer()
 X = vectorizer.fit_transform(corpus)
 co_occurrence = (X.T @ X).toarray()
 
-print(vectorizer.get_feature_names_out())
-print(co_occurrence)
+vocab = vectorizer.get_feature_names_out()
+
+df = pd.DataFrame(co_occurrence, index=vocab, columns=vocab)
+df
+
 ```
 
 # Optimization & Learning
@@ -725,11 +728,11 @@ This is why softmax + cross‑entropy is so efficient.
 
 ## Visualizing Gradient Descent
 
-![](./M02_lecture02_figures/sgd-convergence.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+![](./M02_lecture02_figures/sgd-convergence.gif){width="70%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
 
 ## Visualizing Gradient Descent
 
-![](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+![](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="70%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
 
 
 ## Backpropagation
@@ -974,9 +977,8 @@ $$
 
 These limitations motivated the move to **recurrent** models.
 
----
 
-# **Recurrent Neural Networks (RNNs)**
+# Recurrent Neural Networks (RNNs)
 
 - Feedforward models treat each context window independently.  
 - RNNs introduce **recurrence**, allowing the model to maintain a **hidden state** that summarizes all previous words.

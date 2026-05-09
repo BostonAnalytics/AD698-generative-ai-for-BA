@@ -1,0 +1,115 @@
+digraph NLP_Flow {
+
+  rankdir=LR;
+  splines=ortho;
+  nodesep=0.5;
+  ranksep=0.5;
+  fontname="Helvetica";
+
+  node [
+    fontname="Helvetica",
+    fontsize=11,
+    shape=box,
+    style="rounded,filled",
+    fillcolor="#f5f5f5",
+    color="#1f3a8a"
+  ];
+
+  edge [
+    arrowhead=vee,
+    color="#1f3a8a",
+    penwidth=1.2,
+    fontsize=10
+  ];
+
+  /* =========================
+     INPUT
+     ========================= */
+  TextInput [
+    label="Text Input",
+    shape=parallelogram,
+    fillcolor="#e8f0ff"
+  ];
+
+  /* =========================
+     LEXICAL PROCESSING
+     ========================= */
+  subgraph cluster_lexical {
+    label="1. Lexical Processing";
+    style="rounded,filled";
+    fillcolor="#e8f0ff";
+    color="#b0c4ff";
+
+    Characters;
+    Tokens;
+    TaggedTokens [label="Tagged tokens"];
+
+    Characters -> Tokens       [label="data flow"];
+    Tokens     -> TaggedTokens [label="data flow"];
+  }
+
+  /* =========================
+     STRUCTURAL REPRESENTATION
+     ========================= */
+  subgraph cluster_structural {
+    label="2. Structural Representation";
+    style="rounded,filled";
+    fillcolor="#fff4d6";
+    color="#e9bc55";
+
+    SyntaxTree      [label="Syntax tree"];
+    EntityRelations [label="Entity relationships"];
+    KnowledgeBase   [label="Knowledge base"];
+
+    SyntaxTree      -> EntityRelations [label="data flow"];
+    EntityRelations -> KnowledgeBase   [label="data flow"];
+  }
+
+  /* =========================
+     ALGORITHM (FST)
+     ========================= */
+  subgraph cluster_algorithm {
+    label="3. Algorithm (FST)";
+    style="rounded,filled";
+    fillcolor="#D6EBD6";
+    color="#99CC99";
+
+    fst_regex [label="Regular expression"];
+    fst_pos   [label="Part-of-Speech"];
+    fst_logic [label="Logic compiler"];
+    fst_ie    [label="Information extractor"];
+
+    /* 2×2 layout */
+    { rank=same; fst_regex; fst_pos }
+    { rank=same; fst_logic; fst_ie }
+
+    fst_regex -> fst_logic [style=invis, weight=10];
+    fst_pos   -> fst_ie    [style=invis, weight=10];
+  }
+
+  /* =========================
+     OUTPUT
+     ========================= */
+  SummaryOutput [
+    label="Summary Output",
+    shape=parallelogram,
+    fillcolor="#e8f0ff"
+  ];
+
+  /* =========================
+     MAIN FLOW
+     ========================= */
+
+  TextInput -> Characters [label="data flow"];
+
+  TaggedTokens -> SyntaxTree [label="data flow"];
+  Tokens       -> SyntaxTree [label="data flow"];
+
+  KnowledgeBase -> fst_logic [style="dashed" color="#99CC99" penwidth=2 label="algorithmic influence"];
+  KnowledgeBase -> fst_ie    [style="dashed" color="#99CC99" penwidth=2 label="algorithmic influence"];
+  SyntaxTree    -> fst_pos   [style="dashed" color="#99CC99" penwidth=2 label="algorithmic influence"];
+  fst_regex     -> Tokens    [style="dashed" color="#99CC99" penwidth=2 label="algorithmic influence"];
+
+  fst_logic -> SummaryOutput [label="data flow"];
+  fst_ie    -> SummaryOutput [label="data flow"];
+}

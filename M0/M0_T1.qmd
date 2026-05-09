@@ -62,6 +62,10 @@ Expected:
 1. PyTorch version shown.
 2. CUDA available is `True` for GPU runtime.
 
+:::{.callout-note}
+Colab does not guarantee a specific GPU type or uninterrupted runtime length. If GPU is unavailable, verify the runtime first and then continue on CPU for the tensor examples if needed.
+:::
+
 
 # Part 2: Drive and File Hygiene
 
@@ -89,6 +93,10 @@ print("Folder ready:", base)
 
 :::{.callout-warning}
 Anything in `/content` can disappear after runtime reset. Save files in Drive-backed directories.
+:::
+
+:::{.callout-note}
+If `drive.mount()` is slow or times out, one common cause is that `My Drive` or a target folder has too many directly stored items. Keep Drive organized into subfolders.
 :::
 
 
@@ -210,11 +218,17 @@ Try these directly after the examples:
 
 1. Re-run mount cell.
 2. Confirm correct Google account.
+3. Check whether `My Drive` or the target folder contains too many directly stored files.
+4. Prefer fewer, larger files over many tiny reads when possible.
 
 ## Out-of-memory
 
 1. Reduce tensor sizes.
 2. Restart runtime.
+
+## Sharing reminder
+
+If you share a Colab notebook, the code, markdown, and saved outputs may be shared, but the temporary runtime state is not. Include setup cells so another student or instructor can reproduce the tutorial notebook.
 
 
 # Instructor Internal Reference (Hidden)

@@ -1,0 +1,16 @@
+digraph DataToModel {
+  rankdir=LR;
+  graph [bgcolor="white", margin=0];
+  node [shape=box, style="rounded,filled", fontname="Roboto", fontsize=12];
+
+  A [label="Web / API / Files", fillcolor="#f6e1d7", color="#b5672d"];
+  B [label="Structured Data\n(tables, ratios, returns)", fillcolor="#eff8ff", color="#4477aa"];
+  C [label="Unstructured Text\n(filings, notes, reviews)", fillcolor="#fff4d6", color="#c69100"];
+  D [label="Feature Preparation", fillcolor="#edf9ed", color="#559955"];
+  E [label="Modeling\n(regression / classification /\nclustering / retrieval)", fillcolor="#f5efff", color="#7a55aa"];
+  F [label="Business Output", fillcolor="#ffeef5", color="#b24f79"];
+
+  A -> B -> D;
+  A -> C -> D;
+  D -> E -> F;
+}

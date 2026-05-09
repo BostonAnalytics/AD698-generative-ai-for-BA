@@ -893,6 +893,7 @@ tbl = ax.table(
     colLabels=bow.columns,
     loc="center",
     cellLoc="center",
+    edges='horizontal'
 )
 tbl.auto_set_font_size(False)
 tbl.set_fontsize(8)
@@ -909,7 +910,9 @@ plt.show()
 - Stopwords ("the", "and") get low scores; domain-specific terms get high scores
 
 $$
+\begin{align}
 \text{TF-IDF}(t, d) = \underbrace{\frac{\text{count}(t, d)}{|d|}}_{\text{TF}} \times \underbrace{\log \frac{N}{1 + \text{df}(t)}}_{\text{IDF}}
+\end{align}
 $$
 
 > **Intuition**: "Revenue" appearing only in financial docs → high IDF. "The" appearing everywhere → low IDF.
@@ -951,7 +954,9 @@ Modern approach: **neural networks trained end-to-end** on labeled examples.
 ## MLP for Text Classification
 
 $$
+\begin{align}
 \text{Raw Text} \xrightarrow{\text{TF-IDF}} \mathbf{x} \xrightarrow{\text{MLP}} \hat{y}
+\end{align}
 $$
 
 ![](./M01_lecture01_figures/MLP.png){width="70%" fig-align="center"}
@@ -985,7 +990,9 @@ These are the same training mechanics behind both:
 The core language-modeling task is:
 
 $$
+\begin{align}
 P(w_t \mid w_1, w_2, \ldots, w_{t-1})
+\end{align}
 $$
 
 The model predicts the next word by:

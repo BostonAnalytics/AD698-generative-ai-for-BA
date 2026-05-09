@@ -20,6 +20,9 @@ format:
         toc-depth: 1
         auto-stretch: false
         code-line-numbers: true
+        code-block-bg: true
+        code-block-border-left: "#31BAE9"
+        syntax-highlighting: github
     pptx:
         reference-doc: ../theme/presentation_template.pptx
 from: markdown+emoji
@@ -43,1859 +46,627 @@ categories: ['M01:', 'Slides', 'Presentation']
 description: "Presentation slides for Module 1 on Language, Probability, and Generative Systems."
 ---
 
-## How to print Revealjs slides
+## Why This Lecture Matters
 
-![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
+- `M01_Lab1` taught us how to clean and inspect text
+- This lecture explains how cleaned text becomes numbers
+- It also explains why language is modeled probabilistically
+- That sets up early neural NLP and later generative AI
 
+---
 
-# Text Analytics and Mining
+## The Flow for Today
 
-## Text Analytics
+1. The NLP pipeline
+2. Count-based representations
+3. N-gram language models
+4. Early neural NLP
+5. Why this matters for Module 1 work
 
-![Text Analytics [@talib2016text]](./M01_lecture02_figures/text_mining_overview.jpg){width=80% fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+---
 
-## Text Mining Process
+## The Core NLP Pipeline
 
 ```{dot}
-//| label: "Text Mining Process"
+//| echo: false
 //| fig-align: center
-//| fig-alt: "Text Mining Process, describes the steps of text mining process such as data collection, preprocessing, feature extraction, model building, evaluation and deployment"
-//| fig-cap: "Text Mining Process, describes the steps of text mining process such as data collection, preprocessing, feature extraction, model building, evaluation and deployment"
-digraph NLP_Pipeline {
+//| fig-alt: "Core NLP pipeline from raw text to output"
+//| file: ./M01_lecture02_figures/m01_core_nlp_pipeline.dot
+```
 
-    /* =========================
-       Global graph settings
-       ========================= */
+---
 
-    newrank="true";
-    rankdir="TB";
-    splines="spline";
+## From Acquisition to Modeling
 
-    graph [
-        fontname="Helvetica"
-        fontsize=10
-        bgcolor="white"
-        ranksep="1.25"
-        pad="0.5"
-    ];
+```{dot}
+//| echo: false
+//| fig-align: center
+//| fig-alt: "Data acquisition to modeling pipeline"
+//| file: ./M01_lecture02_figures/m01_data_to_model_pipeline.dot
+```
 
-    node [
-        shape="box"
-        style="rounded,filled"
-        fontname="Helvetica"
-        fontsize=11
-        color="#1f3a8a"
-        fillcolor="#e8f0ff"
-    ];
+---
 
-    edge [
-        fontname="Helvetica"
-        fontsize=9
-        color="#1f3a8a"
-    ];
+## What This Means in Practice
 
-    /* =========================
-       TOP ROW — Lexical pipeline
-       ========================= */
+- We can download data from the web
+- We can call APIs for structured metadata
+- We can parse HTML or plain text
+- We often combine structured and unstructured data in the same project
 
-    subgraph cluster_lexical {
-        label="Lexical processing";
-        style="filled,rounded";
-        color="grey95";
-        rank=same;
+This is exactly what later SEC-based assignments will do.
 
-        Characters;
-        Tokens;
-        TaggedTokens [ label="Tagged tokens" ];
+---
 
-        Characters -> Tokens;
-        Tokens -> TaggedTokens;
-    }
+## Structured and Unstructured Data
 
-    /* =========================
-       BOTTOM ROW — Structural pipeline
-       ========================= */
+- Structured: ratios, returns, tabular company metadata
+- Unstructured: filings, MD&A text, risk factors, notes
 
-    subgraph cluster_structural {
-        label="Structural representation";
-        style="filled,rounded";
-        color="grey95";
-        rank=same;
+Typical modeling directions:
 
-        EntityRelations [ label="Entity relationships" ];
-        SyntaxTree      [ label="Syntax tree" ];
-        KnowledgeBase   [ label="Knowledge base" ];
+- regression on structured variables
+- classification on text
+- clustering or similarity on text embeddings
 
-        /* Right-to-left logical flow */
-        SyntaxTree    -> EntityRelations;
-        EntityRelations -> KnowledgeBase;
+---
 
-    }
-    
-    subgraph cluster_algorithm {
-        label="Algorithm";
-        style="filled,rounded";
-        color="grey95";
-        rank=same;
+## Example: SEC API Metadata
 
-        fst_regex[color="#99CC99" fillcolor="#D6EBD6" label="Regular expression" ];
-        fst_pos  [color="#99CC99" fillcolor="#D6EBD6" label="Part-of-Speech" ];
-        fst_logic[color="#99CC99" fillcolor="#D6EBD6" label="Logic compiler" ];
-        fst_ie   [color="#99CC99" fillcolor="#D6EBD6" label="Information extractor" ];
-    }
+```python
+import requests
+import pandas as pd
 
-    /* =========================
-       Invisible merge anchors
-       ========================= */
+headers = {"User-Agent": "your-email@bu.edu"}
+cik = "0000320193"
+url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+```
 
-    merge_tokens [
-        shape="circle"
-        width=".25"
-        fixedsize="true"
-        label=""
-        style="invis"
-    ];
+```python
+resp = requests.get(url, headers=headers, timeout=30)
+recent = pd.DataFrame(resp.json()["filings"]["recent"])
+recent[["form", "filingDate", "accessionNumber"]].head()
+```
 
-    merge_tagged [
-        shape="circle"
-        width=".25"
-        fixedsize="true"
-        label=""
-        style="invis"
-    ];
+---
 
-    merge_syntax [
-        shape="circle"
-        width=".25"
-        fixedsize="true"
-        label=""
-        style="invis"
-    ];
+## Example: HTML Table Extraction
 
-    /* =========================
-       Controlled merges
-       ========================= */
+```python
+import pandas as pd
 
-    Tokens        -> SyntaxTree      [ arrowhead="vee"];
-    TaggedTokens -> SyntaxTree       [ arrowhead="vee"];
+tables = pd.read_html("https://www.macrotrends.net/stocks/charts/AAPL/apple/revenue")
+print("tables found:", len(tables))
+tables[0].head()
+```
 
-    /* =========================
-       FST annotations (semantic)
-       ========================= */
+This is still text acquisition, but it lands as structured data.
 
-    /* Invisible anchors for labels */
-    // fst_regex  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
-    // fst_pos    [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
-    // fst_logic  [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
-    // fst_ie     [ shape="circle" width=".25" fixedsize="true" color="invis" label="" ];
+---
 
-    fst_regex -> Tokens       [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
-    fst_regex -> TaggedTokens [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
-    SyntaxTree   -> fst_pos [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
-    KnowledgeBase-> fst_ie    [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
-    KnowledgeBase-> fst_logic [ style="dashed" arrowhead="vee" constraint="false" color="#99CC99" penwidth=2.0];
+## Example: Filing Text Extraction
 
-    /* Labels */
-    // fst_regex  [ xlabel="Regular expressions" ];
-    // fst_pos    [ xlabel="POS tagger (FST)" ];
-    // fst_logic  [ xlabel="Logic compiler (FST)" ];
-    // fst_ie     [ xlabel="Information extractor (FST)" ];
+```python
+from bs4 import BeautifulSoup
 
-    /* =========================
-       Rank alignment
-       ========================= */
+html = requests.get(filing_url, headers=headers, timeout=30).text
+soup = BeautifulSoup(html, "html.parser")
+text = soup.get_text(" ", strip=True)
+```
 
-    { rank="same"; Characters; Tokens; TaggedTokens; }
-    { rank="same"; EntityRelations; SyntaxTree; KnowledgeBase; }
-    { rank="same"; fst_regex; fst_pos; fst_logic; fst_ie}
-}
+That is the raw material for text mining and NLP.
+
+---
+
+## What the Pipeline Means in AD698
+
+- Raw text: SEC filings, reviews, business documents
+- Tokenization: split text into usable units
+- Cleaning: normalize text for analysis
+- Representation: convert text to vectors
+- Model: classify, retrieve, or predict
+- Output: label, score, ranking, or next token
+
+The models change across the course, but this flow stays remarkably stable.
+
+---
+
+## What We Do With Text-Mined Data
+
+- supervised classification
+- unsupervised clustering
+- retrieval and similarity search
+- dimensionality reduction for exploration
+
+So text mining is not one task. It is an entry point into many analytics workflows.
+
+---
+
+## Bag of Words
+
+::: {.columns}
+
+::: {.column}
+
+Bag of Words keeps:
+
+- which terms appear
+- how often they appear
+
+Bag of Words loses:
+
+- word order
+- syntax
+- long-range context
+- semantic similarity
+
+
+:::
+
+::: {.column}
+
+![Bag of Words](./M01_lecture02_figures/bag-of-words.png){width=80% fig-align="center" fig-alt="Bag of Words" #fig-bow}
+
+
+:::
+
+:::
+
+
+---
+
+## Why Bag of Words Still Matters
+
+- It is easy to compute
+- It is easy to interpret
+- It is a strong baseline for classification
+- It is the cleanest first bridge from language to linear algebra
+
+If students do not understand BoW, later embeddings often feel like magic instead of engineering.
+
+---
+
+## Preparing Financial Text for Vectorization
+
+```{python}
+docs = [
+    "Revenue increased due to stronger iPhone demand and services growth.",
+    "Risk factors include supply chain disruption and foreign exchange volatility.",
+    "Management expects continued capital expenditure for AI infrastructure.",
+    "Operating margin declined because of restructuring and impairment charges."
+]
+```
+
+```{python}
+import re
+def normalize_text(text):
+    text = text.lower()
+    text = re.sub(r"[^a-z\\s]", " ", text)
+    return re.sub(r"\\s+", " ", text).strip()
+```
+
+---
+
+## Cleaned Text and Tokens
+
+```{python}
+clean_docs = [normalize_text(x) for x in docs]
+token_lists = [doc.split() for doc in clean_docs]
+
+print(clean_docs[0])
+print(token_lists[0])
+```
+
+This is the practical handoff from text cleaning to vectorization.
+
+---
+
+## Bag of Words in Python
+
+```{python}
+from sklearn.feature_extraction.text import CountVectorizer
+
+bow = CountVectorizer()
+X_bow = bow.fit_transform(clean_docs)
+
+print(bow.get_feature_names_out())
+print(X_bow.toarray())
+```
+
+---
+
+## TF-IDF
+
+BoW counts words.
+
+TF-IDF reweights words so that terms common in one document but less common across the corpus receive more emphasis.
+
+$$
+\text{tfidf}(t, d) = \text{tf}(t, d) \cdot \log\left(\frac{N}{1 + \text{df}(t)}\right)
+$$
+
+Both BoW and TF-IDF are:
+
+- sparse
+- fixed-length
+- useful for baseline retrieval and classification
+
+---
+
+## TF-IDF in Python
+
+```{python}
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+tfidf = TfidfVectorizer()
+X_tfidf = tfidf.fit_transform(clean_docs)
+
+print(tfidf.get_feature_names_out())
+print(X_tfidf.toarray().round(3))
+```
+
+---
+
+## What Count-Based NLP Misses
+
+- `bank` can mean finance or river edge
+- `risk` and `uncertainty` are related but counted separately
+- `"not good"` and `"good"` can look too similar
+- long-distance dependencies are almost invisible
+
+This is where language probability and neural representations become important.
+
+---
+
+## A Supervised Use Case
+
+Once we vectorize text, we can classify it.
+
+Examples:
+
+- company vs competitor
+- positive vs negative sentiment
+- risk-heavy vs growth-heavy language
+- industry labels
+
+This is exactly why Module 1 assignments start with representations.
+
+---
+
+## Language as a Probability Problem
+
+Language models estimate probabilities over sequences:
+
+$$
+P(w_1, w_2, \dots, w_T)
+$$
+
+Using the chain rule:
+
+$$
+P(w_1, \dots, w_T) = \prod_{t=1}^{T} P(w_t \mid w_1, \dots, w_{t-1})
+$$
+
+Modern LLMs still build on this same idea.
+
+---
+
+## N-gram Language Models
+
+Early practical systems simplified the full context using the Markov assumption:
+
+$$
+P(w_t \mid w_1, \dots, w_{t-1}) \approx P(w_t \mid w_{t-n+1}, \dots, w_{t-1})
+$$
+
+That gives us:
+
+- unigram
+- bigram
+- trigram
+- more generally, n-gram models
+
+---
+
+## What N-grams Improved
+
+Compared with pure document counts, n-grams introduced:
+
+- local sequence information
+- collocations
+- phrase-level patterns
+- short-range predictability
+
+So they were an important step from static counts toward actual language modeling.
+
+---
+
+## Why N-grams Were Not Enough
+
+- sparse counts grow quickly
+- unseen phrases are hard to handle
+- similar words do not share meaning
+- context windows remain short
+
+So the next question became:
+
+> Can a model learn a better internal representation of words?
+
+---
+
+## Early Neural NLP
+
+Neural Network Language Models changed the representation layer:
+
+1. map words to dense vectors
+2. combine context vectors
+3. transform through hidden layers
+4. predict the next word with softmax
+
+$$
+\hat{y} = \text{softmax}(W_2 \cdot h + b_2)
+$$
+
+This is the start of learned embeddings.
+
+---
+
+## Why Embeddings Matter
+
+Dense embeddings let models:
+
+- place related words near each other
+- generalize better than exact counts
+- learn similarity from context
+- support downstream tasks beyond counting
+
+This is the major conceptual bridge from classical NLP to early neural NLP.
+
+---
+
+## Word2Vec as the Transition Model
+
+- **CBOW** predicts a word from nearby context
+- **Skip-gram** predicts nearby context from a word
+
+These models are simpler than modern LLMs, but they are central historically because they made learned word representations practical and useful.
+
+---
+
+## Word2Vec in Python
+
+```{python}
+#| echo: true
+#| fig-align: center
+#| output-location: column
+from gensim.models import Word2Vec
+from tabulate import tabulate
+import numpy as np
+import pandas as pd
+from IPython.display import HTML
+
+sentences = [doc.split() for doc in clean_docs]
+w2v = Word2Vec(sentences, vector_size=50, window=3, min_count=1, sg=1, epochs=200)
+
+word = "risk"
+similar = pd.DataFrame(w2v.wv.most_similar(word, topn=5),
+                       columns=["Word", "Similarity"])
+
+HTML(similar.to_html(index=False, float_format="%.3f"))
+
+
+# vec = w2v.wv["risk"]
+# df = pd.DataFrame(vec.reshape(5, -1))  # 5×10 block
+# df.style.background_gradient(cmap="Blues")
+
 
 ```
 
-## Text Analytics
+---
 
-- Knowledge Discovery in Textual Databases
-- Text Mining is a subfield of Text Analytics and Natural Language Processing (NLP)
-- Text Analytics is a broader term that encompasses various techniques for analyzing and extracting insights from text data.
-- Borrows from various fields such as information retrieval, machine learning, statistics, linguistics, and others.
+
+## Continuous Bag‑of‑Words (CBOW)
+CBOW predicts a **target word** given its **context window**.
+
+Formally:
+
 $$
 \begin{align}
-\text{Text Mining} &= \text{Information Extraction} + \nonumber \\
-      &\quad{}  \text{Data Mining} + \text{Web Mining} \\
-\text{Text Analytics} &= \text{Information Retrieval} + \text{Text Mining}
+p(w_t \mid w_{t-m}, \ldots, w_{t-1}, w_{t+1}, \ldots, w_{t+m})
 \end{align}
 $$
 
-## Application Areas of Text Mining
-
-- Information extraction
-- Topic tracking
-- Summarization
-- Categorization
-- Clustering
-- Concept linking
-- Question answering
-
-# Text Mining and Analytics Process 
-
-![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
-
-## Sentiment Analysis
-
-:::{.columns}
-:::{.column}
-![Sentiment Analysis: tasks, tools, methods, and applications](M01_lecture02_figures/Sentiment_Analysis.jpg){width=80% fig-align="center" fig-alt="Sentiment Analysis Process" #fig-sentiment-analysis}
-
-:::
-:::{.column}
-
-- Methods
-    - Lexicon-based
-    - Machine Learning
-    - Deep Learning
-    - Hybrid
-- Applications
-    - Domain Applications
-    - Large Language Models
-- Challenges
-    - Methodological Challenges
-    - Text Context Challenges
-:::
-:::
-
-## Sentiment Classification Algorithms
-
-
-```{dot}
-digraph Sentiment_Approaches {
-
-    /* =========================
-       Global settings
-       ========================= */
-
-    rankdir=TD;
-    newrank=true;
-    splines=curved;
-
-    graph [
-        fontname="Handlee"
-        fontsize=11
-        bgcolor="white"
-        pad="0.0"
-        margin="0"
-        nodesep="0.6"
-        ranksep="1.2"
-    ];
-
-    node [
-        shape=box
-        style="rounded,filled"
-        fontname="Handlee"
-        fontsize=11
-        color="#555555"
-    ];
-
-    edge [
-        fontname = "Handlee"
-        color="#333333"
-        penwidth=1.6
-        arrowsize=0.8
-    ];
-
-    /* =========================
-       ROOT NODES
-       ========================= */
-
-    ML_Approach [
-        label="Machine Learning\nApproach"
-        fillcolor="#ffd37f"
-        fontsize=12
-    ];
-
-    Lexicon_Approach [
-        label="Lexicon-based\nApproach"
-        fillcolor="#cde6a3"
-        fontsize=12
-    ];
-
-    /* =========================
-       MACHINE LEARNING BRANCH
-       ========================= */
-
-    Supervised [
-        label="Supervised\nLearning"
-        fillcolor="#ffd37f"
-    ];
-
-    Unsupervised [
-        label="Unsupervised\nLearning"
-        fillcolor="#ffd37f"
-    ];
-
-    ML_Approach -> Supervised;
-    ML_Approach -> Unsupervised;
-
-    /* ---- Classifier families ---- */
-
-    DecisionTree [
-        label="Decision Tree\nClassifiers"
-        fillcolor="#ffd37f"
-    ];
-
-    LinearCls [
-        label="Linear\nClassifiers"
-        fillcolor="#ffd37f"
-    ];
-
-    RuleBased [
-        label="Rule-based\nClassifiers"
-        fillcolor="#ffd37f"
-    ];
-
-    Probabilistic [
-        label="Probabilistic\nClassifiers"
-        fillcolor="#ffd37f"
-    ];
-
-    Supervised -> DecisionTree;
-    Supervised -> LinearCls;
-    Supervised -> RuleBased;
-    Unsupervised -> Probabilistic;
-
-    /* ---- Specific algorithms ---- */
-
-    SVM [
-        label="Support Vector\nMachine (SVM)"
-        fillcolor="#ffb000"
-    ];
-
-    NN [
-        label="Neural Network\n(NN)"
-        fillcolor="#ffb000"
-    ];
-
-    DL [
-        label="Deep Learning\n(DL)"
-        fillcolor="#ffb000"
-    ];
-
-    NB [
-        label="Naïve Bayes\n(NB)"
-        fillcolor="#ffb000"
-    ];
-
-    BN [
-        label="Bayesian Network\n(BN)"
-        fillcolor="#ffb000"
-    ];
-
-    ME [
-        label="Maximum\nEntropy (ME)"
-        fillcolor="#ffb000"
-    ];
-
-    DecisionTree -> SVM;
-    LinearCls   -> NN;
-    LinearCls   -> DL;
-
-    Probabilistic -> NB;
-    Probabilistic -> BN;
-    Probabilistic -> ME;
-
-    /* =========================
-       LEXICON-BASED BRANCH
-       ========================= */
-
-    Dictionary [
-        label="Dictionary-based\nApproach"
-        fillcolor="#cde6a3"
-    ];
-
-    Corpus [
-        label="Corpus-based\nApproach"
-        fillcolor="#cde6a3"
-    ];
-
-    Lexicon_Approach -> Dictionary;
-    Lexicon_Approach -> Corpus;
-
-    Statistical [
-        label="Statistical"
-        fillcolor="#bfe3ea"
-    ];
-
-    Semantic [
-        label="Semantic"
-        fillcolor="#bfe3ea"
-    ];
-
-    Corpus -> Statistical;
-    Corpus -> Semantic;
-
-    /* =========================
-       Rank alignment
-       ========================= */
-
-    { rank=same; ML_Approach; Lexicon_Approach; }
-    { rank=same; Supervised; Unsupervised; Dictionary; Corpus; }
-    { rank=same; DecisionTree; LinearCls; RuleBased; Probabilistic; Statistical; Semantic; }
-    { rank=same; SVM; NN; DL; NB; BN; ME; }
-}
-
-```
-
-## Types of Sentiment Analysis
-
-- Aspects-based
-- Emotion-based
-- Fine-grained
-- Intent-based
-
-:::{.r-stack}
-
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 1.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-out}
-
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 2.png){width=80% fig-align="center"  fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
-
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 3.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
-
-![](./M01_lecture02_figures/types-of-sentiment-analysis - 4.png){width=80% fig-align="center" fig-alt="Types of Sentiment Analysis, describes Aspects-based, Emotion-based, Fine-grained, Intent-based sentiment analysis" .fragment .fade-in}
-
-:::
-
-# Web Mining, personalization, Social Analytics
-
-## Web Mining 
-
-- Web mining is the application of data mining techniques to discover patterns from the World Wide Web.
-
-```{dot}
-digraph Weblog_Mining_Process {
-
-  /* =========================
-     Global styling
-     ========================= */
-  graph [
-    fontname="Helvetica,Arial,sans-serif",
-    fontsize=14,
-    bgcolor="white",
-    pad="0.2",
-    ranksep="1.1",
-    nodesep="0.9",
-    splines=curved
-  ];
-
-  node [
-    shape=box,
-    style="rounded,filled",
-    fontname="Helvetica,Arial,sans-serif",
-    fontsize=14,
-    fillcolor="#f7f7f7",
-    color="#333333",
-    margin="0.25,0.18"
-  ];
-
-  edge [
-    color="#333333",
-    penwidth=1.4,
-    arrowsize=0.8
-  ];
-
-  /* =========================
-     Cluster 1 — Data Collection
-     ========================= */
-  subgraph cluster_collection {
-    label="Data Collection";
-    style="filled,rounded";
-    color="#e3f2fd";
-
-    RawData     [ label="Raw Data" ];
-    Collection  [ label="Weblog Data Collection" ];
-
-    RawData -> Collection;
-  }
-
-  /* =========================
-     Cluster 2 — Pre-processing
-     ========================= */
-  subgraph cluster_preprocessing {
-    label="Pre-processing";
-    style="filled,rounded";
-    color="#e8f5e9";
-
-    Integration   [ label="Data Integration" ];
-    Preprocessing [ label="Data Pre-processing" ];
-
-    Integration -> Preprocessing;
-  }
-
-  /* =========================
-     Cluster 3 — Pattern Discovery
-     ========================= */
-  subgraph cluster_discovery {
-    label="Pattern Discovery";
-    style="filled,rounded";
-    color="#fff3e0";
-
-    Extraction [ label="Pattern Extraction" ];
-    Analysis   [ label="Pattern Analysis" ];
-
-    Extraction -> Analysis;
-  }
-
-  /* =========================
-     Cluster 4 — Output
-     ========================= */
-  subgraph cluster_output {
-    label="Output";
-    style="filled,rounded";
-    color="#fce4ec";
-
-    Output [ label="Patterns Formed" ];
-  }
-
-  /* =========================
-     Cross-cluster flow
-     ========================= */
-  Collection   -> Integration;
-  Preprocessing -> Extraction;
-  Analysis     -> Output;
-
-  /* =========================
-     Rank alignment (2 rows)
-     ========================= */
-  { rank=same; RawData; Integration; Extraction; }
-  { rank=same; Collection; Preprocessing; Analysis; Output; }
-}
-
-```
-
-## Web Content Mining (Web Scraping) {background-color="#eff8ff"}
-
-![Web Scraping Process](./M01_lecture02_figures/web-scrapping.png){width=80% fig-align="center" #fig-web-scrapping fig-alt="Web Scraping Process"}
-
-
-## Web Usage Mining (Web Analytics)
-
-- Web usage mining (Web analytics) is the extraction of useful information from data generated through Web page visits and transactions.
-
-![](./M01_lecture02_figures/Web_Usage_Mining.png){width=80% fig-align="center" fig-alt="Web Usage Mining Process"}
-
-
-## Social Analytics
-
-- Social analytics is defined as monitoring, analyzing, measuring and interpreting digital interactions and relationships of people, topics, ideas and content.
-
-```{dot}
-digraph Social_Analytics {
-
-    /* =========================
-       Global settings
-       ========================= */
-
-    rankdir=LR;
-    newrank=true;
-    splines=curved;
-
-    graph [
-        fontname="Helvetica"
-        fontsize=14
-        bgcolor="white"
-        pad="0.2"
-        nodesep="1.0"
-        ranksep="1.4"
-    ];
-
-    node [
-        shape=box
-        style="rounded,filled"
-        fontname="Helvetica"
-        fontsize=16
-        color="black"
-        fillcolor="#cfe1f7"
-        margin="0.35,0.25"
-    ];
-
-    edge [
-        color="black"
-        penwidth=2.0
-        arrowsize=0.8
-    ];
-
-    /* =========================
-       Nodes
-       ========================= */
-
-    SocialAnalytics [
-        label="Social Analytics"
-        fontsize=18
-    ];
-
-    SNA [
-        label="Social Network Analysis\n(SNA)"
-    ];
-
-    SMA [
-        label="Social Media Analytics"
-    ];
-
-    /* =========================
-       Structure
-       ========================= */
-
-    SocialAnalytics -> SNA;
-    SocialAnalytics -> SMA;
-
-    /* =========================
-       Rank alignment
-       ========================= */
-
-    { rank=same; SNA; SMA; }
-}
-
-
-```
-
-
-# Text mining
-
-## Text Mining Concepts
-
-- 85-90 percent of all corporate data is in some kind of unstructured form (e.g., text)
-- Unstructured corporate data is doubling in size every 18 months
-- Tapping into these information sources is not an option, but a need to stay competitive
-
-:::{.callout-note}
-
-Text mining is the process of deriving high-quality information from text. High-quality information is typically derived through the devising of patterns and trends through means such as statistical pattern learning.
-
-:::
-
-## Knowledge Discovery from Web Data
-
-![Example Data exploration workflow for textual data extraction [@Gupta2024]](./M01_lecture02_figures/knowledge_extraction.jpg){width=80% fig-align="center" fig-alt="Knowledge Discovery from Web Data" #fig-knowledge-discovery-web-data}
-
-
-# Natural Language Processing (NLP)
-
-## What is Natural Language Processing (NLP)?
-
-- Technology that enables computers to process, generate, and interact with language (e.g., text). Some key aspects:
-- [Learn useful representations]{.uublue-bold}: capture meaning in a structured way that can be used for downstream tasks (e.g., embeddings used to classify a document)
-- [Generate language]{.uublue-bold}: create language (e.g., text, 
-- code) for tasks like dialogue, translation, or question answering.
-- [Bridge language and action]{.uublue-bold}: Use language to perform tasks, solve problems, interact with environments (e.g., a code IDE)
-
-## General NLP Framework 
-
-```{dot}
-
-digraph NLP_Tasks {
-  node [shape=plaintext]
-
-  nlp_table [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-      <TR>
-        <TD bgcolor="#137dcb"><B>Input X</B></TD>
-        <TD bgcolor="lightcoral"><B>Output Y</B></TD>
-        <TD bgcolor="#0ccc90"><B>Task</B></TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Continuing Text</TD>
-        <TD>Language Modeling</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Text in Other Language</TD>
-        <TD>Translation</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Label</TD>
-        <TD>Text Classification</TD>
-      </TR>
-      <TR>
-        <TD>Text</TD>
-        <TD>Linguistic Structure</TD>
-        <TD>Language Analysis</TD>
-      </TR>
-      <TR>
-        <TD>Image</TD>
-        <TD>Text</TD>
-        <TD>Image Captioning</TD>
-      </TR>
-    </TABLE>
-  >]
-
-  title [label=<
-    <TABLE BORDER="0" CELLBORDER="0">
-      <TR><TD><B>Create a function to map an input X into an output Y, where X and/or Y involve language.</B></TD></TR>
-    </TABLE>
-  >]
-
-  title -> nlp_table
-}
-
-```
-
-## Building NLP Systems
-
-- Rules: Manual creation of rules
-
-  ```
-  def classify(x: str) -> str:
-      sports_keywords = ["baseball", "soccer", "football", "tennis"]
-      if any(keyword in x for keyword in sports_keywords):
-          return "sports"
-      else:
-          return "other"
-  ```
-
-
-- Prompting: Prompting a language model w/o training
-
-```{dot}
-digraph PromptLogic {
-  rankdir=LR
-  node [shape=plaintext]
-
-  decision_box [label=<
-    <TABLE BORDER="0.50" CELLBORDER="0.5" CELLSPACING="0" CELLPADDING="2" bgcolor="lightyellow">
-      <TR><TD width="400" fixedsize="false"><B>If the following sentence is about 'sports', reply 'sports'. Otherwise reply 'other'.</B></TD></TR>
-    </TABLE>
-  >]
-
-  lm_node [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightblue">
-      <TR><TD width="75" fixedsize="true"><B>LM</B></TD></TR>
-    </TABLE>
-  >]
-
-  decision_box -> lm_node
-}
-
-```
-
-## Building NLP Systems
-
-- Fine-tuning: Machine learning from paired data $\langle X, Y\rangle$
-
-```{dot}
-digraph TextClassificationTraining {
-    rankdir=LR
-
-  node [shape=plaintext]
-
-  samples [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
-      <TR><TD><B>Sentence</B></TD><TD><B>Label</B></TD></TR>
-      <TR><TD>"I love to play baseball."</TD><TD>sports</TD></TR>
-      <TR><TD>"The stock price is going up."</TD><TD>other</TD></TR>
-      <TR><TD>"He got a hat-trick yesterday."</TD><TD>sports</TD></TR>
-      <TR><TD>"He is wearing tennis shoes."</TD><TD>other</TD></TR>
-    </TABLE>
-  >]
-
-  training [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2" bgcolor="lightgray">
-      <TR><TD><B>Training</B></TD></TR>
-    </TABLE>
-  >]
-
-  model [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="2">
-      <TR>
-        <TD><IMG SRC="M01_lecture02_figures/reshot-icon-engineering-6XYGVMCJ59.png"/></TD>
-        <TD><B>Model</B></TD>
-      </TR>
-    </TABLE>
-  >]
-
-  samples -> training -> model
-}
-
-```
-
-## Data Requirements for System Building
-
--  [Rules/prompting based on intuition]{.uublue-bold}: No data needed, but also no performance guarantees  
-- [Rules/prompting based on spot-checks]{.uublue-bold}: A small amount of data with input $X$ only
-- [Rules/prompting with rigorous evaluation]{.uublue-bold}: Development set with input $X$ and output $Y$ (e.g. 200-2000 examples). Additional held-out test set also preferable.
-- [Fine-tuning]{.uublue-bold}: Additional train set. More is often better - constant accuracy increase when data size doubles.
-
-```{dot}
-digraph DataSplit {
-  rankdir=LR
-  node [shape=plaintext]
-
-  split_table [label=<
-    <TABLE BORDER="1" CELLBORDER="1" CELLSPACING="0" CELLPADDING="6">
-      <TR>
-        <TD bgcolor="lightgreen" width="378">
-          <B>Train Data</B><BR/><FONT COLOR="red">X_train, y_train</FONT><BR/>60%
-        </TD>
-        <TD bgcolor="lightblue" width="108">
-          <B>Test Data</B><BR/><FONT COLOR="red">X_test, y_test</FONT><BR/>20%
-        </TD>
-        <TD bgcolor="lightyellow" width="54">
-          <B>Validation (Dev)</B><BR/><FONT COLOR="red">X_val, y_val</FONT><BR/>20%
-        </TD>
-      </TR>
-    </TABLE>
-  >]
-}
-
-```
-
-## Natural Language Processing (NLP) Pipeline 
-
-```{dot}
-digraph Pipeline {
-
-  rankdir=LR;
-  splines=ortho;
-  concentrate=true;
-  nodesep=0.8;
-  ranksep=1.2;
-  fontname="Helvetica";
-
-  node [
-    shape=box,
-    style="filled,rounded",
-    fontname="Helvetica",
-    fillcolor="blanchedalmond"
-  ];
-
-  edge [
-    arrowhead=vee,
-    penwidth=1.2
-  ];
-
-  /* =========================
-     STAGE 1 — DATA SOURCES
-     ========================= */
-  subgraph cluster_data {
-    label="Data Sources";
-    color="#f4cccc";
-    style=filled;
-    rank=same;
-
-    ds1 [label="Survey Data"];
-    ds2 [label="Logs"];
-    ds3 [label="APIs"];
-    ds4 [label="Databases"];
-    ds5 [label="Files"];
-    ds6 [label="External Feeds"];
-  }
-
-  /* =========================
-     STAGE 2 — INGESTION
-     ========================= */
-  subgraph cluster_ingest {
-    label="Ingestion & Parsing";
-    color="#cfe2f3";
-    style=filled;
-    rank=same;
-
-    p1 [label="Load"];
-    p2 [label="Parse"];
-    p3 [label="Validate"];
-    p4 [label="Normalize"];
-    p5 [label="Enrich"];
-  }
-
-  /* =========================
-     STAGE 3 — TRANSFORMATION
-     ========================= */
-  subgraph cluster_transform {
-    label="Transformation";
-    color="#fff2cc";
-    style=filled;
-    rank=same;
-
-    t1 [label="Clean"];
-    t2 [label="Aggregate"];
-    t3 [label="Feature Engineering"];
-  }
-
-  /* =========================
-     STAGE 4 — DATA PRODUCTS
-     ========================= */
-  subgraph cluster_products {
-    label="Data Products";
-    color="#d9ead3";
-    style=filled;
-    rank=same;
-    splines=curved;
-
-
-    o1 [label="Structured Tables"];
-    o2 [label="Feature Store"];
-    o3 [label="Analytics Dataset"];
-  }
-
-  /* =========================
-     STAGE 5 — CONSUMPTION
-     ========================= */
-  subgraph cluster_consume {
-    label="Consumption";
-    color="#ead1dc";
-    style=filled;
-    rank=same;
-
-    c1 [label="Dashboards"];
-    c2 [label="ML Models"];
-    c3 [label="Reports"];
-  }
-
-  /* =========================
-     FLOWS
-     ========================= */
-  ds1 -> p1;
-  ds2 -> p2;
-  ds3 -> p2;
-  ds4 -> p2;
-  ds5 -> p3;
-  ds6 -> p4;
-
-  p1 -> t1;
-  p2 -> t1;
-  p3 -> t2;
-  p4 -> t2;
-  p5 -> t3;
-
-  t1 -> o1;
-  t2 -> o2;
-  t3 -> o3;
-
-  o1 -> c1;
-  o2 -> c2;
-  o3 -> c3;
-}
-
-```
-
-## Text Summarization
-
-```{dot}
-digraph SummarizationPipeline {
-
-  rankdir=LR;
-  splines=ortho;
-  nodesep=0.6;
-  ranksep=0.9;
-  fontname="Helvetica";
-
-  node [
-    fontname="Helvetica",
-    fontsize=11,
-    shape=box,
-    style="rounded,filled",
-    fillcolor="#f5f5f5",
-    color="#333333"
-  ];
-
-  edge [
-    arrowhead=vee,
-    color="#333333",
-    penwidth=1.2
-  ];
-
-  /* =========================
-     INPUT
-     ========================= */
-  TextInput [
-    label="Text Input",
-    shape=parallelogram,
-    fillcolor="#e8f3ff"
-  ];
-
-  /* =========================
-     PREPROCESSING
-     ========================= */
-  subgraph cluster_pre {
-    label="1. Pre-processing";
-    fontsize=12;
-    style="rounded";
-    color="#cccccc";
-
-    Lowercase   [label="Lowercasing"];
-    Punct       [label="Remove punctuation"];
-    Tokenize    [label="Tokenization"];
-    Stopwords   [label="Stopword removal"];
-    SentSeg     [label="Sentence segmentation"];
-  }
-
-  /* =========================
-     FEATURES
-     ========================= */
-  subgraph cluster_features {
-    label="2. Linguistic & Statistical Features";
-    fontsize=12;
-    style="rounded";
-    color="#cccccc";
-
-    POSTag      [label="POS tagging"];
-    WordSeg     [label="Word segmentation"];
-    OccStats    [label="Occurrence statistics (TF, TF-IDF)"];
-    Keywords    [label="Keyword extraction"];
-    SentFeat    [label="Sentence-level features"];
-  }
-
-  /* =========================
-     RANKING
-     ========================= */
-  subgraph cluster_rank {
-    label="3. Sentence Ranking";
-    fontsize=12;
-    style="rounded,filled";
-    fillcolor="#fff2cc";
-    color="#7d6608";
-
-    Unsupervised [label="Unsupervised (TextRank, LexRank)"];
-    Supervised   [label="Supervised ML models"];
-    Neural       [label="Neural models (BART, T5, Pegasus)"];
-  }
-
-  /* =========================
-     SUMMARY
-     ========================= */
-  subgraph cluster_summary {
-    label="4. Summary Construction";
-    fontsize=12;
-    style="rounded";
-    color="#cccccc";
-
-    Select      [label="Select top sentences"];
-    OrderSmooth [label="Order and smooth"];
-    Compress    [label="Optional compression/paraphrasing"];
-  }
-
-  /* =========================
-     OUTPUT
-     ========================= */
-  SummaryOutput [
-    label="Summary Output",
-    shape=parallelogram,
-    fillcolor="#e8f3ff"
-  ];
-
-  /* =========================
-     MAIN FLOW
-     ========================= */
-
-  TextInput -> Lowercase;
-  Lowercase -> Punct -> Tokenize -> Stopwords -> SentSeg;
-
-  SentSeg -> POSTag;
-  SentSeg -> WordSeg;
-  SentSeg -> OccStats;
-
-  POSTag -> Keywords;
-  WordSeg -> Keywords;
-  OccStats -> Keywords;
-  Keywords -> SentFeat;
-
-  SentFeat -> Unsupervised;
-  SentFeat -> Supervised;
-  SentFeat -> Neural;
-
-  Unsupervised -> Select;
-  Supervised   -> Select;
-  Neural       -> Select;
-
-  Select -> OrderSmooth -> Compress -> SummaryOutput;
-}
-
-```
-
-
-## Natural Language Processing (NLP)
-
-- Part-of-speech tagging
-- Text segmentation
-- Word sense disambiguation
-- Syntactic ambiguity
-- Imperfect or irregular input
-- Speech acts
-
-
-## NLP Tasks
-
-- Question answering
-- Automatic summarization
-- Natural language generation
-- Natural language understanding
-- Machine translation
-- Foreign language reading
-- Foreign language writing.
-- Speech recognition
-- Text-to-speech
-- Text proofing
-- Optical character recognition
-
-
-## Classical NLP
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-056.jpg?height=504&width=2020&top_left_y=409&top_left_x=243)
-
-## Deep Learning-based NLP
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-056.jpg?height=643&width=2090&top_left_y=1164&top_left_x=244)
-
-## Modern NLP Pipeline
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=575&width=2356&top_left_y=203&top_left_x=41)
-Task / Output
-
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=396&width=601&top_left_y=1130&top_left_x=48)
-
-Task / Output
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-057.jpg?height=691&width=1278&top_left_y=1128&top_left_x=626)
-
-## Modern NLP Pipeline
-
-Task / Output
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-058.jpg?height=675&width=2442&top_left_y=753&top_left_x=21)
-
-## Deep Learning NLP
-
-Task / Output
-
-Classification
-
-Sentiment Analysis
-![](https://cdn.mathpix.com/cropped/c931bfb7-94ef-4062-8314-bc3ef9e9e62f-059.jpg?height=446&width=1976&top_left_y=847&top_left_x=23)
-
-Entity Extraction
-
-Topic Modeling
-
-Document Similarity
-
-
-
-## Rule Based Sentiment
-
-:::{.callout-note}
- Given a review ($X$) on a movie ratings website, decide whether its label ($y$) is positive (1), negative (-1) or neutral (0).
-:::
-
-```{dot}
-digraph SentimentAnalysis {
-  rankdir=LR
-  node [shape=plaintext, scale=0.60]
-
-  sentence1 [label=<
-    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-      <TR><TD>"I hate this movie"</TD></TR>
-    </TABLE>
-  >]
-
-  sentence2 [label=<
-    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-      <TR><TD>"I love this movie"</TD></TR>
-    </TABLE>
-  >]
-
-  sentence3 [label=<
-    <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0">
-      <TR><TD>"I saw this movie"</TD></TR>
-    </TABLE>
-  >]
-
-  sentiment1 [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-      <TR>
-        <TD><FONT COLOR="red">negative</FONT></TD>
-        <TD><FONT COLOR="green">positive</FONT></TD>
-        <TD><FONT COLOR="black">neutral</FONT></TD>
-      </TR>
-    </TABLE>
-  >]
-
-  sentiment2 [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-      <TR>
-        <TD><FONT COLOR="green">positive</FONT></TD>
-        <TD><FONT COLOR="black">neutral</FONT></TD>
-        <TD><FONT COLOR="red">negative</FONT></TD>
-      </TR>
-    </TABLE>
-  >]
-
-  sentiment3 [label=<
-    <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-      <TR>
-        <TD><FONT COLOR="black">neutral</FONT></TD>
-        <TD><FONT COLOR="green">positive</FONT></TD>
-        <TD><FONT COLOR="red">negative</FONT></TD>
-      </TR>
-    </TABLE>
-  >]
-
-  sentence1 -> sentiment1
-  sentence2 -> sentiment2
-  sentence3 -> sentiment3
-}
-
-```
-
-
-# Natural Language Processing Pipeline
-
-## Natural Language Processing Pipeline
-
-![NLP Pipeline](M01_lecture02_figures/NLP-Pipeline.jpeg){width=80% fig-align="center" #fig-nlp-pipeline fig-alt="General NLP Pipeline"}
-
-# Sentiment Classification 
-
-## Text Information
-
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-def read_xy_data(filename: str) -> tuple[list[str], list[int]]:
-    x_data = []
-    y_data = []
-    with open(filename, 'r') as f:
-        for line in f:
-            label, text = line.strip().split(' ||| ')
-            x_data.append(text)
-            y_data.append(int(label))
-    return x_data, y_data
-
-
-x_train, y_train = read_xy_data('./data/sentiment-treebank/train.txt')
-x_test, y_test = read_xy_data('./data/sentiment-treebank/dev.txt')
-
-
-print("Document:-", x_train[0])
-print("Label:-", y_train[0])
-```
-
-## Segmentation, Tokenization, and Cleaning
-
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-def extract_features(x: str) -> dict[str, float]:
-    features = {}
-    x_split = x.split(' ')
-
-    # Count the number of "good words" and "bad words" in the text
-    good_words = ['love', 'good', 'nice', 'great', 'enjoy', 'enjoyed']  # <1>
-    bad_words = ['hate', 'bad', 'terrible',
-                 'disappointing', 'sad', 'lost', 'angry']  # <1>
-    for x_word in x_split:  # <2>
-        if x_word in good_words:  # <2>
-            features['good_word_count'] = features.get(
-                'good_word_count', 0) + 1  # <2>
-        if x_word in bad_words:  # <2>
-            features['bad_word_count'] = features.get(
-                'bad_word_count', 0) + 1  # <2>
-
-    # The "bias" value is always one, to allow us to assign a "default" score to the text
-    features['bias'] = 1  # <3>
-
-    return features
-
-
-feature_weights = {'good_word_count': 1.0, 'bad_word_count': -1.0, 'bias': 0.5}
-```
-
-1. We list the words that represent sentiment,
-2. We count the number of good words and bad words in the text,
-3. We add a bias term to allow us to assign a "default" score to the text.
-   1. Think of $\beta_{0}$ in OLS calculation where we add an array of $[\mathbb{1}]$
-
-## Decision ML Algorithm
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-def run_classifier(x: str) -> int:
-    score = 0
-    for feat_name, feat_value in extract_features(x).items():
-        score = score + feat_value * feature_weights.get(feat_name, 0)
-    if score > 0:
-        return 1
-    elif score < 0:
-        return -1
-    else:
-        return 0
-
-def calculate_accuracy(x_data: list[str], y_data: list[int]) -> float:
-    total_number = 0
-    correct_number = 0
-    for x, y in zip(x_data, y_data):
-        y_pred = run_classifier(x)
-        total_number += 1
-        if y == y_pred:
-            correct_number += 1
-    return correct_number / float(total_number)
-
-
-```
-
-## Results 
-
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-label_count = {}
-for y in y_test:
-    if y not in label_count:
-        label_count[y] = 0
-    label_count[y] += 1
-print(label_count)
-
-train_accuracy = calculate_accuracy(x_train, y_train)
-test_accuracy = calculate_accuracy(x_test, y_test)
-
-print(f'Train accuracy: {train_accuracy}')
-print(f'Dev/test accuracy: {test_accuracy}')
-
-# Display 4 decimal
-print(f'Train accuracy: {train_accuracy:.4f}')
-print(f'Dev/test accuracy: {test_accuracy:.4f}')
-
-```
-
-## Model Evaluation
-
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-import random
-
-
-def find_errors(x_data, y_data):
-    error_ids = []
-    y_preds = []
-    for i, (x, y) in enumerate(zip(x_data, y_data)):
-        y_preds.append(run_classifier(x))
-        if y != y_preds[-1]:
-            error_ids.append(i)
-    for _ in range(5):
-        my_id = random.choice(error_ids)
-        x, y, y_pred = x_data[my_id], y_data[my_id], y_preds[my_id]
-        print(f'{x}\ntrue label: {y}\npredicted label: {y_pred}\n')
-
-
-find_errors(x_train, y_train)
-
-```
-
-## Improving the Model
-
-1. What's going wrong with my system?
-2. Modify the system (featurization, scoring function, etc.)
-3. Measure accuracy improvements, accept/reject change
-4. Repeat from 1
-5. Finally, when satisfied with dev accuracy, evaluate on test
-
-
-## Linguistic Barriers
-
-- Low-frequency Words
-- Conjugation
-- Negation 
-- Metaphor 
-- Analogy
-- Symbolic Languages
-
-:::{.callout-tip}
-Can we think of solutions for these?
-:::
-
-
-# Probabilistic Topic Modeling 
-
-## Probabilistic Topic Modeling {background-color="#f6e1d7"}
-
-![Probabilistic Topic Modeling](M01_lecture02_figures/Probabilistic-Topic-Modeling.png){width=80% fig-align="center" #fig-topic-modeling fig-alt="screenshot of papers from Science magazine about topic modeling"}
-
-## Machine Learning
--  We want to [estimate]{.uugreen-bold} a function that will [predict]{.uugreen-bold} the label of a given text relatively well.
-- The function $f(x)$ can be [linear]{.uugreen-bold} or [non-linear]{.uugreen-bold}.
-- It can be [defined by humans]{.uugreen-bold} or [learned from data]{.uugreen-bold}.
-
-![Machine Learning](M01_lecture02_figures/MLsteps.png){width=80% fig-align="center" #fig-machine-learning fig-alt="Machine Learning end to end pipeline"}
-
-# Bag of Words approach
-
-## What is Bag of Words?
-
-- Text is treated as a **collection (bag)** of words
-- Word order is discarded
-- Each document becomes a **vector of word counts**
-
-![Bag of Words](M01_lecture02_figures/bag-of-words.png){width=60% fig-align="center" #fig-bag-of-words fig-alt="Bag of Words"}
-
-## Why We Need Bag of Words
-
-- Machines do not understand text
-- Models require **fixed-length numeric vectors**
-- Bag of Words is the **first workable bridge** between language and math
-
-> "Meaning is ignored; frequency is preserved."
+- Input: average (or sum) of context word embeddings  
+- Output: probability distribution over vocabulary  
+- Objective: maximize likelihood of the center word  
+- Computationally efficient because context is aggregated  
+- Smooths noisy contexts → stable embeddings  
+- Good for frequent words  
 
 ---
 
-## Text Cleaning
+## Skip‑gram
+Skip‑gram predicts **context words** given a **target word**.
 
-:::{.columns}
+Formally:
 
-:::{.column width="50%" .fragment}
+$$
+\begin{align}
+ \prod_{-m \leq j \leq m, j \neq 0} p(w_{t+j} \mid w_t)
+\end{align}
+$$
 
-:::{.callout}
-
-Despite suffering a sense-of-humour failure , The Man Who Wrote Rocky does not deserve to go down with a ship as leaky as this.
-
-:::
-
-:::{.callout}
-
-despite suffering a sense of humour failure the man who wrote rocky does not deserve to go down with a ship as leaky as this
-
-:::
-
-:::
-
-:::{.column width="50%" .fragment}
-
-- Lowercasing
-- Removing punctuation
-- Removing numbers
-- Removing stopwords (optional)
-
-:::
-
-:::
+- Input: embedding of the center word  
+- Output: multiple predictions (one per context position)  
+- Objective: maximize likelihood of surrounding words  
+- Better for rare words (each rare word generates many training pairs)  
+- Produces richer semantic structure  
 
 ---
 
-## Stanford Text Corpus Import
+## Continuous Bag‑of‑Words (CBOW)
 
-```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-import random
-
-def sample_sentences(x, y, n=4, seed=42):
-    random.seed(seed)
-    idx = random.sample(range(len(x)), n)
-    return [(y[i], x[i]) for i in idx]
-
-samples = sample_sentences(x_train, y_train, n=4)
-
-for i, (label, text) in enumerate(samples, 1):
-    print(f"S{i} [label={label}]: {text}")
-
-```
-
-- Import all documents in the corpus.
-- Make sure they are stored in the right format.
-
-## Tokenization
-
-- Breaking text into units
-  - Split text into tokens (usually words)
-  - Simple whitespace tokenization is often enough
-  - More advanced methods exist (e.g., subword tokenization)
-  - Tokens are the **building blocks** for Bag of Words
-  - Example:  "I love NLP!"  $\rightarrow$  ["I", "love", "NLP"]
+- Predicts the **center word** from its **context window**  
+- Input representation:  
+  $$
+  v_{context} = \frac{1}{2m} \sum_{j \neq 0} v(w_{t+j})
+  $$
+- Output: softmax over vocabulary  
+- Objective:  
+  $$
+  \max \log p(w_t \mid context)
+  $$
+- Characteristics:  
+  - Fast, stable  
+  - Smooths noisy contexts  
+  - Works well for frequent words  
+- Interpretation: “Given the neighborhood, infer the missing word.”
 
 ---
 
-## Building `CountVectorizer`
+## Skip‑gram (Technical + Narrative)
+
+- Predicts **context words** from the **center word**  
+- Objective:  
+  $$
+  \max \sum_{j=-m}^{m} \log p(w_{t+j} \mid w_t)
+  $$
+- Each training example generates multiple (target, context) pairs  
+- Characteristics:  
+  - Excellent for rare words  
+  - Produces richer semantic geometry  
+  - More training pairs → more expressive embeddings  
+- Interpretation: “Given a word, infer its linguistic neighborhood.”
+
+## CBOW and Skip-gram Differences
+
+
+::: {.columns}
+
+::: {.column}
+
+| Aspect | CBOW | Skip‑gram |
+|-------|------|-----------|
+| Direction | context → target | target → context |
+| Training pairs | fewer | many |
+| Good for | frequent words | rare words |
+| Stability | smoother | more expressive |
+| Complexity | lower | higher |
+
+Both use **[negative sampling]{.uublue-bold}** or **[hierarchical softmax]{.uublue-bold}** to approximate the softmax efficiently.
+
+:::
+
+::: {.column}
+
+
+![](./M01_lecture02_figures/cbow.svg){width=35% fig-align="center" fig-alt="CBOW"}
+
+![](./M01_lecture02_figures/skip_gram.svg){width=35% fig-align="center" fig-alt="Skip-gram"}
+
+:::
+
+:::
+
+
+
+---
+
+## From Representation to Classification
+
+A shallow neural classifier already shows the transition:
+
+$$
+\begin{align}
+\hat{y} = \text{softmax}(W_2 \cdot \text{ReLU}(W_1 x + b_1) + b_2)
+\end{align}
+$$
+
+The pipeline is still the same:
+
+- text
+- vector representation
+- model
+- output probabilities
+
+What changes is that the model learns a richer mapping than a fixed rule or pure count score.
+
+---
+
+## Unsupervised Use Case
+
+After vectorization, we can also cluster documents:
 
 ```{python}
-# | echo: true
-# | eval: true
-# | output-location: column
-
-from sklearn.feature_extraction.text import CountVectorizer
-import pandas as pd
-
-docs = [text for _, text in samples]
-
-vectorizer = CountVectorizer(
-    lowercase=True,
-    stop_words=None   # keep everything for teaching clarity
-)
-
-X = vectorizer.fit_transform(docs)
-
-bow_df = pd.DataFrame(
-    X.toarray(),
-    columns=vectorizer.get_feature_names_out(),
-    index=[f"S{i+1}" for i in range(len(docs))]
-)
-
-bow_df.iloc[:, 0:8]
-
-```
-
-## Vocabulary Construction
-
-- Vocabulary = **unique words across all documents**
-- Vocabulary size grows quickly
-- Rare words may be removed
-- Vocabulary ≈ **feature space**
-- Too large → sparse, inefficient models
-
-## Counting Words - Document-Term Matrix (DTM)
-
-- Rows = documents
-- Columns = vocabulary terms
-- Values = word counts
-
-This is the [actual model input]{.uublue-bold}.
-
-## Word Frequencies
-
-```{python}
-#| echo: false
-#| eval: true
+#| echo: true
+#| fig-align: center
+#| fig-alt: "KMeans clustering of TF-IDF vectors"
 #| 
+from sklearn.cluster import KMeans
 
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Sum word counts across all sampled documents
-term_frequencies = bow_df.sum(axis=0)
-
-# Select top 15 terms
-top_terms = term_frequencies.sort_values(ascending=False).head(15)
-
-# Drop words below 3 letters for clarity
-top_terms_3 = top_terms[top_terms.index.str.len() >= 3]
-
-# ---------------------------------------------------------
-# 1. Prepare data for grouped barplot
-# ---------------------------------------------------------
-
-df_plot = pd.DataFrame({
-    "term": top_terms.index,
-    "count_top15": top_terms.values,
-    "count_top15_3": top_terms_3.reindex(top_terms.index, fill_value=0).values
-})
-
-df_melt = df_plot.melt(
-    id_vars="term",
-    value_vars=["count_top15", "count_top15_3"],
-    var_name="category",
-    value_name="count"
-)
-
-df_melt["category"] = df_melt["category"].map({
-    "count_top15": "Top 15 Terms",
-    "count_top15_3": "Top Terms (≥3 letters)"
-})
-
-# ---------------------------------------------------------
-# 2. Global styling
-# ---------------------------------------------------------
-
-plt.rcParams["font.family"] = "Roboto"
-plt.rcParams["axes.titleweight"] = "bold"
-plt.rcParams["axes.labelweight"] = "bold"
-
-sns.set_theme(style="white")
-
-# ---------------------------------------------------------
-# 3. Plot
-# ---------------------------------------------------------
-plt.figure(figsize=(10, 5.5))
-
-ax = sns.barplot(
-    data=df_melt,
-    x="term",
-    y="count",
-    hue="category",
-    palette=sns.color_palette("dark", n_colors=2),
-    alpha=0.6 #
-)
-
-# Title: bold, left-aligned, 14 pt
-plt.title("Comparison of Top Terms vs. Top Terms (≥3 letters)",
-          fontsize=14, fontweight="bold", loc="left")
-
-# Axis labels bold
-plt.xlabel("Term", fontsize=12, fontweight="bold")
-plt.ylabel("Word Count", fontsize=12, fontweight="bold")
-
-plt.xticks(rotation=45, ha="right", fontsize=11)
-
-# Legend outside top-right
-plt.legend(
-    title="",
-    fontsize=12,
-    loc="upper right",           # anchor to top-right corner
-    bbox_to_anchor=(1, 1),       # position inside plot
-    ncol=2,                      # horizontal layout
-    borderaxespad=0.2,           # slight padding
-    frameon=False                # optional: remove legend box
-)
-
-plt.tight_layout()
-plt.show()
-
+kmeans = KMeans(n_clusters=2, random_state=42, n_init=10)
+clusters = kmeans.fit_predict(X_tfidf)
 ```
 
+This is useful when labels do not exist yet.
 
 ---
 
-## What BoW Gets Right
+## PCA for Exploration
 
-:::{.columns}
-:::{.column}
+PCA can project TF-IDF or embedding vectors into 2D:
 
-### Strengths
+```python
+from sklearn.decomposition import PCA
 
-- Simple and interpretable
-- Fast to compute
-- Works surprisingly well for:
-  - sentiment analysis
-  - topic classification
-  - spam detection
-
-:::
-
-:::{.column}
-
-### Limitations
-
-- Ignores word order
-- Ignores meaning
-- Vocabulary explosion
-- Sparse matrices
-- Classic failure: "not good" ≈ "good"
-
-:::
-
-:::
-
----
-
-## BoW in Practice (Sentiment Analysis)
-
-```{dot}
-digraph SentimentPipeline {
-
-    rankdir=LR;
-    splines=ortho;
-    bgcolor="white";
-    nodesep=0.6;
-    ranksep=0.9;
-    fontname="Helvetica";
-
-    node [
-        shape=box,
-        style="rounded,filled",
-        fontname="Helvetica",
-        fontsize=10,
-        fillcolor="#F7F7F7",
-        color="#555555"
-    ];
-
-    edge [
-        fontname="Helvetica",
-        fontsize=9,
-        color="#555555"
-    ];
-
-    /* ===== Input Layer ===== */
-    Text [
-        label="Textual Data\n(A statement)",
-        fillcolor="#E8F1FA"
-    ];
-
-    /* ===== Lexicons ===== */
-    Lex1 [
-        label="Corpus",
-        shape=folder,
-        fillcolor="#FFF3CD"
-    ];
-
-    Lex2 [
-        label="Lexicon",
-        shape=cylinder,
-        fillcolor="#FFF3CD"
-    ];
-
-    /* ===== Processing Steps ===== */
-    Step1 [
-        label="Step 1:\nCalculate O–S Polarity",
-        fillcolor="#E3F2FD"
-    ];
-
-    Decision [
-        label="Is there a sentiment?",
-        shape=diamond,
-        fillcolor="#FDEDEC"
-    ];
-
-    Step2 [
-        label="Step 2:\nCalculate N–P Polarity\nof the sentiment",
-        fillcolor="#E3F2FD"
-    ];
-
-    Step3 [
-        label="Step 3:\nIdentify the target\nfor the sentiment",
-        fillcolor="#E3F2FD"
-    ];
-
-    /* ===== Output Layer ===== */
-    Record [
-        label="Record Polarity,\nStrength,\nand Target",
-        fillcolor="#E8F8F5"
-    ];
-
-    Step4 [
-        label="Step 4:\nTabulate & aggregate\nsentiment analysis results",
-        fillcolor="#D5F5E3"
-    ];
-
-    /* ===== Layout Control (Two Rows) ===== */
-    { rank=same; Text; Step1; Decision }
-    { rank=same; Step2; Step3; Record; Step4 }
-
-    /* ===== Edges ===== */
-    Text -> Step1;
-    Lex1 -> Step1;
-
-    Step1 -> Decision;
-
-    Decision -> Text   [label="No"];
-    Decision -> Step2  [label="Yes"];
-
-    Lex2 -> Step2;
-
-    Step2 -> Step3;
-
-    Step1 -> Record [label="O–S Polarity"];
-    Step2 -> Record [label="N–P Polarity"];
-    Step3 -> Record [label="Target"];
-
-    Record -> Step4;
-}
-
+coords = PCA(n_components=2).fit_transform(X_tfidf.toarray())
 ```
 
+PCA does not replace representation learning. It helps us inspect the geometry of the representation.
 
 ---
 
-## When Should You Use BoW?
+## Classical, Early Neural, and Modern NLP
 
-:::{.columns}
+| Stage | Main representation | Typical model | Main strength |
+|---|---|---|---|
+| Classical NLP | BoW / TF-IDF | Naive Bayes, logistic regression, SVM | simple and interpretable |
+| Early sequence models | N-grams | probabilistic LMs | local word order |
+| Early neural NLP | embeddings | NNLM, Word2Vec, shallow MLP | semantic generalization |
+| Modern NLP | contextual embeddings | RNN, LSTM, Transformer | richer context and generation |
 
-:::{.column}
+---
 
-### When to Use Bag of Words
--  Dataset is small to medium
--  Interpretability matters
--  You need a fast baseline
--  Text is short and structured
+## How This Connects to Module 1
 
-:::
+- `M01_Lab1`: preprocessing and text discipline
+- `M01_Lab2`: learned text representations
+- `M01_A`: SEC-based text classification
 
-:::{.column}
-
-### When Not to Use Bag of Words
-- Long documents
-- Semantic nuance matters
-- Context is critical
-
-:::
-
-:::
+So this lecture is not a side topic. It explains the logic behind the full Module 1 build.
 
 ---
 
 ## Key Takeaways
 
-> Bag of Words is not about language—it is about [counting]{.uublue-bold}.
+- NLP begins with a pipeline, not just a model
+- BoW and TF-IDF are foundational because they make text computable
+- N-grams introduced local sequence probability
+- Early neural models introduced dense embeddings
+- Modern generative AI grows out of these earlier ideas
 
-- Bag of words is a stepping stone to more advanced techniques:
-  - TF-IDF (weighting counts)
-  - Embeddings (learning meaning)
-  - Transformers (learning context)
+---
 
-## Language, Probability, and Representation
+## Looking Ahead
 
-- Language can be modeled as a **probabilistic system**
-- Text analytics begins with **representation**, not models
-- The same representation can support **multiple NLP tasks**
-- Generative AI **extends** classical NLP rather than replacing it
+The next major move is from:
 
-> Before we can generate language, we must first represent it.
+- static vectors to context-aware vectors
+- short context windows to richer context modeling
+- document classification to sequence prediction and generation
 
-## From Text to Numbers
+That is the doorway to modern LLM thinking.
 
-### Why Representation Comes First
-
-- Machines do not understand text — they operate on numbers
-- Every NLP system starts by converting text into:
-  - counts
-  - weights
-  - probabilities
-  - vectors
-- **Bag of Words** is the simplest bridge between language and mathematics
-
-Representation choices directly affect:
-- interpretability  
-- scalability  
-- evaluation  
-- regulatory transparency
-
-## Generative vs. Discriminative
-
-### Two Ways to Think About Language Models
-
-**Generative modeling**
-- Learns how language is produced
-- Models probability of text
-- Foundation of language models and LLMs
-
-**Discriminative modeling**
-- Learns how to assign labels or decisions
-- Focuses on prediction accuracy
-- Common in business analytics tasks
-
-Modern systems often **combine both approaches**.
-
-## Why Bag of Words Still Matters
-
-- Provides a **transparent baseline**
-- Enables:
-  - fast experimentation
-  - interpretable results
-  - defensible analysis (e.g., SEC filings)
-- Serves as a comparison point for:
-  - TF–IDF
-  - embeddings
-  - transformer-based models
-
-> If you don’t understand Bag of Words, embeddings will feel like magic instead of engineering.
+---
 
 ### References {.unnumbered}
-
-:::{#refs}
-
-::: 

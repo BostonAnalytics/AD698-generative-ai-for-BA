@@ -1,20 +1,19 @@
 ---
 title: "AD698 - Applied Generative AI"
-subtitle: "Group Paper Presentation"
+subtitle: "Group/Week Paper Presentation"
 number-sections: true
 date: "2024-11-21"
 date-modified: today
 date-format: long
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M03:', 'Participation']
-description: "Participation activity for Module 3 focused on Group Paper Presentation."
+categories: ['M01:', 'Participation']
+description: "Participation activity for Module 1 focused on Group/Week Paper Presentation."
 ---
 
 # Overview {.unnumbered}
 
-
-In this participation assignment, you will work in **groups** to study, synthesize, and present a **foundational or state-of-the-art research paper** in Generative AI, Large Language Models (LLMs), or reproducible computational practice.
+In this participation assignment, you will work in **Group/Weeks** to study, synthesize, and present a **foundational or state-of-the-art research paper** in Generative AI, Large Language Models (LLMs), or reproducible computational practice.
 
 [Online Students]{.uured-bold}: Please submit a one page pdf/word independently [per week, see details at the end]{.uured-bold}
 
@@ -25,7 +24,7 @@ The goal is **not** to reproduce the paper technically, but to:
 * Situate it within the **modern GenAI stack**
 * Critically assess its **assumptions, limitations, and downstream implications**
 
-Each group will deliver a **short academic-style presentation** aimed at a technically literate but non-specialist audience (e.g., analytics managers, graduate students, applied researchers).
+Each Group/Week will deliver a **short academic-style presentation** aimed at a technically literate but non-specialist audience (e.g., analytics managers, graduate students, applied researchers).
 
 This assignment emphasizes:
 
@@ -46,11 +45,11 @@ By completing this assignment, you will:
 * Strengthen academic and professional presentation skills
 
 
-# Paper Selection (One Paper per Group)
+# Paper Selection (One Paper per Group/Week)
 
 - Everyone must read through the curated list below.
 - Papers are organized by **theme**. 
-- Each group will need to present a presentation on one of the papers from the week's theme listed under numbered list.
+- Each Group/Week will need to present a presentation on one of the papers from the week's theme listed under numbered list.
 - Names of the papers are listed in the table and are also available at the end of this document.
 - You can also search these papers on [scholar.google.com](https://scholar.google.com). 
 
@@ -75,7 +74,7 @@ By completing this assignment, you will:
 |Sequence to sequence learning [@Sutskever2014Sequence]|Are LLMs Models of Distributional Semantics? A Case Study on Quantifiers  [@Enyan2024Distributional]|Efficient Estimation of Word Representations in Vector Space [@Mikolov2013Efficient]|
 
 
-## Group 1 – Transformers: Architecture and Attention
+## Group/Week 1 – Transformers: Architecture and Attention
 
 | **Transformer Core**                                      | **Interpretability & Attention**                   | **Representational Power**                                              |
 | --------------------------------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------- |
@@ -84,61 +83,61 @@ By completing this assignment, you will:
 | Self-Attention with Relative Position [@Shaw2018Selfattention] | Attention Is Not Explanation [@Jain2019Attention]  | Efficient streaming language models[@Xiao2023Efficient]          |
 
 
-## Group 2 – Scaling & Emergence
+## Group/Week 2 – Scaling & Emergence
 
 * Scaling Laws for Neural LMs [@Kaplan2020Scaling]
 * Sparks of AGI [@Bubeck2023SparksAGI]
 
 
-## Group 3 – Text-as-Data & Business NLP
+## Group/Week 3 – Text-as-Data & Business NLP
 
 * Text as Data [@Gentzkow2019TextAsDataPaper]
 * Information Extraction from Business Text [@Kogan2019BusinessIE]
 
 
-## Group 4 – Prompting & Reasoning
+## Group/Week 4 – Prompting & Reasoning
 
 * Chain-of-Thought Prompting [@Wei2022CoT]
 * ReAct [@Yao2023ReAct]
 
 
-## Group 5 – Alignment & Instruction
+## Group/Week 5 – Alignment & Instruction
 
 * Training Language Models with Human Feedback [@Ouyang2022RLHF]
 * Constitutional AI [@Bai2022Constitutional]
 
 
-## Group 6 – Retrieval-Augmented Generation
+## Group/Week 6 – Retrieval-Augmented Generation
 
 * Retrieval-Augmented Generation [@Lewis2020RAG]
 * Self-RAG [@Asai2023SelfRAG]
 
 
-## Group 7 – Efficient Fine-Tuning
+## Group/Week 7 – Efficient Fine-Tuning
 
 * LoRA [@Hu2021LoRA]
 * QLoRA [@Dettmers2023QLoRA]
 
 
-## Group 8 – Long Context & Memory
+## Group/Week 8 – Long Context & Memory
 
 * Lost in the Middle [@Liu2023ContextWindow]
 * Transformer-XL [@Dai2019TransformerXL]
 
 
-## Group 9 – Evaluation & Benchmarks
+## Group/Week 9 – Evaluation & Benchmarks
 
 * HELM Benchmark [@Liang2022HELM]
 * Evaluating LLMs [@Chang2023EvaluatingLLMs]
 
 
-## Group 10 – Hallucination & Trust
+## Group/Week 10 – Hallucination & Trust
 
 * Survey on Hallucination in LLMs [@Huang2023Hallucinations]
 * Stochastic Parrots [@Bender2021StochasticParrots]
 
 
-## Group 11 – Governance & Deployment
+## Group/Week 11 – Governance & Deployment
 
 * Worldwide AI ethics [@Correa2023worldwide]
 * Responsible AI pattern catalogue [@Lu2024responsible]
@@ -150,7 +149,7 @@ By completing this assignment, you will:
 
 * **10–12 minutes total**
 * **5–7 slides**
-* All group members must participate
+* All Group/Week members must participate
 
 ## Suggested Slide Structure
 

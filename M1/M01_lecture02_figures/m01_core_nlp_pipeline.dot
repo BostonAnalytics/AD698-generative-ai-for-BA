@@ -1,0 +1,14 @@
+digraph NLP_Pipeline {
+  rankdir=LR;
+  graph [bgcolor="white", margin=0];
+  node [shape=box, style="rounded,filled", fontname="Roboto", fontsize=12];
+
+  A [label="Raw Text", fillcolor="#f6e1d7", color="#b5672d"];
+  B [label="Segmentation +\nTokenization", fillcolor="#eff8ff", color="#4477aa"];
+  C [label="Cleaning +\nNormalization", fillcolor="#edf9ed", color="#559955"];
+  D [label="Representation\n(BoW / TF-IDF / Embeddings)", fillcolor="#fff4d6", color="#c69100"];
+  E [label="Model\n(Classifier / LM / Retriever)", fillcolor="#f5efff", color="#7a55aa"];
+  F [label="Output\n(Label / Score / Next Token)", fillcolor="#ffeef5", color="#b24f79"];
+
+  A -> B -> C -> D -> E -> F;
+}

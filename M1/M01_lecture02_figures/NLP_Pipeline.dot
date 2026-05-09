@@ -1,0 +1,116 @@
+digraph NLP_Pipeline {
+
+    newrank=true;
+    rankdir=TB;
+
+    graph [
+        fontname="Helvetica"
+        fontsize=12
+        bgcolor="white"
+        ranksep="1.6"
+        pad="0.75"
+    ];
+
+    node [
+        shape="box"
+        style="rounded,filled"
+        fontname="Helvetica"
+        fontsize=12
+        color="#1f3a8a"
+    ];
+
+    edge [
+        fontname="Helvetica"
+        fontsize=11
+        color="#1f3a8a"
+        arrowsize=0.9
+    ];
+
+    /* =========================
+       LEXICAL PROCESSING
+       ========================= */
+    subgraph cluster_lexical {
+        label="Lexical processing";
+        style="filled,rounded";
+        color="grey80";
+        fillcolor="#e8f0ff";
+
+        Characters [label="Characters", fontcolor="#ffffff"];
+        Tokens [label="Tokens", fontcolor="#ffffff"];
+        TaggedTokens [label="Tagged tokens", fontcolor="#ffffff"];
+
+        Characters -> Tokens       [label="data flow" fontcolor="#1f3a8a"];
+        Tokens     -> TaggedTokens [label="data flow" fontcolor="#1f3a8a"];
+    }
+
+    /* =========================
+       STRUCTURAL
+       ========================= */
+    subgraph cluster_structural {
+        label="Structural representation";
+        style="filled,rounded";
+        color="grey80";
+        fillcolor="#fff4d6";
+
+        EntityRelations [color="#e9bc55", label="Entity relationships"];
+        SyntaxTree      [color="#e9bc55", label="Syntax tree"];
+        KnowledgeBase   [color="#e9bc55", label="Knowledge base"];
+
+        SyntaxTree      -> EntityRelations [label="data flow" fontcolor="#1f3a8a"];
+        EntityRelations -> KnowledgeBase   [label="data flow" fontcolor="#1f3a8a"];
+    }
+
+    /* =========================
+       ALGORITHM (Perfect 2×2)
+       ========================= */
+    subgraph cluster_algorithm {
+        label="Algorithm";
+        style="filled,rounded";
+        color="grey80";
+        fillcolor="#D6EBD6";
+
+        fst_regex [color="#99CC99" fillcolor="#73AF59" label="Regular expression"];
+        fst_pos   [color="#99CC99" fillcolor="#73AF59" label="Part-of-Speech"];
+        fst_logic [color="#99CC99" fillcolor="#73AF59" label="Logic compiler"];
+        fst_ie    [color="#99CC99" fillcolor="#73AF59" label="Information extractor"];
+
+        /* Perfectly even 2×2 grid */
+        { rank=same; fst_regex; fst_pos }
+        { rank=same; fst_logic; fst_ie }
+
+        /* Invisible edges to enforce grid symmetry */
+        fst_regex -> fst_pos   [style=invis, weight=20];
+        fst_logic -> fst_ie    [style=invis, weight=20];
+        fst_regex -> fst_logic [style=invis, weight=20];
+        fst_pos   -> fst_ie    [style=invis, weight=20];
+    }
+
+    /* =========================
+       CROSS‑CLUSTER PIPELINE FLOW
+       ========================= */
+    Tokens        -> SyntaxTree      [label="data flow" fontcolor="#1f3a8a"];
+    TaggedTokens  -> SyntaxTree      [label="data flow" fontcolor="#1f3a8a"];
+
+    /* =========================
+       ALGORITHMIC (DASHED GREEN)
+       ========================= */
+
+    /* Clean fan‑out from KnowledgeBase */
+    KB_fanout [shape=point, width=0, label="", style=invis];
+    KnowledgeBase -> KB_fanout [style="dashed" color="#99CC99" penwidth=2 constraint=false];
+
+    KB_fanout -> fst_ie    [style="dashed" color="#99CC99" penwidth=2 constraint=false label="algorithmic influence" fontcolor="#ffffff"];
+    KB_fanout -> fst_logic [style="dashed" color="#99CC99" penwidth=2 constraint=false label="algorithmic influence" fontcolor="#ffffff"];
+
+    /* Other algorithmic influences */
+    fst_regex -> Tokens        [style="dashed" color="#99CC99" penwidth=2 constraint=false label="algorithmic influence" fontcolor="#006666"];
+    fst_regex -> TaggedTokens  [style="dashed" color="#99CC99" penwidth=2 constraint=false label="algorithmic influence" fontcolor="#ffffff"];
+    SyntaxTree -> fst_pos      [style="dashed" color="#99CC99" penwidth=2 constraint=false label="algorithmic influence" fontcolor="#ffffff"];
+
+    /* =========================
+       RANK ALIGNMENT
+       ========================= */
+    { rank=same; Characters; Tokens; TaggedTokens; }
+    { rank=same; EntityRelations; SyntaxTree; KnowledgeBase; }
+
+}

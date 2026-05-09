@@ -18,7 +18,7 @@ monospace !default;
 
 // colors
 $body-bg: #ffffff !default;
-$title-color: #ffac00;
+$title-color: #c6a35e;
 $subtitle-color: #Ffd1b0 !default;
 $h2-color: #003366;
 $code-color: #e64f1e;
@@ -66,7 +66,7 @@ $button-text: #000000; // Button text color
   width: 48px;
   height: 48px;
   background-color: #f1f1f1;
-  color: #a51c30;
+  color: $h2-color;
   font-size: 11pt;
   font-weight: 700 !important;
   font-family: "Source Sans 3", sans-serif;
@@ -78,7 +78,7 @@ $button-text: #000000; // Button text color
   z-index: 100;
   overflow: hidden;
 
-  border-right: 8px solid #a51c30;
+  border-right: 8px solid $h2-color;
 }
 
 
@@ -250,42 +250,129 @@ $button-text: #000000; // Button text color
   margin-left: 0;
 }
 
-// Base unordered list style
+// ============================================================
+// LIST STYLES — custom bullets per level
+// L1: filled square  #003366 bold
+// L2: filled circle  #c6a35e bold italic
+// L3: right triangle #336699 normal  (bullet tinted #c6a35e)
+// ============================================================
+
+// Remove default markers & establish base layout
 .reveal ul,
 .reveal ol {
-  list-style-type: disc;
-  font-weight: 600;
-  padding-left: 1.2em;
+  list-style: none;
+  padding-left: 0;
   margin-top: 0.5em;
   margin-bottom: 1em;
 }
 
-// Level 1 list items
-.reveal ul>li,
-.reveal ol>li {
+// Use block layout so inline spans inside list items behave normally.
+// Flex layout causes constructs like:
+// [Label]{.uublue-bold}: explanation
+// to split into separate flex items, which pushes text after ":" onto a new line.
+.reveal ul > li,
+.reveal ol > li,
+.reveal ul ul > li,
+.reveal ol ol > li,
+.reveal ul ol > li,
+.reveal ol ul > li,
+.reveal ul ul ul > li,
+.reveal ol ol ol > li {
+  display: block;
+  position: relative;
+  font-family: "Source Sans 3", sans-serif;
   font-size: 18pt;
   margin-bottom: 0.4em;
-  font-family: "Source Sans 3", sans-serif;
-  color: $darker-gray;
+  padding-left: 1.2em;
 }
 
-// Level 2 (nested ul inside li)
-.reveal ul li>ul>li,
-.reveal ol li>ol>li {
-  font-size: 18pt;
-  margin-bottom: 0.3em;
-  font-family: "Source Sans 3", sans-serif;
-  color: $dark-gray;
-}
-
-// Level 3
-.reveal ul li ul li>ul>li,
-.reveal ol li ol li>ol>li {
-  font-size: 18pt;
+// Nested lists should flow naturally below the parent line
+.reveal li > ul,
+.reveal li > ol {
+  margin-top: 0.35em;
   margin-bottom: 0.2em;
+}
+
+// Quarto/Reveal often wraps list text in <p>, and the global paragraph margins
+// make longer bullets appear to start on a new line. Remove that extra spacing
+// inside lists so wrapped text stays visually attached to the bullet.
+.reveal li > p {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1.25;
+}
+
+// Shared pseudo-element base
+.reveal ul > li::before,
+.reveal ol > li::before,
+.reveal ul ul > li::before,
+.reveal ol ol > li::before,
+.reveal ul ol > li::before,
+.reveal ol ul > li::before,
+.reveal ul ul ul > li::before,
+.reveal ol ol ol > li::before {
+  display: block;
+  line-height: 1;
+  position: absolute;
+  left: 0;
+}
+
+// ── Level 1: filled square + shadow ──────────────────────────
+.reveal ul > li,
+.reveal ol > li {
+  color: #323232;
+  font-weight: 700;
+}
+.reveal ul > li::before,
+.reveal ol > li::before {
+  content: "";
+  width: 0.52em;
+  height: 0.52em;
+  background-color: #323232;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.45);
+  top: 0.42em;          // optical alignment to first line
+}
+
+// ── Level 2: filled circle + shadow ──────────────────────────
+.reveal ul ul > li,
+.reveal ol ol > li,
+.reveal ul ol > li,
+.reveal ol ul > li {
+  color: #c6a35e;
+  font-weight: 700;
   font-style: italic;
-  font-family: "Source Sans 3", sans-serif;
-  color: $dark-gray;
+  padding-left: 2.2em;   // extra indent from level 1
+  margin-bottom: 0.3em;
+}
+.reveal ul ul > li::before,
+.reveal ol ol > li::before,
+.reveal ul ol > li::before,
+.reveal ol ul > li::before {
+  content: "";
+  width: 0.52em;
+  height: 0.52em;
+  border-radius: 50%;
+  background-color: #c6a35e;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.40);
+  top: 0.42em;
+}
+
+// ── Level 3: right-pointing triangle + shadow ────────────────
+.reveal ul ul ul > li,
+.reveal ol ol ol > li {
+  color: #336699;
+  font-weight: 400;
+  font-style: normal;
+  padding-left: 3.2em;   // extra indent from level 2
+  margin-bottom: 0.2em;
+}
+.reveal ul ul ul > li::before,
+.reveal ol ol ol > li::before {
+  content: "▶";
+  font-size: 0.55em;
+  color: #c6a35e;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.40);
+  top: 0.45em;
 }
 
 
@@ -385,23 +472,25 @@ figure.quarto-float img {
   max-width: 80%; // keep responsive sizing
 }
 
-// Style the caption
-.quarto-float-caption 
-.caption{
-  text-align: center; // center caption text
-  color: #a51c30;
+// Style Quarto Reveal figure captions (<figcaption class="quarto-float-caption ...">)
+// Hanging indent: "Figure X." starts flush-left; wrapped text aligns
+// with the start of the caption body (~5.5em covers up to "Figure 10.")
+.reveal figcaption.quarto-float-caption {
+  text-align: left;
+  color: $h2-color;
   margin-top: 0.5rem;
-  font-style: italic; // keep italic
+  font-style: italic;
   font-size: 11pt !important;
+  line-height: 1.25;
+  padding-left: 5.0em;
+  text-indent: -5.0em;
 }
 
-/* Keep the label (Figure, number, period) bold */ 
-.quarto-float-caption strong 
-.caption {
-   font-style: normal; /* Remove italic from the label */
-   font-weight: 700; /* Ensure bold */
-  }
-
+/* Keep the Figure label/number bold while the rest stays italic */
+.reveal figcaption.quarto-float-caption strong {
+  font-style: normal;
+  font-weight: 700;
+}
 
 /* ============================================================
    GLOBAL CODE-BLOCK NORMALIZATION (Quarto + Reveal.js)
