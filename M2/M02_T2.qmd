@@ -1,6 +1,6 @@
 ---
 title: "Module 2 - Tutorial 2"
-subtitle: "From SEC Chunks to Semantic Neighbors"
+subtitle: "Semantic Neighbors, Cross-Entropy, and LLM-Style Evaluation"
 number-sections: true
 date: "2026-02-01"
 date-modified: today
@@ -25,95 +25,181 @@ By the end of Module 2, students should be able to:
 1. move from cleaned text to structured representations
 2. compare sparse and dense text representations
 3. interpret semantic similarity in a business-text setting
-4. save representation artifacts for later assignments
+4. connect vector semantics to neural classification and LLM-style prediction
 
 ## Tutorial Learning Objectives
 
 By the end of this tutorial, you will:
 
-1. Load a small set of SEC chunks.
-2. Build or load dense embeddings.
-3. Compare cosine neighbors for a few finance-related terms or passages.
-4. Interpret what semantic proximity captures that TF-IDF does not.
+1. load SEC text chunks and inspect their metadata
+2. compare sparse TF-IDF similarity with dense embedding similarity
+3. interpret where semantic retrieval succeeds and where it overgeneralizes
+4. compute simple cross-entropy-style predictions from classifier probabilities
 
-## Recommended Dataset
+## Why This Tutorial Matters
 
-Use one of the following:
+This tutorial connects three ideas that students often learn separately:
 
-- `assignment01/chunks.csv` from the SEC 10-K workflow
-- a small local sample of Item 1A or Item 7 chunks
-- a small text subset built from `data/SEC-10K-2024`
+- semantic retrieval over embeddings
+- probabilistic classification over labels
+- LLM-style prediction over token or class distributions
+
+The goal is to show that these are variations on the same underlying workflow: represent text numerically, score alternatives, and interpret probabilities.
 
 ## How This Tutorial Connects
 
-- `M02_Lab1` and `M02_Lab2` prepare the text artifacts used here.
-- `M02_A` asks students to reason about whether learned representations improve over count-based features.
-- Later retrieval and RAG modules depend on students understanding semantic neighborhoods early.
+- `M02_Lab1` produces the kind of cleaned chunk-level SEC text used here.
+- `M02_Lab2` turns this tutorial into a fully executed lab with diagnostics, classifier evaluation, and error analysis.
+- `M02_A` extends the same intuition into a graded workflow with Word2Vec, GloVe, classifier comparison, and embedding geometry.
+
+::: {.callout-note}
+The tutorial is intentionally guided. It should help students understand the mechanics without giving them a one-click substitute for the lab or assignment.
+:::
 
 ## Setup
 
 ```{python}
 import pandas as pd
 import numpy as np
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report, log_loss
 from sentence_transformers import SentenceTransformer
 ```
 
-## Step 1: Load Chunked SEC Text
+## Step 1: Load SEC Chunked Text
 
 ```{python}
 chunks_df = pd.read_csv("../data/assignment01/chunks.csv")
-chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(200)
+chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(300)
 chunks_df.head()
 ```
 
-## Step 2: Build Dense Embeddings
+Focus on what each row represents:
+
+- one chunk is now the unit of analysis
+- `item` provides weak business context
+- `chunk_text` is what we will represent sparsely and densely
+
+## Step 2: Build a Sparse Baseline with TF-IDF
 
 ```{python}
-model = SentenceTransformer("all-MiniLM-L6-v2")
-embeddings = model.encode(
+tfidf = TfidfVectorizer(max_features=5000, stop_words="english", ngram_range=(1, 2))
+X_tfidf = tfidf.fit_transform(chunks_df["chunk_text"])
+X_tfidf.shape
+```
+
+Use this baseline to ask a concrete question: if the query changes wording but not meaning, will lexical overlap be enough?
+
+## Step 3: Build Dense Embeddings
+
+```{python}
+embed_model = SentenceTransformer("all-MiniLM-L6-v2")
+X_embed = embed_model.encode(
     chunks_df["chunk_text"].tolist(),
     batch_size=32,
     convert_to_numpy=True,
     normalize_embeddings=True
 )
-embeddings.shape
+X_embed.shape
 ```
 
-## Step 3: Run Similarity Search
+Dense embeddings often recover related text even when wording differs. That is the practical value of vector semantics.
+
+## Step 4: Compare Sparse and Dense Retrieval
 
 ```{python}
-query = "cybersecurity risk and data privacy concerns"
-q_vec = model.encode([query], normalize_embeddings=True)
-scores = cosine_similarity(q_vec, embeddings)[0]
+query = "cybersecurity risk and customer data privacy issues"
 
-top_idx = np.argsort(scores)[-5:][::-1]
-neighbor_df = chunks_df.iloc[top_idx].copy()
-neighbor_df["score"] = scores[top_idx]
-neighbor_df[["chunk_id", "company", "item", "score"]]
+q_tfidf = tfidf.transform([query])
+scores_tfidf = cosine_similarity(q_tfidf, X_tfidf)[0]
+
+q_embed = embed_model.encode([query], normalize_embeddings=True)
+scores_embed = cosine_similarity(q_embed, X_embed)[0]
+
+top_sparse = chunks_df.iloc[np.argsort(scores_tfidf)[-5:][::-1]].copy()
+top_dense = chunks_df.iloc[np.argsort(scores_embed)[-5:][::-1]].copy()
+
+top_sparse[["chunk_id", "company", "item"]]
+top_dense[["chunk_id", "company", "item"]]
 ```
 
-## Step 4: Interpret the Neighbors
+## Step 5: Interpret the Difference
+
+Questions for students:
+
+1. Which method retrieves passages with stronger lexical overlap?
+2. Which method retrieves passages that are conceptually similar but worded differently?
+3. Where does the dense model become too broad and retrieve generic “risk” language?
+
+## Step 6: Build a Simple Binary Classifier
+
+Create a rough label to mimic a downstream analytics task.
 
 ```{python}
-for _, row in neighbor_df.iterrows():
-    print("=" * 80)
-    print(row["chunk_id"], row["company"], row["item"], round(row["score"], 3))
-    print(row["chunk_text"][:500])
+chunks_df["label"] = chunks_df["chunk_text"].str.contains(
+    r"privacy|cyber|security|data breach", case=False, regex=True
+).astype(int)
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X_tfidf, chunks_df["label"], test_size=0.25, random_state=42, stratify=chunks_df["label"]
+)
+
+clf = LogisticRegression(max_iter=200)
+clf.fit(X_train, y_train)
+probs = clf.predict_proba(X_test)
+preds = clf.predict(X_test)
+
+print(classification_report(y_test, preds))
 ```
+
+## Step 7: Connect to Cross-Entropy
+
+```{python}
+loss = log_loss(y_test, probs)
+print("Average cross-entropy / log loss:", round(loss, 4))
+```
+
+Interpretation:
+
+- each prediction is a probability distribution over labels
+- log loss penalizes confident mistakes strongly
+- this is the same family of objective used when LLMs predict the next token
+
+## Step 8: Inspect High-Loss Examples
+
+```{python}
+test_rows = chunks_df.iloc[y_test.index].copy()
+test_rows["p_positive"] = probs[:, 1]
+test_rows["loss_if_true"] = -(
+    y_test.values * np.log(np.clip(probs[:, 1], 1e-9, 1.0)) +
+    (1 - y_test.values) * np.log(np.clip(probs[:, 0], 1e-9, 1.0))
+)
+
+test_rows.sort_values("loss_if_true", ascending=False)[
+    ["chunk_id", "company", "item", "p_positive", "loss_if_true"]
+].head(10)
+```
+
+This step is the most important diagnostic step in the tutorial. It forces students to read model failures instead of reporting metrics only.
 
 ## What Students Should Notice
 
-- Dense embeddings can retrieve meaningfully related chunks even when wording changes.
-- SEC text often groups around risk themes like regulation, privacy, litigation, or macroeconomic uncertainty.
-- Semantic neighbors are useful, but they can also blur distinctions between rival companies if the disclosures are too generic.
+- TF-IDF is strong when wording aligns with the query.
+- Dense embeddings recover semantic neighbors under paraphrase.
+- Cross-entropy is not abstract; it is a numeric penalty for bad probability assignments.
+- The same probability logic underlies classifiers, embedding rerankers, and LLM next-token prediction.
 
-## Connection to the Module
+## Extension Ideas
 
-- `Tutorial 1` focuses on building the SEC text pipeline
-- `Tutorial 2` shows what semantic proximity looks like on those chunks
-- `Labs` reinforce representation-building and validation
-- `Assignment 2` scales this up to a formal comparison of learned embeddings versus simpler baselines
+If time permits, students can:
+
+1. compare a dense classifier against the TF-IDF baseline
+2. cluster dense embeddings to identify disclosure themes
+3. evaluate whether retrieval quality changes by SEC item type
+4. test whether mislabeled or ambiguous chunks produce the largest losses
 
 ## AI Use and Share Links {.unnumbered}
 
@@ -126,5 +212,3 @@ If generative AI materially supports your work for this tutorial, include an AI 
 When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
 
 Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

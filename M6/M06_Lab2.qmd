@@ -7,50 +7,70 @@ date-modified: today
 date-format: long
 engine: jupyter
 categories: ['M06:', 'Lab']
-description: "Hands-on lab for Module 6 focused on splitting SEC analysis into retriever, analyst, and reviewer roles."
+description: "Question-driven lab for Module 6 focused on role-based agent coordination and review loops."
+execute:
+  echo: true
+  eval: false
 ---
 
-# Lab Overview
+## Lab Purpose
 
-This lab extends the first Module 6 lab by separating the workflow into explicit roles. Students should compare whether role separation improves clarity, grounding, or auditability.
+- `M06_T2` should be your worked reference for multi-role orchestration.
+- This lab asks you to compare at least two roles or stages in a coordinated workflow.
+- `M06_A` later expects you to justify why your chosen agent pattern is reliable enough for business use.
 
-## Alignment with Module 6
+## Recommended Notebook Pattern
 
-- `M06_LN2`: orchestration and multi-role systems
-- `M06_T2`: coordinated SEC analysis workflow
-- `M06_A`: agent evidence, validation, and responsible AI disclosure
-- `M06_Proj`: presentation of a defensible agentic product
+1. Task framing
+2. Role design
+3. Coordinated workflow
+4. Review loop
+5. Reflection
 
-## Lab Notebook Pattern
+## Validation Standard
 
-1. Setup and artifact loading
-2. Retrieval role
-3. Analyst role
-4. Reviewer role
-5. Trace export
-6. Comparison note versus a single-agent baseline
+Show:
 
-## Lab Validation Standard
+- role definitions
+- role outputs
+- evidence handoff between roles
+- one review or correction step
+- one limitation discussion
 
-Students should show intermediate evidence, not only final outputs. Typical checks include:
+## Questions
 
-- role-by-role outputs
-- one trace dataframe
-- one answer before or after review
-- one short note about where coordination helped or failed
+### Q1. Define at Least Two Roles
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+Examples:
 
-## AI Use and Share Links {.unnumbered}
+- retriever
+- analyst
+- reviewer
+- evidence checker
 
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+For each role, explain its responsibility in 1 to 2 sentences.
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+### Q2. Run a Coordinated Workflow
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+Use one SEC question and show how outputs move from one role to the next.
 
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+### Q3. Add a Review or Correction Step
 
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+Require one role to challenge or verify another role’s output.
 
+Show what changed after review.
 
+### Q4. Compare Single-Agent vs Coordinated Workflow
+
+Answer briefly:
+
+1. what improved?
+2. what overhead increased?
+3. when is coordination worth it?
+
+## Minimal Setup
+
+```{python}
+#| eval: false
+import pandas as pd
+```

@@ -30,6 +30,10 @@ The following files must exist on your Drive before starting:
 Load and inspect `chunks.csv` at the start of your notebook.
 :::
 
+:::{.callout-note}
+This assignment is intentionally more hands-off than the labs. Use the tutorials and labs to understand attention, tokenization, and evaluation patterns, but assemble and justify the final workflow yourself.
+:::
+
 :::{.callout-important}
 ## DataFrame and Visualization Standard
 

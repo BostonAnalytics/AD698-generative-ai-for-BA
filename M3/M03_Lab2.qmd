@@ -1,37 +1,92 @@
 ---
 title: "Module 3 - Lab 2"
 subtitle: "Retrieved Evidence and Prompt Grounding"
+number-sections: true
+date: "2026-02-15"
+date-modified: today
+date-format: long
+engine: jupyter
 categories: ['M03:', 'Lab']
-description: "Hands-on lab for Module 3 focused on M03 Lab2."
+description: "Question-driven lab for Module 3 focused on evidence grounding and retrieval-aware prompt evaluation."
+execute:
+  echo: true
+  eval: false
 ---
 
-# M03 Lab02
+## Lab Purpose
 
-## Lab Notebook Pattern
+- `M03_T2` should be your main worked reference for grounded answering and evidence-aware prompting.
+- This lab asks you to test whether retrieved evidence actually improves the answer quality.
+- `M03_A` later expects you to compare methods more independently using the same SEC scope.
 
-When you build this lab out, use a lightweight structure:
+## Recommended Notebook Pattern
 
-1. Setup
-2. Core task blocks
-3. Validation output after each block
-4. Short interpretation
+1. Question set
+2. Retrieval output
+3. Prompt construction
+4. Answer generation
+5. Grounding evaluation
 
-## Lab Validation Standard
+## Validation Standard
 
-Students should show intermediate evidence, not only final outputs. Typical checks include chunk counts, embedding shapes, retrieval examples, or short sanity-check tables.
+Show intermediate evidence such as:
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+- retrieved context tables
+- one prompt example
+- answer comparisons
+- one grounding or citation-quality check
+- one failure example
 
-## AI Use and Share Links {.unnumbered}
+## Questions
 
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+### Q1. Define a Small Evaluation Set
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+Write at least three questions about SEC filings that require document evidence.
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+For each question, explain in one sentence why unsupported answering would be risky.
 
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+### Q2. Retrieve Evidence
 
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+For each question, retrieve relevant passages from your corpus.
 
+Required evidence:
 
+- top retrieved passages
+- source identifiers
+- one short note on whether the retrieved evidence looks sufficient
+
+### Q3. Compare Two Prompting Styles
+
+Compare at least two prompt designs, such as:
+
+- question only
+- question plus retrieved evidence
+- question plus retrieved evidence plus citation instruction
+
+Show one side-by-side answer comparison.
+
+### Q4. Evaluate Grounding
+
+For each question, judge whether the answer is:
+
+- well grounded
+- partially grounded
+- weakly grounded or unsupported
+
+Use a small evaluation table.
+
+### Q5. Failure Analysis
+
+Choose at least one failure and explain whether it came from:
+
+- weak retrieval
+- noisy evidence
+- poor prompt structure
+- model overreach beyond the evidence
+
+## Minimal Setup
+
+```{python}
+#| eval: false
+import pandas as pd
+```

@@ -1,37 +1,113 @@
 ---
 title: "Module 2 - Lab 2"
-subtitle: "Semantic Representation over SEC Sections"
+subtitle: "Sparse vs Dense Semantic Representations for SEC Chunks"
+number-sections: true
+date: "2026-02-01"
+date-modified: today
+date-format: long
+engine: jupyter
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+execute:
+  echo: true
+  eval: false
+  warning: false
+  message: false
 categories: ['M02:', 'Lab']
-description: "Hands-on lab for Module 2 focused on M02 Lab2."
+description: "Question-driven lab for Module 2 focused on comparing sparse and dense semantic representations over SEC chunk data."
 ---
 
-# M02 Lab02
+## Lab Purpose
 
-## Lab Notebook Pattern
+- `M02_T2` is the main worked tutorial for semantic retrieval, classifier probabilities, and cross-entropy interpretation.
+- This lab asks you to run a smaller but more independent SEC chunk analysis.
+- `M02_A` later extends the same representational thinking into Word2Vec, GloVe, and embedding geometry.
 
-When you build this lab out, use a lightweight structure:
+## Recommended Notebook Pattern
 
-1. Setup
-2. Core task blocks
-3. Validation output after each block
-4. Short interpretation
+1. Data inspection
+2. Sparse baseline
+3. Dense representation experiment
+4. Classification or probability comparison
+5. Error analysis
 
-## Lab Validation Standard
+## Validation Standard
 
-Students should show intermediate evidence, not only final outputs. Typical checks include shapes, counts, sample text, loss curves, or short sanity-check tables.
+Students should show intermediate evidence, not only final outputs:
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+- row counts and example chunks
+- matrix or embedding shapes
+- top retrieval matches
+- label distribution
+- classifier metrics
+- log loss or cross-entropy interpretation
 
-## AI Use and Share Links {.unnumbered}
+## Questions
 
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+### Q1. Inspect a Chunked SEC Corpus
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+Load a chunk-level SEC dataset from a prior lab, tutorial artifact, or Assignment 1.
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+Required evidence:
 
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+- row count
+- one sample chunk
+- one distribution by company or section
 
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+### Q2. Build a Sparse Baseline
 
+Create a TF-IDF or comparable sparse representation and run one business-oriented query.
 
+Required evidence:
+
+- matrix shape
+- top retrieved chunks
+- one short note on lexical overlap
+
+### Q3. Build a Dense Representation
+
+Use one approved dense representation method and run the same query.
+
+Required evidence:
+
+- embedding shape or dimension
+- top retrieved chunks
+- one short note on what changed relative to sparse retrieval
+
+### Q4. Compare the Two Methods
+
+Use a small comparison table and answer:
+
+1. where is sparse retrieval too literal?
+2. where is dense retrieval more semantically useful?
+3. where does dense retrieval become too broad?
+
+### Q5. Probability and Error Analysis
+
+Run one lightweight classification or scoring task and interpret the confidence behavior.
+
+Required evidence:
+
+- predicted probabilities or logits
+- one metric such as accuracy or log loss
+- at least three high-loss or failure examples
+
+### Q6. Reflection
+
+Answer briefly:
+
+1. When are sparse features surprisingly strong?
+2. When do dense vectors provide real added value?
+3. How does this lab prepare you for the assignment?
+
+## Minimal Setup
+
+```{python}
+#| eval: false
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+```

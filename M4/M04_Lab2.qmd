@@ -6,212 +6,94 @@ date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-format:
-    html:
-        toc: true
-        toc-depth: 3
-        code-overflow: wrap
-    docx:
-        reference-doc: ../theme/APA7.docx
-bibliography: ../references.bib
-csl: ../mis-quarterly.csl
-execute:
-    echo: true
-    eval: false
-    warning: false
-    message: false
 categories: ['M04:', 'Lab']
-description: "Hands-on lab for Module 4 focused on Fine-Tuning a Transformer for Text Classification."
+description: "Question-driven lab for Module 4 focused on transformer fine-tuning and diagnostic evaluation."
+execute:
+  echo: true
+  eval: false
 ---
 
-## Objectives
+## Lab Purpose
 
-1. Build a compact transformer-style classifier.
-2. Implement full fine-tuning with AdamW.
-3. Compare frozen embedding vs trainable embedding regimes.
-4. Evaluate with accuracy and confusion analysis.
+- `M04_T2` should be the main worked walkthrough for tokenizer usage, model loading, and basic fine-tuning.
+- This lab asks you to apply that workflow to a small text classification task with stronger emphasis on diagnostics.
+- `M04_A` later extends this thinking to contextual language modeling over SEC rival-company text.
 
 ## Recommended Notebook Pattern
 
-Structure the notebook as:
+1. Data loading
+2. Tokenization
+3. Fine-tuning setup
+4. Evaluation
+5. Error analysis
 
-1. Setup
-2. Data generation or loading
-3. Model definition
-4. Training
-5. Evaluation
-6. Comparison and interpretation
+## Validation Standard
 
-## Lab Validation Standard
+Show intermediate evidence such as:
 
-For each major stage, include at least one validation output such as:
+- label distribution
+- tokenized sample
+- training metrics
+- confusion matrix or classification report
+- examples of misclassified rows
 
-- dataset size or class balance
-- model output shape
-- loss or accuracy trace
-- confusion matrix
-- short comparison note across fine-tuning settings
+## Questions
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+### Q1. Prepare a Small Classification Dataset
 
-## Setup
+Load a small text dataset and define the label task.
 
-```{python}
-#| eval: false
-import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, TensorDataset
-import matplotlib.pyplot as plt
+Required evidence:
 
-torch.manual_seed(7)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
-```
+- class counts
+- one sample text from each class if possible
+- one short note on class balance
 
-## Synthetic Financial Headline Dataset
+### Q2. Tokenize the Data
 
-```{python}
-#| eval: false
-def generate_headline_data(n=1800, seq_len=16, vocab_size=120):
-    X, y = [], []
-    for _ in range(n):
-        label = torch.randint(0, 3, (1,)).item()
-        seq = torch.randint(4, vocab_size, (seq_len,))
-        if label == 0:
-            seq[0] = 1  # positive marker
-        elif label == 1:
-            seq[0] = 2  # negative marker
-        else:
-            seq[0] = 3  # neutral marker
-        X.append(seq)
-        y.append(label)
-    return TensorDataset(torch.stack(X), torch.tensor(y))
+Use a transformer tokenizer and inspect the output.
 
-dataset = generate_headline_data()
-train_ds, val_ds = torch.utils.data.random_split(dataset, [1400, 400])
-train_dl = DataLoader(train_ds, batch_size=32, shuffle=True)
-val_dl = DataLoader(val_ds, batch_size=64)
-```
+Required evidence:
 
-## Model
+- one tokenized example
+- sequence length summary or truncation note
+- one short explanation of why tokenization differs from classical preprocessing
 
-```{python}
-#| eval: false
-class TinyTransformerClassifier(nn.Module):
-    def __init__(self, vocab_size=120, embed_dim=48, num_heads=4, num_classes=3):
-        super().__init__()
-        self.embed = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
-        self.attn = nn.MultiheadAttention(embed_dim, num_heads, batch_first=True)
-        self.ffn = nn.Sequential(
-            nn.Linear(embed_dim, 2 * embed_dim),
-            nn.ReLU(),
-            nn.Linear(2 * embed_dim, embed_dim),
-        )
-        self.norm1 = nn.LayerNorm(embed_dim)
-        self.norm2 = nn.LayerNorm(embed_dim)
-        self.classifier = nn.Linear(embed_dim, num_classes)
+### Q3. Fine-Tune a Small Transformer
 
-    def forward(self, x):
-        h = self.embed(x)
-        attn_out, _ = self.attn(h, h, h)
-        h = self.norm1(h + attn_out)
-        h = self.norm2(h + self.ffn(h))
-        cls = h[:, 0, :]
-        return self.classifier(cls)
-```
+Fine-tune a small transformer classifier or run a short trainer workflow.
 
-## Training Utility
+Required evidence:
+
+- core hyperparameters
+- training or validation metric history
+- final held-out metric
+
+### Q4. Inspect Misclassifications
+
+Review at least five incorrect examples.
+
+For each, briefly discuss whether the issue seems related to:
+
+- ambiguity
+- truncation
+- label noise
+- limited context
+- model overconfidence
+
+### Q5. Compare to a Simpler Baseline
+
+Compare your fine-tuned transformer to one simpler baseline, such as TF-IDF plus logistic regression.
+
+Answer:
+
+1. where does the transformer help?
+2. where might the added cost not be justified?
+
+## Minimal Setup
 
 ```{python}
 #| eval: false
-def train_eval(model, train_dl, val_dl, epochs=6, lr=1e-3):
-    model = model.to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=0.01)
-    criterion = nn.CrossEntropyLoss()
-
-    history = {"train_acc": [], "val_acc": []}
-
-    for ep in range(1, epochs + 1):
-        model.train()
-        correct = total = 0
-        for xb, yb in train_dl:
-            xb, yb = xb.to(device), yb.to(device)
-            optimizer.zero_grad()
-            logits = model(xb)
-            loss = criterion(logits, yb)
-            loss.backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 1.0)
-            optimizer.step()
-            correct += (logits.argmax(-1) == yb).sum().item()
-            total += len(yb)
-        tr = correct / total
-
-        model.eval()
-        correct = total = 0
-        with torch.no_grad():
-            for xb, yb in val_dl:
-                xb, yb = xb.to(device), yb.to(device)
-                pred = model(xb).argmax(-1)
-                correct += (pred == yb).sum().item()
-                total += len(yb)
-        va = correct / total
-
-        history["train_acc"].append(tr)
-        history["val_acc"].append(va)
-        print(f"Epoch {ep}: train_acc={tr:.3f}, val_acc={va:.3f}")
-
-    return history
+import pandas as pd
+from transformers import AutoTokenizer
 ```
-
-## Experiment A: Full Fine-Tuning
-
-```{python}
-#| eval: false
-model_full = TinyTransformerClassifier()
-h_full = train_eval(model_full, train_dl, val_dl, epochs=6, lr=1e-3)
-```
-
-## Experiment B: Frozen Embedding
-
-```{python}
-#| eval: false
-model_frozen = TinyTransformerClassifier()
-model_frozen.embed.weight.requires_grad = False
-h_frozen = train_eval(model_frozen, train_dl, val_dl, epochs=6, lr=1e-3)
-```
-
-## Compare Curves
-
-```{python}
-#| eval: false
-plt.plot(h_full["val_acc"], label="Val: Full FT")
-plt.plot(h_frozen["val_acc"], label="Val: Frozen Emb")
-plt.xlabel("Epoch")
-plt.ylabel("Validation Accuracy")
-plt.title("Fine-Tuning Comparison")
-plt.legend()
-plt.tight_layout()
-plt.show()
-```
-
-## Lab Questions
-
-1. Which regime converges faster: full fine-tuning or frozen embedding?
-2. Try learning rates {1e-4, 5e-4, 1e-3, 3e-3}. Which is best?
-3. Increase model width (`embed_dim`) to 96. How do accuracy and runtime change?
-4. Add dropout before the classifier. Does it improve validation performance?
-5. Create a confusion matrix for the final model and interpret major error patterns.
-
-## AI Use and Share Links {.unnumbered}
-
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
-
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

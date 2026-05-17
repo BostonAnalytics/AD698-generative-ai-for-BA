@@ -338,7 +338,7 @@ $button-text: #000000; // Button text color
 .reveal ol ol > li,
 .reveal ul ol > li,
 .reveal ol ul > li {
-  color: #c6a35e;
+  color: #2b4467;
   font-weight: 700;
   font-style: italic;
   padding-left: 2.2em;   // extra indent from level 1
@@ -352,7 +352,7 @@ $button-text: #000000; // Button text color
   width: 0.52em;
   height: 0.52em;
   border-radius: 50%;
-  background-color: #c6a35e;
+  background-color: #2b4467;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.40);
   top: 0.42em;
 }
@@ -370,7 +370,7 @@ $button-text: #000000; // Button text color
 .reveal ol ol ol > li::before {
   content: "▶";
   font-size: 0.55em;
-  color: #c6a35e;
+  color: #2b4467;
   text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.40);
   top: 0.45em;
 }

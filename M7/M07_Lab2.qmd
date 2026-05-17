@@ -7,48 +7,66 @@ date-modified: today
 date-format: long
 engine: jupyter
 categories: ['M07:', 'Lab']
-description: "Hands-on lab for Module 7 focused on evaluating dashboard trust, drill-down logic, and stakeholder communication."
+description: "Question-driven lab for Module 7 focused on evaluating dashboard trust, usefulness, and drill-down quality."
+execute:
+  echo: true
+  eval: false
 ---
 
-# Lab Overview
+## Lab Purpose
 
-This lab extends the first Module 7 lab by asking whether a dashboard is actually useful, auditable, and understandable to a stakeholder.
+- `M07_T2` should be your worked reference for narration, trust cues, and dashboard explanation patterns.
+- This lab asks you to evaluate a dashboard-style artifact more critically.
+- `M07_A` later expects a stronger synthesis of usefulness, trust, and human oversight.
 
-## Alignment with Module 7
+## Validation Standard
 
-- `M07_LN2`: evaluation, trust, and human-AI interaction
-- `M07_T2`: commentary, trust flags, and drill-down examples
-- `M07_A`: business recommendations grounded in dashboard evidence
+Show:
 
-## Lab Notebook Pattern
+- the dashboard artifact or preview
+- a trust or evaluation rubric
+- at least one drill-down example
+- one weakness and one improvement recommendation
 
-1. Load dashboard-ready artifact
-2. Add trust or quality flags
-3. Build one drill-down example
-4. Write concise interpretation
-5. Reflect on dashboard limitations
+## Questions
 
-## Lab Validation Standard
+### Q1. Define an Evaluation Rubric
 
-Students should show intermediate evidence, not only final outputs. Typical checks include:
+Create a simple rubric with at least three dimensions, such as:
 
-- summary table
-- trust labels
-- one drill-down evidence example
-- one short reflection on limitations or stakeholder risk
+- clarity
+- trustworthiness
+- drill-down usefulness
+- decision support value
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+### Q2. Evaluate a Dashboard Artifact
 
-## AI Use and Share Links {.unnumbered}
+Use a dashboard, chart set, or dashboard-ready notebook output and score it using your rubric.
 
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
+### Q3. Test One Drill-Down Path
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+Choose one metric and trace it back to more detailed evidence.
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+Answer:
 
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
+1. was the drill-down possible?
+2. was the explanation convincing?
+3. what was missing?
 
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
+### Q4. Recommend One Improvement
 
+Propose one concrete change that would improve trust or usefulness for a stakeholder.
 
+### Q5. Reflection
+
+Answer briefly:
+
+1. What makes an AI dashboard persuasive but not necessarily trustworthy?
+2. What evidence should always be recoverable behind a summary metric?
+
+## Minimal Setup
+
+```{python}
+#| eval: false
+import pandas as pd
+```

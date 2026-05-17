@@ -30,6 +30,10 @@ The following files must exist on your Drive before starting:
 Load and inspect `chunks.csv` at the start of your notebook. Your corpus from Assignment 1 is the document base for all retrieval in this assignment.
 :::
 
+:::{.callout-note}
+This assignment is intentionally more hands-off than the labs. The tutorials and labs should help you understand retrieval and evaluation mechanics, but the final comparison workflow, prompts, and interpretation should be your own.
+:::
+
 :::{.callout-warning}
 **API key security:** Store your API key in Colab Secrets (left panel -> key icon) or in a `.env` file on Drive. Never paste a key directly into a code cell. Never commit a key to GitHub.
 :::

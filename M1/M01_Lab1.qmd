@@ -2,352 +2,139 @@
 title: "Module 1 - Lab 1"
 subtitle: "SEC 10-K NLP Preprocessing Pipeline"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-01"
 date-modified: today
 date-format: long
-format: 
-    html:
-        code-overflow: wrap
+engine: jupyter
+format:
+  html:
+    code-overflow: wrap
 categories: ['M01:', 'Lab']
-description: "Hands-on lab for Module 1 focused on Early Neural Networks & Natural Language Processing."
+description: "Question-driven lab for Module 1 focused on building and validating an SEC 10-K preprocessing pipeline."
+execute:
+  echo: true
+  eval: false
 ---
 
+## Lab Purpose
 
-## Lab Objective {.unnumbered}
+This lab should feel like a **small applied analysis**, not a worked tutorial.
 
-In this lab, you will:
+- `M01_T1` and `M01_T2` should be your main worked references for preprocessing mechanics on easier or more guided examples.
+- This lab asks you to adapt those ideas to real SEC 10-K text.
+- `M01_A` then asks you to apply the same workflow more independently to rival-company filings.
 
-- Use **Google Colab in the browser**
-- Load real-world corporate text data (SEC 10-K filings)
-- Implement a **classical NLP preprocessing pipeline**
-- Answer **exploratory questions** about corporate disclosures using text analytics
+## Research Framing
 
-This lab establishes the **computational and conceptual foundation** for later work with embeddings and generative models.
+Treat this lab as asking structured questions of corporate text:
 
+- What changes when we clean 10-K text aggressively?
+- Which tokens survive preprocessing?
+- How much information is lost or preserved?
+- Which intermediate artifacts are worth saving for later modeling?
 
-## Background Context {.unnumbered}
-
-Public companies file **Form 10-K** annually with the U.S. Securities and Exchange Commission (SEC).  
-These filings contain rich textual information about:
-
-- business operations  
-- risks and uncertainties  
-- management discussion  
-- regulatory disclosures  
-
-In this lab, we treat each 10-K as **raw text data** and apply a standard NLP pipeline to prepare it for analysis.
-
-
-## Using Google Colab on the Web {.unnumbered}
-
-Use **Google Colab in your browser** for this lab. This is the cleanest option for AD698 and avoids local environment setup issues.
-
-### Open Colab {.unnumbered}
-
-- Go to [Google Colab](https://colab.research.google.com/)
-- Sign in with your Google account
-- Create a new notebook or upload the notebook file for this lab
-
-### Save to Drive {.unnumbered}
-
-- Rename the notebook clearly
-- Save it in your Google Drive so your work persists between sessions
-
-### Runtime Guidance {.unnumbered}
-
-- Use the default runtime for this lab
-- If a later lab or assignment requires GPU, switch runtimes in Colab using `Runtime -> Change runtime type`
-
-### Recommended Workflow {.unnumbered}
-
-- Keep the notebook open in Colab while you run cells
-- Use Google Drive for input and output files when needed
-- Re-run cells from top to bottom if your session resets
-
-## Dataset Overview {.unnumbered}
-
-- All data for this lab is located in: [SEC-10K-2024/](https://drive.google.com/drive/folders/1q7BfsNHCewG1zNfnqyCcBj9p_RUt-zW6?usp=drive_link)
-- You will need to "copy" the folder to your own Google Drive
-- Right click on the folder, and then click "Add shortcut to Drive". This will allow you to access the folder from your drive!
-- This folder contains **plain-text 10-K filings** for multiple publicly traded firms.
-- Each file represents **one company’s annual report**.
-
-![](./M01_lecture02_figures/gdrive-add-folder.png){width="80%" fig-align="center"}
-
-:::{.callout-note}
-When running notebooks on Google Colab, file paths such as `../data/...` will **not work**.
-Colab runs on a remote virtual machine, so all data must be accessed via mounted storage or downloads.
-:::
-
-
-## Research Framing (Important) {.unnumbered}
-
-You are **not** training a model yet. Instead, think of this lab as **asking structured questions of text**, such as:
-
-- What terms dominate risk disclosures?
-- How consistent is language across companies?
-- Which words survive aggressive cleaning?
-- How does preprocessing change the text representation?
-
-Your answers will be supported by **intermediate outputs**, not final predictions.
-
-At the same time, this lab should prepare you for later neural NLP work. The goal is to understand what your text looks like before you turn it into vectors, embeddings, or classification inputs.
-
-## Recommended Notebook Pattern {.unnumbered}
-
-Keep the notebook structured as a sequence of small, auditable steps:
+## Recommended Notebook Pattern
 
 1. Setup and data access
-2. One NLP transformation at a time
-3. Validation output after each transformation
-4. Short interpretation of what the transformation changed
-5. One short bridge note explaining how the cleaned output could later support a neural model
+2. Raw-text inspection
+3. One preprocessing transformation at a time
+4. Validation output after each transformation
+5. Short interpretation
 
-## Lab Validation Standard {.unnumbered}
+## Validation Standard
 
-After each major NLP step, show at least one of the following:
+After each major step, show at least one of the following:
 
 - sample text before and after processing
 - token counts or sentence counts
 - POS or dependency examples
-- a short note explaining what the intermediate output tells you
-- one short note connecting the cleaned representation to later vectorization or classification
+- string-matching or vocabulary summary
+- one short note explaining what the output tells you
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
-
-## NLP Processing Pipeline {.unnumbered}
-
-You will implement the following pipeline **step by step**:
-
-1. Raw text  
-2. Sentence segmentation  
-3. Tokenization  
-4. Part-of-Speech (POS) tagging  
-5. Stop-word removal  
-6. Stemming / Lemmatization  
-7. Dependency parsing  
-8. String metrics & matching  
-
-```{dot}
-digraph NLP {
-    graph [bb="", margin=0, pad=0];
-    rankdir=LR;
-    splines=ortho;
-    nodesep=0.5;
-    ranksep=0.6;
-
-    node [shape=box, style=rounded, fontsize=12, fontname="Roboto"];
-
-    // Row 1
-    { rank=same;
-        A [label="Raw Text"];
-        B [label="Sentence Segmentation"];
-        C [label="Tokenization"];
-        D [label="Part-of-Speech Tagging"];
-    }
-
-    // Row 2
-    { rank=same;
-        F [label="Stemming / Lemmatization"];
-        E [label="Stop Word Removal"];
-        G [label="Dependency Parsing"];
-        H [label="String Metrics & Matching"];
-    }
-
-    // Edges Row 1
-    A -> B -> C -> D;
-
-    // Wrap to Row 2
-    D -> E;
-
-    // Row 2 edges
-    E -> F -> G -> H;
-}
-
-```
-
-Each stage produces **artifacts** that help you answer analytical questions.
-
-## Bridge to Neural NLP {.unnumbered}
-
-By the end of this lab, students should be able to explain how cleaned SEC text could later become:
-
-1. a Bag-of-Words or TF-IDF matrix
-2. an input to a neural text classifier
-3. a source corpus for embeddings or language modeling
-
-This matters because later Module 1 work does not start from raw text again. It builds directly on the preprocessing discipline established here.
-
-
-## Load and Inspect the Data {.unnumbered}
-
-### Mount Drive in Colab {.unnumbered}
+## Minimal Setup
 
 ```{python}
-#| echo: true
 #| eval: false
-from google.colab import drive
-drive.mount('/content/drive')
-```
-
-### Verify Files {.unnumbered}
-
-```{python}
-#| echo: true
-#| eval: false
-import os
-os.listdir("/content/drive/MyDrive")
-```
-
-Adjust paths as needed.
-
-### For Local Drive (Optional) {.unnumbered}
-
-```{python}
-#| echo: true
-#| eval: false
+import re
 from pathlib import Path
-
-DATA_DIR = Path("../data/SEC-10K-2024")
-
-files = list(DATA_DIR.glob("*.txt"))
-print(f"Number of 10-K documents: {len(files)}")
-
-# Read a sample document
-sample_text = files[0].read_text(encoding="utf-8")
-print(sample_text[:1500])
+import pandas as pd
 ```
 
-## What sections of the 10-K appear most frequently in the opening text?
+## Questions
 
-This will help you understand the structure of the document and identify key areas for analysis (e.g., risk factors, management discussion). We first start with Sentence Segmentation
+### Q1. Load and Inspect SEC Text
 
-```{python}
-#| echo: true
-#| eval: false
-import nltk
-nltk.download("punkt")
+Select a small set of 10-K text files and inspect them.
 
-from nltk.tokenize import sent_tokenize
+Required evidence:
 
-sentences = sent_tokenize(sample_text)
-print(f"Number of sentences: {len(sentences)}")
-sentences[:5]
-```
+- number of files loaded
+- one short metadata table
+- one sample excerpt from a filing
 
-## Are sentences in 10-Ks longer or shorter than typical news or social media text?
+Answer: what makes these files messier than textbook NLP examples?
 
+### Q2. Sentence Segmentation and Tokenization
 
-```{python}
-#| echo: true
-#| eval: false
-from nltk.tokenize import word_tokenize
+Apply sentence segmentation and tokenization to one sample document.
 
-tokens = word_tokenize(sample_text)
-tokens[:30]
-```
+Required evidence:
 
-## What kinds of tokens appear that are not “words” (e.g., symbols, numbers, legal references)?
+- sentence count
+- first 5 to 10 sentences
+- first 20 to 30 tokens
 
-```{python}
-#| echo: true
-#| eval: false
-nltk.download("averaged_perceptron_tagger")
+Answer: what tokenization issues do you notice in SEC language?
 
-from nltk import pos_tag
+### Q3. Cleaning Choices
 
-pos_tags = pos_tag(tokens[:50])
-pos_tags
-```
+Apply at least three cleaning steps such as:
 
-## Which POS categories dominate risk-related sections (nouns, verbs, adjectives)?
+- lowercasing
+- punctuation handling
+- stop-word removal
+- lemmatization or stemming
+- number filtering
 
+Required evidence:
 
-```{python}
-#| echo: true
-#| eval: false
-from nltk.corpus import stopwords
-nltk.download("stopwords")
+- before/after comparison on one excerpt
+- token-count change
+- one short note on what may have been lost
 
-stop_words = set(stopwords.words("english"))
+### Q4. Linguistic Annotation
 
-filtered_tokens = [
-    t.lower() for t in tokens
-    if t.isalpha() and t.lower() not in stop_words
-]
+Use at least one annotation step such as POS tagging or dependency parsing.
 
-filtered_tokens[:30]
-```
+Required evidence:
 
-## Which important business terms survive stop-word removal?
+- one tagged example
+- one short interpretation of what the annotation reveals about business language
 
-```{python}
-#| echo: true
-#| eval: false
-from nltk.stem import PorterStemmer, WordNetLemmatizer
-nltk.download("wordnet")
+### Q5. Corpus-Level Summary
 
-stemmer = PorterStemmer()
-lemmatizer = WordNetLemmatizer()
+Create at least two corpus summaries, such as:
 
-stems = [stemmer.stem(t) for t in filtered_tokens[:20]]
-lemmas = [lemmatizer.lemmatize(t) for t in filtered_tokens[:20]]
+- most frequent tokens
+- company-level token comparison
+- section-level token comparison
+- vocabulary size before vs after cleaning
 
-list(zip(filtered_tokens[:20], stems, lemmas))
-```
+Include at least one plot.
 
-## Which transformation preserves interpretability better for financial text?
+### Q6. Save Reusable Artifacts
 
+Save at least two artifacts that would be useful later, such as:
 
-```{python}
-#| echo: true
-#| eval: false
-import spacy
-nlp = spacy.load("en_core_web_sm")
+- cleaned corpus
+- token table
+- vocabulary list
+- chunk-ready text output
 
-doc = nlp(sentences[0])
-[(token.text, token.dep_, token.head.text) for token in doc]
-```
+Answer: why is saving intermediate artifacts better than repeating the whole pipeline every time?
 
-## How might dependency relationships help identify risk statements or obligations?
-
-```{python}
-#| echo: true
-#| eval: false
-from difflib import SequenceMatcher
-
-def similarity(a, b):
-    return SequenceMatcher(None, a, b).ratio()
-
-similarity(
-    "risk management strategy",
-    "enterprise risk management"
-)
-```
-
-## Why might approximate string matching be useful for cross-company comparison?
-
-
-
-## Deliverables
-
-Submit word document with answering the questions in addition to the Jupyter notebook with the code and outputs (either `.ipynb` or `.pdf`):
-
-## Key Takeaway
-
-> Before we can generate language,
-> we must first **discipline text into structure**.
-
-This pipeline is the foundation upon which **Bag of Words, TF-IDF, embeddings, and generative models** are built.
 ## AI Use and Share Links {.unnumbered}
 
 If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
+![](./M01_lecture02_figures/gdrive-add-folder.png){width="80%" fig-align="center"}

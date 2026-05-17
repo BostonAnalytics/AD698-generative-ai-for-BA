@@ -44,13 +44,18 @@ By the end of this tutorial, students should be able to:
 - normalize and clean noisy filing text
 - extract target sections into a structured dataframe
 - save a reusable, auditable corpus for later module work
+- estimate simple n-gram probabilities from extracted SEC text
 
 ## How This Tutorial Connects
 
-- `M02_Lab1` validates extraction and cleaning decisions.
-- `M02_Lab2` compares saved text artifacts and structured outputs.
-- `M02_A` uses the same section-extraction pipeline as a graded deliverable.
+- `M02_Lab1` validates extraction and cleaning decisions on a smaller practice sample and saves reusable artifacts.
+- `M02_Lab2` works from chunked SEC text and compares sparse vs dense semantic representations.
+- `M02_A` does not reuse this tutorial output directly, but it does reuse the same discipline around auditable artifacts, chunking, and reproducible notebook workflow.
 - `M02_participation1` and `M02_participation2` can reuse the same corpus-building logic.
+
+::: {.callout-tip}
+This tutorial teaches the mechanics. The lab asks you to verify that the pipeline is trustworthy, and the assignment asks you to apply related ideas in your own executed business analysis.
+:::
 
 # Recommended assignment build sequence
 
@@ -210,6 +215,152 @@ Run the usual checks:
 corpus_df.info()
 corpus_df.describe(include="all")
 ```
+
+# From extracted SEC text to n-gram language modeling
+
+Once the SEC filing text has been cleaned and structured, it can serve as a small language-modeling corpus. The Apple example in [help-code/colab_tokenization_demo.ipynb](/D:/Repositories/AD698-generative-ai-for-BA/help-code/colab_tokenization_demo.ipynb) is a good bridge from corpus engineering to probabilistic language modeling because it shows how token counts become unigram, bigram, and trigram probabilities.
+
+## A short Apple 10-K example
+
+Use a short sentence from the Apple 10-K and compare it with Spanish and German translations:
+
+```{python}
+apple_sentence_en = "The Company designs, manufactures and markets mobile communication and media devices and personal computers."
+apple_sentence_es = "La empresa diseña, fabrica y comercializa dispositivos móviles de comunicación y medios y computadoras personales."
+apple_sentence_de = "Das Unternehmen entwickelt, produziert und vermarktet mobile Kommunikations- und Mediengeräte sowie Personal Computer."
+
+print(apple_sentence_en)
+print(apple_sentence_es)
+print(apple_sentence_de)
+```
+
+The teaching point is that the **meaning** is similar across languages, but the **token order** and local conditional probabilities are language-specific.
+
+## Tokenize and build n-grams
+
+```{python}
+def tokenize_words(text: str) -> list[str]:
+    return re.findall(r"[a-z]+", text.lower())
+
+
+def build_ngram_tables(tokens: list[str]):
+    unigrams = Counter(tokens)
+    bigrams = Counter(zip(tokens[:-1], tokens[1:]))
+    trigrams = Counter(zip(tokens[:-2], tokens[1:-1], tokens[2:]))
+    trigram_prefixes = Counter((w1, w2) for w1, w2, _ in trigrams.elements())
+    return unigrams, bigrams, trigrams, trigram_prefixes
+```
+
+```{python}
+apple_demo_text = " ".join([
+    "The Company designs, manufactures and markets mobile communication and media devices and personal computers.",
+    "The Company sells its products worldwide through its retail stores, online stores and direct sales force.",
+    "The business, financial condition and operating results of the Company can be affected by a number of factors."
+])
+
+tokens_en = tokenize_words(apple_demo_text)
+unigrams_en, bigrams_en, trigrams_en, trigram_prefixes_en = build_ngram_tables(tokens_en)
+
+print(f"Total English tokens: {len(tokens_en)}")
+print("Top 10 bigrams:")
+print(bigrams_en.most_common(10))
+```
+
+## Calculate conditional probabilities
+
+```{python}
+def bigram_prob(bigrams: Counter, unigrams: Counter, w1: str, w2: str, alpha: float = 1.0) -> float:
+    vocab_size = len(unigrams)
+    return (bigrams[(w1, w2)] + alpha) / (unigrams[w1] + alpha * vocab_size)
+
+
+def trigram_prob(trigrams: Counter, trigram_prefixes: Counter, unigrams: Counter, w1: str, w2: str, w3: str, alpha: float = 1.0) -> float:
+    vocab_size = len(unigrams)
+    prefix = trigram_prefixes[(w1, w2)]
+    return (trigrams[(w1, w2, w3)] + alpha) / (prefix + alpha * vocab_size)
+```
+
+```{python}
+print("Selected probabilities from the Apple business-text corpus:")
+print("P(company | the) =", round(bigram_prob(bigrams_en, unigrams_en, "the", "company"), 4))
+print("P(designs | company) =", round(bigram_prob(bigrams_en, unigrams_en, "company", "designs"), 4))
+print("P(operating | financial, condition) =", round(trigram_prob(trigrams_en, trigram_prefixes_en, unigrams_en, "financial", "condition", "operating"), 4))
+```
+
+## Compare fluent English with translation-like word order
+
+A good English language model should prefer fluent English token order over awkward literal-order alternatives.
+
+```{python}
+def sentence_log_prob(sentence: str, bigrams: Counter, unigrams: Counter, alpha: float = 1.0) -> float:
+    words = tokenize_words(sentence)
+    score = 0.0
+    for i in range(1, len(words)):
+        score += np.log(bigram_prob(bigrams, unigrams, words[i - 1], words[i], alpha))
+    return score
+```
+
+```{python}
+english_fluent = "the company sells its products worldwide through its retail stores"
+english_spanish_literal = "the company sells worldwide its products through its retail stores"
+english_german_literal = "the company through its retail stores sells its products worldwide"
+
+for label, sent in [
+    ("Fluent English", english_fluent),
+    ("Spanish-style literal order", english_spanish_literal),
+    ("German-style literal order", english_german_literal),
+]:
+    print(label, "->", round(sentence_log_prob(sent, bigrams_en, unigrams_en), 3))
+```
+
+## Optional multilingual extension
+
+Students can also build separate n-gram models for English, Spanish, and German translations and then compare generated continuations in each language:
+
+```{python}
+multilingual_corpora = {
+    "english": [
+        "the company designs and markets mobile devices",
+        "the company sells products through retail stores",
+        "the company offers software and services",
+    ],
+    "spanish": [
+        "la empresa diseña y comercializa dispositivos moviles",
+        "la empresa vende productos a traves de tiendas minoristas",
+        "la empresa ofrece software y servicios",
+    ],
+    "german": [
+        "das unternehmen entwickelt und vermarktet mobile gerate",
+        "das unternehmen verkauft produkte uber einzelhandelsgeschafte",
+        "das unternehmen bietet software und dienstleistungen an",
+    ],
+}
+```
+
+```{python}
+def generate_from_bigrams(sentences: list[str], start_word: str, n_words: int = 8):
+    tokens = []
+    for s in sentences:
+        tokens.extend(tokenize_words(s))
+    unigrams, bigrams, _, _ = build_ngram_tables(tokens)
+    vocab = sorted(unigrams.keys())
+    current = start_word
+    output = [current]
+    for _ in range(n_words - 1):
+        scores = np.array([bigram_prob(bigrams, unigrams, current, w) for w in vocab])
+        scores = scores / scores.sum()
+        current = np.random.choice(vocab, p=scores)
+        output.append(current)
+    return " ".join(output)
+```
+
+```{python}
+for lang, sentences in multilingual_corpora.items():
+    start = {"english": "the", "spanish": "la", "german": "das"}[lang]
+    print(lang, "->", generate_from_bigrams(sentences, start_word=start))
+```
+
+This extension helps students see that **n-gram generation is local, language-specific, and highly sensitive to corpus style and token order**.
 
 # Save outputs for later modules
 

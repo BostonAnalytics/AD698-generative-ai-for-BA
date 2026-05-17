@@ -21,6 +21,10 @@ Use SEC filing text or saved chunk artifacts from earlier modules so the focus s
 
 Keep the evaluation scope fixed to SEC 10-K Item 7, Item 7A, and Item 8 so agent outputs remain directly comparable across modules.
 
+:::{.callout-note}
+This assignment is intentionally more hands-off than the labs. Use the tutorials to understand orchestration patterns and the labs to practice traceability, then make and defend your own agent-design choices here.
+:::
+
 # Submission Instructions {.unnumbered}
 
 Submit three files on Blackboard:

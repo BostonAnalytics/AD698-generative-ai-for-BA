@@ -15,3 +15,5 @@ help-code/3-neural-nlp/data/corpora/imdb-reviews/*.*
 *.env
 .env
 deliverables-solutions/Assignments/outputs/M01_A_sol/tfidf_matrix.csv
+deliverables-solutions/Assignments/outputs/*.*
+deliverables-solutions/Assignments/outputs

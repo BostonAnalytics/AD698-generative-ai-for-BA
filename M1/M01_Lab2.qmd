@@ -2,492 +2,113 @@
 title: "Module 1 - Lab 2"
 subtitle: "Word Embeddings and Neural Text Representations"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-01"
 date-modified: today
 date-format: long
 engine: jupyter
-format:
-    html:
-        toc: true
-        toc-depth: 3
-        code-overflow: wrap
-execute:
-    echo: true
-    eval: false
-    warning: false
-    message: false
 categories: ['M01:', 'Lab']
-description: "Hands-on lab for Module 1 focused on Word Embeddings and Neural Text Representations."
+description: "Question-driven lab for Module 1 focused on comparing classical and neural text representations."
+execute:
+  echo: true
+  eval: false
 ---
 
-## Lab Overview {.unnumbered}
+## Lab Purpose
 
-This lab transitions from **count-based representations** (Bag of Words, TF-IDF)
-to **learned semantic representations** (word embeddings) — the foundation of modern
-neural NLP and generative AI systems.
+- The tutorials introduce word-vector ideas, representation choices, and baseline coding patterns on easier examples.
+- This lab asks you to apply those ideas to course-relevant text data and interpret the tradeoffs.
+- `M01_A` then pushes the same representational thinking into a more independent rival-company workflow.
 
-| Representation | Core Idea | Limitation |
-|---|---|---|
-| Bag of Words | Count occurrences | Ignores meaning and order |
-| TF-IDF | Weight by rarity | Still no semantics |
-| Word Embeddings | Learn from context | Requires training data |
-| Transformer embeddings | Full context | Computationally expensive |
+## Recommended Notebook Pattern
 
-Each row builds on the previous.
-This lab focuses on the **word embeddings** row.
+1. Data loading
+2. Sparse baseline
+3. Dense representation experiment
+4. Comparison and interpretation
+5. Short bridge to later assignments
 
+## Validation Standard
 
-## Learning Objectives {.unnumbered}
+Good evidence includes:
 
-After completing this lab you should be able to:
+- vocabulary or matrix shape
+- nearest-neighbor examples
+- similarity comparisons
+- classifier or retrieval output
+- one short interpretation per major block
 
-1. Explain the distributional hypothesis and why it motivates embeddings.
-2. Build a `Vocabulary` class that maps tokens to integer indices.
-3. Implement a PyTorch `nn.Embedding` layer and inspect learned vectors.
-4. Compute cosine similarity between word vectors.
-5. Visualize word clusters using PCA.
-6. Articulate one business analytics use case for word embeddings.
+## Questions
 
-## Recommended Notebook Pattern {.unnumbered}
+### Q1. Build a Sparse Baseline
 
-Structure the notebook so each representation-building step is easy to follow:
+Create a sparse representation such as bag-of-words or TF-IDF for a small SEC text corpus.
 
-1. Setup
-2. Vocabulary construction
-3. Embedding implementation
-4. Similarity or clustering analysis
-5. Visualization
-6. Short interpretation
+Required evidence:
 
-## Lab Validation Standard {.unnumbered}
+- matrix shape
+- top vocabulary items
+- one example showing how a chunk or sentence is represented
 
-After each major step, include at least one validation output such as:
+### Q2. Create or Load Dense Representations
 
-- vocabulary size
-- example token-to-index mappings
-- embedding matrix shape
-- cosine similarity examples
-- labeled PCA plot with a short interpretation
+Create dense text representations using one method discussed in class or tutorial.
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+Examples:
 
+- average pretrained word vectors
+- a small Word2Vec workflow
+- sentence embeddings if approved by your instructor
 
-## Setup {.unnumbered}
+Required evidence:
+
+- embedding dimension
+- one example vector or similarity output
+- one note on what the dense representation captures that sparse features miss
+
+### Q3. Compare Two Similarity Queries
+
+Choose one business-oriented query and compare:
+
+1. sparse retrieval or similarity
+2. dense retrieval or similarity
+
+Required evidence:
+
+- top matches from both methods
+- one short comparison explaining where they differ
+
+### Q4. Representation Failure Case
+
+Identify at least one case where:
+
+- sparse matching is too literal, or
+- dense matching is too broad
+
+Use a concrete text example and explain the failure in 2 to 3 sentences.
+
+### Q5. Short Neural Bridge
+
+Run one small neural-text step such as:
+
+- a tiny embedding-based classifier
+- a nearest-neighbor comparison
+- a similarity clustering check
+
+You do not need to build a large model. The goal is to show how numeric representations support later neural workflows.
+
+### Q6. Reflection
+
+Answer briefly:
+
+1. When would you still prefer sparse text features?
+2. When do dense features create clear value?
+3. Which representation seems most useful for later SEC rivalry analysis?
+
+## Minimal Setup
 
 ```{python}
-#| label: setup
 #| eval: false
-import re
-import random
-from pathlib import Path
-from collections import Counter
-
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import Dataset, DataLoader
-
-torch.manual_seed(42)
-random.seed(42)
-np.random.seed(42)
-
-print("PyTorch:", torch.__version__)
-print("CUDA available:", torch.cuda.is_available())
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
 ```
-
----
-
-# Load SEC 10-K Data
-
-SEC 10-K filings are annual reports that public companies file with the U.S. Securities
-and Exchange Commission. They contain long, structured text covering business description,
-risk factors, financial results, and management discussion.
-
-This domain-specific language makes 10-K filings ideal for studying word semantics:
-words like *revenue*, *risk*, *liability*, and *impairment* carry precise meanings that
-a well-trained embedding should capture.
-
-```{python}
-#| label: load-data
-#| eval: false
-# Adjust path to match your environment
-DATA_DIR = Path("../../data/SEC-10K-2024")
-
-files = sorted(DATA_DIR.glob("*.txt"))
-print(f"Found {len(files)} 10-K filings")
-
-# Load all text into one list of strings
-raw_docs = []
-for f in files:
-    raw_docs.append(f.read_text(encoding="utf-8", errors="ignore"))
-
-print(f"Total characters: {sum(len(d) for d in raw_docs):,}")
-print(f"\nFirst 300 chars of Doc 1:\n{raw_docs[0][:300]}")
-```
-
-
-# Tokenization
-
-Tokenization splits raw text into **atomic units** that a model can process.
-We use a simple approach:
-
-1. Lowercase
-2. Remove non-alphabetic characters
-3. Filter tokens shorter than 3 characters
-
-```{python}
-#| label: tokenize
-#| eval: false
-def tokenize(text: str) -> list[str]:
-    """Lowercase and split on non-alpha characters, filtering short tokens."""
-    text = text.lower()
-    text = re.sub(r"[^a-z\s]", " ", text)
-    return [t for t in text.split() if len(t) >= 3]
-
-
-tokenized_docs = [tokenize(doc) for doc in raw_docs]
-
-# Flatten to a single corpus
-all_tokens = [t for doc in tokenized_docs for t in doc]
-print(f"Total tokens: {len(all_tokens):,}")
-
-# Vocabulary size
-vocab_counts = Counter(all_tokens)
-print(f"Unique tokens: {len(vocab_counts):,}")
-print(f"\nTop 20 tokens: {vocab_counts.most_common(20)}")
-```
-
-
-# Build a Vocabulary
-
-A `Vocabulary` maps each token to a unique integer index.
-The model never sees raw strings — only integers that index into an embedding matrix.
-
-```{python}
-#| label: vocab
-#| eval: false
-class Vocabulary:
-    """Maps tokens to integer indices and back."""
-
-    PAD = "<PAD>"
-    UNK = "<UNK>"
-
-    def __init__(self, min_freq: int = 5):
-        self.min_freq = min_freq
-        self.token2idx: dict[str, int] = {}
-        self.idx2token: dict[int, str] = {}
-
-    def build(self, token_counts: Counter) -> None:
-        # Reserve indices 0 and 1
-        specials = [self.PAD, self.UNK]
-        tokens = [t for t, c in token_counts.items() if c >= self.min_freq]
-        for idx, token in enumerate(specials + sorted(tokens)):
-            self.token2idx[token] = idx
-            self.idx2token[idx] = token
-
-    def encode(self, token: str) -> int:
-        return self.token2idx.get(token, self.token2idx[self.UNK])
-
-    def __len__(self) -> int:
-        return len(self.token2idx)
-
-
-vocab = Vocabulary(min_freq=5)
-vocab.build(vocab_counts)
-print(f"Vocabulary size: {len(vocab):,}")
-print(f"Index of 'revenue': {vocab.encode('revenue')}")
-print(f"Index of 'risk':    {vocab.encode('risk')}")
-```
-
-**Q1**: What is the vocabulary size after filtering tokens that appear fewer than 5 times?
-Why does min_freq filtering matter for embedding quality?
-
-
-# Skip-gram Dataset
-
-We train embeddings using the **Skip-gram** objective:
-
-> Given a center word, predict its surrounding context words.
-
-This forces the embedding to capture **distributional similarity** — words that appear
-in similar contexts end up with similar vectors.
-
-```{python}
-#| label: skipgram-dataset
-#| eval: false
-class SkipgramDataset(Dataset):
-    """Yields (center_idx, context_idx) pairs from a tokenized corpus."""
-
-    def __init__(self, docs: list[list[str]], vocab: Vocabulary, window: int = 2):
-        self.pairs: list[tuple[int, int]] = []
-        for doc in docs:
-            indices = [vocab.encode(t) for t in doc]
-            for i, center in enumerate(indices):
-                start = max(0, i - window)
-                end = min(len(indices), i + window + 1)
-                for j in range(start, end):
-                    if j != i:
-                        self.pairs.append((center, indices[j]))
-
-    def __len__(self) -> int:
-        return len(self.pairs)
-
-    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
-        center, context = self.pairs[idx]
-        return torch.tensor(center), torch.tensor(context)
-
-
-# Build dataset (use first 5 docs to keep training fast in class)
-dataset = SkipgramDataset(tokenized_docs[:5], vocab, window=2)
-loader = DataLoader(dataset, batch_size=512, shuffle=True)
-print(f"Training pairs: {len(dataset):,}")
-```
-
-
-# Train the Embedding Model
-
-The Skip-gram model is a **two-layer neural network**:
-
-1. An embedding layer (the weight matrix we want to learn)
-2. A linear output layer projecting to vocabulary size
-
-Loss is cross-entropy over context word predictions.
-
-```{python}
-#| label: train-embeddings
-#| eval: false
-class SkipgramModel(nn.Module):
-    def __init__(self, vocab_size: int, embed_dim: int = 64):
-        super().__init__()
-        self.embeddings = nn.Embedding(vocab_size, embed_dim)
-        self.out = nn.Linear(embed_dim, vocab_size)
-
-    def forward(self, center: torch.Tensor) -> torch.Tensor:
-        emb = self.embeddings(center)        # (batch, embed_dim)
-        return self.out(emb)                 # (batch, vocab_size)
-
-
-EMBED_DIM = 64
-model = SkipgramModel(len(vocab), embed_dim=EMBED_DIM)
-optimizer = torch.optim.Adam(model.parameters(), lr=5e-3)
-criterion = nn.CrossEntropyLoss()
-
-EPOCHS = 3
-for epoch in range(EPOCHS):
-    total_loss = 0.0
-    for center, context in loader:
-        logits = model(center)
-        loss = criterion(logits, context)
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        total_loss += loss.item()
-    avg = total_loss / len(loader)
-    print(f"Epoch {epoch+1}/{EPOCHS}  avg loss={avg:.4f}")
-
-# Extract the embedding matrix
-W = model.embeddings.weight.detach().numpy()
-print(f"\nEmbedding matrix shape: {W.shape}")
-```
-
-
-# Cosine Similarity
-
-**Cosine similarity** measures the angle between two vectors:
-
-$$
-\text{cos}(u, v) = \frac{u \cdot v}{\|u\| \cdot \|v\|}
-$$
-
-A value near 1 means the vectors point in the same direction (similar meaning).
-A value near −1 means they point in opposite directions.
-A value near 0 means orthogonal (unrelated).
-
-```{python}
-#| label: cosine-similarity
-#| eval: false
-def get_vector(word: str) -> np.ndarray:
-    idx = vocab.encode(word)
-    return W[idx]
-
-
-def cosine_sim(w1: str, w2: str) -> float:
-    v1 = get_vector(w1)
-    v2 = get_vector(w2)
-    return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2) + 1e-8))
-
-
-def top_similar(word: str, n: int = 5) -> list[tuple[str, float]]:
-    query = get_vector(word)
-    sims = []
-    for token, idx in vocab.token2idx.items():
-        if token in (Vocabulary.PAD, Vocabulary.UNK, word):
-            continue
-        sim = float(np.dot(query, W[idx]) /
-                    (np.linalg.norm(query) * np.linalg.norm(W[idx]) + 1e-8))
-        sims.append((token, sim))
-    return sorted(sims, key=lambda x: x[1], reverse=True)[:n]
-
-
-# Try a few anchor words
-for word in ["revenue", "risk", "debt", "loss"]:
-    if vocab.encode(word) != vocab.token2idx[Vocabulary.UNK]:
-        neighbors = top_similar(word, n=5)
-        print(f"\nTop-5 similar to '{word}':")
-        for token, score in neighbors:
-            print(f"  {token:<20} {score:.4f}")
-```
-
-**Q2**: Report the top-3 most similar words to *revenue* and to *risk*.
-Do the neighbors make semantic sense for financial filings?
-
-
-# Visualize Word Clusters with PCA
-
-Word embeddings live in a 64-dimensional space — we can project to 2D using PCA
-to visualize semantic clusters.
-
-```{python}
-#| label: pca-viz
-#| eval: false
-# Select a set of financially meaningful words
-focus_words = [
-    "revenue", "earnings", "profit", "loss", "income",
-    "risk", "debt", "liability", "asset", "equity",
-    "growth", "decline", "impairment", "restructuring", "charges",
-]
-
-# Keep only words that exist in vocabulary with freq >= 5
-focus_words = [w for w in focus_words
-               if vocab.encode(w) != vocab.token2idx[Vocabulary.UNK]]
-
-vecs = np.array([get_vector(w) for w in focus_words])
-
-# PCA to 2D
-pca = PCA(n_components=2, random_state=42)
-coords = pca.fit_transform(vecs)
-
-# Plot
-fig, ax = plt.subplots(figsize=(9, 6))
-ax.scatter(coords[:, 0], coords[:, 1], s=60, color="#3A86B7", alpha=0.8)
-for i, word in enumerate(focus_words):
-    ax.annotate(word, (coords[i, 0], coords[i, 1]),
-                fontsize=10, ha="left", va="bottom",
-                xytext=(4, 4), textcoords="offset points")
-
-ax.set_title("Word Embeddings — 2D PCA Projection", fontsize=13, fontweight="bold")
-ax.set_xlabel(f"PC 1 ({pca.explained_variance_ratio_[0]:.1%} variance)")
-ax.set_ylabel(f"PC 2 ({pca.explained_variance_ratio_[1]:.1%} variance)")
-ax.grid(True, alpha=0.3)
-plt.tight_layout()
-plt.show()
-```
-
-**Q3**: Based on the PCA visualization, do financially positive words (revenue, profit, earnings)
-cluster away from negative words (loss, risk, impairment)?
-What does this tell you about the embedding quality?
-
-
-# Using Pre-trained GloVe Embeddings
-
-Training embeddings from scratch requires a large corpus.
-In practice, we load **pre-trained embeddings** such as GloVe, which were trained on
-billions of tokens.
-
-The course provides a small GloVe-format file at `data/reviews-word2vec.tiny.txt`.
-
-```{python}
-#| label: load-glove
-#| eval: false
-GLOVE_PATH = Path("../../data/reviews-word2vec.tiny.txt")
-
-glove: dict[str, np.ndarray] = {}
-with GLOVE_PATH.open("r", encoding="utf-8") as f:
-    for line in f:
-        parts = line.split()
-        word = parts[0]
-        vec = np.array(parts[1:], dtype=np.float32)
-        glove[word] = vec
-
-print(f"Loaded {len(glove):,} pre-trained vectors")
-print(f"Vector dimension: {next(iter(glove.values())).shape[0]}")
-```
-
-```{python}
-#| label: glove-similarity
-#| eval: false
-def glove_sim(w1: str, w2: str) -> float | None:
-    if w1 not in glove or w2 not in glove:
-        return None
-    v1, v2 = glove[w1], glove[w2]
-    return float(np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2)))
-
-
-pairs = [
-    ("good", "great"),
-    ("good", "bad"),
-    ("revenue", "income"),
-    ("bank", "finance"),
-]
-
-print(f"{'Word 1':<12} {'Word 2':<12} {'Cosine Sim':>12}")
-print("-" * 38)
-for w1, w2 in pairs:
-    sim = glove_sim(w1, w2)
-    if sim is not None:
-        print(f"{w1:<12} {w2:<12} {sim:>12.4f}")
-    else:
-        print(f"{w1:<12} {w2:<12} {'(not in vocab)':>12}")
-```
-
-**Q4**: Compare the cosine similarity of (*good*, *great*) vs. (*good*, *bad*).
-Explain the result using the distributional hypothesis.
-
-
-# Business Applications of Word Embeddings
-
-Word embeddings power several high-value business analytics tasks:
-
-| Task | How Embeddings Help |
-|---|---|
-| **Risk factor similarity** | Find filings with similar risk language to flag peer exposure |
-| **Trend detection** | Track how word clusters shift over fiscal years |
-| **Anomaly detection** | Flag documents whose embedding deviates from sector norms |
-| **Semantic search** | Retrieve relevant passages without exact keyword match |
-| **Topic clustering** | Group filings by latent theme without labeled data |
-
-## Q5 — Reflection
-
-Answer the following in 2–4 sentences each:
-
-1. **Why do embeddings outperform Bag-of-Words for financial text analysis?**
-
-2. **How does backpropagation enable semantic learning?**
-   (Hint: what are the model parameters, what is the loss, what does the gradient do?)
-
-3. **Describe one concrete business analytics task** at a firm you have worked at (or are familiar with) where word embeddings would provide measurable value.
-   Specify the input text, the embedding model, and how similarity would drive a decision.
-
-
-### References {.unnumbered}
-
-::: {#refs}
-:::
-
-## AI Use and Share Links {.unnumbered}
-
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
-
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

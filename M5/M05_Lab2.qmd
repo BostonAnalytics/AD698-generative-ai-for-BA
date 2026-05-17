@@ -6,206 +6,80 @@ date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-format:
-    html:
-        toc: true
-        toc-depth: 3
-        code-overflow: wrap
-    docx:
-        reference-doc: ../theme/APA7.docx
-bibliography: ../references.bib
-csl: ../mis-quarterly.csl
-execute:
-    echo: true
-    eval: false
-    warning: false
-    message: false
 categories: ['M05:', 'Lab']
-description: "Hands-on lab for Module 5 focused on Evaluate Prompt-only vs RAG vs Pretraining-only."
+description: "Question-driven lab for Module 5 focused on comparing prompting, retrieval grounding, and pretrained model behavior."
+execute:
+  echo: true
+  eval: false
 ---
 
-## Learning Objectives
+## Lab Purpose
 
-1. Define a fair evaluation protocol for three QA systems.
-2. Implement a rubric that scores groundedness and relevance.
-3. Build a compact experiment table suitable for Assignment 4.
-4. Identify failure modes and map each to remediation actions.
+- `M05_T2` should be the worked guide for answer comparison and evaluation framing.
+- This lab asks you to compare methods on a smaller question set with explicit judgment criteria.
+- `M05_A` later scales the same comparison into a more formal assignment workflow.
 
 ## Recommended Notebook Pattern
 
-Structure the notebook as:
+1. Question design
+2. Method execution
+3. Comparison table
+4. Evaluation rubric
+5. Short business interpretation
 
-1. Evaluation dataset setup
-2. System outputs collection
-3. Rubric definition
-4. Scoring table construction
-5. Failure analysis
-6. Short interpretation
+## Validation Standard
 
-## Lab Validation Standard
+Show:
 
-For each major stage, include at least one validation output such as:
+- the exact questions used
+- outputs from all compared methods
+- one structured evaluation table
+- one failure case per method if possible
 
-- benchmark question table
-- rubric columns
-- scored comparison table
-- one labeled failure case
-- a short note explaining what the results imply
+## Questions
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+### Q1. Define an Evaluation Set
 
-## Systems Under Test
+Create at least three questions that matter for SEC analysis.
 
-- Prompt-only baseline
-- RAG pipeline
-- Pretraining-only baseline (domain-adapted or external model variant)
+At least one question should require:
 
-## Step 0: Evaluation Dataset
+- precise document grounding
+- synthesis across evidence
+- caution when evidence is weak
 
-Create a small benchmark set with columns:
+### Q2. Run Three Answering Styles
 
-- `question`
-- `reference_answer`
-- `difficulty` (easy/medium/hard)
-- `topic`
+Compare:
+
+1. prompt-only
+2. RAG
+3. pretrained or background-knowledge-heavy answering
+
+Save all responses in a table.
+
+### Q3. Build a Simple Evaluation Rubric
+
+Score each answer on at least three dimensions, such as:
+
+- correctness
+- grounding
+- specificity
+- usefulness to a business analyst
+
+Use a compact matrix or rubric table.
+
+### Q4. Analyze One Failure per Method
+
+For each method, identify one failure and explain what caused it.
+
+### Q5. Recommendation
+
+Which method would you trust most for an auditable business workflow, and under what conditions would you switch methods?
+
+## Minimal Setup
 
 ```{python}
 #| eval: false
 import pandas as pd
-
-eval_df = pd.DataFrame([
-	{
-		"question": "What is one limitation of naive RAG?",
-		"reference_answer": "Naive RAG can retrieve irrelevant chunks and produce ungrounded answers.",
-		"difficulty": "easy",
-		"topic": "rag-basics",
-	},
-	{
-		"question": "How does HNSW balance recall and latency?",
-		"reference_answer": "HNSW uses layered graph search; larger efSearch typically improves recall but increases latency.",
-		"difficulty": "medium",
-		"topic": "retrieval",
-	},
-])
-
-print(eval_df.head())
 ```
-
-## Step 1: Gather Outputs from Each System
-
-```{python}
-#| eval: false
-def run_prompt_only(question: str) -> str:
-	return "TODO: call your prompt-only system"
-
-def run_rag(question: str) -> str:
-	return "TODO: call your RAG chain"
-
-def run_pretrain_only(question: str) -> str:
-	return "TODO: call your pretraining-only baseline"
-```
-
-## Step 2: Scoring Rubric
-
-Use 1-5 scales:
-
-- `relevance_score`
-- `groundedness_score`
-- `clarity_score`
-
-```{python}
-#| eval: false
-def simple_overlap_score(answer: str, reference: str) -> float:
-	a = set(answer.lower().split())
-	r = set(reference.lower().split())
-	return len(a & r) / max(1, len(r))
-
-def heuristic_groundedness(answer: str) -> int:
-	# Replace with LLM-judge later; this is a quick baseline for the lab.
-	if "insufficient" in answer.lower() or "according to" in answer.lower():
-		return 4
-	return 3
-```
-
-## Step 3: Build Comparative Table
-
-```{python}
-#| eval: false
-rows = []
-for _, row in eval_df.iterrows():
-	q = row["question"]
-	ref = row["reference_answer"]
-
-	systems = {
-		"prompt_only": run_prompt_only(q),
-		"rag": run_rag(q),
-		"pretrain_only": run_pretrain_only(q),
-	}
-
-	for name, ans in systems.items():
-		rows.append({
-			"question": q,
-			"system": name,
-			"answer": ans,
-			"relevance_score": round(simple_overlap_score(ans, ref) * 5, 2),
-			"groundedness_score": heuristic_groundedness(ans),
-		})
-
-result_df = pd.DataFrame(rows)
-print(result_df.head())
-```
-
-## Step 4: Aggregate and Interpret
-
-```{python}
-#| eval: false
-summary = (
-	result_df
-	.groupby("system")[["relevance_score", "groundedness_score"]]
-	.mean()
-	.reset_index()
-)
-
-print(summary)
-summary.to_csv("M05_lab2_eval_summary.csv", index=False)
-```
-
-## Step 5: Failure Analysis
-
-For each system, document at least two examples of:
-
-1. retrieval miss (for RAG)
-2. hallucinated claim
-3. partial answer
-4. incorrect confidence level
-
-## Deliverable for This Lab
-
-Include in your submission:
-
-1. Evaluation dataset design (brief rationale).
-2. Comparative score table.
-3. Failure taxonomy with example rows.
-4. One recommendation per system for improvement.
-
-## Bridge to Assignment 4
-
-Your `M05_A.qmd` report should import this lab output directly as:
-
-- Methods section input (evaluation protocol)
-- Results table source
-- Error analysis evidence
-
-## AI Use and Share Links {.unnumbered}
-
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
-
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

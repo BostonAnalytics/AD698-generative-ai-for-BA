@@ -101,9 +101,6 @@ description: "Presentation slides for Module 2 on Mathematical Foundations Throu
   - [Cached tokens]{.uublue-bold} (reused history)  
   - [Reasoning tokens]{.uublue-bold} (internal steps in some models)  
 - [Context matters:]{.uured-bold} the *same word* can map to *different tokens* depending on spacing, capitalization, and position.  
-  - " red" (leading space, lowercase) → token like 2266  
-  - " Red" (leading space, uppercase) → token like 2297  
-  - "Red" (start of sentence, no space) → token like 7738  
 - **Frequent tokens get lower IDs**, rare ones get higher IDs.  
 
 ---
@@ -123,26 +120,144 @@ Sequence probability is foundational for:
 :::
 ::: {.column}
 
-- Spanish sentence: *El cafe negro me gusta mucho*
-- Literal translation: *The coffee black me pleases much*
-- The language model encodes fluency as probability.
+- Apple-style English: *The company sells its products worldwide through its retail stores*
+- Literal-order alternative: *The company through its retail stores sells its products worldwide*
+- The language model encodes [fluency as probability]{.uublue-bold}.
 
 :::
 :::
 
-[A good English language model assigns]{.uublue-bold}: 
-$\mathbb{P}(\text{The coffee black me pleases much}) <\mathbb{P}(\text{I love dark coffee})$
+[A good English language model assigns]{.uublue-bold}:
+
+$$
+\begin{align}
+\mathbb{P}(\text{The company through its retail stores sells its products worldwide}) \\
+< \mathbb{P}(\text{The company sells its products worldwide through its retail stores})
+\end{align}
+$$
+
+---
+
+## Apple 10-K Example Across Languages
+
+- English source sentence from Apple business text:
+  - *The Company designs, manufactures and markets mobile communication and media devices and personal computers.*
+- Spanish translation:
+  - *La empresa diseña, fabrica y comercializa dispositivos móviles de comunicación y medios y computadoras personales.*
+- German translation:
+  - *Das Unternehmen entwickelt, produziert und vermarktet mobile Kommunikations- und Mediengeräte sowie Personal Computer.*
+- [Key point:]{.uured-bold} the meaning is aligned, but the token sequences and preferred word orders are language-specific.
+
+---
+
+## N-grams from Business Text
+
+- We can estimate probabilities directly from the Apple 10-K style corpus:
+
+$$
+\begin{align}
+P(w_t \mid w_{t-1}) = \frac{\text{count}(w_{t-1}, w_t)}{\text{count}(w_{t-1})}
+\end{align}
+$$
+
+- Example bigram:
+
+$$
+\begin{align}
+P(\text{company} \mid \text{the}) = \frac{\text{count}(\text{the company})}{\text{count}(\text{the})}
+\end{align}
+$$
+
+- Example trigram:
+
+$$
+\begin{align}
+P(\text{operating} \mid \text{financial}, \text{condition}) = \frac{\text{count}(\text{financial condition operating})}{\text{count}(\text{financial condition})}
+\end{align}
+$$
+
+- [This is exactly the logic used in the Apple 10-K tokenization notebook.]{.uublue-bold}
+
+---
+
+## Fluent English vs Literal Order
+
+| Candidate sentence | Expected LM score |
+|---|---|
+| The company sells its products worldwide through its retail stores | Higher |
+| The company sells worldwide its products through its retail stores | Lower |
+| The company through its retail stores sells its products worldwide | Lower |
+
+- [Why?]{.uured-bold} A language model trained on English business text prefers token orders that are common in fluent English.
+- Literal translation-like order may preserve meaning, but often lowers probability.
+- This is why language models help with [translation fluency, speech recognition, and next-token generation]{.uublue-bold}.
+
+---
+
+## Apple 10-K for Classification Too
+
+- The same Apple corpus can also support [Naive Bayes text classification]{.uured-bold}.
+- Example labels:
+  - `product`
+  - `risk`
+- Example training snippets:
+  - `iphone includes siri and apple pay`
+  - `adverse economic conditions could affect demand`
+- Now the model predicts:
+
+$$
+\begin{align}
+P(y \mid \mathbf{x}) \propto P(y) P(\mathbf{x} \mid y)
+\end{align}
+$$
+
+---
+
+## Naive Bayes Probabilities
+
+- Class prior:
+
+$$
+\begin{align}
+P(y) = \frac{\text{count}(y)}{N}
+\end{align}
+$$
+
+- Token likelihood with Laplace smoothing:
+
+$$
+\begin{align}
+P(w \mid y)=\frac{\text{count}(w,y)+\alpha}{\sum_{v \in \mathcal{V}} \text{count}(v,y)+\alpha |\mathcal{V}|}
+\end{align}
+$$
+
+- Apple-style examples:
+  - $P(\text{apple} \mid \text{product})$
+  - $P(\text{financial} \mid \text{risk})$
+  - $P(\text{affect} \mid \text{risk})$
+
+---
+
+## Same Corpus, Two Probability Views
+
+| Task | Probability object | Apple 10-K use |
+|---|---|---|
+| Language modeling | $P(\mathbf{w})$ or $P(w_t \mid w_{<t})$ | score fluent English sequences |
+| Naive Bayes classification | $P(y \mid \mathbf{x})$ via $P(y)P(\mathbf{x}\mid y)$ | classify text as `product` or `risk` |
+
+- [This continuity matters pedagogically:]{.uublue-bold} same corpus, different probability object.
+- That makes the transition from sequence modeling to classification much easier for students.
 
 ---
 
 ## Language as a Probability Distribution
 
 - Generative AI reframes this formally:
-- Generation = sampling from a probability distribution - $\mathbf{z} \sim \mathbb{P}_{data}$
+  - Generation = sampling from a probability distribution - $\mathbf{z} \sim \mathbb{P}_{data}$
 - For text: $\mathbf{z} \in \mathbb{N}^d$
-- Each element is a token index. So, language modeling means: $\mathbf{w} \sim \mathbb{P}_{data}$
-- But we do not know ($\mathbb{P}_{data}$).
-- So, we [learn]{.uured-bold} an approximation:
+  - Each element is a token index. So, language modeling means: $\mathbf{w} \sim \mathbb{P}_{data}$
+  - But we do not know ($\mathbb{P}_{data}$).
+  - So, we [learn]{.uured-bold} an approximation:
 $$
 \begin{align}
 \mathbb{P}_{model}(\mathbf{w}) \approx \mathbb{P}_{data}(\mathbf{w})
@@ -186,11 +301,11 @@ $$
 -  Let's use Bayes’ rule:
 $$
 \begin{align}
-p(w^{(e)} \mid w^{(s)})\\
+\mathbb{P}(w^{(e)} \mid w^{(s)})\\
 \frac{
-p(w^{(s)} \mid w^{(e)}) p(w^{(e)})
+\mathbb{P}(w^{(s)} \mid w^{(e)}) \mathbb{P}(w^{(e)})
 }{
-p(w^{(s)})
+\mathbb{P}(w^{(s)})
 }
 \end{align}
 $$
@@ -198,17 +313,17 @@ $$
 - If we ignore the denominator (since it does not depend on $w^{(e)}$):
 $$
 \begin{align}
-p(w^{(e)} \mid w^{(s)})
+\mathbb{P}(w^{(e)} \mid w^{(s)})
 \propto
-p(w^{(s)} \mid w^{(e)}) p(w^{(e)})
+\mathbb{P}(w^{(s)} \mid w^{(e)}) \mathbb{P}(w^{(e)})
 \end{align}
 $$
 
 ## Implications
 
 - This is the [Noisy Channel Model]{.uured-bold} for translation. 
-  - ($p(w^{(e)})$) = language model
-  - ($p(w^{(s)} \mid w^{(e)})$) = translation model
+  - ($\mathbb{P}(w^{(e)})$) = language model
+  - ($\mathbb{P}(w^{(s)} \mid w^{(e)})$) = translation model
 - This decomposition allows:
   - Translation model trained on bilingual data
   - Language model trained on monolingual data
@@ -320,6 +435,7 @@ $$
 ::: {.columns}
 ::: {.column}
 ```{python}
+#| eval: false
 
 import nltk
 from nltk.corpus import wordnet as wn
@@ -333,6 +449,7 @@ for synset in wn.synsets("good"):
 :::
 ::: {.column}
 ```{python}
+#| eval: false
 import nltk
 from nltk.corpus import wordnet as wn
 nltk.download('wordnet')
@@ -518,6 +635,7 @@ This visually reinforces the idea of semantic neighborhoods.
 ## Building a Co‑Occurrence Matrix
 
 ```{python}
+#| eval: false
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import pandas as pd
@@ -1108,3 +1226,8 @@ This is where vanishing/exploding gradients arise.
 - Suffers from vanishing/exploding gradients  
 - Motivates LSTMs, GRUs, Transformers  
 
+### References
+
+:::{#ref}
+
+:::

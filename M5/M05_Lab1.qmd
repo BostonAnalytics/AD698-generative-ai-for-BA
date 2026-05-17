@@ -7,49 +7,38 @@ date-modified: today
 date-format: long
 engine: jupyter
 format:
-    html:
-        toc: true
-        toc-depth: 3
-        code-overflow: wrap
-    docx:
-        reference-doc: ../theme/APA7.docx
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
+  docx:
+    reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 execute:
-    echo: true
-    eval: false
-    warning: false
-    message: false
+  echo: true
+  eval: false
+  warning: false
+  message: false
 categories: ['M05:', 'Lab']
-description: "Hands-on lab for Module 5 focused on M05 Lecture Note 01: RAG Foundations and Retrieval."
+description: "Question-driven lab for Module 5 focused on retrieval quality, chunking tradeoffs, and auditability."
 ---
 
-## Learning Objectives
+## Lab Purpose
 
-By the end of this lab, you will be able to:
-
-1. Build a retrieval corpus from course-aligned documents.
-2. Compare chunking strategies and explain tradeoffs.
-3. Create a vector index and retriever using FAISS.
-4. Produce retrieval diagnostics required for Assignment 4.
-
-## Why This Lab Matters
-
-Assignment 4 asks you to compare Prompt-only, RAG, and Pretraining-only systems. A weak retriever leads to weak RAG answers, even with a strong model.
+- `M05_T1` should be your worked reference for basic RAG construction.
+- This lab asks you to test chunking and retrieval choices more critically.
+- `M05_A` later compares full answering methods, so weak retrieval here will hurt later work.
 
 ## Recommended Notebook Pattern
 
-Structure the notebook as:
+1. Document loading
+2. Chunking strategy comparison
+3. Vector index construction
+4. Retrieval benchmark
+5. Diagnostic interpretation
 
-1. Setup
-2. Document loading
-3. Chunking strategy comparison
-4. Vector index construction
-5. Retrieval benchmark
-6. Export diagnostics
-7. Short interpretation
-
-## Lab Validation Standard
+## Validation Standard
 
 For each major stage, include at least one validation output such as:
 
@@ -57,132 +46,60 @@ For each major stage, include at least one validation output such as:
 - chunk counts
 - index size
 - latency table
-- one short note on retrieval quality and tradeoffs
+- top retrieved passages
+- one note on retrieval quality
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+## Questions
 
-## Step 0: Setup
+### Q1. Build Two Chunking Strategies
+
+Create two chunking strategies that differ in size, overlap, or segmentation logic.
+
+Required evidence:
+
+- chunk counts for both strategies
+- one sample chunk from each
+- one short note on expected tradeoffs
+
+### Q2. Build a Vector Index
+
+Create a retriever for each chunking strategy.
+
+Required evidence:
+
+- index size or collection size
+- embedding or index summary
+- one note on storage or build-time tradeoffs
+
+### Q3. Run a Small Retrieval Benchmark
+
+Use at least three business-oriented questions and compare retrieval quality.
+
+Required evidence:
+
+- a small benchmark table
+- latency or response-time measure if available
+- one quality note per question
+
+### Q4. Diagnose Retrieval Failures
+
+Identify at least one failure for each strategy if possible.
+
+Possible failure modes:
+
+- chunk too small and missing context
+- chunk too large and too diffuse
+- irrelevant nearest neighbors
+- duplicated retrieval
+
+### Q5. Recommendation
+
+Choose the better chunking strategy for later RAG work and justify it in 3 to 5 sentences using your evidence.
+
+## Minimal Setup
 
 ```{python}
 #| eval: false
 from pathlib import Path
-import time
 import pandas as pd
-
-from langchain_community.document_loaders import DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-
-# If using NVIDIA endpoints, uncomment:
-# from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
-
-DATA_DIR = Path("./data/corpora")
-print("Data dir exists:", DATA_DIR.exists())
 ```
-
-## Step 1: Load Documents
-
-```{python}
-#| eval: false
-loader = DirectoryLoader(str(DATA_DIR), glob="**/*.txt")
-docs = loader.load()
-print("Documents loaded:", len(docs))
-print("First doc chars:", len(docs[0].page_content) if docs else 0)
-```
-
-## Step 2: Create Two Chunking Strategies
-
-```{python}
-#| eval: false
-splitter_small = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=80)
-splitter_large = RecursiveCharacterTextSplitter(chunk_size=900, chunk_overlap=120)
-
-chunks_small = splitter_small.split_documents(docs)
-chunks_large = splitter_large.split_documents(docs)
-
-print("Small chunks:", len(chunks_small))
-print("Large chunks:", len(chunks_large))
-```
-
-## Step 3: Build Vector Indexes
-
-```{python}
-#| eval: false
-# Replace with your embedding model/provider.
-# embed = NVIDIAEmbeddings(model="nvidia/nv-embedqa-e5-v5")
-
-# Example placeholder: use any embedding class available in your environment.
-# vs_small = FAISS.from_documents(chunks_small, embed)
-# vs_large = FAISS.from_documents(chunks_large, embed)
-
-print("Create FAISS indexes for both chunking strategies.")
-```
-
-## Step 4: Retrieval Test Harness
-
-```{python}
-#| eval: false
-queries = [
-	"What is the main difference between naive and modular RAG?",
-	"How does HNSW improve retrieval speed?",
-	"When should we abstain instead of answering confidently?",
-]
-
-def run_retrieval_benchmark(retriever, query_list, k=5):
-	rows = []
-	for q in query_list:
-		t0 = time.time()
-		hits = retriever.get_relevant_documents(q)
-		dt_ms = (time.time() - t0) * 1000
-		rows.append({
-			"query": q,
-			"latency_ms": round(dt_ms, 2),
-			"k": k,
-			"top_hit_chars": len(hits[0].page_content) if hits else 0,
-			"hit_count": len(hits),
-		})
-	return pd.DataFrame(rows)
-```
-
-## Step 5: Export Retrieval Diagnostics
-
-```{python}
-#| eval: false
-# df_small = run_retrieval_benchmark(vs_small.as_retriever(search_kwargs={"k": 5}), queries)
-# df_large = run_retrieval_benchmark(vs_large.as_retriever(search_kwargs={"k": 5}), queries)
-
-# df_small.to_csv("M05_lab1_retrieval_small.csv", index=False)
-# df_large.to_csv("M05_lab1_retrieval_large.csv", index=False)
-
-print("Exported diagnostics for Assignment 4 appendix tables.")
-```
-
-## Deliverable for This Lab
-
-Submit:
-
-1. One paragraph justifying your final chunking strategy.
-2. One CSV table with retrieval latency and hit stats.
-3. Two examples where retrieval succeeded and two where it failed.
-
-## Bridge to Assignment 4
-
-Reuse these artifacts directly in `M05_A.qmd`:
-
-1. Final chunking configuration.
-2. Retriever configuration (`k`, filter logic, embedding model).
-3. Retrieval diagnostics table and failure examples.
-
-## AI Use and Share Links {.unnumbered}
-
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
-
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

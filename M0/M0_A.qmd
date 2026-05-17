@@ -50,6 +50,10 @@ A strong assignment notebook should follow a repeatable structure:
 5. Short interpretation of what the output means
 6. Artifact save or export step where relevant
 
+:::{.callout-note}
+This assignment is intentionally more hands-off than the labs. Use the tutorials for worked examples and the labs for guided practice, but build the final notebook structure and implementation choices yourself.
+:::
+
 ## Report Expectations
 
 The written report should summarize the business question, exact model results, the most important tables and figures, the main limitations, and a clear recommendation or next step. Keep report claims aligned exactly with executed notebook outputs.

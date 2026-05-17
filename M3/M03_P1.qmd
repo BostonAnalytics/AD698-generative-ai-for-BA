@@ -113,6 +113,12 @@ Implications:
 - Prompting activates **latent capabilities** rather than creating new ones.
 
 
+# Encoder and Decoder Models
+
+## Encoder-Decoder Models
+
+---
+
 # Transformer Models
 
 ## The Transformers Timeline
@@ -124,7 +130,7 @@ Implications:
 
 ![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
 
-## Encoder and Decoder Models
+
 ## Language Modeling with RNNs
 
 :::: {.columns}

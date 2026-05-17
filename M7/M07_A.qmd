@@ -26,6 +26,10 @@ Use text-derived artifacts from SEC filings, sentence polarity, or Yelp-style re
 
 For SEC-based deliverables, use the same fixed section scope as earlier assignments: Item 7, Item 7A, and Item 8.
 
+:::{.callout-note}
+This assignment is intentionally more hands-off than the labs. Tutorials and labs should prepare you to build trustworthy business-facing artifacts, but this notebook should reflect your own aggregation, presentation, and trust-design choices.
+:::
+
 # Submission Instructions {.unnumbered}
 
 Submit three files on Blackboard:

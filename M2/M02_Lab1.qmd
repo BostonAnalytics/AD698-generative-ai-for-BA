@@ -2,456 +2,119 @@
 title: "Module 2 - Lab 1"
 subtitle: "SEC HTML Section Extraction and Corpus Validation"
 number-sections: true
-date: "2024-11-21"
+date: "2026-02-01"
 date-modified: today
 date-format: long
 engine: jupyter
 format:
-    html:
-        toc: true
-        toc-depth: 3
-        code-overflow: wrap
+  html:
+    toc: true
+    toc-depth: 3
+    code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 execute:
-    echo: true
-    eval: false
-    warning: false
-    message: false
+  echo: true
+  eval: false
+  warning: false
+  message: false
 categories: ['M02:', 'Lab']
-description: "Hands-on lab for Module 2 focused on Mathematical Foundations Through Language Modeling."
+description: "Question-driven lab for Module 2 focused on extracting, validating, and chunking SEC filing sections."
 ---
 
-## Overview
+## Lab Purpose
 
-In this lab you will build a **word-level LSTM language model** trained on patent abstract text.
-Starting from raw CSV data, you will:
-
-1. Load and tokenize patent abstracts.
-2. Build a `Vocabulary` class with index ↔ word mappings.
-3. Construct a sliding-window `SequenceDataset` for next-word prediction.
-4. Implement a `PatentLSTM` model using `nn.Embedding` + `nn.LSTM` + `nn.Linear`.
-5. Train with gradient clipping and monitor perplexity.
-6. Generate novel text using greedy and temperature-based sampling.
-
-::: {.callout-note}
-All code cells have `eval: false` by default. Run them in order inside a Jupyter kernel.
-:::
+- `M02_T1` is the worked tutorial for SEC HTML cleaning, section extraction, and reusable artifact design.
+- This lab asks you to validate that workflow yourself on a smaller practice sample.
+- `M02_A` later expects the same artifact discipline in a more independent assignment context.
 
 ## Recommended Notebook Pattern
 
-Keep the notebook organized as a modeling pipeline:
+1. Setup and file discovery
+2. Extraction attempt
+3. Validation diagnostics
+4. Chunking
+5. Artifact export
 
-1. Setup
-2. Data loading and tokenization
-3. Vocabulary and dataset construction
-4. Model definition
-5. Training and monitoring
-6. Sampling and interpretation
+## Validation Standard
 
-## Lab Validation Standard
+Show at least one check for each major stage:
 
-For each major stage, include at least one check such as:
+- files processed
+- missing-section counts
+- section-length summaries
+- one manually reviewed extraction example
+- chunk-count summary
+- one saved artifact preview
 
-- tokenization sample
-- vocabulary size
-- batch shape
-- loss or perplexity trace
-- generated text examples with a brief interpretation
+## Questions
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+### Q1. Discover and Sample SEC HTML Files
 
-## Setup
+Load a small sample of SEC HTML files.
+
+Required evidence:
+
+- total files found
+- files selected for the lab
+- one short note on why sampling helps before scaling
+
+### Q2. Clean HTML into Plain Text
+
+Convert at least one filing from HTML to normalized text.
+
+Required evidence:
+
+- one raw HTML excerpt
+- one cleaned-text excerpt
+- one short note on which artifacts or tags needed removal
+
+### Q3. Extract Item 7, Item 7A, and Item 8
+
+Implement or adapt section-boundary logic.
+
+Required evidence:
+
+- a table showing whether each section was found
+- section lengths in characters
+- one manually reviewed example
+
+### Q4. Diagnose Extraction Quality
+
+Summarize where extraction succeeded or failed.
+
+Required evidence:
+
+- missing-section summary
+- one plot of section lengths or coverage
+- one brief explanation of the most common failure mode
+
+### Q5. Convert Sections into Chunks
+
+Chunk extracted text into smaller retrieval-ready units.
+
+Required evidence:
+
+- chunk count by section
+- one preview of chunk text
+- one short note on chunk-size tradeoffs
+
+### Q6. Save Reusable Artifacts
+
+Save at least two artifacts such as:
+
+- section-level corpus
+- chunk-level corpus
+- vocabulary or token summary
+
+Answer: which artifact would be most valuable to later labs and why?
+
+## Minimal Setup
 
 ```{python}
 #| eval: false
-import re, pathlib, random, math
-from collections import Counter
-
-import numpy as np
+import re
+from pathlib import Path
 import pandas as pd
-import torch
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
-import matplotlib.pyplot as plt
-
-SEED = 42
-random.seed(SEED); np.random.seed(SEED); torch.manual_seed(SEED)
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(f"Using device: {device}")
+from bs4 import BeautifulSoup
 ```
-
-## Load Patent Abstracts
-
-The dataset is the Neural Network Patent Query CSV from the course data folder.
-Each row contains a patent `abstract` field — a short technical paragraph.
-
-```{python}
-#| eval: false
-csv_path = pathlib.Path("../data/neural_network_patent_query.csv")
-df = pd.read_csv(csv_path)
-print(df.shape)
-print(df.columns.tolist())
-df.head(3)
-```
-
-```{python}
-#| eval: false
-# Extract abstracts and basic stats
-abstracts = df["abstract"].dropna().tolist()
-print(f"Total abstracts: {len(abstracts)}")
-print(f"\nSample abstract:\n{abstracts[0][:300]}...")
-```
-
-## Tokenization
-
-We use a simple word tokenizer: lowercase, replace punctuation with spaces, split on whitespace.
-
-```{python}
-#| eval: false
-def tokenize(text: str) -> list[str]:
-    """Lower-case, remove special chars, split on whitespace."""
-    text = text.lower()
-    text = re.sub(r"[^a-z0-9\s]", " ", text)
-    return text.split()
-
-# Tokenize all abstracts into a flat list of words
-all_tokens: list[str] = []
-for abstract in abstracts:
-    all_tokens.extend(tokenize(abstract))
-    all_tokens.append("<eos>")   # sentence boundary
-
-print(f"Total tokens : {len(all_tokens):,}")
-print(f"Unique types : {len(set(all_tokens)):,}")
-
-# Token frequency distribution
-freq = Counter(all_tokens)
-print(f"\nTop 20 tokens:")
-for tok, cnt in freq.most_common(20):
-    print(f"  {tok:<20} {cnt:>6}")
-```
-
-## Vocabulary Class
-
-We build a `Vocabulary` that maps words to integer indices and back.
-Words appearing fewer than `min_freq` times are mapped to `<unk>`.
-
-```{python}
-#| eval: false
-class Vocabulary:
-    """Word-to-index and index-to-word mappings."""
-
-    PAD = "<pad>"
-    UNK = "<unk>"
-    EOS = "<eos>"
-
-    def __init__(self, tokens: list[str], min_freq: int = 3):
-        self.min_freq = min_freq
-        counter = Counter(tokens)
-        # Special tokens first
-        specials = [self.PAD, self.UNK, self.EOS]
-        words = [w for w, c in counter.items()
-                 if c >= min_freq and w not in specials]
-        words.sort()
-        self._vocab = specials + words
-
-        self._word2idx = {w: i for i, w in enumerate(self._vocab)}
-        self._idx2word = {i: w for i, w in enumerate(self._vocab)}
-
-    def __len__(self) -> int:
-        return len(self._vocab)
-
-    def encode(self, word: str) -> int:
-        return self._word2idx.get(word, self._word2idx[self.UNK])
-
-    def decode(self, idx: int) -> str:
-        return self._idx2word.get(idx, self.UNK)
-
-    def encode_seq(self, words: list[str]) -> list[int]:
-        return [self.encode(w) for w in words]
-
-    def decode_seq(self, indices: list[int]) -> list[str]:
-        return [self.decode(i) for i in indices]
-
-
-vocab = Vocabulary(all_tokens, min_freq=3)
-print(f"Vocabulary size (min_freq=3): {len(vocab):,}")
-print(f"Index of 'network': {vocab.encode('network')}")
-print(f"Word at index 5:    {vocab.decode(5)}")
-```
-
-## Sequence Dataset
-
-We use a **sliding window** approach: for every window of `seq_len` tokens, the target is the next token.
-
-```{python}
-#| eval: false
-class SequenceDataset(Dataset):
-    """Sliding-window next-word prediction dataset."""
-
-    def __init__(self, tokens: list[str], vocab: Vocabulary, seq_len: int = 30):
-        self.seq_len = seq_len
-        # Encode full token list
-        encoded = vocab.encode_seq(tokens)
-        self.data = torch.tensor(encoded, dtype=torch.long)
-
-    def __len__(self) -> int:
-        return len(self.data) - self.seq_len
-
-    def __getitem__(self, idx: int):
-        x = self.data[idx : idx + self.seq_len]
-        y = self.data[idx + 1 : idx + self.seq_len + 1]
-        return x, y
-
-
-SEQ_LEN = 30
-BATCH_SIZE = 64
-
-dataset = SequenceDataset(all_tokens, vocab, seq_len=SEQ_LEN)
-train_size = int(0.9 * len(dataset))
-val_size   = len(dataset) - train_size
-
-train_ds, val_ds = torch.utils.data.random_split(dataset, [train_size, val_size])
-train_dl = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True,  drop_last=True)
-val_dl   = DataLoader(val_ds,   batch_size=BATCH_SIZE, shuffle=False, drop_last=True)
-
-print(f"Train batches: {len(train_dl)}  |  Val batches: {len(val_dl)}")
-x_sample, y_sample = next(iter(train_dl))
-print(f"x shape: {x_sample.shape}  y shape: {y_sample.shape}")
-```
-
-## PatentLSTM Model
-
-Architecture:
-- **Embedding layer** — maps token IDs to dense vectors.
-- **LSTM** — processes the sequence and captures long-range dependencies.
-- **Linear head** — projects the LSTM hidden state to vocabulary logits.
-
-```{python}
-#| eval: false
-class PatentLSTM(nn.Module):
-    def __init__(
-        self,
-        vocab_size: int,
-        embed_dim: int = 128,
-        hidden_dim: int = 256,
-        num_layers: int = 2,
-        dropout: float = 0.3,
-    ):
-        super().__init__()
-        self.embed = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
-        self.lstm  = nn.LSTM(
-            embed_dim, hidden_dim, num_layers=num_layers,
-            batch_first=True, dropout=dropout
-        )
-        self.drop  = nn.Dropout(dropout)
-        self.head  = nn.Linear(hidden_dim, vocab_size)
-
-    def forward(self, x, hidden=None):
-        """x: (batch, seq_len)  →  logits: (batch, seq_len, vocab_size)"""
-        emb = self.drop(self.embed(x))          # (B, T, E)
-        out, hidden = self.lstm(emb, hidden)    # (B, T, H)
-        logits = self.head(self.drop(out))      # (B, T, V)
-        return logits, hidden
-
-    def init_hidden(self, batch_size: int):
-        """Zero initial hidden state."""
-        p = next(self.parameters())
-        h = torch.zeros(self.lstm.num_layers, batch_size, self.lstm.hidden_size,
-                        device=p.device, dtype=p.dtype)
-        c = torch.zeros_like(h)
-        return h, c
-
-
-model = PatentLSTM(vocab_size=len(vocab)).to(device)
-total_params = sum(p.numel() for p in model.parameters())
-print(f"Model parameters: {total_params:,}")
-print(model)
-```
-
-## Training Loop
-
-We use `AdamW` with learning rate warmup and clip gradients at norm 1.0 to prevent exploding gradients.
-
-```{python}
-#| eval: false
-def train_epoch(model, loader, optimizer, loss_fn, clip: float = 1.0):
-    model.train()
-    total_loss = 0.0
-    for x, y in loader:
-        x, y = x.to(device), y.to(device)
-        optimizer.zero_grad()
-        logits, _ = model(x)                         # (B, T, V)
-        # Reshape for cross-entropy: (B*T, V) vs (B*T,)
-        loss = loss_fn(logits.reshape(-1, logits.size(-1)), y.reshape(-1))
-        loss.backward()
-        nn.utils.clip_grad_norm_(model.parameters(), clip)
-        optimizer.step()
-        total_loss += loss.item()
-    return total_loss / len(loader)
-
-
-@torch.no_grad()
-def evaluate(model, loader, loss_fn):
-    model.eval()
-    total_loss = 0.0
-    for x, y in loader:
-        x, y = x.to(device), y.to(device)
-        logits, _ = model(x)
-        total_loss += loss_fn(logits.reshape(-1, logits.size(-1)), y.reshape(-1)).item()
-    return total_loss / len(loader)
-
-
-EPOCHS = 15
-LR     = 3e-3
-
-optimizer = torch.optim.AdamW(model.parameters(), lr=LR, weight_decay=1e-4)
-scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
-loss_fn   = nn.CrossEntropyLoss(ignore_index=0)  # ignore <pad>
-
-train_losses, val_losses = [], []
-
-for epoch in range(1, EPOCHS + 1):
-    tr_loss = train_epoch(model, train_dl, optimizer, loss_fn)
-    va_loss = evaluate(model, val_dl, loss_fn)
-    scheduler.step()
-    train_losses.append(tr_loss)
-    val_losses.append(va_loss)
-    ppl = math.exp(va_loss)
-    print(f"Epoch {epoch:>2} | train_loss={tr_loss:.4f}  val_loss={va_loss:.4f}  val_ppl={ppl:.1f}")
-```
-
-```{python}
-#| eval: false
-# Plot learning curves
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
-
-ax1.plot(train_losses, label="Train")
-ax1.plot(val_losses,   label="Val")
-ax1.set_xlabel("Epoch"); ax1.set_ylabel("Cross-Entropy Loss")
-ax1.set_title("Learning Curves"); ax1.legend()
-
-val_ppls = [math.exp(l) for l in val_losses]
-ax2.plot(val_ppls, color="orange")
-ax2.set_xlabel("Epoch"); ax2.set_ylabel("Perplexity")
-ax2.set_title("Validation Perplexity")
-
-plt.tight_layout()
-plt.show()
-print(f"Final validation perplexity: {val_ppls[-1]:.1f}")
-```
-
-## Text Generation
-
-### Greedy Decoding
-
-At each step, choose the highest-probability next token.
-
-```{python}
-#| eval: false
-@torch.no_grad()
-def generate_greedy(model, seed_text: str, vocab: Vocabulary,
-                    max_tokens: int = 50) -> str:
-    model.eval()
-    tokens = tokenize(seed_text)
-    ids    = vocab.encode_seq(tokens)
-    x      = torch.tensor(ids, dtype=torch.long).unsqueeze(0).to(device)
-    hidden = model.init_hidden(1)
-
-    generated = list(tokens)
-    for _ in range(max_tokens):
-        logits, hidden = model(x, hidden)
-        next_id = logits[0, -1, :].argmax().item()
-        next_word = vocab.decode(next_id)
-        if next_word == vocab.EOS:
-            break
-        generated.append(next_word)
-        x = torch.tensor([[next_id]], dtype=torch.long).to(device)
-
-    return " ".join(generated)
-
-
-seed = "a neural network for image recognition"
-print("Greedy generation:")
-print(generate_greedy(model, seed, vocab))
-```
-
-### Temperature Sampling
-
-With temperature τ < 1 the distribution sharpens (more predictable); τ > 1 it flattens (more random).
-
-```{python}
-#| eval: false
-@torch.no_grad()
-def generate_temperature(model, seed_text: str, vocab: Vocabulary,
-                         max_tokens: int = 50, temperature: float = 0.8) -> str:
-    model.eval()
-    tokens = tokenize(seed_text)
-    ids    = vocab.encode_seq(tokens)
-    x      = torch.tensor(ids, dtype=torch.long).unsqueeze(0).to(device)
-    hidden = model.init_hidden(1)
-
-    generated = list(tokens)
-    for _ in range(max_tokens):
-        logits, hidden = model(x, hidden)
-        # Apply temperature
-        probs    = torch.softmax(logits[0, -1, :] / temperature, dim=-1)
-        next_id  = torch.multinomial(probs, num_samples=1).item()
-        next_word = vocab.decode(next_id)
-        if next_word == vocab.EOS:
-            break
-        generated.append(next_word)
-        x = torch.tensor([[next_id]], dtype=torch.long).to(device)
-
-    return " ".join(generated)
-
-
-print("Temperature sampling (τ=0.6, focused):")
-print(generate_temperature(model, seed, vocab, temperature=0.6))
-print()
-print("Temperature sampling (τ=1.2, diverse):")
-print(generate_temperature(model, seed, vocab, temperature=1.2))
-```
-
-## Lab Questions
-
-Answer the following questions in a separate `.md` or `.docx` file.
-
-**Q1. Vocabulary Coverage**
-After building the vocabulary with `min_freq=3`, what percentage of the original token list is mapped to `<unk>`? 
-How does changing `min_freq` to 1 vs 10 affect (a) vocabulary size, (b) model parameters, and (c) training loss? Run a short experiment and report your findings.
-
-**Q2. Perplexity Interpretation**
-The validation perplexity measures how surprised the model is by held-out text.
-If your model achieves perplexity of 80, what does that mean intuitively?
-How does perplexity relate to the cross-entropy loss in the training loop?
-
-**Q3. Gradient Clipping**
-Remove the `nn.utils.clip_grad_norm_` line from `train_epoch` and re-run 5 epochs.
-What happens to the training loss? Explain *why* gradient clipping is especially important for LSTM models on variable-length text.
-
-**Q4. Temperature Sampling**
-Run `generate_temperature` with temperatures τ ∈ {0.3, 0.7, 1.0, 1.5}.
-Report the qualitative difference in the generated text for each temperature.
-Which temperature produces the most grammatically coherent patent-like text?
-
-**Q5. Business Application**
-A patent analytics firm wants to use a language model to auto-complete patent claim language.
-Based on your experiment:
-(a) What are two limitations of the word-level LSTM approach for this use case?
-(b) How would replacing the LSTM with a transformer encoder-decoder address these limitations?
-(c) What additional training data (beyond abstracts) would improve performance on patent claims specifically?
-
-## AI Use and Share Links {.unnumbered}
-
-If generative AI materially supports your work for this lab, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
-
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
-
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

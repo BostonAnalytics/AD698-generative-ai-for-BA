@@ -12,26 +12,27 @@ author:
         name: Boston University
         city: Boston
         state: MA
-format: 
-    revealjs:
-        theme: [../theme/presentation.scss]
-        html-math-method: katex
-        slide-number: c/t
-        toc: true
-        toc-depth: 1
-        auto-stretch: false
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
+format:
+  revealjs:
+    theme: [../theme/presentation.scss]
+    html-math-method: katex
+    slide-number: c/t
+    toc: true
+    toc-depth: 1
+    auto-stretch: false
+  pptx:
+    reference-doc: ../theme/presentation_template.pptx
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
 monofont: Roboto
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
-execute: 
+  data-background-image: "../theme/blank_red.png"
+  data-background-size: 103% auto
+  data-background-opacity: "0.95"
+execute:
   echo: false
+  eval: false
   warning: false
   message: false
 bibliography: ../references.bib
@@ -44,652 +45,688 @@ description: "Presentation slides for Module 2 on From Words to Structured Text.
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
-# Defining the Word
+# From Words to Vectors
 
-## Types, Tokens, and Vocabulary
+## Module arc
 
-- A **token** is an individual occurrence of a word in a document:  
-  $w = (w_1, w_2, \ldots, w_M)$, where each $w_m \in V$.  
-- A **type** is a unique word in the vocabulary.  
-- A document’s type‑count vector is  
-  $$
-  \begin{align}
-    x_j \in \{0,1,2,\ldots,M\}
-  \end{align}
-  $$
-  
-  - where $x_j$ counts how many times type $j$ appears.
-
-- Order matters for tokens; order is lost in type counts.  
-- Many token sequences map to the same type‑count vector.  
-- Multinomial Naïve Bayes uses type counts, but an equivalent generative model can produce tokens directly.
-
-## Naïve Bayes for Word Classification
-
-- Goal: classify a document $x$ into a label $y \in \{1,\ldots,K\}$.  
-- Bayes rule:  
-  $$
-  \begin{align}
-  \hat{y} = \arg\max_y \; p(y \mid x) = \arg\max_y \; p(x \mid y)\,p(y)
-  \end{align}
-  $$
-- **Naïve assumption:** features (words) are conditionally independent given the class.  
-- Prior:  
-  $$
-  \begin{align}
-  p(y=k) = \mu_k
-  \end{align}
-  $$
-- Likelihood factorizes across features.
+- Start with tokens, counts, and vocabularies.
+- Move from sparse text features to dense vector semantics.
+- Use entropy, cross-entropy, and KL divergence to explain how neural models learn.
+- Build the bridge from feedforward networks to RNNs, attention, and transformers.
+- Keep one question in view:
+  - How does a model turn text into probabilities, then probabilities into meaning?
 
 ---
 
-## Multinomial Naïve Bayes
+## Types, tokens, and vocabulary
 
-- Represent document as type‑count vector  
-  $$
-  \begin{align}
-  x = (x_1, x_2, \ldots, x_V)
-  \end{align}
-  $$
-- Generative process:  
-  1. Draw class $y \sim \text{Categorical}(\mu)$.  
-  2. Draw counts from a multinomial: $x \mid y \sim \text{Multinomial}(M, \phi_y)$
-- Likelihood:  
-  $$
-  \begin{align}
-  p(x \mid y) = B(x)\prod_{j=1}^V \phi_{y,j}^{x_j}
-  \end{align}
-  $$
-  - where $B(x) = \frac{M!}{x_1!x_2!\cdots x_V!}$ is the multinomial coefficient.
+- A **token** is one occurrence in a sequence.
+- A **type** is a unique vocabulary item.
+- Bag-of-words keeps counts but discards order.
+- Sequence models keep order and predict the next token from context.
+
+$$
+\begin{align}
+w = (w_1, w_2, \ldots, w_M), \qquad x_j = \text{count of type } j
+\end{align}
+$$
 
 ---
 
-## Token‑Level Generative Model
+## Why sparse representations still matter
 
-- Alternative generative process (Algorithm 2):  
-  $$
-  \begin{align}
-  y^{(i)} &\sim \text{Categorical}(\mu)\\
-  w_m^{(i)} &\mid y^{(i)} \sim \text{Categorical}(\phi_{y^{(i)}})
-  \end{align}
-  $$
-- Conditional independence:  
-  $$
-  \begin{align}
-  w_m^{(i)} \perp w_{m'}^{(i)} \mid y^{(i)}
-  \end{align}
-  $$
-- Probability of sequence:  
-  $$
-  \begin{align}
-  p(w \mid y) = \prod_{m=1}^M \phi_{y,\,w_m}
-  \end{align}
-  $$
-- Equivalent to multinomial NB up to the multinomial coefficient $B(x)$.
+- Count vectors are simple, interpretable, and strong baselines.
+- Naive Bayes and logistic regression still work well for:
+  - topic classification
+  - spam detection
+  - risk-factor tagging
+- They help us see what neural models are replacing, not just what they outperform.
 
-
-## Why the Two Models Are Equivalent
-
-- Many token sequences correspond to the same type‑count vector.  
-- Relationship:  
-  $$
-  \begin{align}
-  p(w \mid y) = \frac{1}{B(x)}\,p(x \mid y)
-  \end{align}
-  $$
-- Since $B(x) \ge 1$,  
-  $$
-  \begin{align}
-  p(x \mid y) \ge p(w \mid y)
-  \end{align}
-  $$
-- Classification decisions identical because $B(x)$ does [not]{.uured-bold} depend on $y$.  
-- [Order adds no information under the Naïve Bayes independence assumption]{.uublue-bold}.
-
-
-## Tokenization
-
-- Converts raw character sequences into discrete units.  
-- English: whitespace + punctuation rules often suffice.  
-- Other languages: segmentation is non‑trivial (e.g., Chinese, Japanese).
-- Challenges:
-  - Ambiguity: "Isn’t Ahab, Ahab? ;)" → different tokenizers produce different segmentations.  
-  - Languages without spaces require statistical segmentation.  
-  - Social media, hashtags, emojis, and code‑switching complicate boundaries.
-- Algorithmic Approaches
-  - Rule‑based (regex, dictionaries).  
-  - Supervised sequence labeling (e.g., logistic regression, CRF).  
-  - Neural models (LSTM‑CRF, CNN‑based encoders).
+![](./M02_lecture02_figures/naive-bayes-wordvec.png){width="62%" fig-alt="Simple illustration connecting bag-of-words classification to learned word vectors."}
 
 ---
 
-## Out‑of‑Vocabulary (OOV) Words
+## Naive Bayes as a probabilistic text model
 
-- Closed vs. open vocabulary
-  - Closed vocabulary: fixed $V$.  
-  - Real text introduces new names, slang, technologies, numbers, and morphological variants.
-- Basic OOV handling
-  - Replace unseen types with a special token: ⟨UNK⟩.  
-  - Option: mark first occurrence of each type as ⟨UNK⟩.
-- Better OOV modeling
-  - Character‑level models (n‑grams, RNNs, CNNs).  
-  - Subword segmentation (morphemes, BPE, unigram LM).  
-  - Helps with morphologically rich languages (e.g., Portuguese verb paradigms).
+- Draw a class label first.
+- Then generate words from a class-specific distribution.
+- Under the conditional-independence assumption:
 
----
+$$
+\begin{align}
+\hat{y} = \arg\max_y \; p(y \mid x) = \arg\max_y \; p(x \mid y)p(y)
+\end{align}
+$$
 
-## Vocabulary Size and Coverage
-
-- Larger vocabulary → higher coverage but larger models.  
-- English movie reviews: ~4k types cover ~90% of tokens.  
-- Portuguese (MAC‑Morpho): >10k types needed for similar coverage.
-
-- Design decisions
-  - Limit vocabulary to top‑K types.  
-  - Consider stemming/lemmatization.  
-  - Avoid over‑aggressive stopword removal in supervised tasks.  
-  - Feature hashing for fixed‑size representations.
-
+- Strong simplification, but excellent intuition for token probabilities.
 
 # Vector Semantics
 
-## Distributional Semantics: The Core Idea
+## Distributional semantics
 
-- Meaning emerges from **contextual usage**.  
-- Harris (1954), Firth (1957): *"You shall know a word by the company it keeps."*  
-- Represent words as [vectors]{.uublue-bold} in a high‑dimensional space.  
-- Similarity = [geometric closeness]{.uublue-bold}.  
-- Foundation for all modern embeddings.
+- Meaning comes from **patterns of use**.
+- Words that occur in similar contexts get similar vectors.
+- Vector spaces make semantics geometric:
+  - nearby vectors = similar usage
+  - distant vectors = different roles or meanings
 
----
-
-## Static Embeddings: word2vec & GloVe
-
-- word2vec
-  - Learns embeddings by predicting context.  
-- Two architectures:  
-  - [CBOW]{.uured-bold}: predict target from context.  
-  - [Skip‑gram]{.uured-bold}: predict context from target.  
-- Objective (skip‑gram):  
-  $$
-  \begin{align}
-  \max_\theta \sum_{t=1}^T \sum_{c \in \mathcal{C}(t)} \log p(w_c \mid w_t)
-  \end{align}
-  $$
-
-- GloVe
-  - Global co‑occurrence matrix factorization.  
-  $$
-  \begin{align}
-  J = \sum_{i,j} f(X_{ij})\left( w_i^\top \tilde{w}_j + b_i + \tilde{b}_j - \log X_{ij} \right)^2
-  \end{align}
-  $$
+> Modern LLMs still rely on this idea, but learn it dynamically and contextually.
 
 ---
 
-## Geometry of Embedding Spaces
+## Static embeddings
 
-- Embedding space = [semantic geometry]{.uublue-bold}.
-- Cosine similarity:  
-  - Cosine: angle → semantic similarity.  
-  $$
-  \begin{align}
-  \text{cos}(u,v) = \frac{u \cdot v}{\|u\|\|v\|}
-  \end{align}
-  $$
-- Euclidean distance:  
-  - Euclidean: magnitude + direction → sensitive to frequency effects.  
-  $$
-  \begin{align}
-  d(u,v) = \|u - v\|
-  \end{align}
-  $$
+- One vector per word type.
+- Learned from large corpora.
+- Classic families:
+  - **CBOW** predicts the center word from context.
+  - **Skip-gram** predicts context from the center word.
+  - **GloVe** factorizes global co-occurrence statistics.
+
+![](./M02_lecture02_figures/cbow.svg){width="42%" fig-alt="CBOW architecture diagram."}
+![](./M02_lecture02_figures/skip_gram.svg){width="42%" fig-alt="Skip-gram architecture diagram."}
 
 ---
+
+## Contextual embeddings
+
+- One word can mean different things in different contexts.
+- Static embeddings collapse polysemy into one vector.
+- Contextual models produce a new vector for each token instance.
+
+Examples:
+
+- `bank` in *river bank*
+- `bank` in *investment bank*
+
+This is the representational leap from word2vec to BERT/GPT-style encoders and decoders.
+
+---
+
+## Geometry of embedding spaces
+
+- Semantic similarity is often measured with cosine similarity.
+
+$$
+\begin{align}
+\text{cos}(u,v) = \frac{u \cdot v}{\|u\|\|v\|}
+\end{align}
+$$
+
+- Euclidean distance also matters, but is more sensitive to vector magnitude.
+- Retrieval systems, clustering, and nearest-neighbor search all rely on this geometry.
+
 
 ## Distance Metrics in Embedding Space
 
-![Distance Metrics](./M02_lecture02_figures/distance-metrics.png){width=80% fig-align=center #fig-distance-metrics fig-alt="Illustration of Dot product, Cosine similarity, Euclidean and Manhattan distance in embedding space."}
-
----
-
-## Mahalanobis Distance: Covariance‑Aware Similarity
-
-- Accounts for [correlated dimensions]{.uublue-bold}.  
-- Generalized distance:  
-  $$
-  \begin{align}
-  d_M(u,v) = \sqrt{(u-v)^\top \Sigma^{-1}(u-v)}
-  \end{align}
-  $$
-- $\Sigma$ = covariance matrix of embedding distribution.  
-- Benefits:  
-  - Downweights noisy or redundant dimensions.  
-  - Captures anisotropy in embedding spaces.  
-- Useful in metric learning, clustering, and specialized retrieval tasks.
-
-## Mahalanobis Distance
-
-![Mahalanobis distance](./M02_lecture02_figures/mahalanobis-outlier.jpg){width=60% fig-align=center #fig-mahalanobis fig-alt="Illustration of Mahalanobis distance identifying outliers in a 2D distribution."}
-
-## Cross‑Entropy
-
 ```{python}
-#| eval: true
 #| echo: false
-#| fig-cap: Different levels of entropy in 2D data
-#| fig-alt: Scatter plots showing low, medium, high, and extreme entropy distributions.
+#| eval: true
+#| fig-alt: "Distance metrics in embedding space."
+#| label: fig-distance-metrics
 #| fig-align: center
-#| label: fig-entropy
+#| caption: "Distance metrics in embedding space."
 
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
-np.random.seed(42)
+# --- helper: place equation in top-right of axes ---
+def annotate_equation(ax, text):
+    ax.text(
+        0.98, 0.98, text,
+        transform=ax.transAxes,
+        ha='right', va='top',
+        fontsize=12, fontweight='bold',
+        bbox=dict(facecolor='white', alpha=0.7, edgecolor='none')
+    )
 
-def make_cluster(center, n=50, spread=0.1):
-    return np.random.randn(n, 2) * spread + np.array(center)
-
-# Low entropy: two clean clusters
-low_class0 = make_cluster([0, 0], spread=0.08)
-low_class1 = make_cluster([1, 1], spread=0.08)
-
-# Medium entropy: clusters closer, slight overlap
-med_class0 = make_cluster([0.2, 0.2], spread=0.15)
-med_class1 = make_cluster([0.8, 0.8], spread=0.15)
-
-# High entropy: strong overlap
-high_class0 = make_cluster([0.5, 0.5], spread=0.25)
-high_class1 = make_cluster([0.55, 0.55], spread=0.25)
-
-# Extreme entropy: fully mixed random points
-extreme_class0 = np.random.rand(50, 2)
-extreme_class1 = np.random.rand(50, 2)
+# --- sample vectors ---
+v1 = np.array([2, 1])
+v2 = np.array([1, 2])
 
 fig, axes = plt.subplots(2, 2, figsize=(6, 6))
 
-# Plot helper
-def plot(ax, c0, c1, title):
-    ax.scatter(c0[:,0], c0[:,1], color='blue', alpha=0.7, label='Class 0')
-    ax.scatter(c1[:,0], c1[:,1], color='red', alpha=0.7, label='Class 1')
-    ax.set_title(title)
-    ax.set_xticks([])
-    ax.set_yticks([])
+# ---------------- DOT PRODUCT ----------------
+ax = axes[0, 0]
+ax.quiver(0, 0, v1[0], v1[1], angles='xy', scale_units='xy', scale=1, color='red')
+ax.quiver(0, 0, v2[0], v2[1], angles='xy', scale_units='xy', scale=1, color='blue')
+annotate_equation(ax, r"$v_1 \cdot v_2 = \sum_i v_{1i}v_{2i}$")
+ax.set_title("Dot Product")
+ax.set_xlim(0, 3); ax.set_ylim(0, 3); ax.set_aspect('equal')
 
-plot(axes[0,0], low_class0, low_class1, "Low Entropy")
-plot(axes[0,1], med_class0, med_class1, "Medium Entropy")
-plot(axes[1,0], high_class0, high_class1, "High Entropy")
-plot(axes[1,1], extreme_class0, extreme_class1, "Extreme Entropy")
+# ---------------- COSINE SIMILARITY ----------------
+ax = axes[0, 1]
+ax.quiver(0, 0, v1[0], v1[1], angles='xy', scale_units='xy', scale=1, color='red')
+ax.quiver(0, 0, v2[0], v2[1], angles='xy', scale_units='xy', scale=1, color='blue')
+annotate_equation(ax, r"$\cos\theta=\frac{v_1\cdot v_2}{\|v_1\|\|v_2\|}$")
+ax.set_title("Cosine Similarity")
+ax.set_xlim(0, 3); ax.set_ylim(0, 3); ax.set_aspect('equal')
+
+# ---------------- EUCLIDEAN DISTANCE ----------------
+ax = axes[1, 0]
+ax.plot([v1[0], v2[0]], [v1[1], v2[1]], 'k--')
+ax.scatter([v1[0], v2[0]], [v1[1], v2[1]], color=['red','blue'])
+annotate_equation(ax, r"$d=\sqrt{\sum_i (v_{1i}-v_{2i})^2}$")
+ax.set_title("Euclidean Distance")
+ax.set_xlim(0, 3); ax.set_ylim(0, 3); ax.set_aspect('equal')
+
+# ---------------- MANHATTAN DISTANCE ----------------
+ax = axes[1, 1]
+ax.plot([v1[0], v1[0]], [v1[1], v2[1]], 'k--')
+ax.plot([v1[0], v2[0]], [v2[1], v2[1]], 'k--')
+ax.scatter([v1[0], v2[0]], [v1[1], v2[1]], color=['red','blue'])
+annotate_equation(ax, r"$d=\sum_i |v_{1i}-v_{2i}|$")
+ax.set_title("Manhattan Distance")
+ax.set_xlim(0, 3); ax.set_ylim(0, 3); ax.set_aspect('equal')
 
 plt.tight_layout()
 plt.show()
-```
-
-
-## Cross‑Entropy
-
-- Cross‑entropy measures how well a predicted distribution matches the true one.  
-- High cross‑entropy → model assigns low probability to the correct class.  
-- Low cross‑entropy → model is confident and correct.  
-- Visual intuition:  
-  - When the predicted probability for the true class approaches 1, loss → 0.  
-  - When the model is wrong/confident, loss spikes sharply.  
-- This loss underlies softmax classifiers, word prediction, and neural language models.
-
-# Representing Meaning
-
-## VAKOG: Visual, Auditory, Kinesthetic modalities.
-
-![Visual, Auditory, Kinesthetic, Olfactory, and Gustatory Representation](./M02_lecture02_figures/VAKOG-representational-meaning.jpg){width=75% fig-align=center #fig-vakog fig-alt="Diagram illustrating the VAKOG representational meaning model, showing how words can evoke visual, auditory, and kinesthetic representations."}
-
-## Why Represent Meaning in Vectors?
-
-- Words carry meaning through **patterns of use**.  
-- Distributional hypothesis → represent meaning via **co‑occurrence structure**.  
-- Vector spaces allow:  
-  - Similarity comparisons  
-  - Analogy reasoning  
-  - Clustering & retrieval  
-  - Input to neural models  
-- Meaning becomes **geometry**.
-
----
-
-## Static Embeddings
-
-- One vector per word type (context‑independent).  
-- Learned from large corpora.  
-- Two major families:  
-  - **word2vec** (predictive)  
-  - **GloVe** (count‑based factorization)  
-- Capture syntactic & semantic regularities.  
-- Limitations:  
-  - Polysemy collapsed into one vector  
-  - No contextual variation
-
----
-
-## Contextual Embeddings
-
-- Meaning depends on **context**.  
-- Same word → different vectors in different sentences.  
-- Produced by deep LMs (ELMo, BERT, GPT).  
-- Representations come from **hidden states** of the model.  
-- Capture:  
-  - Word sense  
-  - Syntax  
-  - Long‑range dependencies  
-  - Discourse‑level meaning
-
-
-# Classification Diagnostics & Evaluation
-
-## Classification Example
-
-- Dataset includes **Adelie, Gentoo, Chinstrap** penguins.  
-- Features: bill length, bill depth, flipper length, body mass.  
-- For evaluation demos, create a **binary task**:  
-  - *Adelie* vs *Non‑Adelie*  
-- Allows clean visualization of:  
-  - Class separation  
-  - Threshold effects  
-  - ROC & PR curves  
-  - Imbalance manipulation
-- More Detailed discussion is in module 8 lecture note 1.
-
-```{python}
-#| eval: true
-#| echo: false 
-#| output-location: slide
-
-import seaborn as sns
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_curve, roc_auc_score
-from sklearn.metrics import precision_recall_curve, auc
-import matplotlib.pyplot as plt
-
-penguins = sns.load_dataset("penguins").dropna()
-
-penguins["label"] = (penguins["species"] == "Adelie").astype(int)
-
-X = penguins[["bill_length_mm", "bill_depth_mm"]]
-y = penguins["label"]
-
-trainX, testX, trainy, testy = train_test_split(X, y, test_size=0.3, random_state=42)
 
 ```
 
+<!-- ![](./M02_lecture02_figures/distance-metrics.png){width="76%" fig-alt="Distance metrics in embedding space."} -->
 
 ---
 
-## Visualizing the Feature Space
+## Covariance-aware distance
+
+- Real embedding spaces are not perfectly isotropic.
+- Mahalanobis distance adjusts for correlated dimensions.
+- Useful idea for metric learning and specialized retrieval.
+
+$$
+\begin{align}
+d_M(u,v) = \sqrt{(u-v)^\top \Sigma^{-1}(u-v)}
+\end{align}
+$$
+
+
+![Mahalanobis Distance](./M02_lecture02_figures/mahalanobis-outlier.jpg){width="54%" fig-alt="Mahalanobis distance illustration." fig-align="center" #fig-mahalanobis}
+
+# Entropy to Learning
+
+## Entropy starts with uncertainty
+
+- Entropy measures how uncertain a distribution is.
+- For a Bernoulli event like a coin toss:
+
+$$
+\begin{align}
+H(p) = -p\log_2 p - (1-p)\log_2(1-p)
+\end{align}
+$$
+
+- If the coin is fair, uncertainty is highest.
+- If the coin is heavily biased, uncertainty is lower.
+
+---
+
+## Coin toss intuition
+- A fair coin surprises us more on average because both outcomes remain plausible.
+
+- A biased coin is easier to predict, so average surprise drops.
+
+
+![Entropy curve for a coin toss](./M02_lecture02_figures/entropy-coin-curve.png){width="74%" fig-alt="Entropy curve for a coin toss showing maximum uncertainty at p equals 0.5." fig-align="center" #fig-entropy-coin}
+
+
+---
+
+## Surprise is the building block
+
+- For one event, surprise is:
+
+$$
+\begin{align}
+I(x) = -\log p(x)
+\end{align}
+$$
+
+- Rare events create large surprise.
+- Likely events create small surprise.
+- Entropy is just the **expected surprise** over all outcomes.
+
+---
+
+## Cross-entropy = how expensive your wrong beliefs are
+
+- Suppose reality is one distribution, but your model predicts another.
+- Cross-entropy asks:
+  - How many bits of surprise do I incur when I encode reality using my model?
+
+$$
+\begin{align}
+H(P, Q) = -\sum_x P(x)\log Q(x)
+\end{align}
+$$
+
+- This is the loss behind softmax classifiers and next-token prediction.
+
+---
+
+## Betting against the truth gets expensive fast
+
+- If the correct class gets probability near 1, loss is tiny.
+- If the correct class gets probability near 0, loss explodes.
+- This is exactly why confident mistakes are punished so strongly during training.
+
+![Cross-entropy penalty](./M02_lecture02_figures/cross-entropy-penalty.png){width="78%" fig-alt="Bar chart showing cross-entropy penalty increasing as predicted probability for the correct class decreases." fig-align="center" #fig-cross-entropy}
+
+---
+
+## KL divergence = extra surprise from a bad model
+
+- KL divergence compares the true distribution to the model distribution.
+
+$$
+\begin{align}
+D_{KL}(P \| Q) = \sum_x P(x)\log\frac{P(x)}{Q(x)}
+\end{align}
+$$
+
+- Key identity:
+
+$$
+\begin{align}
+H(P, Q) = H(P) + D_{KL}(P \| Q)
+\end{align}
+$$
+
+- Cross-entropy = irreducible uncertainty + penalty for mismatch.
+
+---
+
+## Why this matters for LLMs
+
+- An LLM outputs a distribution over the next token.
+- Training asks the model to assign high probability to the correct next token.
+- Backpropagation adjusts weights to reduce cross-entropy.
+
+- entropy = uncertainty in the task
+- cross-entropy = cost of the model's bets
+- KL divergence = how far the model is from the target distribution
+
+# Diagnostics and Evaluation
+
+## From logits to decisions
+
+- A classifier produces logits.
+- Softmax converts logits to probabilities.
+- The predicted class is the largest probability.
+- Good probability models need:
+  - accurate ranking
+  - sensible thresholds
+  - reasonable calibration
+
+---
+
+## Core classification diagnostics
+
+- Confusion matrix tells us what kinds of mistakes we make.
+- ROC curve emphasizes ranking quality.
+- Precision-recall curve is better when positives are rare.
+- These ideas transfer directly to LLM evaluation:
+  - token ranking
+  - top-k accuracy
+  - calibration
+  - perplexity and loss
+
+--- 
+
+## Confusion matrix
+
+![Confusion and Contingency matrix diagram](./M02_lecture02_figures/complete-contingecy-matrix.png){width="56%" fig-alt="Confusion matrix diagram." fig-align="center" #fig-confusion-matrix}
+
+# Feedforward Networks
+
+## Neural networks are not magic
+
+- A neural network is not a black box in the mystical sense.
+- It is a stack of simple operations:
+  - weighted sums
+  - biases
+  - activation functions
+  - a loss function
+  - gradient-based updates
+- The complexity comes from composition, not from hidden rules.
+
+---
+
+## One hidden unit makes one bend
+
+- A hidden unit with an activation function can create a bend or hinge in the response.
+- A few hidden units can combine those bends into a flexible curve.
+- This is the intuition behind why neural networks can fit nonlinear patterns.
+
+![ReLU squiggle](./M02_lecture02_figures/relu-squiggle.png){width="76%" fig-alt="A few ReLU units combining into a flexible squiggle-like response curve." fig-align="center" #fig-relu-squiggle}
+
+---
+
+## Feedforward neural networks
+
+- A multilayer perceptron maps input vectors to hidden representations, then to output logits.
+- Each layer learns a better internal representation for the task.
+- For text, the input may be:
+  - bag-of-words
+  - TF-IDF
+  - pooled embeddings
+
+![Multilayer perceptron diagram](./M02_lecture02_figures/Multilayer-perceptron.png){width="40%" fig-alt="Multilayer perceptron diagram." fig-align="center" #fig-multilayer-perceptron}
+
+---
+
+## Why ReLU became so popular
+
+- ReLU is simple:
+
+$$
+\begin{align}
+\text{ReLU}(z)=\max(0,z)
+\end{align}
+$$
+
+- It is computationally cheap.
+- It helps deep models learn piecewise-linear structure.
+- It often trains more easily than older saturating activations.
+
+## Backpropagation in one slide
+
+1. Run a forward pass to compute logits and loss.
+2. Compare predictions to the true label with cross-entropy.
+3. Compute gradients of the loss with respect to each parameter.
+4. Update weights with gradient descent or Adam.
+
+$$
+\begin{align}
+\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}
+\end{align}
+$$
+
+- Cross-entropy gives the error signal.
+- Backpropagation moves that signal through the network.
+
+---
+
+## Gradient descent intuition
+
+- We do not search every possible parameter value.
+- We move downhill using slope information from the loss surface.
+- Far from a good solution, the updates are often larger.
+- Near a good solution, updates become smaller corrections.
+
+![Gradient descent steps](./M02_lecture02_figures/gradient-descent-steps.png){width="65%" fig-alt="Gradient descent takes larger steps early and smaller steps near the minimum." fig-align="center" #fig-gradient-descent}
+
+---
+
+## Backpropagation is organized chain rule
+
+- Backpropagation feels complicated because the network is deep.
+- Conceptually it is just this:
+  - each parameter affects a node
+  - that node affects the output
+  - the output affects the loss
+- So we multiply local derivatives along the path.
+
+$$
+\begin{align}
+\frac{\partial \mathcal{L}}{\partial w}
+=
+\frac{\partial \mathcal{L}}{\partial \hat{y}}
+\cdot
+\frac{\partial \hat{y}}{\partial z}
+\cdot
+\frac{\partial z}{\partial w}
+\end{align}
+$$
+
+---
+
+## Argmax is for reading, softmax is for learning
+
+- `argmax` tells us which class wins.
+- But `argmax` is not useful for gradient-based training.
+- `softmax` turns logits into smooth probabilities we can differentiate.
+- Then cross-entropy measures how bad those probabilities are.
+  - use `argmax` to report the decision
+  - use `softmax + cross-entropy` to train the model
+
+---
+
+## From Classification to LLMs
+
+- In a classifier, the outputs are class probabilities.
+- In an LLM, the outputs are token probabilities.
+- Same core loop:
+  - produce logits
+  - apply softmax
+  - compute cross-entropy
+  - backpropagate
+  - update weights
+
+
+## Minimal PyTorch pattern
 
 ```{python}
+#| echo: true
 #| eval: true
-#| echo: false
-#| fig-align: center
-#| fig-cap: "Penguins feature space: bill length vs. bill depth, colored by species."
-#| fig-alt: "Scatter plot of penguin bill length vs. bill depth, with points colored by species (Adelie, Gentoo, Chinstrap)."
-plt.figure(figsize=(7,6))
-sns.scatterplot(
-    data=penguins,
-    x="bill_length_mm",
-    y="bill_depth_mm",
-    hue="species",
-    palette="deep"
+#| 
+
+import torch
+import torch.nn as nn
+
+# -----------------------------
+# 1. Build a toy vocabulary
+# -----------------------------
+stoi = {
+    "<pad>": 0,
+    "<unk>": 1,
+    "companys": 2,
+    "financial": 3,
+    "condition": 4,
+    "market": 5,
+    "risk": 6,
+    "exposure": 7
+}
+
+vocab_size = len(stoi)
+num_classes = 2   # binary classification
+
+# -----------------------------
+# 2. Convert text → bag-of-words vector
+# -----------------------------
+def text_to_bow(tokens, stoi):
+    vec = torch.zeros(len(stoi))
+    for tok in tokens:
+        idx = stoi.get(tok, stoi["<unk>"])
+        vec[idx] = 1
+    return vec
+
+# Example batch of tokenized texts
+batch_tokens = [
+    ["companys", "financial", "condition"],
+    ["market", "risk", "exposure"]
+]
+
+batch_x = torch.stack([text_to_bow(toks, stoi) for toks in batch_tokens])
+batch_y = torch.tensor([0, 1])  # class labels
+
+# -----------------------------
+# 3. Define the model
+# -----------------------------
+model = nn.Sequential(
+    nn.Linear(vocab_size, 256),
+    nn.ReLU(),
+    nn.Dropout(0.2),
+    nn.Linear(256, num_classes)
 )
-plt.title("Penguins Feature Space")
-plt.xlabel("Bill Length (mm)")
-plt.ylabel("Bill Depth (mm)")
-plt.legend(title="Species")
-plt.show()
+
+# -----------------------------
+# 4. Forward pass + loss
+# -----------------------------
+logits = model(batch_x)
+loss_fn = nn.CrossEntropyLoss()
+loss = loss_fn(logits, batch_y)
+
+print("Logits:", logits)
+print("Loss:", loss.item())
+
+# -----------------------------
+# 5. Backprop
+# -----------------------------
+loss.backward()
+print("Backward pass completed.")
+
+
 ```
 
+# Sequence Models
+
+## Recurrent neural networks
+
+- RNNs process one token at a time.
+- Hidden state carries forward compressed context.
+
+$$
+\begin{align}
+h_t = f(h_{t-1}, x_t)
+\end{align}
+$$
+
+- Useful historical step toward modern sequence modeling.
+
+![](./M02_lecture02_figures/rnn.svg){width="54%" fig-alt="Recurrent neural network diagram."}
+
 ---
 
-## Confusion Matrix & Thresholding
+## LSTM and GRU improve memory
 
-![Contingency Table](./M02_lecture02_figures/complete-contingecy-matrix.png){width=60% fig-align=center #fig-confusion-matrix fig-alt="Illustration of a confusion matrix showing true positives, false positives, true negatives, and false negatives."}
+- Gates decide what to keep, forget, and expose.
+- They reduce but do not eliminate the long-range dependency problem.
+- They still process tokens sequentially, which limits parallelism.
+
+![](./M02_lecture02_figures/lstm.svg){width="42%" fig-alt="LSTM diagram."}
+![](./M02_lecture02_figures/gru.svg){width="42%" fig-alt="GRU diagram."}
 
 ---
 
-## ROC Curve on Penguins
-- ROC = TPR vs FPR across thresholds.  
-- AUC = ranking quality.  
-- Penguins show clear separation → high AUC.  
-- Connects to LLM evaluation:  
-  - LLM token ranking ≈ classifier score ranking.
+## Why RNNs struggle at scale
+
+- Information bottleneck:
+  - too much history compressed into one state
+- Optimization issues:
+  - vanishing and exploding gradients
+- Systems issues:
+  - slow sequential computation
+
+This is exactly where attention becomes necessary.
+
+# Attention and Transformers
+
+## Self-attention: direct access to context
+
+- Instead of forcing everything through one hidden state, let each token look at all other tokens.
+- Each token produces:
+  - a query
+  - a key
+  - a value
+
+$$
+\begin{align}
+\text{Attention}(Q,K,V)=\text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+\end{align}
+$$
+
+---
+
+## Multi-head attention
+
+- Different heads can learn different relations:
+  - syntax
+  - topic
+  - coreference
+  - positional structure
+- Outputs are concatenated, then projected.
+
+This is why transformer representations are richer than simple recurrent summaries.
+
+---
+
+## Transformer block
+
+- Multi-head self-attention
+- Residual connection + normalization
+- Position-wise feedforward network
+- Residual connection + normalization
+
+The feedforward sublayer matters:
+
+- attention mixes information across positions
+- feedforward transforms each position nonlinearly
+
+---
+
+## Encoder, decoder, encoder-decoder
+
+- **Encoder-only**
+  - bidirectional context
+  - strong for classification and retrieval
+  - example: BERT
+- **Decoder-only**
+  - causal next-token prediction
+  - strong for generation
+  - example: GPT
+- **Encoder-decoder**
+  - map one sequence to another
+  - strong for translation and summarization
+  - example: T5
+
+---
+
+## Pretraining objectives
+
+- **Masked language modeling**
+  - predict hidden tokens from both left and right context
+- **Causal language modeling**
+  - predict the next token from left context only
+- **Sequence-to-sequence**
+  - encode source text, decode target text
+
+These objectives all use cross-entropy.
+
+---
+
+## BERT-style architecture intuition
 
 ```{python}
-#| eval: true
-#| echo: false 
-#| fig-align: center
-#| fig-cap: "ROC curve for logistic regression on penguin data."
-model = LogisticRegression()
-model.fit(trainX, trainy)
+from transformers import BertTokenizer, BertForSequenceClassification
 
-probs = model.predict_proba(testX)[:, 1]
-fpr, tpr, _ = roc_curve(testy, probs)
-
-
-plt.plot([0,1], [0,1], '--', label="No Skill")
-plt.plot(fpr, tpr, label="Logistic")
-plt.xlabel("False Positive Rate")
-plt.ylabel("True Positive Rate")
-plt.title("ROC Curve — Penguins")
-plt.legend()
-plt.show()
-
-print("ROC AUC:", roc_auc_score(testy, probs))
+tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+model = BertForSequenceClassification.from_pretrained(
+    "bert-base-uncased", num_labels=2
+)
 ```
 
----
-
-## Precision–Recall Curve on Penguins
-- PR curve focuses on the **positive class**.  
-- More sensitive to imbalance.  
-- Demonstrates why PR‑AUC is preferred when positives are rare.  
-- Connects to LLM correctness:  
-  - Rare correct answers → PR‑AUC is more informative.
-
-```{python}
-#| eval: true
-#| echo: false 
-#| fig-align: center
-precision, recall, _ = precision_recall_curve(testy, probs)
-pr_auc = auc(recall, precision)
-
-plt.plot(recall, precision)
-plt.xlabel("Recall")
-plt.ylabel("Precision")
-plt.title(f"Precision–Recall Curve — PR AUC = {pr_auc:.3f}")
-plt.show()
-```
+- subword tokenization
+- embedding layer
+- stacked transformer encoders
+- task head on top of the `[CLS]` representation
 
 ---
 
-## Creating Imbalance in Penguins
-- Downsample Adelie to simulate 1:10 imbalance.  
-- ROC remains high; PR collapses.  
-- Mirrors the attached document’s insight:  
-  > “ROC AUC can be optimistic on severely imbalanced classification problems.”
+## Modern LLM takeaways
 
-```{python}
-#| eval: true
-#| echo: false 
-#| fig-align: center
-minority = penguins[penguins["label"] == 1]
-majority = penguins[penguins["label"] == 0].sample(frac=0.2, random_state=42)
+- Vector semantics gives us the geometry.
+- Cross-entropy gives us the training signal.
+- Backpropagation updates parameters.
+- Attention gives direct access to long-range context.
+- Transformers scale this recipe to billions of parameters and trillions of tokens.
 
-imbalanced = pd.concat([minority, majority])
-X_imb = imbalanced[["bill_length_mm", "bill_depth_mm"]]
-y_imb = imbalanced["label"]
+# What students should remember
 
-trainX, testX, trainy, testy = train_test_split(X_imb, y_imb, test_size=0.3, random_state=42)
+## Five key takeaways
 
-model.fit(trainX, trainy)
-probs = model.predict_proba(testX)[:, 1]
-
-# ROC
-fpr, tpr, _ = roc_curve(testy, probs)
-plt.plot([0,1], [0,1], '--')
-plt.plot(fpr, tpr)
-plt.title("ROC Curve — Severe Imbalance")
-plt.show()
-
-# PR
-precision, recall, _ = precision_recall_curve(testy, probs)
-plt.plot(recall, precision)
-plt.title("PR Curve — Severe Imbalance")
-plt.show()
-```
----
-
-## LLM Correctness Evaluation
-- LLMs output **ranked token distributions**, not labels.  
-- Evaluation parallels ROC/PR:  
-  - Ranking quality → ROC‑AUC  
-  - Rare correct answers → PR‑AUC  
-  - Calibration → Brier score  
-- Penguins example builds intuition for LLM scoring.
-
-# Feedforward Architectures
-
-## Feedforward Neural Networks
-
-- Check module 8 Lecture note 1 and 2 for details on feedforward architectures and Backpropagation.
-- Download data for analysis from [here](https://drive.google.com/drive/folders/1djzbe1pWmHpGwHIHPiN_PQYnBIWQJ6vd?usp=sharing)
-
-# Recurrent Architectures
-
-## Recurrent Neural Networks
-
-- Check module 8 Lecture note 3 for details on recurrent architectures and LSTM.
-- Download data for analysis from [here](https://drive.google.com/drive/folders/1djzbe1pWmHpGwHIHPiN_PQYnBIWQJ6vd?usp=sharing)
-
-
-# Attention & Long‑Range Dependencies
-
-
-## Why RNNs Struggle With Long‑Range Dependencies
-- RNNs compress all past information into a **single hidden state**.  
-- Gradients must flow through **many time steps**, causing vanishing/exploding gradients.  
-- Sequential processing prevents **parallelization**.  
-- Even LSTMs/GRUs struggle when dependencies span **dozens or hundreds** of tokens.  
-- Bottleneck:  
-  $$
-  \begin{align}
-  h_t = f(h_{t-1}, x_t)
-  \end{align}
-  $$  
-
-- All information must pass through $h_t$.
-
----
-
-## The Need for Direct Access to Context
-- Many tasks require linking distant tokens:  
-  - Coreference (“The book… *it*…”)  
-  - Long sentences  
-  - Document‑level reasoning  
-- RNNs force the model to “remember” everything.  
-- We want a mechanism where a token can **look up** relevant information directly.  
-- Key idea: **don’t compress the past — attend to it.**
-
----
-
-## The Attention Mechanism
-- Each token produces:  
-  - **Query** $Q$  
-  - **Key** $K$  
-  - **Value** $V$  
-- Attention score:  
-  $$
-  \begin{align}
-  \text{score}(Q,K) = \frac{QK^\top}{\sqrt{d_k}}
-  \end{align}
-  $$  
-- Softmax turns scores into weights.  
-- Output is a weighted sum of values:  
-  $$
-  \begin{align}
-  \text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
-  \end{align}
-  $$  
-- Tokens retrieve information from anywhere in the sequence.
-
----
-
-## Why Attention Solves Long‑Range Dependencies
-- No recurrence → no vanishing gradients.  
-- Every token can attend to **any other token**.  
-- Parallelizable across sequence length.  
-- Learns dynamic context:  
-  - Syntax  
-  - Semantics  
-  - Coreference  
-  - Long‑range structure  
-
----
-
-## Multi‑Head Self‑Attention
-- Instead of one attention pattern, use **multiple heads**.  
-- Each head learns a different projection of $Q, K, V$.  
-- Heads capture different relationships:  
-  - Syntax  
-  - Semantic similarity  
-  - Positional patterns  
-- Outputs are concatenated and projected:  
-  $$
-  \begin{align}
-  \text{MHA}(X) = \text{Concat}(\text{head}_1,\dots,\text{head}_h)W^O
-  \end{align}
-  $$
-
----
-
-## Visualizing Multi‑Head Attention
-- Each head = a different “view” of the sequence.  
-- Some heads track subject–verb agreement.  
-- Some track coreference.  
-- Some track positional offsets.  
-- Combined → rich contextual representation.
-
----
-
-## Leading to Transformers
-- Attention removes RNN bottlenecks.  
-- Enables full parallelization.  
-- Scales to long sequences.  
-- Forms the core of:  
-  - BERT  
-  - GPT  
-  - T5  
-  - LLaMA  
-  - All modern LLMs  
-- This is the key architectural leap from RNNs → Transformers.
-
-                    
-
-# Transformer Architectures
-## Encoder                                               
-## Decoder                                               
-## Encoder–decoder                                       
-## Cross-attention                                       
-
-# Pretraining Objectives
-
-## Masked language modeling                              
-## Causal language modeling                              
-
-# Modern Extensions
-
-## Vision transformers                                   
-## Architectural innovations (MoE, RoPE, Flash Attention)
-## Multimodal LLMs                                       
-
-
+1. Sparse features explain the baseline probabilistic view of text.
+2. Embeddings turn semantics into geometry.
+3. Entropy, cross-entropy, and KL divergence explain learning under uncertainty.
+4. Feedforward and recurrent nets are stepping stones, not dead ends.
+5. Transformers succeed because they combine token embeddings, attention, and cross-entropy-driven learning at scale.

@@ -250,6 +250,206 @@ multi-head attention:
 - **Masking** — encoder uses full bidirectional attention; decoder uses causal masking to
   prevent attending to future tokens.
 
+```{python}
+#| echo: false
+#| eval: true
+from pathlib import Path
+import sys
+
+repo_root = Path.cwd().resolve().parent
+if str(repo_root) not in sys.path:
+    sys.path.append(str(repo_root))
+
+from utils.sequence_diagrams import (
+    build_mnist_autoencoder_svg,
+    build_rnn_language_model_svg,
+)
+
+build_rnn_language_model_svg(repo_root / "M3" / "M03_lecture01_figures" / "rnn1.svg")
+build_mnist_autoencoder_svg(repo_root / "M3" / "M03_lecture01_figures" / "mnist_autoencoder.svg")
+```
+
+## Encoder and Decoder Models
+
+Modern sequence models usually specialize one of three ways:
+
+- **Encoder-only** models build rich contextual representations of the input.
+- **Decoder-only** models generate the next token autoregressively.
+- **Encoder-decoder** models first compress the input and then generate an output sequence.
+
+That design choice is closely tied to the task: understanding, generation, or
+sequence-to-sequence transformation.
+
+## Decoder-Only Intuition from Language Modeling
+
+:::: {.columns}
+::: {.column width="52%"}
+![](./M03_lecture01_figures/rnn1.svg){width=96% fig-align=center fig-alt="Readable diagram of an RNN language model predicting one token at a time" #fig-rnn-architecture}
+:::
+
+::: {.column width="48%"}
+- Decoder-style models predict the **next token** from the tokens that came before it.
+- At time step $t$, the model estimates
+  $$
+  P(y_t \mid y_1, y_2, \dots, y_{t-1})
+  $$
+- The hidden state $s_t$ acts as a compressed summary of the prefix.
+- GPT-style models keep this same autoregressive objective, but replace recurrence with
+  masked self-attention.
+- Strength: excellent for open-ended generation, chat, summarization, and code completion.
+:::
+::::
+
+## Encoder-Only Models
+
+:::: {.columns}
+::: {.column width="50%"}
+![Encoder-only transformer diagram](./M03_lecture02_figures/bert_encoder_only.svg){width=92% fig-align=center fig-alt="Encoder-only transformer architecture" #fig-encoder-only}
+:::
+
+::: {.column width="50%"}
+- Encoder-only models read the **entire input at once**.
+- Because attention is bidirectional, each token can use both left and right context.
+- The output is a contextual embedding for each input token, not a generated sequence.
+- Typical uses:
+  - sentiment classification
+  - named entity recognition
+  - retrieval and semantic search
+- Example family: **BERT**.
+:::
+::::
+
+## Decoder-Only Models
+
+:::: {.columns}
+::: {.column width="50%"}
+![Decoder-only transformer diagram](./M03_lecture01_figures/gpt_decoder_only.svg){width=92% fig-align=center fig-alt="Decoder-only transformer architecture" #fig-decoder-only}
+:::
+
+::: {.column width="50%"}
+- Decoder-only models are trained with a **causal mask**.
+- Each position can attend only to earlier tokens, never future ones.
+- This makes them natural next-token predictors:
+  $$
+  P(y_t \mid y_1^{t-1})
+  $$
+- Typical uses:
+  - text generation
+  - dialogue systems
+  - code generation
+- Example family: **GPT**.
+:::
+::::
+
+## Encoder-Decoder Models
+
+:::: {.columns}
+::: {.column width="52%"}
+![](./M03_lecture01_figures/encoder_decoder.svg){width=100% fig-align=center fig-alt="Encoder-decoder architecture transforming an input sequence into an output sequence" #fig-encoder-decoder}
+:::
+
+::: {.column width="48%"}
+- The encoder converts the source input into a set of contextual representations.
+- The decoder then generates the target sequence one token at a time.
+- Cross-attention lets the decoder look back at the encoder outputs while generating.
+- This is ideal when the input and output are **different sequences**.
+- Typical uses:
+  - translation
+  - summarization
+  - question answering over documents
+- Example families: **T5**, **BART**, and the original Transformer.
+:::
+::::
+
+## A Simple MNIST Encoder-Decoder Example
+
+:::: {.columns}
+::: {.column width="54%"}
+![](./M03_lecture01_figures/mnist_autoencoder.svg){width=100% fig-align=center fig-alt="MNIST autoencoder showing encoder, latent vector, and decoder" #fig-mnist-autoencoder}
+:::
+
+::: {.column width="46%"}
+- A classic image example is an **autoencoder** trained on MNIST digits.
+- The **encoder** compresses a $28 \times 28 = 784$ pixel image into a small latent vector.
+- The **decoder** expands that latent vector back into a reconstructed image.
+- Here, the target is not a sentence but the original image itself.
+- This makes encoder-decoder ideas easy to visualize before moving back to text.
+:::
+::::
+
+## MNIST Data and Model Sketch
+
+:::: {.columns}
+::: {.column width="50%"}
+```{python}
+from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
+
+transform = transforms.ToTensor()
+train_ds = datasets.MNIST(
+    root="data",
+    train=True,
+    download=True,
+    transform=transform,
+)
+train_loader = DataLoader(
+    train_ds,
+    batch_size=128,
+    shuffle=True,
+)
+```
+:::
+
+::: {.column width="50%"}
+```{python}
+import torch.nn as nn
+
+class MNISTAutoencoder(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.encoder = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(784, 256), nn.ReLU(),
+            nn.Linear(256, 64), nn.ReLU(),
+            nn.Linear(64, 16)
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(16, 64), nn.ReLU(),
+            nn.Linear(64, 256), nn.ReLU(),
+            nn.Linear(256, 784), nn.Sigmoid()
+        )
+```
+:::
+::::
+
+## How the MNIST Encoder-Decoder Is Trained
+
+:::: {.columns}
+::: {.column width="55%"}
+```{python}
+model = MNISTAutoencoder()
+criterion = nn.MSELoss()
+
+for images, _ in train_loader:
+    z = model.encoder(images)
+    recon = model.decoder(z)
+    recon = recon.view(-1, 1, 28, 28)
+    loss = criterion(recon, images)
+```
+:::
+
+::: {.column width="45%"}
+- We ignore the class label and train on the image itself.
+- The latent vector $z$ is a compressed representation of the digit.
+- The decoder tries to reconstruct the original pixels from $z$.
+- A low reconstruction loss means the encoder preserved the important structure.
+- This is the same high-level pattern used in many generative systems:
+  - compress information
+  - operate in a latent space
+  - decode back into the target output
+:::
+::::
+
 
 ## What's Next: Token Representations and Semantic Geometry
 

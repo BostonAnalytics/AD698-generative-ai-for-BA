@@ -7,29 +7,66 @@ date-modified: today
 date-format: long
 engine: jupyter
 categories: ['M07:', 'Lab']
-description: "Hands-on lab for Module 7 focused on preparing text-analysis outputs for a business dashboard."
+description: "Question-driven lab for Module 7 focused on preparing analysis outputs for dashboard use."
+execute:
+  echo: true
+  eval: false
 ---
 
-# Lab Overview
+## Lab Purpose
 
-Use saved SEC, sentence polarity, or Yelp text-analysis outputs to create a dashboard-ready metrics table for a business user.
+- `M07_T1` should be the worked guide for constructing dashboard-ready summary artifacts.
+- This lab asks you to build a stakeholder-facing metrics table from saved analysis outputs.
+- `M07_A` later expects a fuller business interpretation and trust discussion.
 
-## Alignment with Module 7
+## Validation Standard
 
-- `M07_LN1`: pipeline layers and business-facing interfaces
-- `M07_T1`: dashboard-ready summary table construction
-- `M07_A`: business interpretation and reporting
-
-## Lab Validation Standard
-
-Students should show intermediate evidence, not only final dashboards. Good checks include:
+Show intermediate evidence, not only final displays:
 
 - input artifact preview
 - grouped metric table
 - chart preview
 - one short note explaining what the display reveals
 
-If this lab requires a written memo, reflection, or report in addition to the notebook, format that written deliverable in **APA 7**.
+## Questions
+
+### Q1. Load Prior Analysis Artifacts
+
+Load one saved analysis artifact from an earlier module, such as SEC, sentiment, or review outputs.
+
+Required evidence:
+
+- artifact preview
+- column summary
+- one note on which fields are useful for dashboard aggregation
+
+### Q2. Build a Dashboard-Ready Table
+
+Create a summary table suitable for a business dashboard.
+
+Examples:
+
+- company-level risk summary
+- section-level sentiment summary
+- method-comparison metrics table
+
+### Q3. Create One Supporting Chart
+
+Create one chart that would reasonably sit beside the summary table in a dashboard.
+
+### Q4. Add a Drill-Down Column or Supporting View
+
+Include at least one field that supports later drill-down, such as:
+
+- company
+- section
+- year
+- source file
+- confidence flag
+
+### Q5. Interpretation
+
+Write 3 to 5 sentences for a business stakeholder explaining what the table shows and what they should look at next.
 
 ## AI Use and Share Links {.unnumbered}
 
@@ -38,9 +75,3 @@ If generative AI materially supports your work for this lab, include an AI discl
 ![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
 
 ![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
-
-When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
-
-Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-
