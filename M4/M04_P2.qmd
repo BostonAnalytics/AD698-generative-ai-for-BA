@@ -14,8 +14,6 @@ format:
         toc: true
         toc-depth: 1
         auto-stretch: false
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
 fig-align: center
 monofont: Roboto
 title-slide-attributes:

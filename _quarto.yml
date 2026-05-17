@@ -286,7 +286,6 @@ format:
     theme: [cosmo, ./theme/metanalytics.scss]
     toc: true
     number-sections: true
-    embed-resources: true
     format-links: false
     highlight-style: github
     code-overflow: wrap

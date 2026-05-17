@@ -7,9 +7,6 @@ date-format: long
 keywords: [weather alert, class cancellation, bu alert, announcements]
 number-sections: false
 format:
-  docx:
-    toc: false
-    reference-doc: "../theme/announcement.docx"
   html:
     toc: false
 ---

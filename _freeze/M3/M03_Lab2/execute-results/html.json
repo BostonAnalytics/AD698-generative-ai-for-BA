@@ -1,0 +1,12 @@
+{
+  "hash": "957a8b247a899a43ff45bea8e8f09b04",
+  "result": {
+    "engine": "jupyter",
+    "markdown": "---\ntitle: \"Module 3 - Lab 2\"\nsubtitle: \"Retrieved Evidence and Prompt Grounding\"\nnumber-sections: true\ndate: \"2026-02-15\"\ndate-modified: today\ndate-format: long\nengine: jupyter\ncategories: ['M03:', 'Lab']\ndescription: \"Question-driven lab for Module 3 focused on evidence grounding and retrieval-aware prompt evaluation.\"\nexecute:\n  echo: true\n  eval: false\n---\n\n## Lab Purpose\n\n- `M03_T2` should be your main worked reference for grounded answering and evidence-aware prompting.\n- This lab asks you to test whether retrieved evidence actually improves the answer quality.\n- `M03_A` later expects you to compare methods more independently using the same SEC scope.\n\n## Recommended Notebook Pattern\n\n1. Question set\n2. Retrieval output\n3. Prompt construction\n4. Answer generation\n5. Grounding evaluation\n\n## Validation Standard\n\nShow intermediate evidence such as:\n\n- retrieved context tables\n- one prompt example\n- answer comparisons\n- one grounding or citation-quality check\n- one failure example\n\n## Questions\n\n### Q1. Define a Small Evaluation Set\n\nWrite at least three questions about SEC filings that require document evidence.\n\nFor each question, explain in one sentence why unsupported answering would be risky.\n\n### Q2. Retrieve Evidence\n\nFor each question, retrieve relevant passages from your corpus.\n\nRequired evidence:\n\n- top retrieved passages\n- source identifiers\n- one short note on whether the retrieved evidence looks sufficient\n\n### Q3. Compare Two Prompting Styles\n\nCompare at least two prompt designs, such as:\n\n- question only\n- question plus retrieved evidence\n- question plus retrieved evidence plus citation instruction\n\nShow one side-by-side answer comparison.\n\n### Q4. Evaluate Grounding\n\nFor each question, judge whether the answer is:\n\n- well grounded\n- partially grounded\n- weakly grounded or unsupported\n\nUse a small evaluation table.\n\n### Q5. Failure Analysis\n\nChoose at least one failure and explain whether it came from:\n\n- weak retrieval\n- noisy evidence\n- poor prompt structure\n- model overreach beyond the evidence\n\n## Minimal Setup\n\n::: {#175d38c0 .cell execution_count=1}\n``` {.python .cell-code}\nimport pandas as pd\n```\n:::\n\n\n",
+    "supporting": [
+      "M03_Lab2_files"
+    ],
+    "filters": [],
+    "includes": {}
+  }
+}

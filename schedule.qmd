@@ -10,7 +10,6 @@ format:
         body-width: 1100px
         margin-width: 400px
         gutter-width: 1.5rem
-    docx: default
 sidebar: false
 html-table-processing: none
 execute: 

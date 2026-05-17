@@ -20,8 +20,6 @@ format:
     toc: true
     toc-depth: 1
     auto-stretch: false
-  pptx:
-    reference-doc: ../theme/presentation_template.pptx
 from: markdown+emoji
 self-contained-math: true
 fig-align: center

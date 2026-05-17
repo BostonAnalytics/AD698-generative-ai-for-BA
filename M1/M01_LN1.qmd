@@ -6,8 +6,6 @@ date: "2024-11-21"
 date-modified: today
 format:
     html: default
-    docx: 
-        reference-doc: ../theme/APA7.docx
 bibliography: ../references.bib
 categories: ['neural networks', 'perceptron', 'McCulloch–Pitts neuron', 'backpropagation', 'multilayer perceptron (MLP)', 'distributed representations', 'early NLP', 'symbolic vs. connectionist models', 'language modeling', 'embeddings', 'generative modeling foundations']
 description: "This lecture introduces the foundational ideas that shaped modern generative AI by tracing the evolution from early neural computation to the first statistical approaches to language. We explore the McCulloch–Pitts neuron, the perceptron, multilayer networks, and the emergence of backpropagation as the breakthrough that enabled deep learning. In parallel, we examine early NLP methods—from symbolic rules to probabilistic language models—and show how these ideas converge into the architectures that power today’s generative systems. The goal is to give students a conceptual and historical grounding that makes contemporary LLMs feel less like magic and more like the natural continuation of decades of ideas in representation, learning, and language."

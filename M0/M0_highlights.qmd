@@ -7,7 +7,6 @@ date-modified: today
 format:
     html:
         code-fold: true
-    docx: default
 date-format: long
 categories: ['M0:', 'Highlights']
 description: "Module 0 highlights for Technology Stack Preparation & Deep Learning Foundations."

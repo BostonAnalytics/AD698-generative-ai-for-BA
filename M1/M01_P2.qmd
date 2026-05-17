@@ -23,8 +23,6 @@ format:
         code-block-bg: true
         code-block-border-left: "#31BAE9"
         syntax-highlighting: github
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
 from: markdown+emoji
 self-contained-math: true
 code-annotations: below

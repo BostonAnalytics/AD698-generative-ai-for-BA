@@ -20,8 +20,6 @@ format:
         toc: true
         toc-depth: 1
         code-fold: true
-    pptx:
-        reference-doc: ../theme/presentation_template.pptx
 self-contained-math: true
 fig-align: center
 monofont: Roboto

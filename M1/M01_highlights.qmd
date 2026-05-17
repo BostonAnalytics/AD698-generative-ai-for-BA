@@ -7,7 +7,6 @@ date-modified: today
 format:
     html:
         code-fold: true
-    docx: default
 date-format: long
 categories: ['M01:', 'Highlights']
 description: "Module 1 highlights for Language Probability and Representation."
