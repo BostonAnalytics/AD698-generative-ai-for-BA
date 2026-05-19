@@ -1,0 +1,254 @@
+---
+title: "Tokens and Tokenization"
+subtitle: "Primer 3 for Applied Generative AI Business Analytics"
+number-sections: false
+date: "2026-01-01"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../../references.bib
+categories: ["M0", "Primer", "Tokens", "Tokenization", "Foundations"]
+description: "A technical primer explaining tokenization as the interface between language, computation, context windows and cost."
+format:
+  html:
+    toc: false
+    fontsize: 10pt
+    css: primer-style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+::: {.primer-kicker}
+Module 0 Primer | Points of Significance
+:::
+
+# Tokens and Tokenization
+
+Large language models do not directly read words, sentences or documents in the
+way humans do. They read sequences of **tokens**. A token may be a whole word,
+part of a word, a punctuation mark, a space-prefixed word fragment, a number
+fragment, a code symbol or a byte-level unit. Tokenization is the procedure that
+converts raw text into these model-readable units.
+
+Tokenization is easy to dismiss as preprocessing, but it is one of the central
+interfaces between human language and model computation. It affects how a model
+handles rare words, names, numbers, programming languages, multilingual text,
+context length, latency and API cost.
+
+::: {.key-box}
+**Key idea.** A language model predicts tokens, not ideas, words or sentences.
+Tokenization determines the units over which probability, attention, memory and
+cost are computed.
+:::
+
+```{python}
+#| label: fig-tokenization-panels
+#| fig-cap: "Three views of tokenization. (a) Text is segmented into model-readable units that may differ from words. (b) Different kinds of strings expand into different token counts. (c) A fixed context window creates a budget: instructions, retrieved evidence, examples and generated output all compete for token space."
+#| fig-width: 8.2
+#| fig-height: 2.65
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "figure.dpi": 140
+})
+
+fig, axes = plt.subplots(1, 3, figsize=(8.2, 2.65))
+
+# Panel a: token boxes
+ax = axes[0]
+ax.axis("off")
+ax.text(0.02, 0.93, "a", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Words are not always tokens", pad=4)
+tokens = ["Gener", "ative", " AI", " helps", " analysts", "."]
+widths = [0.16, 0.15, 0.11, 0.16, 0.22, 0.06]
+x = 0.05
+for tok, w in zip(tokens, widths):
+    ax.add_patch(plt.Rectangle((x, 0.52), w, 0.20, fill=False, ec="#111827", lw=1.0))
+    ax.text(x + w / 2, 0.62, tok, ha="center", va="center", fontsize=8)
+    x += w + 0.012
+ax.text(0.05, 0.33, "Raw text: Generative AI helps analysts.", fontsize=8)
+ax.text(0.05, 0.20, "Model input: integer token ids", fontsize=8, color="#374151")
+
+# Panel b: token expansion by string type
+ax = axes[1]
+labels = ["plain\nsentence", "rare\nname", "number\nstring", "code\nsnippet", "mixed\nlanguage"]
+counts = [7, 11, 15, 21, 18]
+colors = ["#2563eb", "#3b82f6", "#64748b", "#f97316", "#047857"]
+ax.bar(np.arange(len(labels)), counts, color=colors)
+ax.set_xticks(np.arange(len(labels)))
+ax.set_xticklabels(labels)
+ax.set_ylabel("approx. token count")
+ax.set_ylim(0, 24)
+ax.set_title("Strings expand differently", pad=4)
+ax.text(-0.45, 22.4, "b", fontweight="bold")
+
+# Panel c: context budget
+ax = axes[2]
+parts = ["system", "prompt", "examples", "retrieval", "output"]
+sizes = np.array([10, 14, 22, 38, 16])
+left = 0
+palette = ["#111827", "#2563eb", "#64748b", "#047857", "#f97316"]
+for part, size, color in zip(parts, sizes, palette):
+    ax.barh([0], [size], left=left, color=color, height=0.34)
+    ax.text(left + size / 2, 0, part, ha="center", va="center", color="white", fontsize=7)
+    left += size
+ax.set_xlim(0, 100)
+ax.set_yticks([])
+ax.set_xlabel("token budget (%)")
+ax.set_title("Context is a finite budget", pad=4)
+ax.text(1, 0.32, "c", fontweight="bold")
+
+fig.tight_layout(w_pad=1.0)
+plt.show()
+```
+
+**Figure 1a** shows why tokenization is not the same as word splitting. A
+single word such as `Generative` may be split into subword pieces, while a
+common phrase fragment such as ` helps` may appear as one token. Many tokenizers
+encode leading spaces as part of the token because spaces are informative in
+text and code.
+
+**Figure 1b** shows that token count depends on the character pattern, not only
+on the number of words. Rare proper nouns, long numeric strings, code snippets,
+URLs, tables and multilingual text often consume more tokens than a plain
+English sentence of similar visual length. This matters because model context
+windows and API prices are usually measured in tokens.
+
+**Figure 1c** shows the context-budget problem. The model's usable context is
+shared by system instructions, user prompts, examples, retrieved documents,
+tool outputs, chat history and the model's generated answer. Adding more
+retrieved evidence may improve grounding, but it also consumes space that could
+have been used for examples, instructions or output.
+
+# Why Subword Tokenization Exists
+
+A model vocabulary cannot contain every possible word, name, typo, product code,
+legal citation, URL, database identifier and programming symbol. Subword
+tokenization solves this by using reusable pieces. Frequent words may receive
+single tokens, while rare words are composed from smaller units.
+
+This provides a compromise:
+
+- **Word-level tokenization** is interpretable but fails on unseen words.
+- **Character-level tokenization** handles everything but creates long
+  sequences.
+- **Subword tokenization** handles open vocabulary text while keeping sequences
+  shorter.
+
+Modern tokenizers often use algorithms related to byte-pair encoding,
+WordPiece, unigram language-model tokenization or byte-level variants. The
+technical details differ, but the central goal is the same: represent arbitrary
+text using a fixed vocabulary of reusable units.
+
+# Token IDs and Embeddings
+
+After tokenization, each token is mapped to an integer ID. The model does not
+reason over the string directly. It looks up a learned vector for each token ID:
+
+$$
+\text{text}
+\rightarrow
+\text{tokens}
+\rightarrow
+\text{token IDs}
+\rightarrow
+\text{embedding vectors}.
+$$
+
+Those vectors become the input to the transformer. Attention then operates over
+positions in the token sequence. If a phrase is split into more tokens, it
+occupies more positions and requires more computation.
+
+The practical consequence is subtle but important: a model's apparent fluency
+with a word or phrase partly depends on how that phrase is tokenized and how
+often related patterns appeared in training.
+
+# Tokenization and Numbers
+
+Numbers are often harder for language models than ordinary prose. A model may
+split `12,487.95` into several tokens, and the token boundaries may not align
+with place value in a way that supports arithmetic. This is one reason models
+can write plausible financial explanations while making arithmetic mistakes.
+
+For analytics work, numerical reliability should come from tools, code or
+databases, not from unconstrained token prediction. A good GenAI workflow lets
+the model explain, route, format and interpret, while exact computation is
+delegated to deterministic systems.
+
+# Tokenization and Retrieval
+
+Retrieval-augmented generation systems also depend on tokenization. Documents
+must often be chunked before they are embedded or sent to a model. Chunk size is
+usually measured in tokens rather than words or pages.
+
+Chunking decisions affect retrieval:
+
+- chunks that are too small may lose context;
+- chunks that are too large may dilute the relevant passage;
+- overlapping chunks reduce boundary errors but increase storage and retrieval
+  redundancy;
+- tables and code may require specialized chunking because visual structure is
+  not preserved by naive splitting.
+
+Tokenization therefore shapes both what the model sees and what the retrieval
+system can efficiently provide.
+
+# Context Windows Are Not Memory
+
+A context window is the maximum number of tokens the model can condition on at
+one time. It is tempting to treat a long context window as memory, but the two
+are not the same. Context is temporary input. Memory implies durable state,
+selection, updating and retrieval across interactions.
+
+Long context windows are useful, but they create design questions:
+
+- Which documents should be included?
+- In what order should evidence appear?
+- Should the answer cite exact passages?
+- How much output space should be reserved?
+- How should the system handle conflicting evidence?
+
+More tokens are not automatically better. Irrelevant tokens can distract the
+model, increase cost, slow response time and make evaluation harder.
+
+::: {.pitfall-box}
+**Pitfall.** Do not equate page count with model context. A short page with
+tables, code, citations or unusual formatting may consume more tokens than a
+long page of simple prose.
+:::
+
+# Business Analytics Implications
+
+Tokenization affects common analytics applications:
+
+| Workflow | Tokenization issue | Design response |
+|---|---|---|
+| Contract review | Long clauses and citations consume context | retrieve targeted passages |
+| Financial analysis | Numbers may split awkwardly | use tools for arithmetic |
+| Support summarization | Many short tickets create overhead | batch and cluster before summarizing |
+| Code generation | Indentation and symbols matter | preserve formatting |
+| Multilingual feedback | Token counts vary by language | budget by tokens, not words |
+| RAG over PDFs | Layout may be lost during extraction | inspect chunks before indexing |
+
+The most reliable systems treat tokenization as an engineering constraint. They
+measure token counts, reserve output space, test chunking, and avoid assuming
+that visible length equals computational length.
+
+# Mini Exercise
+
+Take three inputs from a business setting: a paragraph, a table row and a short
+code snippet. Before using a tokenizer, predict which will use the most tokens.
+Then test your prediction with a tokenizer and explain the result. Which input
+would be most expensive to include repeatedly in a prompt?
+
+::: {.takeaway-box}
+**Takeaway.** Tokenization is the model's first interpretation of text. It
+controls sequence length, context use, cost, retrieval design and the units over
+which next-token probabilities are computed.
+:::

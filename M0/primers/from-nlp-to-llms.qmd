@@ -1,0 +1,237 @@
+---
+title: "From NLP to Large Language Models"
+subtitle: "Primer 6 for Applied Generative AI Business Analytics"
+number-sections: false
+date: "2026-01-01"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../../references.bib
+categories: ["M0", "Primer", "NLP", "Large Language Models", "Foundations"]
+description: "A technical primer tracing the shift from classical NLP pipelines to pretrained large language models and GenAI systems."
+format:
+  html:
+    toc: false
+    fontsize: 10pt
+    css: primer-style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+::: {.primer-kicker}
+Module 0 Primer | Points of Significance
+:::
+
+# From NLP to Large Language Models
+
+Natural language processing predates modern generative AI by decades. Earlier
+NLP systems often decomposed language tasks into pipelines: tokenize text,
+extract features, parse grammar, apply rules or train a supervised model for a
+specific task. Large language models changed this pattern by learning broad
+language representations from large corpora and adapting those representations
+to many tasks through prompting, fine-tuning, retrieval and tool use.
+
+The shift is not from "old NLP was bad" to "LLMs are magic." The shift is from
+task-specific pipelines with hand-built features toward general pretrained
+models that can be conditioned for many downstream behaviors.
+
+::: {.key-box}
+**Key idea.** LLMs are part of the NLP lineage. They inherit the goal of
+computing with language, but they replace many task-specific pipelines with
+pretraining, contextual representations and conditional generation.
+:::
+
+```{python}
+#| label: fig-nlp-to-llms-panels
+#| fig-cap: "Three views of the transition from NLP to LLMs. (a) Classical NLP pipelines often used task-specific preprocessing, features and models. (b) Pretrained models learn reusable contextual representations that can be adapted to many tasks. (c) GenAI systems wrap LLMs with prompts, retrieval, tools, evaluation and governance."
+#| fig-width: 8.2
+#| fig-height: 2.75
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "figure.dpi": 140
+})
+
+fig, axes = plt.subplots(1, 3, figsize=(8.2, 2.75))
+
+# Panel a: classical pipeline
+ax = axes[0]
+ax.axis("off")
+ax.text(0.02, 0.93, "a", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Task-specific NLP pipeline", pad=4)
+steps = ["text", "tokens", "features", "model", "label"]
+x_positions = [0.04, 0.24, 0.46, 0.68, 0.86]
+for x, step in zip(x_positions, steps):
+    ax.add_patch(plt.Rectangle((x, 0.50), 0.13, 0.16, fill=False, ec="#111827", lw=1.0))
+    ax.text(x + 0.065, 0.58, step, ha="center", va="center", fontsize=8)
+for x1, x2 in zip(x_positions[:-1], x_positions[1:]):
+    ax.annotate("", xy=(x2, 0.58), xytext=(x1 + 0.13, 0.58), arrowprops=dict(arrowstyle="->", lw=0.9))
+ax.text(0.05, 0.30, "Each task often needs its own features,\nlabels and evaluation loop.", fontsize=8)
+
+# Panel b: pretraining and adaptation
+ax = axes[1]
+ax.axis("off")
+ax.text(0.02, 0.93, "b", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Pretraining creates reusable capability", pad=4)
+ax.add_patch(plt.Rectangle((0.08, 0.64), 0.28, 0.15, fill=False, ec="#111827", lw=1.0))
+ax.text(0.22, 0.715, "large text\ncorpus", ha="center", va="center", fontsize=8)
+ax.add_patch(plt.Rectangle((0.45, 0.64), 0.28, 0.15, fill=False, ec="#111827", lw=1.0))
+ax.text(0.59, 0.715, "pretrained\nmodel", ha="center", va="center", fontsize=8)
+for y, label, color in [(0.42, "prompt", "#2563eb"), (0.27, "fine-tune", "#047857"), (0.12, "retrieve", "#f97316")]:
+    ax.add_patch(plt.Rectangle((0.58, y), 0.26, 0.10, fill=False, ec=color, lw=1.0))
+    ax.text(0.71, y + 0.05, label, ha="center", va="center", color=color, fontsize=8)
+ax.annotate("", xy=(0.45, 0.715), xytext=(0.36, 0.715), arrowprops=dict(arrowstyle="->", lw=0.9))
+for y in [0.47, 0.32, 0.17]:
+    ax.annotate("", xy=(0.66, y + 0.05), xytext=(0.59, 0.64), arrowprops=dict(arrowstyle="->", lw=0.8))
+
+# Panel c: system wrapper
+ax = axes[2]
+ax.axis("off")
+ax.text(0.02, 0.93, "c", fontweight="bold", transform=ax.transAxes)
+ax.set_title("LLM application system", pad=4)
+center = (0.47, 0.52)
+ax.add_patch(plt.Circle(center, 0.13, fill=False, ec="#111827", lw=1.1))
+ax.text(center[0], center[1], "LLM", ha="center", va="center", fontsize=9)
+items = [
+    (0.08, 0.75, "prompt"),
+    (0.64, 0.75, "retrieval"),
+    (0.08, 0.20, "tools"),
+    (0.64, 0.20, "evaluation"),
+    (0.35, 0.08, "governance"),
+]
+for x, y, label in items:
+    ax.add_patch(plt.Rectangle((x, y), 0.24, 0.11, fill=False, ec="#374151", lw=0.9))
+    ax.text(x + 0.12, y + 0.055, label, ha="center", va="center", fontsize=8)
+    ax.annotate("", xy=center, xytext=(x + 0.12, y + 0.055), arrowprops=dict(arrowstyle="->", lw=0.75))
+
+fig.tight_layout(w_pad=1.0)
+plt.show()
+```
+
+**Figure 1a** shows the classical pipeline pattern. A system might tokenize text,
+remove stop words, compute TF-IDF features, train a classifier and output a
+label. This approach is transparent and often strong for constrained tasks, but
+each task may require separate data, features and model design.
+
+**Figure 1b** shows the pretraining pattern. A large model is trained on a broad
+corpus with a self-supervised objective, such as predicting masked tokens or
+predicting the next token. The resulting representations can then be adapted to
+many downstream tasks through prompts, fine-tuning or retrieval.
+
+**Figure 1c** shows the modern GenAI application pattern. The LLM is not the
+whole system. The system includes prompting, retrieval, tools, evaluation,
+monitoring, interface design and governance. This is the level at which most
+business analytics applications succeed or fail.
+
+# Classical NLP Tasks
+
+NLP historically included many specialized tasks:
+
+| Task | Goal | Example business use |
+|---|---|---|
+| tokenization | split text into units | prepare documents for analysis |
+| part-of-speech tagging | label grammatical role | analyze phrasing patterns |
+| named entity recognition | extract people, places, organizations | extract counterparties from contracts |
+| sentiment analysis | classify affect or opinion | summarize customer feedback |
+| topic modeling | discover latent themes | group survey responses |
+| information extraction | convert text into structured fields | process invoices or claims |
+| machine translation | translate between languages | localize support content |
+| summarization | compress text | produce executive briefs |
+
+These tasks remain important. LLMs did not erase them. Instead, LLMs often
+perform them through prompting or are used inside systems that still need these
+task definitions for evaluation.
+
+# Representation Shift
+
+Classical feature engineering represented text using hand-designed or
+statistical features: word counts, n-grams, TF-IDF weights, lexicons,
+dependency patterns or manually defined rules. Neural NLP introduced learned
+representations, first through word embeddings and then contextual embeddings.
+
+The important difference is context. A static word embedding gives a word one
+main vector. A contextual model gives a token different representations
+depending on surrounding text. For example, `bank` in "river bank" and `bank`
+in "loan approval from the bank" should be represented differently.
+
+Transformers made contextual representation scalable by using self-attention,
+which lets each token incorporate information from other tokens in the context.
+
+# From Language Modeling to Instruction Following
+
+Base language models are trained to predict text. Instruction-following models
+are further adapted to respond to user requests. This adaptation may include
+instruction tuning, preference tuning, reinforcement learning from human
+feedback or other alignment techniques.
+
+The distinction matters:
+
+- a **base model** continues text;
+- an **instruction-tuned model** follows requests;
+- a **chat model** follows conversational message structure;
+- a **tool-using model** can produce calls to external functions or APIs;
+- a **RAG system** conditions the model on retrieved evidence.
+
+Many failures come from confusing these layers. A model may be fluent but not
+grounded, instruction-following but not correct, or tool-capable but poorly
+orchestrated.
+
+# Why Scale Changed Behavior
+
+Scaling data, parameters and computation improved model capabilities, but not
+uniformly. Larger models generally became better at capturing long-range
+patterns, following instructions, translating between task formats and
+performing few-shot generalization. However, scaling also increased the need for
+evaluation, governance and cost control.
+
+The practical result is that many NLP tasks can now be attempted with a prompt
+before collecting task-specific labels. This is useful for prototyping, but it
+does not remove the need for validation. A prompt-based classifier still needs a
+test set. A generated summary still needs fidelity checks. A document extraction
+workflow still needs field-level accuracy measurement.
+
+::: {.pitfall-box}
+**Pitfall.** Prompting is not a substitute for evaluation. It is a way to
+specify behavior. The behavior still needs to be measured against the task.
+:::
+
+# Business Analytics Interpretation
+
+For analytics teams, the transition from NLP to LLMs changes the development
+workflow:
+
+| Earlier NLP workflow | LLM-era workflow |
+|---|---|
+| define task and collect labels first | prototype with prompts, then evaluate |
+| build task-specific features | use pretrained representations |
+| train separate models per task | adapt one model to many tasks |
+| output labels or scores | output structured artifacts and explanations |
+| evaluate model metric only | evaluate retrieval, generation and workflow |
+
+This does not mean the LLM-era workflow is easier. It shifts difficulty from
+feature engineering toward system design, context management, evaluation and
+governance.
+
+# Mini Exercise
+
+Take one classical NLP task, such as sentiment analysis, named entity
+recognition or summarization. Describe:
+
+1. how a classical pipeline would solve it;
+2. how an LLM prompt would solve it;
+3. what could go wrong in the LLM version;
+4. what test set or rubric would be needed before using it in a business
+   workflow.
+
+::: {.takeaway-box}
+**Takeaway.** Large language models extend the NLP tradition by replacing many
+task-specific pipelines with pretrained, contextual, conditional generation.
+The new engineering center is the full GenAI system: prompt, context, tools,
+retrieval, evaluation and governance.
+:::

@@ -1,0 +1,250 @@
+---
+title: "What Is Generative AI?"
+subtitle: "Primer 1 for Applied Generative AI Business Analytics"
+number-sections: false
+date: "2026-01-01"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../../references.bib
+categories: ["M0", "Primer", "Generative AI", "Foundations"]
+description: "A technical primer introducing generative AI as distribution learning and conditional artifact synthesis."
+format:
+  html:
+    toc: false
+    fontsize: 10pt
+    css: primer-style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+::: {.primer-kicker}
+Module 0 Primer | Points of Significance
+:::
+
+# What Is Generative AI?
+
+Generative artificial intelligence is a class of modeling methods that learn
+regularities in data and use them to synthesize new artifacts. In business
+analytics, these artifacts may be natural-language summaries, code, structured
+records, classifications with rationales, images, forecasts with explanations,
+or tool-mediated actions.
+
+More formally, a generative model represents or approximates a probability
+distribution over data, often written as \(p_\theta(x)\), or a conditional
+distribution over outputs given inputs and context, written as
+\(p_\theta(y \mid x, c)\). Here \(x\) may be source data, \(y\) is the generated
+artifact, \(c\) is context such as instructions or retrieved evidence, and
+\(\theta\) denotes learned model parameters.
+
+::: {.key-box}
+**Key idea.** Generative AI is not simply "AI that writes text." It is
+probabilistic artifact synthesis: a model uses learned structure and current
+context to produce plausible new data.
+:::
+
+```{python}
+#| label: fig-generative-ai-contrast
+#| fig-cap: "Three views of generative AI. (a) Discriminative modeling estimates a boundary or score for labels. (b) Generative modeling learns the structure of the data distribution and can sample new observations. (c) Conditional generation produces artifacts under instructions, evidence and constraints."
+#| fig-width: 8.2
+#| fig-height: 2.45
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(7)
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "figure.dpi": 140
+})
+
+fig, axes = plt.subplots(1, 3, figsize=(8.2, 2.45))
+
+# Panel a: discriminative boundary
+n = 34
+x0 = np.random.normal([0.36, 0.44], [0.10, 0.12], size=(n, 2))
+x1 = np.random.normal([0.67, 0.63], [0.10, 0.12], size=(n, 2))
+ax = axes[0]
+ax.scatter(x0[:, 0], x0[:, 1], s=15, facecolors="white", edgecolors="#3b82f6", lw=0.9)
+ax.scatter(x1[:, 0], x1[:, 1], s=15, color="#3b82f6", lw=0.9)
+xx = np.array([0.12, 0.90])
+ax.plot(xx, -0.9 * xx + 1.05, color="#111827", lw=1.2)
+ax.text(0.13, 0.91, "a", fontweight="bold")
+ax.set_title("Predict labels", pad=4)
+ax.set_xlabel("feature 1")
+ax.set_ylabel("feature 2")
+ax.set_xlim(0.08, 0.93)
+ax.set_ylim(0.13, 0.94)
+ax.set_xticks([])
+ax.set_yticks([])
+
+# Panel b: generative density and samples
+ax = axes[1]
+grid_x, grid_y = np.meshgrid(np.linspace(0, 1, 80), np.linspace(0, 1, 80))
+z1 = np.exp(-(((grid_x - 0.35) ** 2) / 0.018 + ((grid_y - 0.58) ** 2) / 0.028))
+z2 = 0.9 * np.exp(-(((grid_x - 0.68) ** 2) / 0.026 + ((grid_y - 0.39) ** 2) / 0.018))
+z = z1 + z2
+ax.contour(grid_x, grid_y, z, levels=7, colors="#374151", linewidths=0.65)
+samples = np.vstack([
+    np.random.normal([0.35, 0.58], [0.06, 0.08], size=(14, 2)),
+    np.random.normal([0.68, 0.39], [0.08, 0.06], size=(14, 2)),
+])
+ax.scatter(samples[:, 0], samples[:, 1], s=12, color="#047857", alpha=0.85)
+ax.text(0.05, 0.91, "b", fontweight="bold")
+ax.set_title("Learn and sample data", pad=4)
+ax.set_xlabel("data dimension 1")
+ax.set_ylabel("data dimension 2")
+ax.set_xlim(0.02, 0.98)
+ax.set_ylim(0.02, 0.98)
+ax.set_xticks([])
+ax.set_yticks([])
+
+# Panel c: conditional generation stack
+ax = axes[2]
+ax.axis("off")
+ax.text(0.03, 0.91, "c", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Generate under context", pad=4)
+boxes = [
+    (0.07, 0.63, "instruction"),
+    (0.37, 0.63, "evidence"),
+    (0.67, 0.63, "constraints"),
+    (0.25, 0.34, "model"),
+    (0.58, 0.34, "artifact")
+]
+for x, y, label in boxes:
+    ax.add_patch(plt.Rectangle((x, y), 0.24, 0.16, fill=False, ec="#111827", lw=1.0))
+    ax.text(x + 0.12, y + 0.08, label, ha="center", va="center", fontsize=8)
+for start, end in [((0.19, 0.63), (0.33, 0.50)), ((0.49, 0.63), (0.42, 0.50)),
+                   ((0.79, 0.63), (0.50, 0.50)), ((0.49, 0.42), (0.58, 0.42))]:
+    ax.annotate("", xy=end, xytext=start, arrowprops=dict(arrowstyle="->", lw=0.9))
+
+fig.tight_layout(w_pad=1.0)
+plt.show()
+```
+
+**Figure 1a** shows the familiar discriminative setting. The model receives
+features and learns a decision rule, score, or boundary. Many classical
+analytics workflows live here: churn prediction, fraud scoring, lead
+qualification, credit risk, and response prediction. The output space is fixed
+in advance.
+
+**Figure 1b** shows the generative setting. Rather than learning only a
+boundary, the model learns structure in the data distribution. Once such a
+distribution has been learned, the model can sample new observations, fill in
+missing information, denoise corrupted inputs, or continue a pattern.
+
+**Figure 1c** shows the modern business GenAI setting. In practice, the model is
+only one component. The generated artifact is conditioned by instructions,
+evidence, constraints, retrieval, tools, user interface design, and evaluation.
+For applied analytics, the system surrounding the model often determines whether
+the output is reliable.
+
+# Generative and Discriminative Questions
+
+Discriminative modeling asks questions such as:
+
+$$
+P(y \mid x)
+$$
+
+What is the probability of a label \(y\) given an observation \(x\)? A model
+might estimate the probability that a customer will churn given recent product
+usage.
+
+Generative modeling asks questions such as:
+
+$$
+P(x) \quad \text{or} \quad P(x, y)
+$$
+
+What data are likely? How are observations distributed? What new sample would
+look like it came from the same process?
+
+Modern large language models often operate conditionally:
+
+$$
+P_\theta(y_1, \ldots, y_T \mid x, c)
+$$
+
+The generated text \(y_1, \ldots, y_T\) depends on an input \(x\), context
+\(c\), and learned parameters \(\theta\). This is why prompt design, retrieval
+quality, and context selection are not cosmetic details. They change the
+conditional distribution from which the answer is generated.
+
+# Families of Generative Models
+
+| Family | Learned object | Generation mechanism | Typical artifacts |
+|---|---|---|---|
+| Autoregressive models | Next-token or next-step distribution | Sequential sampling | Text, code, sequences |
+| Diffusion models | Denoising process | Iterative refinement from noise | Images, audio, video |
+| Variational autoencoders | Latent representation and decoder | Sample latent variables, decode | Synthetic data, representations |
+| Generative adversarial networks | Generator that fools a discriminator | Adversarial optimization | Images, simulation data |
+| Retrieval-augmented LLM systems | Conditional generation plus external evidence | Retrieve, condition, generate | Grounded answers and reports |
+
+This taxonomy matters because "generative AI" names a modeling family, not a
+single product. A chatbot, image generator, code assistant, synthetic-data
+engine, and document-review workflow may all be generative, but the evaluation
+criteria differ.
+
+# Business Analytics Interpretation
+
+For business analytics, a generative model is useful when it converts data and
+context into an artifact that supports a decision. Examples include:
+
+- summarizing customer complaints into operational themes;
+- extracting contract obligations into a structured table;
+- drafting explanations for a dashboard;
+- generating SQL or Python code for an analyst;
+- creating scenario narratives from forecasts;
+- comparing policy documents and flagging inconsistencies.
+
+The artifact should be judged by the task it supports. A support-ticket summary
+must be faithful to tickets. A contract extraction must be complete and
+traceable. A generated SQL query must run and answer the intended question. A
+strategy memo must separate evidence from speculation.
+
+::: {.pitfall-box}
+**Pitfall.** The model objective is not the same as the business objective.
+Text that is likely under the model can be unsupported, incomplete, or
+misaligned with the decision being made.
+:::
+
+# Technical Failure Modes
+
+Generative systems fail in recognizable ways:
+
+- **Unsupported continuation:** the model produces plausible content when
+  evidence is absent.
+- **Context misuse:** the model ignores, misreads, or overweights supplied
+  information.
+- **Distribution mismatch:** the deployment task differs from the model's
+  training or evaluation setting.
+- **Evaluation leakage:** examples or answers used for testing are also present
+  in the development process.
+- **Interface overtrust:** users treat fluent language as if it were verified
+  analysis.
+
+These failures are not mysterious. They follow from using probabilistic models
+inside open-ended tasks. The remedy is not simply "better prompting"; it is
+better system design: grounding, constraints, tests, monitoring, and human
+review.
+
+# Mini Exercise
+
+Choose one analytics workflow: customer support, invoice processing, market
+research, compliance review, or dashboard reporting. Identify:
+
+1. the input \(x\);
+2. the context \(c\);
+3. the generated artifact \(y\);
+4. the evidence needed to verify \(y\);
+5. the risk if \(y\) is fluent but wrong.
+
+::: {.takeaway-box}
+**Takeaway.** Generative AI should be understood as distribution learning plus
+conditional artifact generation. The model creates possibilities; the analytic
+system must make them useful, grounded, and governed.
+:::

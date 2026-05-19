@@ -1,0 +1,257 @@
+---
+title: "Probability and Text Generation"
+subtitle: "Primer 2 for Applied Generative AI Business Analytics"
+number-sections: false
+date: "2026-01-01"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../../references.bib
+categories: ["M0", "Primer", "Probability", "Text Generation"]
+description: "A technical primer explaining next-token probability, softmax, sampling, temperature, and why likelihood is not truth."
+format:
+  html:
+    toc: false
+    fontsize: 10pt
+    css: primer-style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+::: {.primer-kicker}
+Module 0 Primer | Points of Significance
+:::
+
+# Probability and Text Generation
+
+Large language models generate text by repeatedly estimating a probability
+distribution over the next token. The model does not first write a full answer
+and then display it. It conditions on the prompt and all tokens already
+generated, scores possible next tokens, transforms those scores into
+probabilities, selects one token, and repeats.
+
+If a generated response contains tokens \(w_1, \ldots, w_T\), an autoregressive
+language model factorizes the probability of the sequence as
+
+$$
+\begin{align}
+P(w_1, \ldots, w_T)
+= \prod_{t=1}^{T} P(w_t \mid w_1, \ldots, w_{t-1}).
+\end{align}
+$$
+
+With a prompt or external context \(c\), the conditional version is
+
+$$
+\begin{align}
+P(w_1, \ldots, w_T \mid c)
+= \prod_{t=1}^{T} P(w_t \mid c, w_1, \ldots, w_{t-1}).
+\end{align}
+$$
+
+::: {.key-box}
+**Key idea.** Text generation is conditional probability applied sequentially.
+Every generated token changes the context for the next prediction.
+:::
+
+```{python}
+#| label: fig-text-generation-probability
+#| fig-cap: "Three probability views of text generation. (a) The model assigns logits to candidate next tokens and softmax converts them into probabilities. (b) Temperature changes the sharpness of the distribution, affecting variation in sampled outputs. (c) A generated response is a chain of conditional choices, so early selections influence later probabilities."
+#| fig-width: 8.2
+#| fig-height: 2.55
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "figure.dpi": 140
+})
+
+def softmax(z, temperature=1.0):
+    z = np.asarray(z, dtype=float) / temperature
+    z = z - z.max()
+    exp_z = np.exp(z)
+    return exp_z / exp_z.sum()
+
+tokens = ["overdue", "paid", "missing", "due", "incorrect"]
+logits = np.array([3.0, 2.4, 1.5, 1.2, 0.7])
+prob = softmax(logits)
+
+fig, axes = plt.subplots(1, 3, figsize=(8.2, 2.55))
+
+# Panel a: logits to probabilities
+ax = axes[0]
+x = np.arange(len(tokens))
+ax.bar(x - 0.18, logits / logits.max(), width=0.34, color="#9ca3af", label="scaled logit")
+ax.bar(x + 0.18, prob, width=0.34, color="#2563eb", label="probability")
+ax.set_xticks(x)
+ax.set_xticklabels(tokens, rotation=35, ha="right")
+ax.set_ylim(0, 1.05)
+ax.set_ylabel("relative value")
+ax.set_title("Scores become probabilities", pad=4)
+ax.text(-0.45, 0.98, "a", fontweight="bold")
+ax.legend(frameon=False, fontsize=7, loc="upper right")
+
+# Panel b: temperature distributions
+ax = axes[1]
+temps = [0.4, 1.0, 1.8]
+colors = ["#111827", "#2563eb", "#f97316"]
+for temp, color in zip(temps, colors):
+    ax.plot(x, softmax(logits, temp), marker="o", lw=1.4, color=color, label=f"T={temp}")
+ax.set_xticks(x)
+ax.set_xticklabels(tokens, rotation=35, ha="right")
+ax.set_ylim(0, 0.9)
+ax.set_ylabel("next-token probability")
+ax.set_title("Temperature controls spread", pad=4)
+ax.text(-0.45, 0.83, "b", fontweight="bold")
+ax.legend(frameon=False, fontsize=7)
+
+# Panel c: sequential dependency
+ax = axes[2]
+steps = np.arange(1, 6)
+p_path = np.array([0.47, 0.38, 0.55, 0.31, 0.44])
+alt_path = np.array([0.24, 0.33, 0.21, 0.29, 0.18])
+ax.plot(steps, p_path, marker="o", color="#047857", lw=1.4, label="chosen path")
+ax.plot(steps, alt_path, marker="o", color="#9ca3af", lw=1.2, label="alternative")
+ax.set_xticks(steps)
+ax.set_xlabel("generation step")
+ax.set_ylabel("conditional probability")
+ax.set_ylim(0, 0.65)
+ax.set_title("Each token changes context", pad=4)
+ax.text(0.68, 0.60, "c", fontweight="bold")
+ax.legend(frameon=False, fontsize=7)
+
+fig.tight_layout(w_pad=1.0)
+plt.show()
+```
+
+**Figure 1a** shows the last step of a neural language model. The model produces
+unnormalized scores, called logits, for candidate tokens. The softmax function
+turns these scores into probabilities:
+
+$$
+\begin{align}
+P(w_i \mid c) =
+\frac{\exp(z_i)}
+{\sum_j \exp(z_j)}.
+\end{align}
+$$
+
+The highest-scoring token is not guaranteed to be selected unless decoding is
+configured greedily. Many systems sample from the distribution, which allows
+multiple valid continuations.
+
+**Figure 1b** shows why generation settings matter. Temperature rescales logits
+before softmax:
+
+$$
+\begin{align}
+P_T(w_i \mid c) =
+\frac{\exp(z_i/T)}
+{\sum_j \exp(z_j/T)}.
+\end{align}
+$$
+
+Low temperature concentrates probability on the highest-scoring token. High
+temperature spreads probability over more candidates. In business analytics,
+low-temperature generation is often useful for extraction, classification, and
+reporting; higher-temperature generation may be useful for brainstorming or
+scenario generation.
+
+**Figure 1c** shows the sequential nature of generation. Once the model chooses
+a token, that token becomes part of the context. A weak early choice can shift
+later probabilities and make a response drift. This is one reason long
+generations need constraints, intermediate checks, retrieval, or structured
+outputs.
+
+# Tokens Are the Unit of Prediction
+
+A token is not necessarily a word. It may be a word, part of a word, a number
+fragment, punctuation, whitespace, or a code symbol. Tokenization affects:
+
+- how many model steps are needed to generate an answer;
+- how much context fits in the context window;
+- how names, abbreviations, numbers, and rare terms are represented;
+- how much an API call costs.
+
+For example, a phrase such as `quarterly revenue increased by 12%` might be
+represented as several tokens: `quarterly`, ` revenue`, ` increased`, ` by`,
+` 12`, `%`. The exact decomposition depends on the tokenizer.
+
+# Likelihood, Perplexity and Fluency
+
+Language models are often trained to assign high probability to observed text.
+One common training objective is cross-entropy loss, which penalizes the model
+when it assigns low probability to the true next token. Perplexity is an
+exponentiated version of this loss and can be interpreted as the model's
+effective uncertainty over next-token choices.
+
+Lower perplexity means the model is better at predicting text from a given
+distribution. It does not necessarily mean the model is more truthful, more
+ethical, or more useful for a business decision. A model can assign high
+likelihood to a fluent but unsupported statement because the statement resembles
+common language patterns.
+
+::: {.pitfall-box}
+**Pitfall.** Probability is not truth. A language model estimates plausible
+continuations, not verified facts. Factuality must be supplied by evidence,
+retrieval, tools, tests, or human review.
+:::
+
+# A Worked Analytics Example
+
+Suppose the prompt is:
+
+> The main reason customers delayed renewal was
+
+Without evidence, the model may assign high probability to continuations such
+as `budget constraints`, `implementation delays`, or `lack of stakeholder
+alignment`, because these are common business explanations. The answer may be
+fluent and plausible even if the actual renewal data show a different pattern.
+
+Now suppose the prompt includes retrieved evidence:
+
+> In 37 of 52 renewal notes, customers mentioned unresolved security review.
+> In 9 notes, customers mentioned budget. In 6 notes, customers mentioned
+> procurement timing. The main reason customers delayed renewal was
+
+The conditional distribution changes. Tokens related to security review should
+now receive higher probability because the evidence changes the context. This
+is the central logic of retrieval-augmented generation: change the input
+context so useful tokens become more probable.
+
+# Decoding Choices and Analytic Tasks
+
+| Task | Desired behavior | Typical decoding preference |
+|---|---|---|
+| Field extraction | Stable, exact, schema-following | Low temperature, structured output |
+| Classification | Consistent labels | Low temperature, constrained labels |
+| Summarization | Faithful compression | Low to moderate temperature, evidence included |
+| Brainstorming | Diverse alternatives | Higher temperature or multiple samples |
+| Report drafting | Fluent but grounded narrative | Moderate temperature with citations/checks |
+
+Decoding settings do not solve reasoning or factuality by themselves. They
+control how the model uses its probability distribution. The surrounding system
+must still specify the task, provide evidence, constrain the output, and test
+the result.
+
+# Mini Exercise
+
+For the prompt:
+
+> The invoice should be flagged because
+
+write five possible next-token continuations. Then identify which continuations
+would be acceptable only if supporting data were present. Finally, rewrite the
+prompt so the model must condition on invoice fields rather than general
+business plausibility.
+
+::: {.takeaway-box}
+**Takeaway.** Language models generate text by chaining next-token
+probabilities. The quality of a business output depends on how well the system
+controls the context, decoding process, evidence, and evaluation.
+:::

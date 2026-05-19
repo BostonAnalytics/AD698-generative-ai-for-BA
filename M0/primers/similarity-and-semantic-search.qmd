@@ -1,0 +1,260 @@
+---
+title: "Similarity and Semantic Search"
+subtitle: "Primer 5 for Applied Generative AI Business Analytics"
+number-sections: false
+date: "2026-01-01"
+date-modified: today
+date-format: long
+engine: jupyter
+bibliography: ../../references.bib
+categories: ["M0", "Primer", "Similarity", "Semantic Search", "Foundations"]
+description: "A technical primer explaining similarity metrics, nearest-neighbor retrieval, hybrid search and evaluation for semantic search systems."
+format:
+  html:
+    toc: false
+    fontsize: 10pt
+    css: primer-style.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+::: {.primer-kicker}
+Module 0 Primer | Points of Significance
+:::
+
+# Similarity and Semantic Search
+
+Search is one of the core operations in generative AI systems. Before a model
+can answer a question about a policy, contract, research memo, support ticket or
+knowledge base, the system must decide which pieces of evidence are relevant.
+Semantic search uses learned representations to retrieve material that is
+meaningfully related to a query, even when the exact words differ.
+
+Traditional keyword search asks whether query terms occur in a document.
+Semantic search asks whether the query and document occupy nearby regions in an
+embedding space. In modern retrieval-augmented generation, both signals often
+matter.
+
+::: {.key-box}
+**Key idea.** Semantic search converts retrieval into a nearest-neighbor
+problem: embed the query, embed the documents, compare vectors, then return the
+documents most similar to the query under the chosen metric.
+:::
+
+```{python}
+#| label: fig-semantic-search-panels
+#| fig-cap: "Three views of semantic search. (a) Keyword retrieval can miss paraphrases while semantic retrieval can find related language. (b) Ranking depends on the similarity metric and threshold. (c) Hybrid retrieval combines lexical and embedding-based evidence before reranking."
+#| fig-width: 8.2
+#| fig-height: 2.75
+import numpy as np
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({
+    "font.size": 8,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "figure.dpi": 140
+})
+
+fig, axes = plt.subplots(1, 3, figsize=(8.2, 2.75))
+
+# Panel a: keyword vs semantic matches
+ax = axes[0]
+ax.axis("off")
+ax.text(0.02, 0.93, "a", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Exact terms and paraphrases", pad=4)
+rows = [
+    ("query", "renewal delayed by security review", "#111827"),
+    ("keyword hit", "security review delayed renewal", "#2563eb"),
+    ("semantic hit", "customer waiting on infosec approval", "#047857"),
+    ("miss", "office lease renewal deadline", "#9ca3af"),
+]
+for i, (label, text, color) in enumerate(rows):
+    y = 0.76 - i * 0.18
+    ax.text(0.04, y, label, color=color, fontweight="bold", fontsize=8)
+    ax.text(0.34, y, text, color=color, fontsize=8)
+    ax.plot([0.32, 0.32], [0.16, 0.84], color="#e5e7eb", lw=0.8)
+
+# Panel b: similarity threshold
+ax = axes[1]
+docs = np.arange(1, 9)
+scores = np.array([0.91, 0.84, 0.76, 0.63, 0.55, 0.42, 0.36, 0.22])
+colors = ["#047857" if s >= 0.60 else "#9ca3af" for s in scores]
+ax.bar(docs, scores, color=colors)
+ax.axhline(0.60, color="#111827", lw=1.0, ls="--")
+ax.text(6.0, 0.63, "threshold", fontsize=7)
+ax.set_ylim(0, 1.0)
+ax.set_xlabel("candidate document")
+ax.set_ylabel("similarity")
+ax.set_title("Ranking requires a cutoff", pad=4)
+ax.text(0.55, 0.94, "b", fontweight="bold")
+ax.set_xticks(docs)
+
+# Panel c: hybrid retrieval
+ax = axes[2]
+ax.axis("off")
+ax.text(0.02, 0.93, "c", fontweight="bold", transform=ax.transAxes)
+ax.set_title("Hybrid retrieval pipeline", pad=4)
+boxes = [
+    (0.06, 0.66, "query"),
+    (0.36, 0.78, "keyword\nsearch"),
+    (0.36, 0.54, "vector\nsearch"),
+    (0.66, 0.66, "rerank"),
+    (0.66, 0.34, "top-k\nevidence"),
+]
+for x, y, label in boxes:
+    ax.add_patch(plt.Rectangle((x, y), 0.22, 0.13, fill=False, ec="#111827", lw=1.0))
+    ax.text(x + 0.11, y + 0.065, label, ha="center", va="center", fontsize=8)
+for start, end in [
+    ((0.28, 0.72), (0.36, 0.84)),
+    ((0.28, 0.72), (0.36, 0.60)),
+    ((0.58, 0.84), (0.66, 0.73)),
+    ((0.58, 0.60), (0.66, 0.70)),
+    ((0.77, 0.66), (0.77, 0.47)),
+]:
+    ax.annotate("", xy=end, xytext=start, arrowprops=dict(arrowstyle="->", lw=0.9))
+
+fig.tight_layout(w_pad=1.0)
+plt.show()
+```
+
+**Figure 1a** shows the central motivation for semantic search. Exact keyword
+retrieval works well when the document uses the same words as the query. It can
+miss relevant paraphrases, such as "infosec approval" for "security review."
+Semantic retrieval can recover such matches because similarity is computed in a
+learned vector space rather than only through exact term overlap.
+
+**Figure 1b** shows that retrieval is not only a scoring problem. It is also a
+selection problem. The system must choose how many documents to return or what
+similarity threshold to apply. A threshold that is too strict may omit necessary
+evidence; a threshold that is too loose may pass irrelevant material into the
+generation step.
+
+**Figure 1c** shows a common production pattern. Hybrid retrieval combines
+keyword search and vector search, then reranks the combined candidates. This is
+often stronger than either method alone because business documents contain both
+semantic meaning and exact identifiers such as product names, clause numbers,
+invoice IDs, dates and policy codes.
+
+# Metrics of Similarity
+
+Embedding systems usually compare vectors with a distance or similarity metric.
+The most common are cosine similarity, dot product and Euclidean distance.
+
+Cosine similarity compares direction:
+
+$$
+\text{cosine}(a,b) =
+\frac{a \cdot b}{\|a\|\|b\|}.
+$$
+
+Dot product compares both direction and magnitude:
+
+$$
+a \cdot b = \sum_i a_i b_i.
+$$
+
+Euclidean distance compares geometric distance:
+
+$$
+d(a,b) = \sqrt{\sum_i (a_i-b_i)^2}.
+$$
+
+In many text-embedding workflows, vectors are normalized, making cosine
+similarity and dot product closely related. The correct metric depends on how
+the embedding model was trained and how the vector index is configured.
+
+# Retrieval Is Approximate
+
+Large document collections cannot always compare a query vector to every stored
+vector exactly. Vector databases often use approximate nearest-neighbor indexes
+to trade a small amount of retrieval accuracy for speed. This creates practical
+design parameters:
+
+- index type;
+- recall target;
+- latency budget;
+- number of candidates;
+- metadata filters;
+- reranking model;
+- similarity threshold.
+
+The engineering question is not simply "does search work?" It is whether the
+right evidence is retrieved quickly enough, cheaply enough and consistently
+enough for the business decision being supported.
+
+# Semantic Search in RAG
+
+In retrieval-augmented generation, semantic search is upstream of generation.
+If the retrieved evidence is wrong, the model may produce an answer that is
+fluent but unsupported. A strong answer requires both retrieval quality and
+generation quality.
+
+A typical RAG retrieval stage is:
+
+1. accept a user query;
+2. rewrite or expand the query if needed;
+3. embed the query;
+4. retrieve nearest document chunks;
+5. filter by metadata;
+6. rerank candidates;
+7. pass selected evidence to the language model.
+
+Each step changes what the model can know. Query rewriting may clarify intent.
+Metadata filtering may remove documents from the wrong department or time
+period. Reranking may move the most answer-bearing passage into the top few
+results.
+
+::: {.pitfall-box}
+**Pitfall.** A high similarity score does not guarantee answerability. A
+retrieved passage can be topically related to the query without containing the
+specific evidence needed to answer it.
+:::
+
+# Evaluation
+
+Search systems should be evaluated before they are connected to generation.
+Useful retrieval metrics include:
+
+| Metric | Meaning |
+|---|---|
+| recall@k | whether a relevant passage appears in the top \(k\) results |
+| precision@k | how many of the top \(k\) results are relevant |
+| MRR | how high the first relevant result appears |
+| nDCG | whether highly relevant results appear near the top |
+| answerability | whether retrieved evidence is sufficient to answer |
+
+For business analytics, answerability is especially important. A retrieved
+chunk may be semantically similar and still fail to contain the needed number,
+date, source, condition or exception.
+
+# Business Analytics Example
+
+Suppose a manager asks:
+
+> Why are enterprise renewals delayed this quarter?
+
+Keyword retrieval might find documents containing `renewal` and `delayed`.
+Semantic retrieval might also find `procurement hold`, `security approval`,
+`legal redlines`, `data processing addendum`, and `budget freeze`. A hybrid
+system can combine both. A reranker can then prioritize passages that actually
+explain renewal delay rather than merely mention renewal.
+
+The final answer should cite or trace back to the retrieved evidence. Otherwise
+the language model may merge real evidence with plausible general business
+explanations.
+
+# Mini Exercise
+
+Design a semantic search test set for a small internal knowledge base. Write
+five queries and identify the passages that should be retrieved for each. For
+one query, include a passage that is topically related but does **not** answer
+the question. Explain how that false positive could affect a generated answer.
+
+::: {.takeaway-box}
+**Takeaway.** Semantic search is not just vector similarity. It is a retrieval
+system with metrics, thresholds, filtering, reranking and evaluation. In GenAI
+applications, retrieval quality sets the ceiling for grounded generation.
+:::
