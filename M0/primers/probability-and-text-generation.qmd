@@ -1,6 +1,8 @@
 ---
-title: "Probability and Text Generation"
-subtitle: "Primer 2 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 2 - Probability and Text Generation"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -20,17 +22,16 @@ execute:
   message: false
 ---
 
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
-
 # Probability and Text Generation
 
 Large language models generate text by repeatedly estimating a probability
 distribution over the next token. The model does not first write a full answer
 and then display it. It conditions on the prompt and all tokens already
 generated, scores possible next tokens, transforms those scores into
-probabilities, selects one token, and repeats.
+probabilities, selects one token, and repeats. This autoregressive view is the
+modern neural version of the language-modeling problem that runs from \(n\)-gram
+models to neural probabilistic language models and transformers
+[@Bengio2003NeuralLM; @Vaswani2017Attention; @JurafskyMartin2026SLP].
 
 If a generated response contains tokens \(w_1, \ldots, w_T\), an autoregressive
 language model factorizes the probability of the sequence as
@@ -157,7 +158,7 @@ P_T(w_i \mid c) =
 $$
 
 Low temperature concentrates probability on the highest-scoring token. High
-temperature spreads probability over more candidates. In business analytics,
+temperature spreads probability over more candidates. In business settings,
 low-temperature generation is often useful for extraction, classification, and
 reporting; higher-temperature generation may be useful for brainstorming or
 scenario generation.
@@ -182,6 +183,35 @@ For example, a phrase such as `quarterly revenue increased by 12%` might be
 represented as several tokens: `quarterly`, ` revenue`, ` increased`, ` by`,
 ` 12`, `%`. The exact decomposition depends on the tokenizer.
 
+# Training Objective and Prediction Error
+
+During training, the model sees a context and the true next token. It assigns a
+probability to every vocabulary item, and the loss is large when the true token
+receives low probability. For one position \(t\), the negative log-likelihood
+is
+
+$$
+\begin{align}
+\ell_t(\theta)
+  &= -\log P_\theta(w_t \mid c, w_{<t}).
+\end{align}
+$$
+
+For a sequence, the average cross-entropy is
+
+$$
+\begin{align}
+H
+  &= -\frac{1}{T}\sum_{t=1}^{T}
+     \log P_\theta(w_t \mid c, w_{<t}).
+\end{align}
+$$
+
+This objective explains both the strength and the limitation of language
+models. It strongly rewards learning regularities in text. It does not, by
+itself, distinguish a true statement from a merely common or rhetorically
+plausible one.
+
 # Likelihood, Perplexity and Fluency
 
 Language models are often trained to assign high probability to observed text.
@@ -189,6 +219,13 @@ One common training objective is cross-entropy loss, which penalizes the model
 when it assigns low probability to the true next token. Perplexity is an
 exponentiated version of this loss and can be interpreted as the model's
 effective uncertainty over next-token choices.
+
+$$
+\begin{align}
+\text{perplexity}
+  &= \exp(H).
+\end{align}
+$$
 
 Lower perplexity means the model is better at predicting text from a given
 distribution. It does not necessarily mean the model is more truthful, more
@@ -202,7 +239,7 @@ continuations, not verified facts. Factuality must be supplied by evidence,
 retrieval, tools, tests, or human review.
 :::
 
-# A Worked Analytics Example
+# Demonstration: Evidence Changes the Distribution
 
 Suppose the prompt is:
 
@@ -224,7 +261,13 @@ now receive higher probability because the evidence changes the context. This
 is the central logic of retrieval-augmented generation: change the input
 context so useful tokens become more probable.
 
-# Decoding Choices and Analytic Tasks
+The same logic applies to formatting constraints. If the prompt includes a
+schema, valid field names and examples, the model's probability mass shifts
+toward tokens that continue the schema. This is why structured generation is
+usually more reliable when the desired structure is explicit rather than merely
+implied.
+
+# Decoding Choices and NLP Tasks
 
 | Task | Desired behavior | Typical decoding preference |
 |---|---|---|
@@ -232,26 +275,39 @@ context so useful tokens become more probable.
 | Classification | Consistent labels | Low temperature, constrained labels |
 | Summarization | Faithful compression | Low to moderate temperature, evidence included |
 | Brainstorming | Diverse alternatives | Higher temperature or multiple samples |
-| Report drafting | Fluent but grounded narrative | Moderate temperature with citations/checks |
+| Business report drafting | Fluent but grounded narrative | Moderate temperature with citations/checks |
 
 Decoding settings do not solve reasoning or factuality by themselves. They
 control how the model uses its probability distribution. The surrounding system
 must still specify the task, provide evidence, constrain the output, and test
 the result.
 
-# Mini Exercise
+# Demonstration: Decoding Is a Policy
 
-For the prompt:
+Decoding is the policy that turns probabilities into text.
 
-> The invoice should be flagged because
+| Decoding policy | Token chosen from distribution | Typical effect |
+|---|---|---|
+| greedy | highest probability token | stable but can be dull or locally trapped |
+| sampling | random draw from distribution | varied but less predictable |
+| top-\(k\) | sample from \(k\) highest tokens | removes low-ranked tail tokens |
+| top-\(p\) | sample from smallest set with mass \(p\) | adapts candidate set to uncertainty |
 
-write five possible next-token continuations. Then identify which continuations
-would be acceptable only if supporting data were present. Finally, rewrite the
-prompt so the model must condition on invoice fields rather than general
-business plausibility.
+For extraction and classification, a narrow decoding policy is usually
+preferable. For ideation, multiple samples may be more useful than one
+high-confidence continuation. Either way, the probability distribution is only
+the model's local view; the decoding policy determines the realized text.
 
 ::: {.takeaway-box}
 **Takeaway.** Language models generate text by chaining next-token
 probabilities. The quality of a business output depends on how well the system
 controls the context, decoding process, evidence, and evaluation.
 :::
+
+### References
+
+For a deeper path, read Jurafsky and Martin on \(n\)-gram and neural language
+models [@JurafskyMartin2026SLP], Bengio et al. on neural probabilistic language
+models [@Bengio2003NeuralLM], and Vaswani et al. for the transformer
+architecture that made large-scale conditional generation practical
+[@Vaswani2017Attention].

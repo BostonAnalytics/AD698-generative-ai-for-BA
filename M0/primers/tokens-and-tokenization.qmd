@@ -1,6 +1,8 @@
 ---
-title: "Tokens and Tokenization"
-subtitle: "Primer 3 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 3 - Tokens and Tokenization"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -14,15 +16,19 @@ format:
     toc: false
     fontsize: 10pt
     css: primer-style.css
+  pdf:
+    toc: false
+    fontsize: 10pt
+    margin-left: 1.0in
+    margin-right: 1.0in
+    margin-top: 1.0in
+    margin-bottom: 1.0in
+    documentclass: scrartcl
 execute:
   echo: false
   warning: false
   message: false
 ---
-
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
 
 # Tokens and Tokenization
 
@@ -36,6 +42,9 @@ Tokenization is easy to dismiss as preprocessing, but it is one of the central
 interfaces between human language and model computation. It affects how a model
 handles rare words, names, numbers, programming languages, multilingual text,
 context length, latency and API cost.
+The type/token/term distinctions and the hard cases around apostrophes,
+hyphens, names, URLs and multilingual text are standard concerns in information
+retrieval and NLP [@ManningRaghavanSchutze2008IR; @JurafskyMartin2026SLP].
 
 ::: {.key-box}
 **Key idea.** A language model predicts tokens, not ideas, words or sentences.
@@ -141,10 +150,18 @@ This provides a compromise:
 - **Subword tokenization** handles open vocabulary text while keeping sequences
   shorter.
 
+The compromise is not only computational. It is linguistic. A tokenizer must
+decide how to treat contractions, hyphenated expressions, product codes,
+compound nouns and multilingual text. In information retrieval, these choices
+determine which query strings can match which documents; in language modeling,
+they determine the sequence over which the model learns probabilities
+[@ManningRaghavanSchutze2008IR].
+
 Modern tokenizers often use algorithms related to byte-pair encoding,
 WordPiece, unigram language-model tokenization or byte-level variants. The
 technical details differ, but the central goal is the same: represent arbitrary
-text using a fixed vocabulary of reusable units.
+text using a fixed vocabulary of reusable units [@Sennrich-ACL-2016-Neural;
+@Kudo-EMNLP-2018-SentencePiece; @Devlin.Chang.Lee.ea.2018].
 
 # Token IDs and Embeddings
 
@@ -152,13 +169,12 @@ After tokenization, each token is mapped to an integer ID. The model does not
 reason over the string directly. It looks up a learned vector for each token ID:
 
 $$
+\begin{align}
 \text{text}
-\rightarrow
-\text{tokens}
-\rightarrow
-\text{token IDs}
-\rightarrow
-\text{embedding vectors}.
+&\rightarrow \text{tokens} \\
+&\rightarrow \text{token IDs} \\
+&\rightarrow \text{embedding vectors}.
+\end{align}
 $$
 
 Those vectors become the input to the transformer. Attention then operates over
@@ -176,10 +192,10 @@ split `12,487.95` into several tokens, and the token boundaries may not align
 with place value in a way that supports arithmetic. This is one reason models
 can write plausible financial explanations while making arithmetic mistakes.
 
-For analytics work, numerical reliability should come from tools, code or
-databases, not from unconstrained token prediction. A good GenAI workflow lets
-the model explain, route, format and interpret, while exact computation is
-delegated to deterministic systems.
+For business uses that include numbers, numerical reliability should come from
+tools, code or databases, not from unconstrained token prediction. A good GenAI
+workflow lets the model explain, route, format and interpret, while exact
+computation is delegated to deterministic systems.
 
 # Tokenization and Retrieval
 
@@ -198,6 +214,24 @@ Chunking decisions affect retrieval:
 
 Tokenization therefore shapes both what the model sees and what the retrieval
 system can efficiently provide.
+
+# Normalization and Reversibility
+
+Classical NLP pipelines often normalized text by lowercasing, stemming,
+lemmatizing, removing punctuation or deleting stop words. Those operations can
+improve matching, but they can also destroy information. Modern LLM tokenizers
+usually preserve more surface detail because generation must be reversible: the
+system must be able to turn token IDs back into text.
+
+| Operation | Useful for | Risk |
+|---|---|---|
+| lowercasing | reducing vocabulary size | loses proper-noun or acronym signal |
+| stemming | lexical matching | conflates words with different meanings |
+| stop-word removal | sparse retrieval | damages syntax and generation |
+| byte-level encoding | arbitrary text coverage | longer sequences for some strings |
+
+This is why tokenization for search and tokenization for generation are related
+but not identical design problems.
 
 # Context Windows Are Not Memory
 
@@ -223,9 +257,9 @@ tables, code, citations or unusual formatting may consume more tokens than a
 long page of simple prose.
 :::
 
-# Business Analytics Implications
+# Business Use Without Losing the NLP Core
 
-Tokenization affects common analytics applications:
+Tokenization affects common document and language applications:
 
 | Workflow | Tokenization issue | Design response |
 |---|---|---|
@@ -240,15 +274,31 @@ The most reliable systems treat tokenization as an engineering constraint. They
 measure token counts, reserve output space, test chunking, and avoid assuming
 that visible length equals computational length.
 
-# Mini Exercise
+# Demonstration: Same Surface Length, Different Token Burden
 
-Take three inputs from a business setting: a paragraph, a table row and a short
-code snippet. Before using a tokenizer, predict which will use the most tokens.
-Then test your prediction with a tokenizer and explain the result. Which input
-would be most expensive to include repeatedly in a prompt?
+Two strings can look equally short while imposing different modeling costs:
+
+| String type | Example pattern | Tokenization risk |
+|---|---|---|
+| plain prose | `renewal delayed by legal review` | compact and predictable |
+| identifier | `CASE-2026-05-AX19-7781` | splits into many fragments |
+| code | `df.groupby("region")["arr"].sum()` | punctuation and symbols matter |
+| URL/email | `https://...` or `name@domain.com` | long byte-like sequences |
+
+This is why production systems measure token counts directly rather than
+estimating from characters, words or pages.
 
 ::: {.takeaway-box}
 **Takeaway.** Tokenization is the model's first interpretation of text. It
 controls sequence length, context use, cost, retrieval design and the units over
 which next-token probabilities are computed.
 :::
+
+### References
+
+For classic tokenization and IR vocabulary issues, see Manning, Raghavan and
+Schuetze [@ManningRaghavanSchutze2008IR]. For modern NLP treatment of words,
+tokens and subwords, see Jurafsky and Martin [@JurafskyMartin2026SLP],
+Sennrich et al. on byte-pair encoding [@Sennrich-ACL-2016-Neural], Kudo on
+SentencePiece [@Kudo-EMNLP-2018-SentencePiece], and Devlin et al. on WordPiece
+use in BERT [@Devlin.Chang.Lee.ea.2018].

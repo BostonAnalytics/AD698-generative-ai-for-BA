@@ -27,6 +27,8 @@ description: "Question-driven lab for Module 3 focused on prompt design, retriev
 - `M03_T1` should be your worked guide for chunking, embeddings, and simple prompt assembly.
 - This lab asks you to design and test those components more independently.
 - `M03_A` later uses the same SEC evaluation scope in a more open-ended assignment.
+- Conceptually, this lab treats retrieval as an external context-selection mechanism:
+  the system must decide which source passages deserve attention before generation.
 
 ## Recommended Notebook Pattern
 
@@ -34,8 +36,9 @@ description: "Question-driven lab for Module 3 focused on prompt design, retriev
 2. Chunking
 3. Embedding
 4. Retrieval
-5. Prompt construction
-6. Short interpretation
+5. Attention-like retrieval inspection
+6. Prompt construction
+7. Short interpretation
 
 ## Validation Standard
 
@@ -45,6 +48,7 @@ For each major stage, show at least one of the following:
 - embedding shape
 - index or collection size
 - top-k retrieved passages
+- normalized or ranked retrieval scores
 - one prompt example
 - one note on whether the retrieved context looks useful
 
@@ -82,7 +86,25 @@ Required evidence:
 - top matches for the same query
 - one note on retrieval quality differences
 
-### Q4. Build a Prompt Formatter
+### Q4. Inspect Retrieval as External Attention
+
+For one query, create a small table that shows how strongly the retrieval system focuses
+on each top result.
+
+You may normalize similarity scores:
+
+$$
+w_i = \frac{\text{score}_i}{\sum_{j=1}^{k}\text{score}_j}
+$$
+
+Required evidence:
+
+- top 5 chunks for one query
+- raw retrieval score
+- normalized focus weight or rank
+- 2 to 3 sentence interpretation of whether the system is focusing on useful evidence
+
+### Q5. Build a Prompt Formatter
 
 Create a grounded prompt template that includes:
 
@@ -92,7 +114,7 @@ Create a grounded prompt template that includes:
 
 Show one filled prompt example.
 
-### Q5. Failure Analysis
+### Q6. Failure Analysis
 
 Identify at least one retrieval or prompting failure, such as:
 

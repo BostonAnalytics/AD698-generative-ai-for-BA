@@ -1,6 +1,8 @@
 ---
-title: "From NLP to Large Language Models"
-subtitle: "Primer 6 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 6 - From NLP to Large Language Models"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -20,10 +22,6 @@ execute:
   message: false
 ---
 
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
-
 # From NLP to Large Language Models
 
 Natural language processing predates modern generative AI by decades. Earlier
@@ -36,6 +34,11 @@ to many tasks through prompting, fine-tuning, retrieval and tool use.
 The shift is not from "old NLP was bad" to "LLMs are magic." The shift is from
 task-specific pipelines with hand-built features toward general pretrained
 models that can be conditioned for many downstream behaviors.
+This arc connects classical information retrieval, statistical language
+modeling, neural sequence models, contextual encoders and transformer LLMs
+[@ManningRaghavanSchutze2008IR; @Bengio2003NeuralLM;
+@Hochreiter.Schmidhuber.1997; @Devlin.Chang.Lee.ea.2018;
+@Vaswani2017Attention].
 
 ::: {.key-box}
 **Key idea.** LLMs are part of the NLP lineage. They inherit the goal of
@@ -127,7 +130,7 @@ many downstream tasks through prompts, fine-tuning or retrieval.
 **Figure 1c** shows the modern GenAI application pattern. The LLM is not the
 whole system. The system includes prompting, retrieval, tools, evaluation,
 monitoring, interface design and governance. This is the level at which most
-business analytics applications succeed or fail.
+business applications succeed or fail.
 
 # Classical NLP Tasks
 
@@ -148,6 +151,11 @@ These tasks remain important. LLMs did not erase them. Instead, LLMs often
 perform them through prompting or are used inside systems that still need these
 task definitions for evaluation.
 
+The task names are useful because they preserve what must be measured. A model
+may answer a prompt that asks for "entities," but the system still needs to know
+whether it is measuring exact span match, normalized entity identity, relation
+to a knowledge base or usefulness to a downstream workflow.
+
 # Representation Shift
 
 Classical feature engineering represented text using hand-designed or
@@ -162,6 +170,12 @@ in "loan approval from the bank" should be represented differently.
 
 Transformers made contextual representation scalable by using self-attention,
 which lets each token incorporate information from other tokens in the context.
+
+This representation shift also changed transfer learning. Instead of training a
+new model from scratch for every task, practitioners increasingly start with a
+pretrained model and adapt it. Adaptation may be as light as a prompt or as
+heavy as additional supervised fine-tuning. The shared premise is that broad
+pretraining has already learned reusable linguistic and factual regularities.
 
 # From Language Modeling to Instruction Following
 
@@ -182,6 +196,18 @@ Many failures come from confusing these layers. A model may be fluent but not
 grounded, instruction-following but not correct, or tool-capable but poorly
 orchestrated.
 
+The layers can be summarized as a movement from continuation to control:
+
+| Layer | Primary behavior | Added control |
+|---|---|---|
+| base LM | continue text | context only |
+| instruction model | follow task requests | instruction tuning |
+| chat model | maintain dialogue roles | message formatting |
+| tool model | call external functions | schemas and execution |
+| RAG system | answer from evidence | retrieval and citation |
+
+Each layer adds capability, but also adds a new surface for failure.
+
 # Why Scale Changed Behavior
 
 Scaling data, parameters and computation improved model capabilities, but not
@@ -201,10 +227,11 @@ workflow still needs field-level accuracy measurement.
 specify behavior. The behavior still needs to be measured against the task.
 :::
 
-# Business Analytics Interpretation
+# Business Use Without Losing the NLP Core
 
-For analytics teams, the transition from NLP to LLMs changes the development
-workflow:
+For business teams, the transition from NLP to LLMs changes the development
+workflow, but the core technical question remains linguistic: how should text be
+represented, conditioned, transformed and evaluated?
 
 | Earlier NLP workflow | LLM-era workflow |
 |---|---|
@@ -218,16 +245,25 @@ This does not mean the LLM-era workflow is easier. It shifts difficulty from
 feature engineering toward system design, context management, evaluation and
 governance.
 
-# Mini Exercise
+The continuity with classical NLP is important pedagogically. Tokenization,
+classification, sequence labeling, retrieval and evaluation are still present.
+What changes is the default implementation path: many tasks begin with a
+pretrained model and then recover classical structure through prompts, schemas,
+tools and tests.
 
-Take one classical NLP task, such as sentiment analysis, named entity
-recognition or summarization. Describe:
+# Demonstration: Same Task, Different Abstraction Level
 
-1. how a classical pipeline would solve it;
-2. how an LLM prompt would solve it;
-3. what could go wrong in the LLM version;
-4. what test set or rubric would be needed before using it in a business
-   workflow.
+Consider named entity recognition for contracts.
+
+| Approach | Representation | Failure mode |
+|---|---|---|
+| rules | regular expressions and dictionaries | brittle aliases |
+| supervised NLP | labeled spans and sequence model | label drift across domains |
+| LLM prompting | instruction plus context | fluent but inconsistent boundaries |
+| LLM + retrieval/tooling | prompt, evidence and schema validation | orchestration errors |
+
+The task did not disappear. The abstraction level changed. A careful system
+still needs span definitions, examples, boundary rules and evaluation.
 
 ::: {.takeaway-box}
 **Takeaway.** Large language models extend the NLP tradition by replacing many
@@ -235,3 +271,12 @@ task-specific pipelines with pretrained, contextual, conditional generation.
 The new engineering center is the full GenAI system: prompt, context, tools,
 retrieval, evaluation and governance.
 :::
+
+### References
+
+For the broad NLP sequence, see Jurafsky and Martin
+[@JurafskyMartin2026SLP]. Classic landmarks include neural probabilistic
+language modeling [@Bengio2003NeuralLM], LSTMs
+[@Hochreiter.Schmidhuber.1997], BERT [@Devlin.Chang.Lee.ea.2018],
+transformers [@Vaswani2017Attention], and GPT-style few-shot language models
+[@Brown-NeurIPS-2020-Language].

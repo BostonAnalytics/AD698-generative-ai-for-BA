@@ -1,6 +1,8 @@
 ---
-title: "Embeddings as Meaning"
-subtitle: "Primer 4 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 4 - Embeddings as Meaning"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -20,10 +22,6 @@ execute:
   message: false
 ---
 
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
-
 # Embeddings as Meaning
 
 An embedding is a learned numerical representation of an object. In language
@@ -36,6 +34,10 @@ statistical relationships learned from data. However, those relationships are
 often useful enough to support semantic search, clustering, recommendation,
 classification, retrieval-augmented generation and change detection across
 large text collections.
+The modern embedding story connects older vector-space models in information
+retrieval with neural distributional representations such as word2vec and GloVe
+[@Salton.Wong.Yang.1975; @TurneyPantel2010VSM; @Mikolov2013Word2Vec;
+@Pennington.Socher.Manning.2014].
 
 ::: {.key-box}
 **Key idea.** Embeddings convert qualitative artifacts into quantitative
@@ -130,8 +132,10 @@ share exact keywords.
 by the angle between them:
 
 $$
-\cos(\theta) =
-\frac{a \cdot b}{\|a\| \|b\|}.
+\begin{align}
+\cos(\theta)
+  &= \frac{a \cdot b}{\|a\| \|b\|}.
+\end{align}
 $$
 
 Two vectors can have different lengths but similar directions. Cosine
@@ -156,6 +160,21 @@ means similar according to the model's training objective and data. Two
 documents can be nearby because they discuss the same topic, express the same
 intent, answer the same question, or share a genre.
 
+# Distributional Meaning
+
+The basic linguistic intuition is distributional: expressions that occur in
+similar contexts tend to have related meanings. Neural embeddings operationalize
+this idea by learning vectors that are useful for prediction. In word2vec, for
+example, the training task links a word to its surrounding context; in GloVe,
+the objective is tied to global co-occurrence statistics
+[@Mikolov2013Word2Vec; @Pennington.Socher.Manning.2014]. Modern sentence and
+document embeddings extend this idea from words to larger units of text.
+
+This does not make embeddings transparent. Individual dimensions usually do not
+correspond cleanly to human-interpretable features. Meaning is distributed
+across the vector, and similarity emerges from the geometry of many dimensions
+taken together.
+
 # From Sparse to Dense Representations
 
 Traditional information retrieval often represents documents as sparse vectors.
@@ -174,9 +193,14 @@ semantic similarity matters.
 | Dense embeddings | captures paraphrase and related meaning | can retrieve plausible but wrong passages |
 | Hybrid retrieval | combines lexical and semantic signals | more system complexity |
 
-For business analytics, hybrid retrieval is often attractive. Exact terms such
-as policy IDs, product names, invoice numbers and legal clauses matter, but so
-does semantic similarity.
+For business uses, hybrid retrieval is often attractive. Exact terms such as
+policy IDs, product names, invoice numbers and legal clauses matter, but so does
+semantic similarity.
+
+The practical lesson is not to replace lexical retrieval everywhere. Sparse
+retrieval is often better for identifiers, quotes and exact terminology. Dense
+retrieval is often better for paraphrase and intent. Hybrid systems recognize
+that natural language contains both exact strings and flexible meaning.
 
 # Embeddings in RAG
 
@@ -254,7 +278,24 @@ terms, occupations or demographic references into neighborhoods that reflect
 historical stereotypes. For high-stakes uses, embedding behavior should be
 audited with representative queries and documents.
 
-# Business Analytics Implications
+# Granularity
+
+The object being embedded matters. A token embedding, sentence embedding,
+paragraph embedding and document embedding answer different questions.
+
+| Unit embedded | Good for | Common problem |
+|---|---|---|
+| token | internal model computation | context changes representation |
+| sentence | semantic similarity | may omit document-level context |
+| paragraph/chunk | RAG retrieval | boundary choices affect evidence |
+| document | clustering and overview | loses fine-grained answer spans |
+
+Many retrieval failures are really granularity failures. The correct document
+may be retrieved, but the answer-bearing sentence may be buried. Or a highly
+specific sentence may be retrieved without the surrounding context needed to
+interpret it.
+
+# Business Use Without Losing the NLP Core
 
 | Design choice | Why it matters |
 |---|---|
@@ -270,20 +311,32 @@ The strongest retrieval systems are rarely just "embed and search." They use
 metadata, lexical matching, semantic matching, reranking, thresholds and human
 inspection during development.
 
-# Mini Exercise
+# Demonstration: A Query Is Not a Topic Label
 
-Choose ten documents from a business domain, such as support tickets, course
-announcements, policy excerpts or project proposals. Write three queries:
+A query such as `delayed customer renewal` is not a stable topic label. It is a
+short linguistic object whose nearest neighbors depend on the embedding model,
+document chunks and similarity metric.
 
-1. one that should be answered by exact keyword matching;
-2. one that requires semantic similarity;
-3. one that requires both.
+| Candidate passage | Why it may rank highly | Why it may fail |
+|---|---|---|
+| security review note | strong paraphrase of delay cause | may be one account only |
+| procurement email | semantically related process delay | may not explain renewal |
+| renewal clause | exact term overlap | may be legal boilerplate |
+| product roadmap | customer context overlap | may be irrelevant to delay |
 
-For each query, describe what a good retrieved passage would contain and what a
-plausible but bad retrieval result might look like.
+The retrieval question is therefore not "what is nearest?" but "what nearest
+passages are sufficient for the downstream answer?"
 
 ::: {.takeaway-box}
 **Takeaway.** Embeddings make language computable as geometry. They are central
 to semantic search, clustering and RAG, but they must be evaluated as part of a
 task-specific retrieval system.
 :::
+
+### References
+
+Classic foundations include vector-space retrieval [@Salton.Wong.Yang.1975],
+survey treatments of distributional semantics [@TurneyPantel2010VSM],
+word2vec [@Mikolov2013Word2Vec], GloVe
+[@Pennington.Socher.Manning.2014], and the embeddings chapter in Jurafsky and
+Martin [@JurafskyMartin2026SLP].

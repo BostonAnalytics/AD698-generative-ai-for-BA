@@ -1,6 +1,8 @@
 ---
-title: "What Is Generative AI?"
-subtitle: "Primer 1 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 1 - What Is Generative AI?"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -20,17 +22,16 @@ execute:
   message: false
 ---
 
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
-
 # What Is Generative AI?
 
 Generative artificial intelligence is a class of modeling methods that learn
-regularities in data and use them to synthesize new artifacts. In business
-analytics, these artifacts may be natural-language summaries, code, structured
-records, classifications with rationales, images, forecasts with explanations,
-or tool-mediated actions.
+regularities in data and use them to synthesize new artifacts. In language and
+business systems, these artifacts may be summaries, code, structured records,
+classifications with rationales, images, forecasts with explanations, or
+tool-mediated actions. The technical lineage runs through probabilistic
+language modeling, neural representation learning and transformer-based
+sequence modeling [@Bengio2003NeuralLM; @Vaswani2017Attention;
+@JurafskyMartin2026SLP].
 
 More formally, a generative model represents or approximates a probability
 distribution over data, often written as \(p_\theta(x)\), or a conditional
@@ -127,9 +128,8 @@ plt.show()
 
 **Figure 1a** shows the familiar discriminative setting. The model receives
 features and learns a decision rule, score, or boundary. Many classical
-analytics workflows live here: churn prediction, fraud scoring, lead
-qualification, credit risk, and response prediction. The output space is fixed
-in advance.
+business models live here: churn prediction, fraud scoring, lead qualification,
+credit risk, and response prediction. The output space is fixed in advance.
 
 **Figure 1b** shows the generative setting. Rather than learning only a
 boundary, the model learns structure in the data distribution. Once such a
@@ -139,15 +139,17 @@ missing information, denoise corrupted inputs, or continue a pattern.
 **Figure 1c** shows the modern business GenAI setting. In practice, the model is
 only one component. The generated artifact is conditioned by instructions,
 evidence, constraints, retrieval, tools, user interface design, and evaluation.
-For applied analytics, the system surrounding the model often determines whether
-the output is reliable.
+For applied NLP systems, the surrounding design often determines whether the
+output is reliable.
 
 # Generative and Discriminative Questions
 
 Discriminative modeling asks questions such as:
 
 $$
+\begin{align}
 P(y \mid x)
+\end{align}
 $$
 
 What is the probability of a label \(y\) given an observation \(x\)? A model
@@ -157,7 +159,9 @@ usage.
 Generative modeling asks questions such as:
 
 $$
+\begin{align}
 P(x) \quad \text{or} \quad P(x, y)
+\end{align}
 $$
 
 What data are likely? How are observations distributed? What new sample would
@@ -166,13 +170,38 @@ look like it came from the same process?
 Modern large language models often operate conditionally:
 
 $$
+\begin{align}
 P_\theta(y_1, \ldots, y_T \mid x, c)
+\end{align}
 $$
 
 The generated text \(y_1, \ldots, y_T\) depends on an input \(x\), context
 \(c\), and learned parameters \(\theta\). This is why prompt design, retrieval
 quality, and context selection are not cosmetic details. They change the
 conditional distribution from which the answer is generated.
+
+# Levels of Generation
+
+"Generative" can refer to several different levels of modeling. At the lowest
+level, a model may generate the next symbol in a sequence. At the application
+level, the system may generate a structured answer, plan, code block or
+document. These levels are related but not identical. A language model may only
+be trained to predict tokens, yet an application can use that token-level
+behavior to produce a contract summary, a database query or a customer-response
+draft.
+
+| Level | Object generated | Typical constraint |
+|---|---|---|
+| token | next subword or symbol | probability distribution over vocabulary |
+| sequence | sentence, paragraph, code block | context and decoding rule |
+| structured artifact | JSON, table, citation-bearing answer | schema and validation |
+| workflow output | decision memo, ticket update, tool action | business rule and audit trail |
+
+This distinction helps avoid a common misunderstanding. The model generates a
+sequence; the **system** turns the sequence into an artifact with meaning,
+provenance and consequences. Much of applied GenAI is therefore not new model
+training, but careful design of context, constraints and evaluation around a
+pretrained model.
 
 # Families of Generative Models
 
@@ -189,17 +218,27 @@ single product. A chatbot, image generator, code assistant, synthetic-data
 engine, and document-review workflow may all be generative, but the evaluation
 criteria differ.
 
-# Business Analytics Interpretation
+Autoregressive language models are the main focus of these primers because they
+sit at the center of modern NLP systems. They generate one token at a time and
+therefore make generation a sequence of conditional decisions. Diffusion models
+and GANs are important generative families, but they use different objectives
+and generation procedures. The shared idea is distribution learning; the
+mechanism of sampling differs.
 
-For business analytics, a generative model is useful when it converts data and
-context into an artifact that supports a decision. Examples include:
+# Business Use Without Losing the NLP Core
 
-- summarizing customer complaints into operational themes;
-- extracting contract obligations into a structured table;
-- drafting explanations for a dashboard;
-- generating SQL or Python code for an analyst;
-- creating scenario narratives from forecasts;
-- comparing policy documents and flagging inconsistencies.
+For business use, a generative model is useful when it converts language,
+records and context into an artifact that supports a decision. The important
+point is still linguistic and computational: the system must condition the
+model on the right evidence and constrain the artifact to the right form.
+
+| NLP operation | Business-facing artifact | Technical pressure point |
+|---|---|---|
+| summarization | issue brief or account summary | faithfulness to source text |
+| information extraction | structured fields from contracts or forms | schema and boundary decisions |
+| semantic comparison | policy or document differences | paraphrase and contradiction |
+| code generation | SQL or Python draft | executable correctness |
+| grounded generation | answer with evidence | retrieval and citation quality |
 
 The artifact should be judged by the task it supports. A support-ticket summary
 must be faithful to tickets. A contract extraction must be complete and
@@ -232,19 +271,49 @@ inside open-ended tasks. The remedy is not simply "better prompting"; it is
 better system design: grounding, constraints, tests, monitoring, and human
 review.
 
-# Mini Exercise
+# Demonstration: From Model Output to System Output
 
-Choose one analytics workflow: customer support, invoice processing, market
-research, compliance review, or dashboard reporting. Identify:
+The same generated sentence can have different status depending on the system
+around it.
 
-1. the input \(x\);
-2. the context \(c\);
-3. the generated artifact \(y\);
-4. the evidence needed to verify \(y\);
-5. the risk if \(y\) is fluent but wrong.
+| Generated sentence | System status | Why it matters |
+|---|---|---|
+| "The renewal delay was caused by security review." | unsupported continuation | no evidence supplied |
+| same sentence with cited notes | grounded claim | evidence can be inspected |
+| same sentence in JSON with `cause`, `source`, `confidence` | structured artifact | downstream system can validate fields |
+| same sentence after human approval | governed output | accountability is assigned |
+
+The NLP object is a string. The business object is a claim, record or action.
+The bridge between the two is evidence and validation.
+
+# Demonstration: Conditional Artifacts
+
+A compact way to analyze any generated artifact is to name its conditioning
+variables:
+
+$$
+\begin{align}
+\text{artifact}
+  &= f_\theta(\text{input}, \text{instruction}, \text{evidence},
+       \text{constraints}) \\
+  &\approx y \sim P_\theta(y \mid x, c).
+\end{align}
+$$
+
+If the evidence term is empty, the model leans more heavily on learned priors.
+If the constraint term is weak, the model may produce the right topic in the
+wrong form. If the input is ambiguous, the model may resolve the ambiguity in a
+plausible but unverified direction.
 
 ::: {.takeaway-box}
 **Takeaway.** Generative AI should be understood as distribution learning plus
 conditional artifact generation. The model creates possibilities; the analytic
 system must make them useful, grounded, and governed.
 :::
+
+### References
+
+Classic starting points include neural probabilistic language models
+[@Bengio2003NeuralLM], transformers [@Vaswani2017Attention], broad foundation
+model framing [@bommasani2022opportunities], and the NLP overview in Jurafsky
+and Martin [@JurafskyMartin2026SLP].

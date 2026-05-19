@@ -1,6 +1,8 @@
 ---
-title: "Similarity and Semantic Search"
-subtitle: "Primer 5 for Applied Generative AI Business Analytics"
+title: "Primers for AD698 - Applied Generative AI for Analytics"
+subtitle: "Primer 5 - Similarity and Semantic Search"
+author: "Nakul R. Padalkar"
+institute: "Boston University"
 number-sections: false
 date: "2026-01-01"
 date-modified: today
@@ -20,10 +22,6 @@ execute:
   message: false
 ---
 
-::: {.primer-kicker}
-Module 0 Primer | Points of Significance
-:::
-
 # Similarity and Semantic Search
 
 Search is one of the core operations in generative AI systems. Before a model
@@ -36,6 +34,9 @@ Traditional keyword search asks whether query terms occur in a document.
 Semantic search asks whether the query and document occupy nearby regions in an
 embedding space. In modern retrieval-augmented generation, both signals often
 matter.
+The lineage runs from vector-space retrieval and probabilistic IR to modern
+dense retrieval and RAG [@Salton.Wong.Yang.1975;
+@ManningRaghavanSchutze2008IR; @Lewis2020RAG].
 
 ::: {.key-box}
 **Key idea.** Semantic search converts retrieval into a nearest-neighbor
@@ -146,25 +147,40 @@ The most common are cosine similarity, dot product and Euclidean distance.
 Cosine similarity compares direction:
 
 $$
-\text{cosine}(a,b) =
-\frac{a \cdot b}{\|a\|\|b\|}.
+\begin{align}
+\text{cosine}(a,b)
+  &= \frac{a \cdot b}{\|a\|\|b\|}.
+\end{align}
 $$
 
 Dot product compares both direction and magnitude:
 
 $$
-a \cdot b = \sum_i a_i b_i.
+\begin{align}
+a \cdot b
+  &= \sum_i a_i b_i.
+\end{align}
 $$
 
 Euclidean distance compares geometric distance:
 
 $$
-d(a,b) = \sqrt{\sum_i (a_i-b_i)^2}.
+\begin{align}
+d(a,b)
+  &= \sqrt{\sum_i (a_i-b_i)^2}.
+\end{align}
 $$
 
 In many text-embedding workflows, vectors are normalized, making cosine
 similarity and dot product closely related. The correct metric depends on how
 the embedding model was trained and how the vector index is configured.
+
+Metrics also encode assumptions. Cosine similarity ignores vector magnitude
+after normalization, which is useful when direction carries the semantic signal.
+Euclidean distance treats absolute position as meaningful. Dot product can
+reward both direction and magnitude. A search system should use the metric
+recommended for the embedding model rather than treating metrics as
+interchangeable knobs.
 
 # Retrieval Is Approximate
 
@@ -184,6 +200,11 @@ design parameters:
 The engineering question is not simply "does search work?" It is whether the
 right evidence is retrieved quickly enough, cheaply enough and consistently
 enough for the business decision being supported.
+
+Approximation creates an evaluation obligation. If the index misses relevant
+neighbors, the language model may never see the evidence required to answer
+correctly. Increasing the candidate pool can improve recall but also increases
+reranking cost and may pass more distracting evidence downstream.
 
 # Semantic Search in RAG
 
@@ -207,6 +228,11 @@ Metadata filtering may remove documents from the wrong department or time
 period. Reranking may move the most answer-bearing passage into the top few
 results.
 
+RAG is therefore not a single technique but a chain of retrieval decisions.
+Chunking determines candidate units, embeddings determine neighborhoods,
+metadata filters determine eligibility, rerankers determine ordering, and the
+prompt determines how evidence is presented to the generator.
+
 ::: {.pitfall-box}
 **Pitfall.** A high similarity score does not guarantee answerability. A
 retrieved passage can be topically related to the query without containing the
@@ -226,11 +252,11 @@ Useful retrieval metrics include:
 | nDCG | whether highly relevant results appear near the top |
 | answerability | whether retrieved evidence is sufficient to answer |
 
-For business analytics, answerability is especially important. A retrieved
+For business uses, answerability is especially important. A retrieved
 chunk may be semantically similar and still fail to contain the needed number,
 date, source, condition or exception.
 
-# Business Analytics Example
+# Demonstration: Related Is Not Sufficient
 
 Suppose a manager asks:
 
@@ -246,15 +272,21 @@ The final answer should cite or trace back to the retrieved evidence. Otherwise
 the language model may merge real evidence with plausible general business
 explanations.
 
-# Mini Exercise
-
-Design a semantic search test set for a small internal knowledge base. Write
-five queries and identify the passages that should be retrieved for each. For
-one query, include a passage that is topically related but does **not** answer
-the question. Explain how that false positive could affect a generated answer.
+The retrieval system should therefore be tested with adversarial near misses:
+documents that mention the same topic but do not answer the question. These
+near misses are more informative than obviously irrelevant documents because
+they reveal whether the system can distinguish topicality from answerability.
 
 ::: {.takeaway-box}
 **Takeaway.** Semantic search is not just vector similarity. It is a retrieval
 system with metrics, thresholds, filtering, reranking and evaluation. In GenAI
 applications, retrieval quality sets the ceiling for grounded generation.
 :::
+
+### References
+
+For classic retrieval foundations, see Salton et al. on vector-space retrieval
+[@Salton.Wong.Yang.1975] and Manning, Raghavan and Schuetze on information
+retrieval [@ManningRaghavanSchutze2008IR]. For modern RAG, see Lewis et al.
+[@Lewis2020RAG] and the information-retrieval/RAG chapter in Jurafsky and
+Martin [@JurafskyMartin2026SLP].

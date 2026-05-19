@@ -39,7 +39,6 @@ description: "Presentation slides for Module 3 on Prompting as System Design."
 ---
 
 
-
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
@@ -115,19 +114,61 @@ Implications:
 
 ## Encoder-Decoder Models
 
----
+:::: {.columns}
+::: {.column width="50%"}
+![Encoder-decoder architecture](./M03_lecture01_figures/encoder_decoder.png){width=95% fig-align=center fig-alt="Generic encoder-decoder architecture mapping an input sequence into an encoded state and decoding an output sequence" #fig-encoder-decoder}
+:::
 
-# Transformer Models
+::: {.column width="50%"}
+- An **encoder** reads the input and builds a representation.
+- A **decoder** generates the output, usually one token at a time.
+- This lets us model tasks where:
+  - input and output lengths differ
+  - alignment is not known in advance
+  - the output depends on both the input and previous outputs
+- The decoder is a **conditional language model**.
+:::
+::::
 
-## The Transformers Timeline
+## Why Encoder-Decoder Models Matter
 
-![Timeline of transformer-based models](./M03_lecture01_figures/02-13.png){width=80% fig-align=center fig-alt="Timeline of transformer-based models" #fig-timeline}
+- Many business AI tasks are not simple classification problems.
+- They are **input-to-output generation** problems:
+  - document $\rightarrow$ summary
+  - question + context $\rightarrow$ answer
+  - image $\rightarrow$ caption
+  - customer request $\rightarrow$ response draft
+  - source language $\rightarrow$ target language
+- Encoder-decoder models gave neural networks a reusable pattern for these transformations.
 
+## Encoder-Decoder as Conditional Generation
 
-## Transformer Models
+The model estimates a conditional sequence distribution:
 
-![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
+$$
+P(y_1, \dots, y_T \mid x_1, \dots, x_S)
+= \prod_{t=1}^{T} P(y_t \mid y_1^{t-1}, \operatorname{Enc}(x_1^S)).
+$$
 
+- The encoder compresses or organizes the source information.
+- The decoder uses that information plus the partial output history.
+- If we remove the encoder, the decoder becomes an ordinary language model.
+
+## Two Design Choices
+
+:::: {.columns}
+::: {.column width="50%"}
+![Decoder initialized by the encoder state](./M03_lecture01_figures/translation_opt2_1.png){width=90% fig-align=center fig-alt="Machine translation encoder-decoder diagram where the encoder state initializes the decoder" #fig-translation-option-1}
+:::
+
+::: {.column width="50%"}
+![Decoder conditioned on the encoder state at each step](./M03_lecture01_figures/translation_opt2_2.png){width=90% fig-align=center fig-alt="Machine translation encoder-decoder diagram where the encoder state is provided to every decoder step" #fig-translation-option-2}
+:::
+::::
+
+- Use the encoder output once to initialize the decoder state.
+- Or feed the encoder output to each decoding step.
+- Attention and transformers generalize this second idea.
 
 ## Language Modeling with RNNs
 
@@ -379,6 +420,90 @@ $$
 ::::
 
 
+## From RNN Language Models to Sequence-to-Sequence
+
+![Sequence-to-sequence learning with an RNN encoder and RNN decoder](./M03_lecture01_figures/d2l_seq2seq.png){width=78% fig-align=center fig-alt="RNN sequence-to-sequence architecture for machine translation with beginning and end of sequence tokens" #fig-d2l-seq2seq}
+
+- The encoder RNN reads $x_1, \dots, x_S$ and produces a context variable $\mathbf{c}$.
+- The decoder RNN predicts $y_t$ from $\mathbf{c}$ and the previous target tokens.
+- Special tokens such as `<bos>` and `<eos>` mark the beginning and end of generation.
+
+## Encoder and Decoder Interfaces
+
+:::: {.columns}
+::: {.column width="50%"}
+**Encoder**
+
+$$
+\begin{aligned}
+h_t &= f(x_t, h_{t-1})\\
+\mathbf{c} &= q(h_1, \dots, h_S)
+\end{aligned}
+$$
+
+- Takes variable-length input.
+- Returns encoded states or a context variable.
+:::
+
+::: {.column width="50%"}
+**Decoder**
+
+$$
+P(y_t \mid y_1^{t-1}, \mathbf{c})
+= \operatorname{softmax}(V s_t + b)
+$$
+
+- Initializes state from encoder output.
+- Generates one target token distribution per step.
+:::
+::::
+
+## Layers in an RNN Encoder-Decoder
+
+![Layers in an RNN encoder-decoder model](./M03_lecture01_figures/d2l_seq2seq_details.png){width=74% fig-align=center fig-alt="Detailed RNN encoder-decoder layers with embeddings, recurrent layers, and output projection" #fig-d2l-seq2seq-details}
+
+- The source sequence is embedded and passed through an encoder RNN.
+- The target-side decoder receives shifted target tokens during training.
+- The output layer maps decoder states into vocabulary probabilities.
+
+## Teacher Forcing
+
+- During training, the decoder usually receives the **true previous target token**.
+- The decoder input is shifted right:
+
+$$
+\langle bos \rangle,\; y_1,\; y_2,\; \dots,\; y_{T-1}
+\quad \rightarrow \quad
+y_1,\; y_2,\; \dots,\; y_T,\; \langle eos \rangle
+$$
+
+- This is efficient and stable because every decoding step gets the correct history.
+- At inference time, the model must use its own previous predictions.
+
+## Prediction at Test Time
+
+![Predicting the output sequence token by token using an RNN encoder-decoder](./M03_lecture01_figures/d2l_seq2seq_predict.png){width=78% fig-align=center fig-alt="RNN encoder-decoder prediction process where each generated token is fed into the next decoder step" #fig-d2l-seq2seq-predict}
+
+- Start with `<bos>`.
+- Predict the next token distribution.
+- Feed the selected token back into the decoder.
+- Stop when the model emits `<eos>` or a maximum length is reached.
+
+## Greedy Search and Beam Search
+
+:::: {.columns}
+::: {.column width="52%"}
+![Beam search with beam size two](./M03_lecture01_figures/d2l_beam_search.png){width=95% fig-align=center fig-alt="Beam search diagram showing candidate output sequences retained across decoding steps" #fig-d2l-beam-search}
+:::
+
+::: {.column width="48%"}
+- **Greedy search:** keep only the most likely token at each step.
+- **Beam search:** keep the top $k$ partial sequences.
+- Larger beams explore more candidates but cost more computation.
+- Greedy search is beam search with $k = 1$.
+:::
+::::
+
 ## Guiding Questions for Sequence Modeling Tasks
 
 - What kind of network can we use to encode the input(s)?  
@@ -444,7 +569,7 @@ $$
 
 :::: {.columns}
 ::: {.column width="45%"}
-![Machine Translation Example](./M03_lecture01_figures//translation_opt2_1.svg){width=80% fig-align=center fig-alt="Diagram illustrating the machine translation process" #fig-machine-translation}
+![Machine translation encoder-decoder example](./M03_lecture01_figures/translation_opt2_1.png){width=80% fig-align=center fig-alt="Diagram illustrating the machine translation process" #fig-machine-translation}
 
 :::
 
@@ -485,13 +610,131 @@ $$
 :::
 ::::
 
-## More Complex Attention Patterns
+## Attention as Learned Relevance
 
-:::{.callout-note}
-We will cover these in video lectures in Module 8
+![Attention mechanism for sequence-to-sequence decoding](./M03_lecture01_figures/attention_mechanism.png){width=82% fig-align=center fig-alt="Attention mechanism showing encoder states, attention weights, context vector, and decoder update" #fig-attention-mechanism}
+
+- At each decoder step $t$, the model decides which encoder states matter.
+- The attention weights form a distribution over source positions.
+- The decoder receives a context vector built from the relevant source states.
+
+## Attention Scores
+
+Let $s_{t-1}$ be the previous decoder state and $h_j$ be the encoder state for the $j^{\text{th}}$ source token.
+
+The model first computes an **alignment score**:
+
+$$
+e_{jt} = f_{\text{ATT}}(s_{t-1}, h_j)
+$$
+
+One common additive attention form is:
+
+$$
+e_{jt} = v_{\text{att}}^\top \tanh(U_{\text{att}} s_{t-1} + W_{\text{att}} h_j)
+$$
+
+- $e_{jt}$ measures how useful source position $j$ is for producing target token $t$.
+- $U_{\text{att}}$, $W_{\text{att}}$, and $v_{\text{att}}$ are learned with the rest of the model.
+
+## Attention Weights
+
+Scores become a probability distribution using softmax:
+
+$$
+\alpha_{jt}
+= \frac{\exp(e_{jt})}{\sum_{k=1}^{S} \exp(e_{kt})}
+$$
+
+- $\alpha_{jt}$ is the model's learned focus on source token $j$ at decoder step $t$.
+- The weights sum to one over the source sequence.
+- We do not need labeled alignments; the translation loss teaches the model useful attention.
+
+## Context Vector
+
+The decoder receives a weighted average of encoder states:
+
+$$
+c_t = \sum_{j=1}^{S} \alpha_{jt} h_j
+$$
+
+Then the decoder update becomes:
+
+$$
+s_t = \operatorname{RNN}\!\left(s_{t-1}, [e(\hat{y}_{t-1}), c_t]\right)
+$$
+
+and the next-token distribution is:
+
+$$
+P(y_t \mid y_1^{t-1}, x_1^S) = \operatorname{softmax}(V s_t + b)
+$$
+
+## Attention-Based Machine Translation
+
+:::: {.columns}
+::: {.column width="50%"}
+**Encoder**
+
+$$
+h_j = \operatorname{RNN}(h_{j-1}, x_j)
+$$
+
+**Attention**
+
+$$
+\begin{aligned}
+e_{jt} &= v_{\text{att}}^\top \tanh(U_{\text{att}}s_{t-1}+W_{\text{att}}h_j)\\
+\alpha_{jt} &= \operatorname{softmax}(e_{jt})\\
+c_t &= \sum_j \alpha_{jt} h_j
+\end{aligned}
+$$
 :::
 
+::: {.column width="50%"}
+**Decoder**
 
+$$
+\begin{aligned}
+s_t &= \operatorname{RNN}(s_{t-1}, [e(\hat{y}_{t-1}), c_t])\\
+\ell_t &= \operatorname{softmax}(V s_t + b)
+\end{aligned}
+$$
+
+- Same training objective as seq2seq.
+- More expressive information flow.
+- Soft alignment is learned as a byproduct.
+:::
+::::
+
+## Visualizing Attention
+
+:::: {.columns}
+::: {.column width="50%"}
+![Attention heatmap from summarization](./M03_lecture01_figures/attention_heatmap_summarization.png){width=92% fig-align=center fig-alt="Attention heatmap from an attention-based summarization system" #fig-attention-summarization}
+:::
+
+::: {.column width="50%"}
+![Attention heatmap from translation](./M03_lecture01_figures/attention_heatmap_translation.png){width=92% fig-align=center fig-alt="Attention heatmap from an attention-based neural machine translation model" #fig-attention-translation}
+:::
+::::
+
+- Heatmaps reveal the soft alignment between input tokens and generated output tokens.
+- Each cell corresponds to an attention weight $\alpha_{jt}$.
+
+
+
+
+# Transformer Models
+
+## The Transformers Timeline
+
+![Timeline of transformer-based models](./M03_lecture01_figures/02-13.png){width=80% fig-align=center fig-alt="Timeline of transformer-based models" #fig-timeline}
+
+
+## Transformer Models
+
+![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
 
 
 # Prompt Engineering as System Design

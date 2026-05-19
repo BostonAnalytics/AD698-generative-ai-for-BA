@@ -28,6 +28,7 @@ By the end of Module 3, students should be able to:
 2. build a simple retrieval layer over SEC chunks
 3. inspect whether retrieved evidence is actually useful
 4. prepare retrieval artifacts for later prompting and project work
+5. connect retrieval to the attention idea of selecting relevant context
 
 ## Tutorial Learning Objectives
 
@@ -38,12 +39,30 @@ By the end of this tutorial, you will:
 3. Build a FAISS index.
 4. Retrieve the top passages for analyst-style questions.
 5. Inspect whether the retrieved evidence is actually useful.
+6. Interpret similarity scores as a lightweight attention-like ranking over external text.
 
 ## How This Tutorial Connects
 
 - `M03_Lab1` extends this into more deliberate retrieval experiments.
 - `M03_Lab2` and `M03_A` build on the same evidence-first workflow.
 - `M03_Proj` can reuse the same retrieval design ideas in a larger product context.
+
+## Conceptual Bridge: Retrieval as External Attention
+
+In the lecture, attention let a decoder focus on the source states most relevant to the
+current generated token. Retrieval-augmented generation uses a related systems idea:
+before asking a model to answer, we select the chunks most relevant to the user question.
+
+The analogy is not exact, but it is useful:
+
+| Neural attention | Retrieval workflow |
+|---|---|
+| query state $s_{t-1}$ | user question |
+| keys/values $h_j$ | embedded document chunks |
+| attention weights $\alpha_{jt}$ | similarity scores or ranked neighbors |
+| context vector $c_t$ | selected evidence placed in the prompt |
+
+In this tutorial, FAISS gives us a practical version of that selection step.
 
 ## Setup
 
@@ -109,6 +128,22 @@ for q in queries:
     print(retrieve(q, k=3)[["chunk_id", "company", "item", "score"]])
 ```
 
+## Step 6: Inspect Retrieval as Attention-Like Focus
+
+```{python}
+query = "cybersecurity and data privacy risk"
+results = retrieve(query, k=5)
+
+score_sum = results["score"].sum()
+results["attention_like_weight"] = results["score"] / score_sum
+
+results[["chunk_id", "company", "item", "score", "attention_like_weight"]]
+```
+
+The normalized column is not a neural attention weight, but it helps us ask the same
+question we ask of attention heatmaps: **where is the system focusing, and does that focus
+make sense for the task?**
+
 ## Why This Matters
 
 This tutorial gives students the retrieval intuition they need before they start prompt design.
@@ -116,6 +151,7 @@ This tutorial gives students the retrieval intuition they need before they start
 It also reinforces an important course habit:
 
 - validate retrieval quality before adding generation
+- inspect what context the model will be allowed to use
 
 That same logic carries directly into `M03_Lab1` and later project work.
 

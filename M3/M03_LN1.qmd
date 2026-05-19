@@ -33,33 +33,36 @@ Concurrently, Convolutional Neural Networks (CNNs) were adapted for NLP to extra
 ```{python}
 #| echo: false
 #| eval: true
-import seaborn as sns
 import matplotlib.pyplot as plt
 
 def set_economist_theme():
-    sns.set_theme(
-        context="talk",
-        style="whitegrid",
-        rc={
-            "font.family": "serif",
-            "axes.titlesize": 14,
-            "axes.titleweight": "bold",
-            "axes.labelsize": 12,
-            "axes.labelweight": "bold",
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
-            "grid.color": "#d9d9d9",
-            "grid.linewidth": 0.6,
-            "axes.edgecolor": "#333333",
-            "axes.linewidth": 0.8,
-            "axes.spines.top": False,
-            "axes.spines.right": False,
-            "lines.linewidth": 1.0,
-            "figure.figsize": (8, 4),
-            "figure.dpi": 120,
-            "legend.frameon": False,
-        }
-    )
+    rc = {
+        "font.family": "serif",
+        "axes.titlesize": 14,
+        "axes.titleweight": "bold",
+        "axes.labelsize": 12,
+        "axes.labelweight": "bold",
+        "xtick.labelsize": 9,
+        "ytick.labelsize": 9,
+        "grid.color": "#d9d9d9",
+        "grid.linewidth": 0.6,
+        "axes.edgecolor": "#333333",
+        "axes.linewidth": 0.8,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "lines.linewidth": 1.0,
+        "figure.figsize": (8, 4),
+        "figure.dpi": 120,
+        "legend.frameon": False,
+    }
+
+    try:
+        import seaborn as sns
+        sns.set_theme(context="talk", style="whitegrid", rc=rc)
+    except ModuleNotFoundError:
+        plt.rcParams.update(rc)
+        plt.style.use("seaborn-v0_8-whitegrid")
+
 set_economist_theme()
 ```
 
@@ -175,6 +178,63 @@ This design has two fundamental weaknesses:
 LSTM and GRU cells mitigate (but do not eliminate) the vanishing gradient by adding gated
 memory cells. But the bottleneck remains.
 
+## Encoder-Decoder Models Before Attention
+
+Encoder-decoder models extend the language modeling idea to **conditional generation**.
+Instead of predicting the next token from only the previous output tokens, the decoder
+also conditions on an encoded input.
+
+![Encoder-decoder architecture](./M03_lecture01_figures/encoder_decoder.png){width=75% fig-align=center fig-alt="Generic encoder-decoder architecture mapping an input sequence into an encoded state and decoding an output sequence" #fig-ln-encoder-decoder}
+
+The encoder reads a source sequence $x_1, \dots, x_S$ and produces a context
+representation. The decoder generates the target sequence one token at a time:
+
+$$
+P(y_1, \dots, y_T \mid x_1, \dots, x_S)
+= \prod_{t=1}^{T} P(y_t \mid y_1^{t-1}, \operatorname{Enc}(x_1^S)).
+$$
+
+This architecture is natural for translation, summarization, question answering over
+documents, and many business workflows where an input artifact must be transformed into a
+different output artifact.
+
+## Sequence-to-Sequence with RNNs
+
+![Sequence-to-sequence learning with an RNN encoder and RNN decoder](./M03_lecture01_figures/d2l_seq2seq.png){width=80% fig-align=center fig-alt="RNN sequence-to-sequence architecture for machine translation with beginning and end of sequence tokens" #fig-ln-seq2seq}
+
+In the classical RNN version, the encoder transforms the input into hidden states
+$h_1,\dots,h_S$ and often compresses them into a context variable $\mathbf{c}$:
+
+$$
+\begin{aligned}
+h_j &= f(x_j, h_{j-1})\\
+\mathbf{c} &= q(h_1,\dots,h_S)
+\end{aligned}
+$$
+
+The decoder then behaves like a conditional language model:
+
+$$
+P(y_t \mid y_1^{t-1}, \mathbf{c}) = \operatorname{softmax}(V s_t + b).
+$$
+
+During training, we often use **teacher forcing**: the decoder receives the true previous
+target token. At inference time, the decoder must feed its own previous prediction back
+into the next step. Search strategies such as greedy search and beam search determine
+which output sequence is selected.
+
+## The Encoder-Decoder Bottleneck
+
+The original encoder-decoder setup asks one fixed representation to carry everything the
+decoder might need. That is a severe bottleneck for long inputs.
+
+![Two ways to condition a decoder on the encoder state](./M03_lecture01_figures/translation_opt2_2.png){width=45% fig-align=center fig-alt="Machine translation encoder-decoder diagram where the encoder state is provided to every decoder step" #fig-ln-decoder-conditioning}
+
+Even if the encoder representation is passed to every decoding step, the decoder still
+receives the **same** source summary while generating different target words. Human
+translation is more selective: when producing a particular output word, we tend to focus
+on the source words most relevant to that word.
+
 ## The Attention Insight
 
 What if, instead of compressing history into a single vector, we allowed the model to
@@ -193,6 +253,60 @@ $$
 The weights $\alpha_i$ measure how relevant each key $k_i$ is to the current query $q$.
 The division by $\sqrt{d_k}$ prevents the dot products from growing too large in high
 dimensions (scaled dot-product attention, @vaswani2017attention).
+
+For encoder-decoder models, the same idea can be written in the notation of machine
+translation. Let $s_{t-1}$ be the previous decoder state and $h_j$ be the encoder state
+for the $j^{\text{th}}$ source token. The model computes an alignment score:
+
+$$
+e_{jt} = f_{\text{ATT}}(s_{t-1}, h_j)
+$$
+
+One common additive attention form is:
+
+$$
+e_{jt} = v_{\text{att}}^\top \tanh(U_{\text{att}}s_{t-1} + W_{\text{att}}h_j).
+$$
+
+The scores are normalized into attention weights:
+
+$$
+\alpha_{jt}
+= \frac{\exp(e_{jt})}{\sum_{k=1}^{S}\exp(e_{kt})},
+\qquad
+c_t = \sum_{j=1}^{S}\alpha_{jt}h_j.
+$$
+
+![Attention mechanism for sequence-to-sequence decoding](./M03_lecture01_figures/attention_mechanism.png){width=82% fig-align=center fig-alt="Attention mechanism showing encoder states, attention weights, context vector, and decoder update" #fig-ln-attention-mechanism}
+
+The decoder now updates from both the previous target token and the time-specific context
+vector:
+
+$$
+s_t = \operatorname{RNN}\!\left(s_{t-1}, [e(\hat{y}_{t-1}), c_t]\right).
+$$
+
+Attention therefore removes the fixed-vector bottleneck by letting the decoder retrieve
+different source information at different output positions.
+
+## Visualizing Attention
+
+Attention weights can be plotted as heatmaps. These visualizations are useful because they
+show whether the model has learned a plausible soft alignment between input tokens and
+generated output tokens.
+
+:::: {.columns}
+::: {.column width="50%"}
+![Attention heatmap from summarization](./M03_lecture01_figures/attention_heatmap_summarization.png){width=92% fig-align=center fig-alt="Attention heatmap from an attention-based summarization system" #fig-ln-attention-summarization}
+:::
+
+::: {.column width="50%"}
+![Attention heatmap from translation](./M03_lecture01_figures/attention_heatmap_translation.png){width=92% fig-align=center fig-alt="Attention heatmap from an attention-based neural machine translation model" #fig-ln-attention-translation}
+:::
+::::
+
+Each cell corresponds to an attention weight $\alpha_{jt}$: how much the decoder focuses
+on source position $j$ while producing target position $t$.
 
 ## Multi-Head Attention
 
@@ -343,7 +457,7 @@ sequence-to-sequence transformation.
 
 :::: {.columns}
 ::: {.column width="52%"}
-![](./M03_lecture01_figures/encoder_decoder.svg){width=100% fig-align=center fig-alt="Encoder-decoder architecture transforming an input sequence into an output sequence" #fig-encoder-decoder}
+![](./M03_lecture01_figures/encoder_decoder.png){width=100% fig-align=center fig-alt="Encoder-decoder architecture transforming an input sequence into an output sequence" #fig-transformer-encoder-decoder}
 :::
 
 ::: {.column width="48%"}
@@ -358,6 +472,11 @@ sequence-to-sequence transformation.
 - Example families: **T5**, **BART**, and the original Transformer.
 :::
 ::::
+
+In modern transformer encoder-decoder models, the decoder uses **cross-attention** over
+the encoder outputs. This is the transformer version of the same attention idea introduced
+above: at each generated token, the decoder can select the source information it needs
+rather than relying on one fixed summary vector.
 
 ## A Simple MNIST Encoder-Decoder Example
 
