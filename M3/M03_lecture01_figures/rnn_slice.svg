@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg baseProfile="full" height="380" version="1.1" viewBox="0 0 160 380" width="160" xmlns="http://www.w3.org/2000/svg" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><marker id="rnn_cell_arrow" markerHeight="10" markerUnits="strokeWidth" markerWidth="10" orient="auto" refX="9" refY="5"><path d="M 0 0 L 10 5 L 0 10 z" fill="#111827" /></marker><style type="text/css"><![CDATA[
+.rnn-label { font-family: Georgia, 'Times New Roman', serif; fill: #111827; font-size: 24px; font-style: italic; }
+.rnn-small { font-size: 20px; }
+.rnn-edge { stroke: #111827; stroke-width: 2.2; fill: none; marker-end: url(#rnn_cell_arrow); }
+.rnn-box { stroke: #111827; stroke-width: 1.8; }
+.rnn-input { fill: #f3b36f; }
+.rnn-state { fill: #6f7ee8; }
+.rnn-output { fill: #98f391; }
+]]></style></defs><rect class="rnn-box rnn-output" height="80" width="36" x="62.0" y="50.0" /><rect class="rnn-box rnn-state" height="82" width="42" x="59.0" y="169.0" /><rect class="rnn-box rnn-input" height="62" width="36" x="62.0" y="294.0" /><text class="rnn-label rnn-small" text-anchor="middle" x="80" y="35">ŷₜ</text><text class="rnn-label" text-anchor="middle" x="102" y="145">V</text><text class="rnn-label" text-anchor="middle" x="114" y="215">sₜ</text><text class="rnn-label" text-anchor="middle" x="104" y="282">U</text><text class="rnn-label rnn-small" text-anchor="middle" x="80" y="373">xₜ</text><line class="rnn-edge" marker-end="url(#rnn_cell_arrow)" x1="80" x2="80" y1="294.0" y2="254.0" /><line class="rnn-edge" marker-end="url(#rnn_cell_arrow)" x1="80" x2="80" y1="169.0" y2="133.0" /></svg>

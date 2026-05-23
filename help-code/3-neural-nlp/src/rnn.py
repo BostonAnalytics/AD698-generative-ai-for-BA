@@ -32,7 +32,7 @@ class VanillaRNN(nn.Module):
 
     def init_hidden(self, batch_size):
         return torch.zeros(batch_size, self.hidden_size)
-    
+
     
 class VanillaRnnLanguageModel(nn.Module):
     

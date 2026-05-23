@@ -48,30 +48,31 @@ description: "Presentation slides for Module 3 on Language Modeling Foundations,
 
 ## Language Modeling as Next-Token Prediction
 
-Modern generative AI is built on **language modeling**.
-
-Instead of learning a task-specific mapping
+- Modern generative AI is built on **language modeling**.
+- Instead of learning a task-specific mapping
 
 $$
+\begin{align}
 P(y \mid x)
+\end{align}
 $$
 
-we model the probability of a text sequence itself:
+- we model the probability of a text sequence itself:
 
 $$
+\begin{align}
 P(x_1, x_2, \dots, x_T)
+\end{align}
 $$
 
----
-
-## From Joint Probability to Sequential Prediction
-
-Using the chain rule of probability, we can rewrite the probability of a sequence as:
+- Using the chain rule of probability, we can rewrite the probability of a sequence as:
 
 $$
+\begin{align}
 P(x_1, x_2, \dots, x_T)
 =
 \prod_{t=1}^{T} P(x_t \mid x_1, \dots, x_{t-1})
+\end{align}
 $$
 
 --- 
@@ -94,7 +95,7 @@ P(\text{deep}, \text{learning}, \text{is}, \text{fun})
 \end{aligned}
 $$
 
-Language generation is therefore a probabilistic unfolding of tokens through context. :contentReference[oaicite:6]{index=6}
+Language generation is therefore a probabilistic unfolding of tokens through context.
 
 ---
 
@@ -105,7 +106,9 @@ Language generation is therefore a probabilistic unfolding of tokens through con
 ### Supervised NLP
 
 $$
+\begin{align}
 P(y \mid x; \theta)
+\end{align}
 $$
 
 - input text mapped to task-specific output
@@ -117,7 +120,9 @@ $$
 ### Language Modeling
 
 $$
+\begin{align}
 P(x_1, x_2, \dots, x_T; \theta)
+\end{align}
 $$
 
 - learns general text structure
@@ -133,7 +138,9 @@ $$
 If a model learns:
 
 $$
+\begin{align}
 P(x_t \mid x_{<t})
+\end{align}
 $$
 
 well enough, then it can:
@@ -150,32 +157,36 @@ This is the conceptual bridge from **language models** to **large language model
 
 ## Evaluation Intuition: How Good Is a Language Model?
 
-A good language model should assign high probability to the **actual next token**.
-
-For a sequence of length $n$, the average cross-entropy is:
+- A good language model should assign high probability to the **actual next token**.
+- For a sequence of length $n$, the average cross-entropy is:
 
 $$
+\begin{align}
 \frac{1}{n}\sum_{t=1}^{n} -\log P(x_t \mid x_{<t})
+\end{align}
 $$
 
-A smaller value means:
-
-- less surprise
-- better prediction
-- more accurate modeling of language structure. :contentReference[oaicite:8]{index=8}
+- A smaller value means:
+  - less surprise
+  - better prediction
+  - more accurate modeling of language structure.
 
 ---
 
-## Perplexity
 
-Perplexity is the exponential of average cross-entropy:
+
+## What is a good Model
+
+[Perplexity]{.uured-bold} is a common metric for evaluating language models. It is defined as the exponential of the average cross-entropy:
 
 $$
+\begin{align}
 \operatorname{Perplexity}
 =
 \exp\left(
 -\frac{1}{n}\sum_{t=1}^{n}\log P(x_t \mid x_{<t})
 \right)
+\end{align}
 $$
 
 ---
@@ -211,7 +222,7 @@ But it does **not** directly measure:
 - helpfulness
 - alignment with human preferences
 
-That is why later LLM systems require additional control layers such as instruction tuning and RLHF.
+That is why later LLM systems require additional control layers such as instruction tuning and Reinforcement Learning from Human Feedback (RLHF).
 
 ---
 
@@ -291,7 +302,7 @@ That is why later LLM systems require additional control layers such as instruct
 #| fig-align: center
 #| fig-alt: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
 #| fig-cap: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
-#| label: "fig-autocomplete-sequence"
+#| label: fig-autocomplete-sequence
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, FancyArrowPatch
@@ -670,6 +681,7 @@ How do we model such tasks involving sequences?
 #| fig-align: center
 #| fig-alt: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
 #| fig-cap: "Diagram showing a sequence of inputs and outputs for an auto-completion task."
+#| label: fig-sequence-model
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle, FancyArrowPatch
@@ -865,11 +877,9 @@ $$
 
 :::: {.columns}
 ::: {.column width="50%"}
-<div style="text-align:center; margin-top: 1.0em;">
 
 ![](modules/Module14/svg/module14_2_parameter_sharing.svg){width=95%}
 
-</div>
 :::
 
 ::: {.column width="50%"}

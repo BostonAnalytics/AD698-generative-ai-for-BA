@@ -4,12 +4,14 @@ Reusable SVG generators for sequence-model lecture diagrams.
 Current generators
 ------------------
 - build_rnn_language_model_svg
+- build_rnn_slice_svg
+- build_rnn_unrolled_cell_svg
 - build_mnist_autoencoder_svg
 
 Example
 -------
 python utils/sequence_diagrams.py --all
-python utils/sequence_diagrams.py --rnn --mnist
+python utils/sequence_diagrams.py --rnn --rnn-cell --mnist
 """
 
 from __future__ import annotations
@@ -136,6 +138,157 @@ def build_rnn_language_model_svg(output: str | Path = FIG_DIR / "rnn1.svg") -> P
     return _save(dwg, output)
 
 
+RNN_SLICE_STYLE = """
+.rnn-label { font-family: Georgia, 'Times New Roman', serif; fill: #111827; font-size: 24px; font-style: italic; }
+.rnn-small { font-size: 20px; }
+.rnn-edge { stroke: #111827; stroke-width: 2.2; fill: none; marker-end: url(#rnn_cell_arrow); }
+.rnn-box { stroke: #111827; stroke-width: 1.8; }
+.rnn-input { fill: #f3b36f; }
+.rnn-state { fill: #6f7ee8; }
+.rnn-output { fill: #98f391; }
+"""
+
+
+def _subscript(value: int | str) -> str:
+    sub = str.maketrans("0123456789nt", "₀₁₂₃₄₅₆₇₈₉ₙₜ")
+    return str(value).translate(sub)
+
+
+def draw_rnn_slice(
+    dwg: svgwrite.Drawing,
+    x: float,
+    index: int | str,
+    arrow,
+    *,
+    y_output: float = 90,
+    y_state: float = 210,
+    y_input: float = 325,
+    output_size: tuple[float, float] = (36, 80),
+    state_size: tuple[float, float] = (42, 82),
+    input_size: tuple[float, float] = (36, 62),
+) -> dict[str, tuple[float, float]]:
+    """Draw one reusable RNN time-step slice and return useful anchor points."""
+    idx = _subscript(index)
+    output_w, output_h = output_size
+    state_w, state_h = state_size
+    input_w, input_h = input_size
+
+    def text(
+        tx: float,
+        ty: float,
+        content: str,
+        cls: str = "rnn-label",
+        anchor: str = "middle",
+    ) -> None:
+        dwg.add(dwg.text(content, insert=(tx, ty), class_=cls, text_anchor=anchor))
+
+    def box(cx: float, cy: float, w: float, h: float, cls: str) -> None:
+        dwg.add(
+            dwg.rect(
+                insert=(cx - w / 2, cy - h / 2),
+                size=(w, h),
+                class_=f"rnn-box {cls}",
+            )
+        )
+
+    def arrow_line(start: tuple[float, float], end: tuple[float, float]) -> None:
+        dwg.add(
+            dwg.line(
+                start=start,
+                end=end,
+                class_="rnn-edge",
+                marker_end=arrow.get_funciri(),
+            )
+        )
+
+    box(x, y_output, output_w, output_h, "rnn-output")
+    box(x, y_state, state_w, state_h, "rnn-state")
+    box(x, y_input, input_w, input_h, "rnn-input")
+
+    text(x, y_output - 55, f"ŷ{idx}", "rnn-label rnn-small")
+    text(x + 22, y_output + 55, "V")
+    text(x + 34, y_state + 5, f"s{idx}")
+    text(x + 24, y_state + 72, "U")
+    text(x, y_input + 48, f"x{idx}", "rnn-label rnn-small")
+
+    arrow_line((x, y_input - input_h / 2), (x, y_state + state_h / 2 + 3))
+    arrow_line((x, y_state - state_h / 2), (x, y_output + output_h / 2 + 3))
+
+    return {
+        "state_left": (x - state_w / 2, y_state),
+        "state_right": (x + state_w / 2, y_state),
+        "state_center": (x, y_state),
+    }
+
+
+def build_rnn_slice_svg(
+    output: str | Path = FIG_DIR / "rnn_slice.svg",
+    index: int | str = "t",
+) -> Path:
+    """Generate a single reusable RNN time-step slice."""
+    width, height = 160, 380
+    dwg = svgwrite.Drawing(str(output), size=(width, height), viewBox=f"0 0 {width} {height}")
+    arrow = _add_marker(dwg, "rnn_cell_arrow", "#111827")
+    dwg.defs.add(dwg.style(RNN_SLICE_STYLE))
+    draw_rnn_slice(dwg, x=80, index=index, arrow=arrow)
+    return _save(dwg, output)
+
+
+def build_rnn_unrolled_cell_svg(
+    output: str | Path = FIG_DIR / "rnn_unrolled_cell.svg",
+    n_slices: int = 4,
+    *,
+    show_ellipsis: bool = True,
+    final_index: int | str = "n",
+    step_gap: float = 145,
+    visible_steps: int | None = None,
+) -> Path:
+    """Generate an unrolled RNN diagram by repeating the same time-step slice."""
+    if visible_steps is not None:
+        n_slices = visible_steps
+    if n_slices < 1:
+        raise ValueError("n_slices must be at least 1")
+
+    left = 70
+    tail_gap = 120 if show_ellipsis else 0
+    width = left * 2 + step_gap * (n_slices - 1) + tail_gap
+    height = 350
+
+    dwg = svgwrite.Drawing(str(output), size=(width, height), viewBox=f"0 0 {width} {height}")
+    arrow = _add_marker(dwg, "rnn_cell_arrow", "#111827")
+    dwg.defs.add(dwg.style(RNN_SLICE_STYLE))
+
+    def text(x: float, y: float, content: str, cls: str = "rnn-label", anchor: str = "middle") -> None:
+        dwg.add(dwg.text(content, insert=(x, y), class_=cls, text_anchor=anchor))
+
+    def arrow_line(start: tuple[float, float], end: tuple[float, float]) -> None:
+        dwg.add(dwg.line(start=start, end=end, class_="rnn-edge", marker_end=arrow.get_funciri()))
+
+    xs = [left + i * step_gap for i in range(n_slices)]
+    indices: list[int | str] = list(range(1, n_slices + 1))
+    if show_ellipsis:
+        xs.append(left + (n_slices - 1) * step_gap + tail_gap)
+        indices.append(final_index)
+
+    anchors = [
+        draw_rnn_slice(dwg, x=x, index=idx, arrow=arrow)
+        for x, idx in zip(xs, indices)
+    ]
+
+    for start, end in zip(anchors, anchors[1:]):
+        arrow_line(
+            (start["state_right"][0] + 10, start["state_right"][1]),
+            (end["state_left"][0] - 10, end["state_left"][1]),
+        )
+
+    if show_ellipsis:
+        last_visible = anchors[n_slices - 1]["state_center"]
+        final = anchors[-1]["state_center"]
+        text((last_visible[0] + final[0]) / 2 - 5, last_visible[1] + 5, f"s{_subscript(n_slices)} ...")
+
+    return _save(dwg, output)
+
+
 def build_mnist_autoencoder_svg(
     output: str | Path = FIG_DIR / "mnist_autoencoder.svg",
 ) -> Path:
@@ -258,16 +411,27 @@ def build_mnist_autoencoder_svg(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build reusable sequence-model SVG diagrams.")
     parser.add_argument("--rnn", action="store_true", help="Generate the RNN language-model SVG.")
+    parser.add_argument("--rnn-slice", action="store_true", help="Generate one reusable RNN time-step slice SVG.")
+    parser.add_argument("--rnn-cell", action="store_true", help="Generate the compact unrolled RNN cell SVG.")
+    parser.add_argument("--slices", type=int, default=4, help="Number of visible RNN slices for --rnn-cell.")
     parser.add_argument("--mnist", action="store_true", help="Generate the MNIST autoencoder SVG.")
     parser.add_argument("--all", action="store_true", help="Generate all supported SVGs.")
     args = parser.parse_args()
 
-    generate_rnn = args.all or args.rnn or (not args.rnn and not args.mnist and not args.all)
+    generate_rnn = args.all or args.rnn or (
+        not args.rnn and not args.rnn_slice and not args.rnn_cell and not args.mnist and not args.all
+    )
+    generate_rnn_slice = args.all or args.rnn_slice
+    generate_rnn_cell = args.all or args.rnn_cell
     generate_mnist = args.all or args.mnist
 
     outputs = []
     if generate_rnn:
         outputs.append(build_rnn_language_model_svg())
+    if generate_rnn_slice:
+        outputs.append(build_rnn_slice_svg())
+    if generate_rnn_cell:
+        outputs.append(build_rnn_unrolled_cell_svg(n_slices=args.slices))
     if generate_mnist:
         outputs.append(build_mnist_autoencoder_svg())
 
