@@ -149,7 +149,7 @@ chunks_df.describe(include="all")
 chunks_df.head()
 ```
 
-ðŸ“Š **Required:** Bar chart of chunk counts per company and per item type.
+**Required:** Bar chart of chunk counts per company and per item type.
 
 # BERT Attention Visualization {#sec-attention}
 
@@ -227,7 +227,7 @@ plot_attention_heatmap(attn_b, tokens_b, layer=11, head=0,
                        title=f"{company_b} — Layer 12, Head 1")
 ```
 
-ðŸ“Š **Required:** All four heatmaps with token labels on both axes.
+**Required:** All four heatmaps with token labels on both axes.
 
 # BERT Fine-Tuned Classifier {#sec-bert-cls}
 
@@ -272,7 +272,7 @@ plt.ylabel("True")
 plt.show()
 ```
 
-ðŸ“Š **Required:** Confusion matrix heatmap with company names on axes.
+**Required:** Confusion matrix heatmap with company names on axes.
 
 Save classification head weights:
 
@@ -322,7 +322,7 @@ ppl_df.describe()
 ppl_df.head()
 ```
 
-ðŸ“Š **Required:** Box plot of perplexity by company, with a second panel by item type (Item 7 vs Item 7A vs Item 8).
+**Required:** Box plot of perplexity by company, with a second panel by item type (Item 7 vs Item 7A vs Item 8).
 
 Save:
 
@@ -378,7 +378,7 @@ risk_df.describe()
 risk_df
 ```
 
-ðŸ“Š **Required:** Show this table in your Word document. You will use beta and return in Q3 and Q4.
+**Required:** Show this table in your Word document. You will use beta and return in Q3 and Q4.
 
 # 4-Method Accuracy Comparison {#sec-compare}
 
@@ -399,7 +399,7 @@ comparison_df = pd.DataFrame({
 print(comparison_df)
 ```
 
-ðŸ“Š **Required:** Horizontal bar chart of all five methods sorted by accuracy.
+**Required:** Horizontal bar chart of all five methods sorted by accuracy.
 
 # Q1: Which Attention Layer Focuses on More Meaningful Tokens? {#sec-q1}
 

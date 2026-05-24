@@ -89,7 +89,6 @@ from IPython.display import SVG, display
 - Default approach: start with a pretrained Transformer, fine‑tune for downstream tasks  
 - Represents a true [architectural shift]{.uured-bold}, not just bigger models
 
----
 
 # Why Attention? A Human Translation Story
 
@@ -579,7 +578,7 @@ $$
 
 ## Comparing Dot‑Product and Additive Attention
 
--- Dot‑Product Attention
+- Dot‑Product Attention
   - Fast (matrix multiplications)  
   - Scales well to large models  
   - Standard in Transformers  

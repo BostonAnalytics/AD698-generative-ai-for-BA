@@ -53,7 +53,7 @@ You may use generative AI tools for code assistance, debugging, and explanation.
 - Include a shared conversation link when the tool supports sharing; if it does not, say so explicitly
 - Explain how you validated the output against notebook execution, saved artifacts, and manual inspection
 
-When\ possible,\ preserve\ the\ original\ interaction\ using\ a\ direct\ share\ link\ or\ export\ feature\.\n-\ Prefer\ \*\*one\ continuous\ chat\*\*\ for\ the\ full\ assignment\ workflow\ so\ a\ reviewer\ can\ see\ the\ reasoning\ trail\ in\ one\ place\n-\ If\ you\ used\ multiple\ chats,\ share\ \*\*all\ chats\ directly\ related\*\*\ to\ the\ assignment\n-\ Do\ not\ include\ confidential,\ personal,\ or\ restricted\ information\ in\ shared\ chats\nExamples\ include\ Gemini\ shared\ chats\ or\ exports,\ ChatGPT\ shared\ links,\ Claude\ shared\ chat\ links,\ and\ Perplexity\ shared\ thread\ links\.
+When possible, preserve the original interaction using a direct share link or export feature\.\n- Prefer \*\*one continuous chat\*\* for the full assignment workflow so a reviewer can see the reasoning trail in one place\n- If you used multiple chats, share \*\*all chats directly related\*\* to the assignment\n- Do not include confidential, personal, or restricted information in shared chats\nExamples include Gemini shared chats or exports, ChatGPT shared links, Claude shared chat links, and Perplexity shared thread links\.
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
 
