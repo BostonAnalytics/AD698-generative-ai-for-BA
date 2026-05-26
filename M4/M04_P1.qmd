@@ -181,7 +181,7 @@ image = d.focus_sequence(label="bottleneck01");
 
 ```{python}
 #| echo: false
-
+#| eval: false
 from m4code.attention_diagrams import DiagramBuilder
 d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
 image = d.qkv_dictionary(label="qkv01", blockstyle="c");
