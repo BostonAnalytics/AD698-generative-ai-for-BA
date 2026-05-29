@@ -10,8 +10,8 @@ format:
         toc: true
         toc-depth: 3
         code-overflow: wrap
-categories: ["M06:", "Tutorial", "Agentic AI", "SEC Text"]
-description: "Tutorial for building a simple single-agent workflow over SEC filing text with explicit tools, memory, and provenance."
+categories: ["M06:", "Tutorial", "Agentic AI", "LangChain Tools", "SEC Text", "Traceability"]
+description: "Tutorial for building a traceable single-agent SEC research workflow with LangChain retrieval tools, grounded answer synthesis, provenance records, and optional LangSmith tracing."
 ---
 
 ## Module Learning Objectives
@@ -62,55 +62,143 @@ Keep the first build simple:
 
 ```python
 from pathlib import Path
+import os
+import time
 import pandas as pd
+from langchain_core.documents import Document
 
 chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
 chunks_df = pd.read_csv(chunks_path)
 chunks_df.head()
 ```
 
-## Step 2: Define a retrieval tool
+## Step 2: Build a retriever from the SEC chunks
+
+Use the same retrieval pattern you developed in Module 5. The example below uses a local sentence-transformer embedding model and FAISS so the workflow can run without a paid embedding endpoint.
 
 ```python
-def retrieve_sec_chunks(question: str, chunks_df: pd.DataFrame, top_k: int = 5) -> pd.DataFrame:
-    # Replace this placeholder with your actual retrieval logic from M05.
-    sample = chunks_df.head(top_k).copy()
-    sample["query"] = question
-    return sample[["query", "ticker", "year", "item", "chunk_text"]]
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+
+text_col = "chunk_text"
+metadata_cols = [c for c in ["ticker", "company", "year", "item", "source"] if c in chunks_df.columns]
+
+docs = []
+for i, row in chunks_df.iterrows():
+    metadata = {c: row[c] for c in metadata_cols}
+    metadata["source_row"] = i
+    docs.append(Document(page_content=str(row[text_col]), metadata=metadata))
+
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vectorstore = FAISS.from_documents(docs, embedding_model)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 6})
+
+print(f"Indexed {vectorstore.index.ntotal} SEC chunks")
 ```
 
-## Step 3: Define the single-agent workflow
+## Step 3: Define a traceable retrieval tool
+
+LangChain tools should return enough information for both the model and the human reviewer. Here the tool returns formatted evidence while also storing a structured trace row for audit.
 
 ```python
-def single_agent_sec_analysis(question: str) -> dict:
-    retrieved = retrieve_sec_chunks(question, chunks_df, top_k=5)
+from langchain_core.tools import tool
 
+tool_trace = []
+
+def format_doc(doc, rank: int) -> str:
+    meta = doc.metadata
+    label = " | ".join(
+        str(meta.get(k, ""))
+        for k in ["ticker", "year", "item"]
+        if meta.get(k) is not None
+    )
+    return f"[{rank}] {label} | source_row={meta.get('source_row')}\n{doc.page_content[:900]}"
+
+@tool
+def retrieve_sec_evidence(question: str) -> str:
+    """Retrieve SEC 10-K chunks relevant to a financial analysis question."""
+    start = time.perf_counter()
+    hits = retriever.invoke(question)
+    elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+
+    tool_trace.append(
+        {
+            "tool": "retrieve_sec_evidence",
+            "input": question,
+            "latency_ms": elapsed_ms,
+            "num_hits": len(hits),
+            "source_rows": [h.metadata.get("source_row") for h in hits],
+            "items": [h.metadata.get("item") for h in hits],
+        }
+    )
+
+    return "\n\n".join(format_doc(doc, i + 1) for i, doc in enumerate(hits))
+```
+
+## Step 4: Create the single-agent chain
+
+The agent has one job: answer only from retrieved evidence and expose limitations. If you use OpenAI, set `OPENAI_API_KEY` in your notebook or Colab secrets. You can swap `ChatOpenAI` for another LangChain chat model.
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+answer_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are a careful SEC filing analyst. Use only the retrieved evidence. "
+            "Cite ticker, year, item, or source_row when making factual claims. "
+            "If evidence is insufficient, say what is missing.",
+        ),
+        (
+            "user",
+            "Question:\n{question}\n\nRetrieved evidence:\n{evidence}\n\nDraft a concise grounded answer.",
+        ),
+    ]
+)
+
+answer_chain = answer_prompt | llm | StrOutputParser()
+
+def single_agent_sec_analysis(question: str) -> dict:
     plan = [
-        "retrieve evidence from SEC chunks",
-        "compare the evidence across companies",
-        "draft a grounded answer with limitations",
+        "call retrieve_sec_evidence",
+        "read the returned SEC chunks",
+        "draft an answer with citations and limitations",
+        "export trace rows for audit",
     ]
 
-    answer = "TODO: call your model with the retrieved evidence and produce a grounded answer."
+    evidence = retrieve_sec_evidence.invoke({"question": question})
+    answer = answer_chain.invoke({"question": question, "evidence": evidence})
 
     return {
         "question": question,
         "plan": plan,
-        "retrieved_rows": retrieved,
+        "evidence": evidence,
         "answer": answer,
+        "trace": list(tool_trace),
     }
 ```
 
-## Step 4: Add provenance fields
+## Step 5: Add provenance and LangSmith tracing
 
 ```python
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "ad698-m06-single-agent"
+
 def build_audit_log(agent_output: dict) -> pd.DataFrame:
-    retrieved = agent_output["retrieved_rows"].copy()
-    retrieved["used_by_agent"] = True
-    return retrieved
+    trace_df = pd.DataFrame(agent_output["trace"])
+    trace_df["question"] = agent_output["question"]
+    trace_df["answer_preview"] = agent_output["answer"][:240]
+    return trace_df
 ```
 
-## Step 5: Test on one realistic question
+LangSmith tracing is optional but strongly recommended. The local `audit_log` dataframe is required either way because it gives you a portable record for your notebook and Word report.
+
+## Step 6: Test on one realistic question
 
 ```python
 question = "How do the two rival companies describe inflation or supply chain risk differently?"
@@ -118,6 +206,9 @@ result = single_agent_sec_analysis(question)
 
 print(result["plan"])
 print(result["answer"])
+
+audit_log = build_audit_log(result)
+audit_log
 ```
 
 ## What to inspect
@@ -125,9 +216,11 @@ print(result["answer"])
 Before moving on, verify:
 
 1. the agent plan is explicit rather than hidden
-2. retrieved evidence is visible in a table
-3. the final answer makes only supportable claims
-4. provenance can be exported as a dataframe
+2. the retrieval tool records latency and source rows
+3. retrieved evidence is visible in the notebook
+4. the final answer makes only supportable claims
+5. provenance can be exported as a dataframe
+6. LangSmith or a local trace shows the same tool sequence
 
 ## Why this aligns with Module 6
 

@@ -5,8 +5,8 @@ number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M06:', 'Highlights']
-description: "Module 6 highlights for Adaptation and Insight."
+categories: ['M06:', 'Highlights', 'Agentic AI', 'Tools', 'Orchestration', 'Agent Evaluation']
+description: "Module 6 highlights covering agentic AI foundations, tool use, traceable orchestration, review loops, LangSmith-style auditing, and responsible agent design."
 ---
 
 

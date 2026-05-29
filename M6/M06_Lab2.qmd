@@ -6,8 +6,8 @@ date: "2026-04-10"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M06:', 'Lab']
-description: "Question-driven lab for Module 6 focused on role-based agent coordination and review loops."
+categories: ['M06:', 'Lab', 'Multi-Agent', 'Review Loops', 'Traceability', 'RAGAS-Style Evaluation']
+description: "Question-driven lab for Module 6 focused on coordinated retrieval, analyst, reviewer, and revision roles with traceable outputs and RAGAS-style quality checks."
 execute:
   echo: true
   eval: false

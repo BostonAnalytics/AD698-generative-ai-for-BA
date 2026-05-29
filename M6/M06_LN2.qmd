@@ -15,8 +15,8 @@ format:
     number-sections: true
     code-overflow: wrap
 bibliography: ../references.bib
-categories: ['M06:', 'Agentic AI', 'LangChain', 'Implementation', 'Lecture Notes']
-description: "Lecture notes for Module 6 covering Building Agentic AI: A Practical Walkthrough."
+categories: ['M06:', 'Agentic AI', 'LangChain', 'Tools', 'LangSmith', 'Multi-Agent Orchestration', 'Lecture Notes']
+description: "Lecture notes for Module 6 covering practical agent construction with LangChain tools, SEC data acquisition, vector memory, planning, reflection, LangSmith-style tracing, and auditable multi-agent orchestration."
 ---
 
 # Introduction: The Agentic AI Paradigm
@@ -152,6 +152,17 @@ llm_with_tools = llm.bind_tools([download_sec_filing])
 
 The docstring inside the tool is not just for developers; it is literally passed to the LLM. The LLM reads this description and autonomously decides *when* to output a JSON "tool call" to execute the function based on the conversational context.
 
+For course workflows, every tool call should also be traceable. A useful trace contains:
+
+- tool name
+- input arguments
+- output preview
+- source rows or documents used
+- latency
+- error message if the call failed
+
+This is where LangSmith-style tracing becomes practically important. Without a trace, an agentic answer is difficult to audit because the final text hides which evidence and tools shaped it.
+
 ## The Planning Pattern (`07_Pattern_Planning.ipynb`)
 
 In the planning pattern, the agent breaks an abstract goal down into actionable steps. 
@@ -170,6 +181,15 @@ Rather than hard-coding "NVDA, AMD, INTC", we ask the LLM to dynamically deduce 
 ## The Reflection Pattern (`08_Pattern_Reflection.ipynb`)
 
 To ensure reliability, we implement a "Critic" loop. A Generator prompt extracts the risk factors, and a separate Critic prompt reviews the extraction. If the output contains vague language or fails constraints, the Critic forces a rewrite. This establishes a self-correcting autonomous loop, mimicking human peer-review.
+
+RAGAS-style language can make this review less vague. A reviewer can ask:
+
+- **Faithfulness:** Which answer claims are directly supported by retrieved SEC chunks?
+- **Answer relevancy:** Did the answer address the original business question?
+- **Context precision:** Were the top chunks actually useful, or did the agent rely on noisy retrieval?
+- **Context recall:** What necessary evidence appears to be missing?
+
+These questions connect Module 6 agent design back to Module 5 retrieval evaluation.
 
 ## Multiagent Orchestration (`09_Pattern_Multiagent.ipynb`)
 
@@ -212,6 +232,18 @@ class MasterFinancialAgent:
             
         print("--- Workflow Complete ---")
 ```
+
+The final run should produce both an answer and an audit artifact. At minimum, save:
+
+- the original question
+- the plan or role sequence
+- every tool call
+- retrieved evidence with ticker, year, item, and source row
+- reviewer findings
+- final answer
+- unresolved limitations
+
+This audit artifact is the bridge from a demo to a defensible business analytics workflow.
 
 # Conclusion
 

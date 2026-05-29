@@ -6,8 +6,8 @@ date: "2026-04-10"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M06:', 'Lab']
-description: "Question-driven lab for Module 6 focused on auditable single-agent workflows over SEC evidence."
+categories: ['M06:', 'Lab', 'Agent Trace', 'LangChain Tools', 'Provenance', 'SEC Evidence']
+description: "Question-driven lab for Module 6 focused on single-agent SEC workflows with explicit tool traces, retrieved evidence, provenance fields, and grounded answer review."
 execute:
   echo: true
   eval: false

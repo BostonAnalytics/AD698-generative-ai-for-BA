@@ -10,8 +10,8 @@ format:
         toc: true
         toc-depth: 3
         code-overflow: wrap
-categories: ["M06:", "Tutorial", "Multi-Agent", "SEC Text"]
-description: "Tutorial for splitting an SEC analysis workflow into specialized agent roles with traceable outputs."
+categories: ["M06:", "Tutorial", "Multi-Agent", "LangChain", "Review Loops", "Traceability", "SEC Text"]
+description: "Tutorial for coordinating retrieval, analyst, reviewer, and revision roles over SEC evidence with LangChain chains, RAGAS-style review language, and local or LangSmith traces."
 ---
 
 ## Module Learning Objectives
@@ -35,7 +35,7 @@ This mirrors the orchestration logic discussed in `M06_LN2` while staying ground
 
 ## Recommended Pattern
 
-Use simple Python functions first. You do not need a full framework to learn the architecture.
+Use simple Python functions first, but make each role produce traceable artifacts. You do not need a full framework to learn the architecture, but your workflow should still expose inputs, outputs, evidence, and reviewer findings.
 
 ## How This Tutorial Connects
 
@@ -43,62 +43,235 @@ Use simple Python functions first. You do not need a full framework to learn the
 - `M06_Lab2` can compare role separation against that baseline.
 - `M06_A` and `M06_Proj` both benefit from explicit role, trace, and review structures.
 
-## Step 1: Retrieval role
+## Step 1: Shared setup
+
+Reuse the same chunks and retriever from `M06_T1`, or run the setup below.
 
 ```python
-def retrieval_agent(question: str, chunks_df, top_k: int = 5):
-    hits = chunks_df.head(top_k).copy()
-    hits["question"] = question
+from pathlib import Path
+import os
+import time
+import pandas as pd
+from langchain_core.documents import Document
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "ad698-m06-coordinated-workflow"
+
+chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+chunks_df = pd.read_csv(chunks_path)
+
+metadata_cols = [c for c in ["ticker", "company", "year", "item", "source"] if c in chunks_df.columns]
+docs = []
+for i, row in chunks_df.iterrows():
+    metadata = {c: row[c] for c in metadata_cols}
+    metadata["source_row"] = i
+    docs.append(Document(page_content=str(row["chunk_text"]), metadata=metadata))
+
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vectorstore = FAISS.from_documents(docs, embedding_model)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 8})
+
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+workflow_trace_rows = []
+```
+
+## Step 2: Retrieval role
+
+The retrieval role owns evidence collection. It does not write the final answer.
+
+```python
+def retrieval_agent(question: str, top_k: int = 8) -> list[Document]:
+    start = time.perf_counter()
+    hits = retriever.invoke(question)[:top_k]
+    elapsed_ms = round((time.perf_counter() - start) * 1000, 1)
+
+    workflow_trace_rows.append(
+        {
+            "role": "retrieval",
+            "input": question,
+            "output_preview": f"{len(hits)} chunks",
+            "latency_ms": elapsed_ms,
+            "source_rows": [h.metadata.get("source_row") for h in hits],
+            "items": [h.metadata.get("item") for h in hits],
+        }
+    )
+
     return hits
 ```
 
-## Step 2: Analyst role
+## Step 3: Analyst role
+
+The analyst role converts retrieved chunks into a grounded answer. It must cite evidence and avoid claims that are not supported by the retrieved context.
 
 ```python
-def analyst_agent(question: str, retrieved_rows) -> str:
-    context = "\n\n".join(retrieved_rows["chunk_text"].astype(str).tolist())
-    return (
-        "TODO: call your model to compare the retrieved SEC evidence and draft a grounded answer. "
-        "Require citations by ticker, year, or item."
+def docs_to_context(docs: list[Document]) -> str:
+    blocks = []
+    for i, doc in enumerate(docs, start=1):
+        meta = doc.metadata
+        label = f"rank={i}, ticker={meta.get('ticker')}, year={meta.get('year')}, item={meta.get('item')}, source_row={meta.get('source_row')}"
+        blocks.append(f"{label}\n{doc.page_content[:900]}")
+    return "\n\n".join(blocks)
+
+analyst_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are the analyst role in a multi-agent SEC workflow. "
+            "Use only the retrieved context. Cite ticker, year, item, or source_row. "
+            "Write a concise answer and include a short limitations sentence.",
+        ),
+        ("user", "Question:\n{question}\n\nRetrieved context:\n{context}"),
+    ]
+)
+
+analyst_chain = analyst_prompt | llm | StrOutputParser()
+
+def analyst_agent(question: str, retrieved_docs: list[Document]) -> str:
+    context = docs_to_context(retrieved_docs)
+    answer = analyst_chain.invoke({"question": question, "context": context})
+
+    workflow_trace_rows.append(
+        {
+            "role": "analyst",
+            "input": question,
+            "output_preview": answer[:240],
+            "latency_ms": None,
+            "source_rows": [d.metadata.get("source_row") for d in retrieved_docs],
+            "items": [d.metadata.get("item") for d in retrieved_docs],
+        }
     )
+
+    return answer
 ```
 
-## Step 3: Reviewer role
+## Step 4: Reviewer role
+
+The reviewer role applies RAGAS-style language. It does not need to compute official RAGAS metrics, but it should inspect faithfulness, answer relevancy, context precision, and missing evidence.
 
 ```python
-def reviewer_agent(answer: str, retrieved_rows) -> dict:
-    review = {
-        "grounding_ok": "TODO",
-        "missing_evidence": "TODO",
-        "revision_needed": "TODO",
-    }
+review_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "You are the reviewer role. Check the answer against the retrieved SEC context. "
+            "Return concise JSON-like text with keys: faithfulness, answer_relevancy, "
+            "context_precision, missing_evidence, revision_needed.",
+        ),
+        (
+            "user",
+            "Question:\n{question}\n\nAnswer:\n{answer}\n\nRetrieved context:\n{context}",
+        ),
+    ]
+)
+
+review_chain = review_prompt | llm | StrOutputParser()
+
+def reviewer_agent(question: str, answer: str, retrieved_docs: list[Document]) -> str:
+    context = docs_to_context(retrieved_docs)
+    review = review_chain.invoke(
+        {"question": question, "answer": answer, "context": context}
+    )
+
+    workflow_trace_rows.append(
+        {
+            "role": "reviewer",
+            "input": question,
+            "output_preview": review[:240],
+            "latency_ms": None,
+            "source_rows": [d.metadata.get("source_row") for d in retrieved_docs],
+            "items": [d.metadata.get("item") for d in retrieved_docs],
+        }
+    )
+
     return review
 ```
 
-## Step 4: Orchestrate the workflow
+## Step 5: Optional revision role
+
+If the reviewer flags a problem, revise once. Keep this bounded so the workflow remains auditable.
 
 ```python
-def coordinated_sec_workflow(question: str, chunks_df) -> dict:
-    retrieved = retrieval_agent(question, chunks_df)
+revision_prompt = ChatPromptTemplate.from_messages(
+    [
+        (
+            "system",
+            "Revise the analyst answer using the reviewer feedback. "
+            "Use only retrieved context and preserve citations.",
+        ),
+        (
+            "user",
+            "Question:\n{question}\n\nOriginal answer:\n{answer}\n\nReviewer feedback:\n{review}\n\nRetrieved context:\n{context}",
+        ),
+    ]
+)
+
+revision_chain = revision_prompt | llm | StrOutputParser()
+
+def revision_agent(question: str, answer: str, review: str, retrieved_docs: list[Document]) -> str:
+    context = docs_to_context(retrieved_docs)
+    revised = revision_chain.invoke(
+        {
+            "question": question,
+            "answer": answer,
+            "review": review,
+            "context": context,
+        }
+    )
+
+    workflow_trace_rows.append(
+        {
+            "role": "revision",
+            "input": question,
+            "output_preview": revised[:240],
+            "latency_ms": None,
+            "source_rows": [d.metadata.get("source_row") for d in retrieved_docs],
+            "items": [d.metadata.get("item") for d in retrieved_docs],
+        }
+    )
+
+    return revised
+```
+
+## Step 6: Orchestrate the workflow
+
+```python
+def coordinated_sec_workflow(question: str, revise_once: bool = True) -> dict:
+    workflow_trace_rows.clear()
+
+    retrieved = retrieval_agent(question)
     answer = analyst_agent(question, retrieved)
-    review = reviewer_agent(answer, retrieved)
+    review = reviewer_agent(question, answer, retrieved)
+
+    final_answer = answer
+    if revise_once and "true" in review.lower():
+        final_answer = revision_agent(question, answer, review, retrieved)
 
     return {
         "question": question,
         "retrieved": retrieved,
         "answer": answer,
         "review": review,
+        "final_answer": final_answer,
+        "trace": pd.DataFrame(workflow_trace_rows),
     }
 ```
 
-## Step 5: Export a trace
+## Step 7: Export a trace
 
 ```python
 def workflow_trace(result: dict) -> pd.DataFrame:
-    trace = result["retrieved"].copy()
-    trace["answer_preview"] = str(result["answer"])[:120]
-    trace["review_status"] = result["review"].get("revision_needed")
-    return trace
+    return result["trace"].copy()
+
+question = "Compare how the two companies discuss liquidity, inflation, or supply chain pressure."
+result = coordinated_sec_workflow(question)
+
+print(result["final_answer"])
+workflow_trace(result)
 ```
 
 ## What students should learn here
@@ -108,6 +281,8 @@ The point is not to over-engineer the framework. The point is to see that:
 - role separation improves clarity
 - traces are easier to audit than hidden prompting
 - reviewer logic creates a bridge to explainability and governance
+- RAGAS-style review language makes "quality" easier to discuss precisely
+- LangSmith or local traces show where orchestration succeeds or fails
 
 ## Bridge to the module deliverables
 
