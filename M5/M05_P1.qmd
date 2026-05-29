@@ -31,8 +31,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 5 on M05 Lecture Note 01: RAG Foundations and Retrieval."
+categories: ['M05:', 'Slides', 'Presentation', 'RAG', 'LangChain Splitters', 'Hybrid Retrieval', 'Vector Search', 'HNSW']
+description: "Presentation slides for Module 5 introducing RAG foundations, LangChain splitter choices, SEC retrieval design, sparse and dense retrieval, MMR, vector indexes, and HNSW search intuition."
 ---
 
 ## How to print Revealjs slides
@@ -70,6 +70,23 @@ RAG converts static model memory into dynamic, evidence-aware answering.
 - Indexing: split, embed, store
 - Retrieval: top-$k$ relevant chunks
 - Generation: answer with context
+
+---
+
+## Retrieval Is the Measurement Layer
+
+Before the LLM writes anything, retrieval decides what evidence exists.
+
+| Pipeline choice | Controls | Failure mode |
+|---|---|---|
+| parser | what text enters corpus | missing tables or sections |
+| splitter | retrievable unit | broken context |
+| metadata | filtering and citation | weak audit trail |
+| embedding | semantic match | missed domain language |
+| index | speed vs recall | right chunk not found |
+| reranker | prompt evidence | noisy or redundant context |
+
+For SEC analysis, a bad retriever can make a strong model look unreliable.
 
 # RAG Paradigms
 
@@ -134,11 +151,89 @@ RAG converts static model memory into dynamic, evidence-aware answering.
 
 ---
 
+## Choosing the Right Splitter
+
+| Splitter | Best source | Preserves |
+|---|---|---|
+| `RecursiveCharacterTextSplitter` | cleaned text | paragraphs and sentence-ish boundaries |
+| `MarkdownHeaderTextSplitter` | markdown filings | heading hierarchy |
+| `HTMLHeaderTextSplitter` | SEC HTML pages | `h1` / `h2` / `h3` metadata |
+| `HTMLSectionSplitter` | sectioned HTML | larger document blocks |
+| `HTMLSemanticPreservingSplitter` | tables/lists/media | semantic elements |
+
+Question for students:
+
+> What information would be lost if this chunk were retrieved without its heading, table, or section label?
+
+---
+
+## SEC Chunk Blueprint
+
+```python
+Document(
+    page_content=chunk_text,
+    metadata={
+        "ticker": "AAPL",
+        "year": 2024,
+        "filing": "10-K",
+        "item": "Item 7",
+        "source_row": 137,
+        "chunk_strategy": "recursive_800_150",
+    },
+)
+```
+
+- Text supports generation
+- Metadata supports filtering, citations, and evaluation
+- Strategy labels make splitter experiments auditable
+
+---
+
 ## Query Optimization
 
 - Query expansion (multi-query, sub-queries)
 - Query transformation (rewrite, HyDE)
 - Query routing by intent/domain
+
+---
+
+## Sparse + Dense Retrieval
+
+Dense similarity:
+
+$$
+\operatorname{sim}(q,d)=
+\frac{q \cdot d}{\lVert q\rVert \lVert d\rVert}
+$$
+
+Sparse retrieval:
+
+- strong for exact terms, tickers, accounting phrases
+- useful when wording matters
+
+Dense retrieval:
+
+- strong for semantic paraphrases
+- useful when user language differs from filing language
+
+Hybrid retrieval combines both, then reranks.
+
+---
+
+## MMR: Relevant But Not Redundant
+
+Maximal Marginal Relevance:
+
+$$
+\operatorname{MMR}(d_i)=
+\lambda \operatorname{sim}(d_i,q)
+-
+(1-\lambda)\max_{d_j\in S}\operatorname{sim}(d_i,d_j)
+$$
+
+- First term: close to the query
+- Second term: not too similar to already selected chunks
+- Useful when top-$k$ returns repeated boilerplate risk language
 
 # Vector Indexing and HNSW
 
@@ -168,6 +263,42 @@ Interpretation:
 
 - Early phase: explore region quickly
 - Late phase: refine local neighbors
+
+---
+
+## Similar Stories as Nearby Vectors
+
+![](./M05_lecture01_figures/hsw_starwars_harrypotter_basic.png){width=73% fig-alt="Star Wars and Harry Potter story beats shown as nearby vector regions"}
+
+- Similarity search does not require exact keyword overlap
+- It can retrieve works with shared structure, archetypes, or themes
+- HNSW makes that search fast by moving coarse-to-fine
+
+---
+
+## Detailed Similarity Layers
+
+![](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=78% fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers"}
+
+- Upper layers: broad archetypes
+- Middle layers: setting, conflict, mentor patterns
+- Lower layers: specific scenes and details
+
+---
+
+## Voronoi View of Vector Space
+
+![](./M05_lecture01_figures/hsw_voronoi_general.png){width=72% fig-alt="Voronoi-style partition of vector space under HNSW layers"}
+
+Each cell is a neighborhood. HNSW tries to reach the right neighborhood without scanning every point.
+
+---
+
+## Query Example: Similar to Dune
+
+![](./M05_lecture01_figures/hsw_dune.png){width=82% fig-alt="Conceptual HNSW search for books similar to Dune"}
+
+The query starts broad, narrows by genre and themes, then refines to local neighbors.
 
 ---
 

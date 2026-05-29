@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['M05:', 'RAG', 'Retrieval', 'Vector Search', 'Lecture Notes']
-description: "Lecture notes for Module 5 covering RAG Foundations and Retrieval."
+categories: ['M05:', 'RAG', 'LangChain Splitters', 'Chunking', 'Vector Search', 'HNSW', 'Lecture Notes']
+description: "Lecture notes for Module 5 covering RAG foundations, LangChain splitter selection, SEC chunking strategy, metadata-aware retrieval, embeddings, vector search, and HNSW indexing tradeoffs."
 ---
 
 # RAG Foundations and Domain Adaptation
@@ -118,6 +118,23 @@ Use fine-tuning when you need:
 
 In practice, many production systems use both: retrieval for grounding and fine-tuning for behavior.
 
+# A Retrieval System Is a Measurement Instrument
+
+It is tempting to treat retrieval as plumbing: split the documents, embed the chunks, and move on. In business analytics, retrieval is closer to a measurement instrument. It decides which evidence the model is allowed to see, which means it shapes the answer before generation begins.
+
+A useful debugging mindset is:
+
+| Design choice | What it controls | What can go wrong |
+|---|---|---|
+| loader/parser | what raw evidence enters the corpus | missing tables, footnotes, or HTML sections |
+| splitter | what counts as one retrievable unit | chunks too broad, too narrow, or structurally broken |
+| metadata | what can be filtered or audited | wrong company, year, item, or source attribution |
+| embedding model | what similarity means | misses domain-specific vocabulary |
+| vector index | how candidates are found quickly | recall loss from approximate search |
+| reranker | what evidence reaches the prompt | overemphasis on surface keyword overlap |
+
+For SEC work, this measurement view matters because the difference between a good and bad answer may be one missing chunk from Item 7A or one table split away from its explanatory footnote.
+
 # Retrieval as the Core Engineering Problem
 
 Most RAG failures start before generation. If the system retrieves weak evidence, the model cannot reliably recover downstream.
@@ -174,6 +191,127 @@ The chunk size tradeoff is straightforward:
 
 - larger chunks preserve context but add noise and cost
 - smaller chunks improve focus but risk losing semantic completeness
+
+### Choosing the Right Splitter
+
+LangChain's splitter integrations are useful because they turn chunking from a hidden preprocessing choice into an explicit design decision. The HTML splitter examples in the LangChain documentation are especially helpful pedagogically: they compare splitters by document structure, metadata behavior, and preservation of semantic elements such as tables and lists.
+
+For SEC filings and business documents, the right splitter depends on what structure must survive into retrieval.
+
+| Splitter pattern | Use when | Strength | Risk or limitation | SEC / business example |
+|---|---|---|---|---|
+| `RecursiveCharacterTextSplitter` | The source is plain text or cleaned PDF text | Simple, robust default; respects paragraph and sentence separators when possible | May cut across section boundaries, tables, or accounting notes | baseline chunking for Item 7 narrative text |
+| `MarkdownHeaderTextSplitter` | The source has Markdown headings | Preserves section hierarchy as metadata | Requires converted or authored Markdown with reliable headings | converted annual report sections with `# Item 7` and `## Liquidity` |
+| `HTMLHeaderTextSplitter` | The source is HTML with meaningful heading tags | Keeps header metadata with each chunk | Does not preserve every complex table or media element | SEC HTML filing pages with `h1`, `h2`, or `h3` structure |
+| `HTMLSectionSplitter` | Sections are represented by broader HTML containers | Captures larger structural blocks before recursive splitting | Depends on the quality of HTML section markup | filing or investor-relations pages with repeated section containers |
+| `HTMLSemanticPreservingSplitter` | Tables, lists, links, code, images, or layout elements carry meaning | Avoids breaking important structured elements across chunks | More complex and sometimes heavier than a baseline splitter | risk-factor lists, compensation tables, footnote tables |
+
+:::{.callout-tip}
+Treat splitter choice as an experimental variable. For the same SEC question, compare retrieved evidence across at least two chunking strategies before deciding which one is "better."
+:::
+
+### Runnable LangChain Splitter Comparison
+
+The following scaffold adapts LangChain's splitter pattern to a small SEC-style corpus. It assumes a dataframe with a `chunk_text` column from an earlier assignment. Students can replace the example path with their own `chunks.csv`.
+
+```{python}
+#| eval: false
+from pathlib import Path
+import pandas as pd
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+
+chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+chunks_df = pd.read_csv(chunks_path)
+
+source_docs = [
+    Document(
+        page_content=row["chunk_text"],
+        metadata={
+            "ticker": row.get("ticker"),
+            "year": row.get("year"),
+            "item": row.get("item"),
+            "source_row": i,
+        },
+    )
+    for i, row in chunks_df.head(100).iterrows()
+]
+
+splitter_grid = {
+    "small_recursive": RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=75,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    ),
+    "large_recursive": RecursiveCharacterTextSplitter(
+        chunk_size=1200,
+        chunk_overlap=150,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    ),
+}
+
+split_results = {}
+for name, splitter in splitter_grid.items():
+    split_results[name] = splitter.split_documents(source_docs)
+
+pd.DataFrame(
+    [
+        {
+            "strategy": name,
+            "num_chunks": len(docs),
+            "avg_chars": sum(len(d.page_content) for d in docs) / max(len(docs), 1),
+            "sample_metadata": docs[0].metadata if docs else {},
+        }
+        for name, docs in split_results.items()
+    ]
+)
+```
+
+If the source is HTML rather than pre-cleaned text, the same design logic applies with HTML-aware splitters:
+
+```{python}
+#| eval: false
+from langchain_text_splitters import HTMLHeaderTextSplitter
+
+headers_to_split_on = [
+    ("h1", "Header 1"),
+    ("h2", "Header 2"),
+    ("h3", "Header 3"),
+]
+
+html_splitter = HTMLHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
+html_chunks = html_splitter.split_text(sec_html_string)
+html_chunks[:3]
+```
+
+### SEC Chunk Blueprint
+
+For this course, a good chunk is not just text. It is text plus enough context to make the retrieved evidence auditable.
+
+```{python}
+#| eval: false
+from langchain_core.documents import Document
+
+doc = Document(
+    page_content=chunk_text,
+    metadata={
+        "ticker": "AAPL",
+        "company": "Apple Inc.",
+        "year": 2024,
+        "filing": "10-K",
+        "item": "Item 7",
+        "section_title": "Management's Discussion and Analysis",
+        "source_row": 137,
+        "chunk_strategy": "recursive_800_150",
+    },
+)
+```
+
+This metadata supports three downstream tasks:
+
+1. retrieval filtering, such as limiting a query to Item 7A
+2. citation, such as reporting ticker, year, item, and source row
+3. evaluation, such as comparing which splitter retrieved stronger evidence
 
 ### Metadata Attachments
 
@@ -246,6 +384,55 @@ That is why hybrid retrieval is common in production. It combines:
 - dense retrieval for semantic recall
 - reranking to reorder the final candidate set
 
+## Similarity Scores and Hybrid Retrieval
+
+Dense retrieval usually ranks chunks by vector similarity. With cosine similarity:
+
+$$
+\begin{align}
+\operatorname{sim}(q, d) =
+\frac{q \cdot d}{\lVert q \rVert \lVert d \rVert}
+\end{align}
+$$
+
+where $q$ is the query embedding and $d$ is the document or chunk embedding.
+
+Sparse retrieval ranks by lexical evidence. BM25 is a common default because it rewards term overlap while controlling for document length:
+
+$$
+\begin{align}
+\operatorname{BM25}(q, d) =
+\sum_{t \in q}
+\operatorname{IDF}(t)
+\frac{f(t,d)(k_1 + 1)}
+{f(t,d) + k_1(1 - b + b \cdot |d|/\operatorname{avgdl})}
+\end{align}
+$$
+
+The practical intuition is simple:
+
+- dense retrieval helps when the user says "cash pressure" and the filing says "liquidity constraints"
+- sparse retrieval helps when the user asks for a precise phrase, ticker, accounting term, or regulation
+- hybrid retrieval combines both signals before reranking
+
+## Diversity with MMR
+
+Top-$k$ vector search often returns near-duplicates. Maximal Marginal Relevance (MMR) tries to balance relevance and diversity:
+
+$$
+\begin{align}
+\operatorname{MMR}(d_i) =
+\lambda \operatorname{sim}(d_i, q)
+-
+(1-\lambda)
+\max_{d_j \in S}\operatorname{sim}(d_i, d_j)
+\end{align}
+$$
+
+where $S$ is the set of chunks already selected.
+
+In SEC analysis, MMR can help avoid retrieving five chunks that all repeat the same risk-factor paragraph. It can surface complementary evidence from liquidity, operations, and market-risk sections.
+
 ## Fine-Tuning the Retriever
 
 Retriever fine-tuning is valuable when the domain has specialized language, changing terminology, or unusual structure. It is also useful when the generator and retriever should be better aligned.
@@ -293,6 +480,50 @@ The Pinecone explanation is useful because it frames HNSW as a combination of tw
 ![Story mapping view for layered navigation and search refinement.](./M05_lecture01_figures/story-mapping.png){width=78% fig-align="center" #fig-hnsw-story-map fig-alt="Story mapping view for layered navigation and search refinement."}
 
 The story map in @fig-hnsw-story-map is a useful mental model for teaching HNSW. Early steps in the search are broad, exploratory, and coarse. Later steps become local, specific, and refinement-oriented. That is exactly what the hierarchy is doing: upper layers help us move across the space quickly, while lower layers help us make precise nearest-neighbor decisions.
+
+### Story Similarity as Vector Neighborhoods
+
+A useful classroom analogy is to treat stories as points in an embedding space. *Star Wars*,
+*Harry Potter*, *The Lord of the Rings*, and *Dune* are not similar because they share the same
+surface words. They are similar because they share latent structure: heroes, mentors, hidden
+lineage, political conflict, chosen-one narratives, empires, desert worlds, magical or mystical
+power systems, and epic scope.
+
+In vector retrieval, those latent features become coordinates. A query such as "books similar to
+*Dune*" should not only find documents containing the word *Dune*. It should move toward a
+neighborhood of semantically similar works: epic science fiction, planetary politics, messianic
+themes, resource conflict, and world-building scale.
+
+![Basic story-beat analogy for *Star Wars* and *Harry Potter* similarities.](./M05_lecture01_figures/hsw_starwars_harrypotter_basic.png){width=78% fig-align="center" #fig-hsw-story-basic fig-alt="Star Wars and Harry Potter story beats shown as nearby vector regions."}
+
+The basic story-beat view in @fig-hsw-story-basic shows why semantic retrieval is more powerful
+than keyword lookup. "Orphan hero," "mentor," "special child," and "good versus evil" can be
+nearby even when the names, places, and vocabulary differ.
+
+![Detailed story-beat analogy for layered HNSW search.](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=82% fig-align="center" fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers."}
+
+The detailed version makes the hierarchy easier to explain. Upper levels can be understood as
+coarse abstractions: heroic arc, mentor relationship, hidden heritage, empire versus resistance.
+Lower levels refine into concrete details: Tatooine farm versus Hogwarts castle, lightsaber
+training versus wand practice, Vader versus Voldemort. HNSW does something analogous during
+search: it uses sparse upper layers to get into the right semantic region, then dense lower layers
+to refine the final neighbors.
+
+![Voronoi-style partition of vector neighborhoods below HNSW layers.](./M05_lecture01_figures/hsw_voronoi_general.png){width=74% fig-align="center" fig-alt="Voronoi-style partition of vector space under HNSW layers."}
+
+The Voronoi-style picture reinforces the idea of neighborhoods. Each cell represents a region of
+space closest to a point. In high-dimensional retrieval systems we do not literally draw these
+cells, but the intuition is valuable: similarity search is about reaching the right neighborhood
+quickly, then comparing local candidates carefully.
+
+![Conceptual HNSW search for books similar to *Dune*.](./M05_lecture01_figures/hsw_dune.png){width=82% fig-align="center" fig-alt="Conceptual HNSW search for books similar to Dune."}
+
+The *Dune* example brings the whole mechanism together. At the top layer, the search can make
+coarse jumps toward science fiction and epic-scale stories. In middle layers, it can refine toward
+planetary politics, messianic themes, ecology, and resource conflict. At the bottom layer, it
+compares local candidate works and returns the nearest neighbors. This is the same operational
+logic used in RAG: avoid scanning everything, but still retrieve the chunks or documents most
+likely to help the generator answer well.
 
 ![HNSW layers and navigation intuition.](./M05_lecture01_figures/hnsw_1_explained.png){width=72% fig-align="center" fig-alt="HNSW layers and navigation intuition."}
 

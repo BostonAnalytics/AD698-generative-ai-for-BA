@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M05:', 'Lab']
-description: "Question-driven lab for Module 5 focused on retrieval quality, chunking tradeoffs, and auditability."
+categories: ['M05:', 'Lab', 'LangChain Splitters', 'Vector Search', 'Reranking', 'Retrieval Diagnostics']
+description: "Question-driven lab for Module 5 where students compare LangChain chunking strategies, build SEC vector indexes, benchmark retrievers, rerank candidates, and diagnose retrieval failures."
 ---
 
 ## Lab Purpose
@@ -31,9 +31,9 @@ description: "Question-driven lab for Module 5 focused on retrieval quality, chu
 ## Recommended Notebook Pattern
 
 1. Document loading
-2. Chunking strategy comparison
+2. LangChain chunking strategy comparison
 3. Vector index construction
-4. Retrieval benchmark
+4. Retriever and reranker benchmark
 5. Diagnostic interpretation
 
 ## Validation Standard
@@ -45,17 +45,24 @@ For each major stage, include at least one validation output such as:
 - index size
 - latency table
 - top retrieved passages
+- reranked passages
 - one note on retrieval quality
 
 ## Questions
 
-### Q1. Build Two Chunking Strategies
+### Q1. Build Three Chunking Strategies
 
-Create two chunking strategies that differ in size, overlap, or segmentation logic.
+Create three chunking strategies that differ in size, overlap, or segmentation logic.
+
+Required strategies:
+
+1. small recursive chunks
+2. larger recursive chunks
+3. structure-aware chunks if your source has HTML or Markdown headings; otherwise a third recursive setting with different overlap
 
 Required evidence:
 
-- chunk counts for both strategies
+- chunk counts for all strategies
 - one sample chunk from each
 - one short note on expected tradeoffs
 
@@ -79,7 +86,25 @@ Required evidence:
 - latency or response-time measure if available
 - one quality note per question
 
-### Q4. Diagnose Retrieval Failures
+### Q4. Add Reranker Diagnostics
+
+Take the top 8 to 10 retrieved chunks from one strategy and rerank them before selecting the final top 3 to 5 chunks.
+
+Acceptable reranking options:
+
+- a cross-encoder reranker such as `cross-encoder/ms-marco-MiniLM-L-6-v2`
+- an embedding-similarity reranker over the candidate set
+- a clearly documented LLM-as-a-reranker prompt
+- a manual relevance score if API access is unavailable
+
+Required evidence:
+
+- raw rank versus reranked rank
+- relevance score or relevance label
+- one example where reranking improved the context
+- one example where reranking did not help or introduced risk
+
+### Q5. Diagnose Retrieval Failures
 
 Identify at least one failure for each strategy if possible.
 
@@ -89,8 +114,10 @@ Possible failure modes:
 - chunk too large and too diffuse
 - irrelevant nearest neighbors
 - duplicated retrieval
+- reranker over-prefers keyword overlap
+- reranker removes useful surrounding context
 
-### Q5. Recommendation
+### Q6. Recommendation
 
 Choose the better chunking strategy for later RAG work and justify it in 3 to 5 sentences using your evidence.
 
@@ -99,5 +126,216 @@ Choose the better chunking strategy for later RAG work and justify it in 3 to 5 
 ```{python}
 #| eval: false
 from pathlib import Path
+import time
 import pandas as pd
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter, MarkdownHeaderTextSplitter
+```
+
+## Runnable SEC Chunking and Retrieval Scaffold
+
+The scaffold below is intentionally modular. It gives you a working pattern for comparing chunking strategies, building retrievers, recording latency, and preparing a reranking table. You may replace the embedding model or vector store with the provider you used in `M05_T1`.
+
+### Load SEC Chunks
+
+```{python}
+#| eval: false
+chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+chunks_df = pd.read_csv(chunks_path)
+
+text_col = "chunk_text"
+metadata_cols = [c for c in ["ticker", "company", "year", "item", "source"] if c in chunks_df.columns]
+
+base_docs = []
+for i, row in chunks_df.iterrows():
+    metadata = {c: row[c] for c in metadata_cols}
+    metadata["source_row"] = i
+    base_docs.append(Document(page_content=str(row[text_col]), metadata=metadata))
+
+print(f"Loaded {len(base_docs)} base documents")
+```
+
+### Create Comparable Chunk Sets
+
+```{python}
+#| eval: false
+splitters = {
+    "small_recursive": RecursiveCharacterTextSplitter(
+        chunk_size=500,
+        chunk_overlap=75,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    ),
+    "large_recursive": RecursiveCharacterTextSplitter(
+        chunk_size=1200,
+        chunk_overlap=150,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    ),
+    "high_overlap_recursive": RecursiveCharacterTextSplitter(
+        chunk_size=800,
+        chunk_overlap=250,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    ),
+}
+
+chunk_sets = {name: splitter.split_documents(base_docs) for name, splitter in splitters.items()}
+
+chunk_summary = pd.DataFrame(
+    [
+        {
+            "strategy": name,
+            "num_chunks": len(docs),
+            "avg_chars": round(sum(len(d.page_content) for d in docs) / max(len(docs), 1), 1),
+            "first_item": docs[0].metadata.get("item") if docs else None,
+        }
+        for name, docs in chunk_sets.items()
+    ]
+)
+chunk_summary
+```
+
+### Optional Markdown Header Splitter
+
+Use this only when your SEC text has been converted to Markdown headings such as `# Item 7` or `## Liquidity and Capital Resources`.
+
+```{python}
+#| eval: false
+headers_to_split_on = [
+    ("#", "section"),
+    ("##", "subsection"),
+    ("###", "topic"),
+]
+
+markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
+markdown_docs = markdown_splitter.split_text(markdown_filing_text)
+markdown_docs[:3]
+```
+
+### Build Retrievers
+
+```{python}
+#| eval: false
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+
+embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+vectorstores = {
+    name: FAISS.from_documents(docs, embedding_model)
+    for name, docs in chunk_sets.items()
+}
+
+retrievers = {
+    name: store.as_retriever(search_kwargs={"k": 8})
+    for name, store in vectorstores.items()
+}
+
+{name: store.index.ntotal for name, store in vectorstores.items()}
+```
+
+### Benchmark Retrieval
+
+```{python}
+#| eval: false
+questions = [
+    "How does the company describe inflation risk?",
+    "What liquidity or capital resource risks does management discuss?",
+    "How does the filing describe supply chain or inventory pressure?",
+]
+
+benchmark_rows = []
+raw_hits = {}
+
+for strategy, retriever in retrievers.items():
+    for question in questions:
+        start = time.perf_counter()
+        hits = retriever.invoke(question)
+        elapsed_ms = (time.perf_counter() - start) * 1000
+        raw_hits[(strategy, question)] = hits
+        benchmark_rows.append(
+            {
+                "strategy": strategy,
+                "question": question,
+                "latency_ms": round(elapsed_ms, 1),
+                "top_item": hits[0].metadata.get("item") if hits else None,
+                "top_source_row": hits[0].metadata.get("source_row") if hits else None,
+                "top_preview": hits[0].page_content[:180] if hits else "",
+            }
+        )
+
+retrieval_benchmark = pd.DataFrame(benchmark_rows)
+retrieval_benchmark
+```
+
+### Rerank Candidate Chunks
+
+The cross-encoder option below is a strong local reranking baseline. If `sentence-transformers` is unavailable, use the manual scoring fallback after it.
+
+```{python}
+#| eval: false
+from sentence_transformers import CrossEncoder
+
+reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+strategy = "small_recursive"
+question = questions[0]
+candidates = raw_hits[(strategy, question)]
+
+pairs = [(question, doc.page_content) for doc in candidates]
+scores = reranker.predict(pairs)
+
+rerank_df = pd.DataFrame(
+    [
+        {
+            "raw_rank": i + 1,
+            "rerank_score": float(score),
+            "item": doc.metadata.get("item"),
+            "source_row": doc.metadata.get("source_row"),
+            "preview": doc.page_content[:220],
+        }
+        for i, (doc, score) in enumerate(zip(candidates, scores))
+    ]
+).sort_values("rerank_score", ascending=False)
+
+rerank_df["reranked_rank"] = range(1, len(rerank_df) + 1)
+rerank_df[["raw_rank", "reranked_rank", "rerank_score", "item", "source_row", "preview"]]
+```
+
+Manual fallback:
+
+```{python}
+#| eval: false
+manual_rerank_df = pd.DataFrame(
+    [
+        {
+            "raw_rank": i + 1,
+            "manual_relevance_0_2": None,
+            "item": doc.metadata.get("item"),
+            "source_row": doc.metadata.get("source_row"),
+            "preview": doc.page_content[:220],
+        }
+        for i, doc in enumerate(candidates)
+    ]
+)
+
+manual_rerank_df
+```
+
+### Retrieval Failure Taxonomy
+
+Use this table to record what happened.
+
+```{python}
+#| eval: false
+failure_log = pd.DataFrame(
+    columns=[
+        "strategy",
+        "question",
+        "failure_type",
+        "evidence",
+        "likely_cause",
+        "fix_to_try",
+    ]
+)
+
+failure_log
 ```

@@ -12,7 +12,8 @@ format:
         code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Tutorial', 'Evaluation', 'Auditability']
+categories: ['M05:', 'Tutorial', 'RAG Evaluation', 'Auditability', 'Grounding', 'Failure Analysis']
+description: "Tutorial for evaluating and auditing an SEC RAG pipeline with small test sets, retrieval audit tables, grounding checks, and reusable failure-analysis artifacts."
 ---
 
 ## Module Learning Objectives
@@ -154,5 +155,4 @@ If generative AI materially supports your work for this tutorial, include an AI 
 When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
 
 Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
 

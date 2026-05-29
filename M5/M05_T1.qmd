@@ -12,7 +12,8 @@ format:
         code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Tutorial', 'RAG', 'SEC Text']
+categories: ['M05:', 'Tutorial', 'RAG', 'LangChain', 'FAISS', 'SEC Text']
+description: "Tutorial for building a minimum viable SEC RAG chain with LangChain documents, embeddings, FAISS retrieval, grounded generation, and reusable artifacts for later evaluation."
 ---
 
 ## Module Learning Objectives

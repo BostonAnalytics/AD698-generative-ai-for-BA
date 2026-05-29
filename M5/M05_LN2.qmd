@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['M05:', 'RAG', 'Generation', 'Evaluation', 'Lecture Notes']
-description: "Lecture notes for Module 5 covering M05 Lecture Note 02: Generation, Evaluation, and Production RAG."
+categories: ['M05:', 'RAG', 'Reranking', 'RAGAS', 'LangSmith', 'Production RAG', 'Lecture Notes']
+description: "Lecture notes for Module 5 covering generation-side RAG design, reranking, context compression, RAGAS-style metrics, LangSmith tracing, production architecture, and multimodal RAG directions."
 ---
 
 # RAG Foundations and Domain Adaptation
@@ -168,6 +168,63 @@ Modern RAG evaluation often uses three high-level quality concepts [@RAGAS; @ARE
 
 These are more informative than a single task score because they diagnose where the failure occurred.
 
+## RAGAS-Style Evaluation Language
+
+RAGAS is useful in this course less because students need one specific library, and more because it gives a precise vocabulary for separating retrieval failure from generation failure.
+
+| Evaluation concept | What it asks | Typical evidence needed | Failure it reveals |
+|---|---|---|---|
+| Faithfulness | Is the answer supported by the retrieved context? | answer + retrieved chunks | hallucinated or unsupported claims |
+| Answer relevancy | Does the answer address the actual question? | question + answer | fluent but off-target responses |
+| Context precision | Are the top retrieved chunks useful, especially near the top? | question + ranked contexts | noisy top-k retrieval |
+| Context recall | Did retrieval find enough evidence to answer completely? | question + ground truth or reference evidence | missing facts or incomplete evidence |
+| Context entity recall | Did retrieval capture the key entities? | expected entities + retrieved context | wrong company, year, item, or entity |
+
+The practical classroom workflow is:
+
+1. create a small test set of representative SEC questions
+2. save the retrieved chunks for each question
+3. save the generated answer
+4. score retrieval and answer quality separately
+5. inspect low-scoring rows and decide whether to tune chunking, embeddings, reranking, or prompting
+
+```{python}
+#| eval: false
+eval_rows = [
+    {
+        "question": "How does the company describe inflation risk?",
+        "contexts": [doc.page_content for doc in retrieved_docs],
+        "answer": generated_answer,
+        "ground_truth": "Reference answer or instructor-approved evidence summary",
+    }
+]
+
+eval_df = pd.DataFrame(eval_rows)
+eval_df
+```
+
+If using RAGAS directly, the same table can be converted into the library's expected dataset format and scored with metrics such as faithfulness, answer relevancy, context precision, and context recall. If the library is not available, students can still apply the same rubric manually.
+
+```{python}
+#| eval: false
+from datasets import Dataset
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+
+ragas_dataset = Dataset.from_pandas(eval_df)
+
+ragas_scores = evaluate(
+    ragas_dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+)
+
+ragas_scores.to_pandas()
+```
+
+:::{.callout-note}
+RAGAS-style metrics should not replace human review in financial analysis. Use them as triage signals that tell you which examples deserve closer inspection.
+:::
+
 ## Four Abilities Worth Testing
 
 The survey also highlights four abilities that stress-test RAG systems [@RGB; @RECALL].
@@ -209,6 +266,44 @@ A practical evaluation workflow is:
 3. score retrieval and answer quality separately
 4. inspect failure modes by category
 5. tune chunking, search, reranking, and prompting iteratively
+
+## LangSmith Tracing for RAG Debugging
+
+Metrics tell us whether a run was weak. Traces help explain why.
+
+LangSmith-style tracing records the actual sequence of events in a RAG application:
+
+- the user question
+- any query rewrite or decomposition
+- retriever inputs and retrieved documents
+- reranker inputs and reordered documents
+- prompt construction
+- model response
+- latency, token usage, and errors
+
+For Module 5, tracing is especially helpful because many failures happen before generation. A final answer might be wrong because the prompt was weak, but it might also be wrong because the retriever never surfaced the relevant SEC section.
+
+```{python}
+#| eval: false
+import os
+
+os.environ["LANGSMITH_TRACING"] = "true"
+os.environ["LANGSMITH_PROJECT"] = "ad698-m05-rag-evaluation"
+
+# Run your retriever or RAG chain after setting these variables.
+# Inspect the trace for retrieval inputs, retrieved chunks, prompt text, and final answer.
+```
+
+When writing up results, students should include a compact trace summary rather than screenshots alone:
+
+| Trace field | What to report |
+|---|---|
+| question | the exact user query |
+| retriever query | original or rewritten retrieval query |
+| top retrieved chunks | ticker, year, item, source row, short preview |
+| reranker change | which chunks moved up or down |
+| prompt evidence | how many chunks entered the final prompt |
+| answer issue | unsupported claim, missing evidence, vague synthesis, or correct answer |
 
 # Downstream Tasks for RAG
 

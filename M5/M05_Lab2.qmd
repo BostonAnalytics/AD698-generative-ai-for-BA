@@ -6,8 +6,8 @@ date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M05:', 'Lab']
-description: "Question-driven lab for Module 5 focused on comparing prompting, retrieval grounding, and pretrained model behavior."
+categories: ['M05:', 'Lab', 'RAG Evaluation', 'Grounding', 'Prompt Comparison', 'Business Recommendation']
+description: "Question-driven lab for Module 5 focused on comparing prompt-only, RAG, and pretraining-heavy answers using explicit grounding, specificity, and business usefulness criteria."
 execute:
   echo: true
   eval: false

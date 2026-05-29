@@ -5,8 +5,8 @@ number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M05:', 'Highlights']
-description: "Module 5 highlights for Retrieval and Grounded Generation."
+categories: ['M05:', 'Highlights', 'RAG', 'LangChain', 'Retrieval Evaluation']
+description: "Module 5 highlights covering RAG architecture, LangChain splitter choices, vector retrieval, reranking, grounding, and evaluation for business analytics."
 ---
 
 

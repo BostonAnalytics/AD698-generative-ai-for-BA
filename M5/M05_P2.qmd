@@ -33,8 +33,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 5 on M05 P2 - RAG Generation, Evaluation, and Production."
+categories: ['M05:', 'Slides', 'Presentation', 'RAG Evaluation', 'Reranking', 'RAGAS', 'Production RAG']
+description: "Presentation slides for Module 5 on generation-side RAG design, reranking, answer faithfulness, RAGAS-style evaluation, LangSmith tracing, and production RAG architecture."
 ---
 
 ## How to print Revealjs slides
