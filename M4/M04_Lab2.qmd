@@ -6,8 +6,8 @@ date: "2026-03-12"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M04:', 'Lab']
-description: "Question-driven lab for Module 4 focused on transformer fine-tuning and diagnostic evaluation."
+categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Applied Practice', 'Evaluation']
+description: "Gives students applied practice with Fine-Tuning a Transformer for Text Classification, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 execute:
   echo: true
   eval: false

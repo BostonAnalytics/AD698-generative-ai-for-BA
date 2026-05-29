@@ -6,8 +6,8 @@ date: "2026-02-01"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M01:', 'Lab']
-description: "Question-driven lab for Module 1 focused on comparing classical and neural text representations."
+categories: ['NLP Foundations', 'SEC Text', 'Language Probability', 'Text Representation', 'Applied Practice', 'Evaluation']
+description: "Gives students applied practice with Word Embeddings and Neural Text Representations, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 execute:
   echo: true
   eval: false

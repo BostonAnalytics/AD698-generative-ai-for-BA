@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   echo: true
   eval: false
-categories: ['M03:', 'Project']
-description: "Project guidance for Module 3 focused on Project Instructions III - Step 3 (Chunking, Embeddings, and Vector Index)."
+categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Workflow Design', 'Deliverable Design']
+description: "Guides students through project work on Project Instructions III - Step 3 (Chunking, Embeddings, and Vector Index), emphasizing reproducible artifacts, validation evidence, interpretation, and business-facing communication."
 ---
 
 # Step 3 Objective

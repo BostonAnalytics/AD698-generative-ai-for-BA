@@ -35,8 +35,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M04:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 4 on Transformers, Attention, and Context."
+categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Conceptual Framing']
+description: "Introduces Transformers, Attention, and Context through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## How to print Revealjs slides

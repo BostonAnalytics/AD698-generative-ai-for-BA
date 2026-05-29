@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M04:', 'Lab']
-description: "Question-driven lab for Module 4 focused on attention mechanics and interpretation."
+categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Applied Practice', 'Validation']
+description: "Gives students applied practice with Transformer Attention on Text Data, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 ---
 
 ## Lab Purpose

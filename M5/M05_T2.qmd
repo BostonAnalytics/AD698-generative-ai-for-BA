@@ -12,8 +12,8 @@ format:
         code-overflow: wrap
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Tutorial', 'RAG Evaluation', 'Auditability', 'Grounding', 'Failure Analysis']
-description: "Tutorial for evaluating and auditing an SEC RAG pipeline with small test sets, retrieval audit tables, grounding checks, and reusable failure-analysis artifacts."
+categories: ['RAG Evaluation', 'Auditability', 'Grounding', 'Failure Analysis', 'Guided Implementation', 'Evaluation']
+description: "Guides students through a hands-on implementation of Evaluate and Audit Your SEC RAG Pipeline, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 ## Module Learning Objectives

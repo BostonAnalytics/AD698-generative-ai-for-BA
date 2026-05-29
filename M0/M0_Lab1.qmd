@@ -6,8 +6,8 @@ date: "2026-01-01"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M0:', 'Lab']
-description: "Question-driven lab for Module 0 focused on Colab setup, GPU checks, and tensor basics."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Applied Practice', 'Validation']
+description: "Gives students applied practice with Colab + GPU + Tensors, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 execute:
   echo: true
   eval: false

@@ -30,8 +30,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M0:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 0 on Mathematical Foundations for Neural Networks and SGD."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Technical Deep Dive']
+description: "Introduces Neural Network Math and SGD through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## Why This Lecture Matters

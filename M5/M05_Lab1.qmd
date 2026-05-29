@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M05:', 'Lab', 'LangChain Splitters', 'Vector Search', 'Reranking', 'Retrieval Diagnostics']
-description: "Question-driven lab for Module 5 where students compare LangChain chunking strategies, build SEC vector indexes, benchmark retrievers, rerank candidates, and diagnose retrieval failures."
+categories: ['LangChain Splitters', 'Vector Search', 'Reranking', 'Retrieval Diagnostics', 'Applied Practice', 'Validation']
+description: "Gives students applied practice comparing LangChain chunking strategies, building SEC vector indexes, benchmarking retrievers, reranking candidates, and diagnosing retrieval failures."
 ---
 
 ## Lab Purpose

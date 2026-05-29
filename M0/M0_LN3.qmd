@@ -19,8 +19,8 @@ format:
     toc: true
     toc-depth: 3
     code-overflow: wrap
-categories: ['M0:', 'Linear Models', 'MLP', 'Deep Learning', 'Lecture Notes']
-description: "Lecture notes for Module 0 covering From Linear Models to Multilayer Perceptrons."
+categories: ['Linear Models', 'MLP', 'Deep Learning', 'Modeling Foundations']
+description: "Explains From Linear Models to Multilayer Perceptrons with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Generative AI Foundations: Colab and Tensors

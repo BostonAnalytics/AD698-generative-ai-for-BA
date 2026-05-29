@@ -5,8 +5,8 @@ number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M05:', 'Wrapup', 'RAG', 'Retrieval Evaluation', 'Production Readiness']
-description: "Module 5 wrap-up connecting splitter choice, retrieval diagnostics, reranking, grounding evaluation, and production-ready RAG design."
+categories: ['RAG', 'Retrieval Evaluation', 'Production Readiness', 'Synthesis', 'Reflection']
+description: "Synthesizes key ideas from Retrieval and Grounded Generation, helping students connect concepts, technical skills, limitations, and next-step learning goals."
 ---
 
 # What We Learned

@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['M0:', 'Mathematics', 'Neural Networks', 'SGD', 'Lecture Notes']
-description: "Lecture notes for Module 0 covering Mathematical Foundations for Neural Networks and SGD."
+categories: ['Mathematics', 'Neural Networks', 'SGD', 'Technical Foundations', 'Neural Network Math']
+description: "Explains Neural Network Math and SGD with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Generative AI Foundations: Colab and Tensors

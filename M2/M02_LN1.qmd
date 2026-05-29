@@ -18,8 +18,8 @@ execute:
     eval: true
     warning: false
     message: false
-categories: ['M02:', 'Mathematics', 'Language Modeling', 'Foundations', 'Lecture Notes']
-description: "Lecture notes for Module 2 covering Mathematical Foundations Through Language Modeling."
+categories: ['Mathematics', 'Language Modeling', 'Foundations', 'Conceptual Foundations', 'Math for Language Modeling']
+description: "Explains Math for Language Modeling with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Foundations of Language Modeling

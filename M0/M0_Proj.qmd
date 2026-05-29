@@ -5,8 +5,8 @@ number-sections: true
 date: "2026-04-28"
 date-modified: today
 date-format: long
-categories: ['M0:', 'Project']
-description: "Project guidance for Module 0 focused on SEC 10-K Financial RAG: Student Build Plan."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Workflow Design', 'Deliverable Design']
+description: "Guides students through project work on SEC 10-K Financial RAG: Student Build Plan, emphasizing reproducible artifacts, validation evidence, interpretation, and business-facing communication."
 ---
 
 # What You Are Building

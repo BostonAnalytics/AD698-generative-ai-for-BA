@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M02:', 'Lab']
-description: "Question-driven lab for Module 2 focused on extracting, validating, and chunking SEC filing sections."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Applied Practice', 'Validation']
+description: "Gives students applied practice with SEC HTML Section Extraction and Corpus Validation, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 ---
 
 ## Lab Purpose

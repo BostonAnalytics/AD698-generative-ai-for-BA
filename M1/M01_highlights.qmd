@@ -8,8 +8,8 @@ format:
     html:
         code-fold: true
 date-format: long
-categories: ['M01:', 'Highlights']
-description: "Module 1 highlights for Language Probability and Representation."
+categories: ['NLP Foundations', 'SEC Text', 'Language Probability', 'Text Representation', 'Learning Objectives', 'Module Roadmap']
+description: "Previews the learning arc for Language Probability and Representation, emphasizing the concepts, tools, and applied skills students should track throughout the module."
 ---
 
 # Lecture 1.1: Course Orientation and Reproducible GenAI Setup

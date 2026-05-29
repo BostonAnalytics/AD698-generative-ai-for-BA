@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   echo: true
   eval: false
-categories: ['M04:', 'Assignment']
-description: "Assignment for Module 4 focused on Transformers, Encoder vs. Decoder, and the Language of Rivals."
+categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Applied Assessment', 'Business Analytics']
+description: "Assesses students' ability to apply Transformers, Encoder vs. Decoder, and the Language of Rivals through reproducible analysis, evidence-based reasoning, validation, and business interpretation."
 ---
 
 # Important Reminder {.unnumbered}

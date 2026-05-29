@@ -9,8 +9,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../../references.bib
-categories: ["M0", "Primer", "Tokens", "Tokenization", "Foundations"]
-description: "A technical primer explaining tokenization as the interface between language, computation, context windows and cost."
+categories: ['Tokens', 'Tokenization', 'Foundations']
+description: "Introduces tokens and tokenization as a foundation for applied generative AI concepts, technical vocabulary, and later course workflows."
 format:
   html:
     toc: false

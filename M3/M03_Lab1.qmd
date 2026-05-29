@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M03:', 'Lab']
-description: "Question-driven lab for Module 3 focused on prompt design, retrieval setup, and grounded response construction."
+categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Applied Practice', 'Validation']
+description: "Gives students applied practice with Prompting as System Design, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 ---
 
 ## Lab Purpose

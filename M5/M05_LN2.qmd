@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['M05:', 'RAG', 'Reranking', 'RAGAS', 'LangSmith', 'Production RAG', 'Lecture Notes']
-description: "Lecture notes for Module 5 covering generation-side RAG design, reranking, context compression, RAGAS-style metrics, LangSmith tracing, production architecture, and multimodal RAG directions."
+categories: ['RAG', 'Reranking', 'RAGAS', 'LangSmith', 'Production RAG', 'Technical Foundations']
+description: "Explains Generation, Evaluation, and Production RAG with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # RAG Foundations and Domain Adaptation

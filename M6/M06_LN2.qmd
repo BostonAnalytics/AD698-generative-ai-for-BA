@@ -15,8 +15,8 @@ format:
     number-sections: true
     code-overflow: wrap
 bibliography: ../references.bib
-categories: ['M06:', 'Agentic AI', 'LangChain', 'Tools', 'LangSmith', 'Multi-Agent Orchestration', 'Lecture Notes']
-description: "Lecture notes for Module 6 covering practical agent construction with LangChain tools, SEC data acquisition, vector memory, planning, reflection, LangSmith-style tracing, and auditable multi-agent orchestration."
+categories: ['Agentic AI', 'LangChain', 'Tools', 'LangSmith', 'Multi-Agent Orchestration', 'Technical Foundations']
+description: "Explains Building Agentic AI with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Introduction: The Agentic AI Paradigm

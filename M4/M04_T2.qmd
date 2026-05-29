@@ -11,12 +11,13 @@ format:
     toc: true
     toc-depth: 3
     code-overflow: wrap
-categories: ['M04:', 'Tutorial']
+categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Guided Implementation', 'Evaluation']
 execute:
   echo: true
   eval: false
   warning: false
   message: false
+description: "Guides students through a hands-on implementation of LoRA-Style Adaptation on Yelp or Sentence Polarity Text, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 ## Module Learning Objectives

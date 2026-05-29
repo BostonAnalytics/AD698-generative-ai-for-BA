@@ -10,8 +10,8 @@ format:
         toc: true
         toc-depth: 3
         code-overflow: wrap
-categories: ["M06:", "Tutorial", "Multi-Agent", "LangChain", "Review Loops", "Traceability", "SEC Text"]
-description: "Tutorial for coordinating retrieval, analyst, reviewer, and revision roles over SEC evidence with LangChain chains, RAGAS-style review language, and local or LangSmith traces."
+categories: ['Multi-Agent', 'LangChain', 'Review Loops', 'Traceability', 'SEC Text', 'Guided Implementation', 'Evaluation']
+description: "Guides students through a hands-on implementation of From Single-Agent Workflow to Coordinated SEC Analysis, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 ## Module Learning Objectives

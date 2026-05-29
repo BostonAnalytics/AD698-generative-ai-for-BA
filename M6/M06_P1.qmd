@@ -35,8 +35,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M06:', 'Slides', 'Presentation', 'Agentic AI', 'Planning', 'Tools', 'Governance']
-description: "Presentation slides for Module 6 introducing agentic AI foundations, autonomy, planning, tool use, memory, orchestration patterns, AgentOps, MCP, tracing, and governance."
+categories: ['Agentic AI', 'Planning', 'Tools', 'Governance', 'Conceptual Framing']
+description: "Introduces Agentic AI Foundations through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 

@@ -32,8 +32,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M06:', 'Slides', 'Presentation', 'Agentic AI', 'LangChain Tools', 'Multi-Agent Orchestration', 'Traceability']
-description: "Presentation slides for Module 6 on building agentic AI systems from SEC document pipelines through tools, planning, reflection, multi-agent orchestration, and auditable financial-agent workflows."
+categories: ['Agentic AI', 'LangChain Tools', 'Multi-Agent Orchestration', 'Traceability', 'Technical Deep Dive']
+description: "Introduces Building Agentic AI through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## How to print Revealjs slides

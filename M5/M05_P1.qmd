@@ -31,8 +31,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M05:', 'Slides', 'Presentation', 'RAG', 'LangChain Splitters', 'Hybrid Retrieval', 'Vector Search', 'HNSW']
-description: "Presentation slides for Module 5 introducing RAG foundations, LangChain splitter choices, SEC retrieval design, sparse and dense retrieval, MMR, vector indexes, and HNSW search intuition."
+categories: ['RAG', 'LangChain Splitters', 'Hybrid Retrieval', 'Vector Search', 'HNSW', 'Conceptual Framing']
+description: "Introduces RAG Foundations and Retrieval through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## How to print Revealjs slides

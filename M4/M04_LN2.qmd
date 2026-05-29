@@ -18,8 +18,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M04:', 'Prompting', 'Fine-Tuning', 'Alignment', 'Lecture Notes']
-description: "Lecture notes for Module 4 covering the prompting paradigm, fine-tuning, RLHF, and parameter-efficient adaptation."
+categories: ['Prompting', 'Fine-Tuning', 'Alignment', 'Technical Foundations', 'Prediction']
+description: "Explains Prompting and Prediction with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Transformers, Self-Attention, and Prompt Engineering

@@ -6,8 +6,8 @@ format:
     toc: false
     transition: fade
     theme: [../theme/instructor.scss]  # Custom styles for sidebar and layout
-categories: ['M0:', 'Instructor']
-description: "Instructor notes for Module 0 focused on M0 instructor01."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors']
+description: "Supports instruction around deep learning setup, tensor workflows, and early neural-network learning goals."
 ---
 
 

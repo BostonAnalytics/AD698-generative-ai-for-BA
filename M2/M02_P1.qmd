@@ -36,8 +36,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M02:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 2 on Mathematical Foundations Through Language Modeling."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Conceptual Framing']
+description: "Introduces Language Modeling and Neural Networks through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## How to print Revealjs slides

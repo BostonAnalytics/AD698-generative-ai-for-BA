@@ -9,8 +9,8 @@ engine: jupyter
 format:
   html:
     code-overflow: wrap
-categories: ['M01:', 'Lab']
-description: "Question-driven lab for Module 1 focused on building and validating an SEC 10-K preprocessing pipeline."
+categories: ['NLP Foundations', 'SEC Text', 'Language Probability', 'Text Representation', 'Applied Practice', 'Validation']
+description: "Gives students applied practice with SEC 10-K NLP Preprocessing Pipeline, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 execute:
   echo: true
   eval: false

@@ -9,8 +9,8 @@ engine: jupyter
 format:
   html:
     code-overflow: wrap
-categories: ["M01:", "Tutorial", "SEC Text", "TF-IDF"]
-description: "Tutorial for Module 1 focused on turning cleaned SEC text into a simple feature matrix that supports the labs and Assignment 1."
+categories: ['SEC Text', 'TF-IDF', 'NLP Foundations', 'Language Probability', 'Guided Implementation', 'Evaluation']
+description: "Guides students through a hands-on implementation of From Clean SEC Text to TF-IDF Features, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 execute:
   echo: true
   eval: false

@@ -18,8 +18,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M03:', 'Tokenization', 'Embeddings', 'Semantic Search', 'Lecture Notes']
-description: "Lecture notes for Module 3 covering Tokenization, Embeddings, and Semantic Geometry."
+categories: ['Tokenization', 'Embeddings', 'Semantic Search', 'Technical Foundations', 'Semantic Geometry']
+description: "Explains Tokenization, Embeddings, and Semantic Geometry with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Sequence Models and the Emergence of the Transformer

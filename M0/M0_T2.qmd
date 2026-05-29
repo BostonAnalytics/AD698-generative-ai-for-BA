@@ -7,8 +7,8 @@ date-modified: today
 date-format: long
 engine: jupyter
 bibliography: ../references.bib
-categories: ['M0:', 'Tutorial']
-description: "Tutorial for Module 0 focused on Hands-On Math for Neural Networks: Activations and SGD."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Guided Implementation', 'Evaluation']
+description: "Guides students through a hands-on implementation of Hands-On Math for Neural Networks: Activations and SGD, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 # Module Learning Objectives {.unnumbered}

@@ -18,8 +18,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M03:', 'Sequence Models', 'RNN', 'Transformer', 'Lecture Notes']
-description: "Lecture notes for Module 3 covering Sequence Models and the Transformer."
+categories: ['Sequence Models', 'RNN', 'Transformer', 'Conceptual Foundations', 'Transformers']
+description: "Explains Sequence Models and Transformers with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Sequence Models and the Emergence of the Transformer

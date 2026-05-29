@@ -12,7 +12,7 @@ format:
     toc: true
     toc-depth: 3
     code-overflow: wrap
-categories: ['M03:', 'Tutorial']
+categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Guided Implementation']
 execute:
   echo: true
   eval: false

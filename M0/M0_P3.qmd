@@ -30,8 +30,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M0:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 0 on From Linear Models to Multilayer Perceptrons."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Modeling Workflow']
+description: "Introduces From Linear Models to Multilayer Perceptrons through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## Roadmap

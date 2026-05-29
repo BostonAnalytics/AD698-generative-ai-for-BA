@@ -8,8 +8,8 @@ format:
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M0:', 'Wrapup']
-description: "Module 0 wrap-up for Technology Stack Preparation & Deep Learning Foundations."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Synthesis', 'Reflection']
+description: "Synthesizes key ideas from Technology Stack Preparation & Deep Learning Foundations, helping students connect concepts, technical skills, limitations, and next-step learning goals."
 ---
 
 

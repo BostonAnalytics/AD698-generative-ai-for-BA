@@ -5,8 +5,8 @@ number-sections: true
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M0:', 'Tutorial']
-description: "Tutorial for Module 0 focused on Colab + GPU + Tensors (Detailed)."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Guided Implementation']
+description: "Guides students through a hands-on implementation of Colab + GPU + Tensors, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 # Module Learning Objectives {.unnumbered}

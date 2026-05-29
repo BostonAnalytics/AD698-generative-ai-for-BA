@@ -18,8 +18,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M01:', 'Language Models', 'Probability', 'Generative AI', 'Lecture Notes']
-description: "Lecture notes for Module 1 covering Language, Probability, and Generative Systems."
+categories: ['Language Models', 'Probability', 'Generative AI', 'Technical Foundations', 'Language']
+description: "Explains Language, Probability, and Generative Systems with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Why This Lecture Matters

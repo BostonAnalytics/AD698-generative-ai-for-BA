@@ -18,8 +18,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M02:', 'Text Representation', 'Structured Text', 'NLP', 'Lecture Notes']
-description: "Lecture notes for Module 2 covering From Words to Structured Text."
+categories: ['Text Representation', 'Structured Text', 'NLP', 'Technical Foundations', 'From Words to Structured Text']
+description: "Explains From Words to Structured Text with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Module Overview

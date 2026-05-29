@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   echo: true
   eval: false
-categories: ['M02:', 'Project']
-description: "Project guidance for Module 2 focused on Project Instructions II - Step 2 (Item Selection, Cleaning, and EDA)."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Workflow Design', 'Deliverable Design']
+description: "Guides students through project work on Project Instructions II - Step 2 (Item Selection, Cleaning, and EDA), emphasizing reproducible artifacts, validation evidence, interpretation, and business-facing communication."
 ---
 
 # Step 2 Objective

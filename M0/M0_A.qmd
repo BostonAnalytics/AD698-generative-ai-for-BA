@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   eval: false
   echo: true
-categories: ['M0:', 'Assignment']
-description: "Assignment for Module 0 focused on End-to-End Deep Learning with PyTorch."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Applied Assessment', 'Business Analytics']
+description: "Assesses students' ability to apply End-to-End Deep Learning with PyTorch through reproducible analysis, evidence-based reasoning, validation, and business interpretation."
 ---
 
 # Important Reminder {.unnumbered}

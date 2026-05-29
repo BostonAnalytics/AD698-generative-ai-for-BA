@@ -34,8 +34,8 @@ execute:
   message: false
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
-categories: ['M03:', 'Slides', 'Presentation']
-description: "Presentation slides for Module 3 on Language Modeling Foundations, Transformer Mechanics, and Semantic Geometry."
+categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Technical Deep Dive']
+description: "Introduces Transformer Mechanics and Semantic Geometry through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
 

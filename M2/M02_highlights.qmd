@@ -8,8 +8,8 @@ format:
 date: "2026-01-01"
 date-modified: today
 date-format: long
-categories: ['M02:', 'Highlights']
-description: "Module 2 highlights for Meaning and Structured Text."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Learning Objectives', 'Module Roadmap']
+description: "Previews the learning arc for Meaning and Structured Text, emphasizing the concepts, tools, and applied skills students should track throughout the module."
 ---
 
 # Lecture 2.1: Mathematical Foundations Through Language Modeling

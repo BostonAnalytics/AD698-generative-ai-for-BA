@@ -21,8 +21,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M02:', 'Tutorial', 'SEC HTML', 'Corpus Construction']
-description: "Tutorial for Module 2 focused on turning messy SEC HTML into a clean reusable corpus for later embedding and retrieval work."
+categories: ['SEC HTML', 'Corpus Construction', 'Language Modeling', 'Text Representation', 'Guided Implementation']
+description: "Guides students through a hands-on implementation of From SEC HTML to a Reusable Section Corpus, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 # Module Learning Objectives

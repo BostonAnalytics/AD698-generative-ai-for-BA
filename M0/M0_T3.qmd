@@ -21,8 +21,8 @@ format:
     code-fold: false
     fig-width: 9
     fig-height: 5
-categories: ['M0:', 'Tutorial']
-description: "Tutorial for Module 0 focused on Single-Layer Perceptron vs. 3-Layer MLP on Simulated Data."
+categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors', 'Guided Implementation', 'Model Comparison']
+description: "Guides students through a hands-on implementation of Single-Layer Perceptron vs. 3-Layer MLP on Simulated Data, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 ## Learning Objectives {.unnumbered}

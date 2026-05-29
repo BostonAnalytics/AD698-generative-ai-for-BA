@@ -9,8 +9,8 @@ engine: jupyter
 execute:
   echo: true
   eval: false
-categories: ['M01:', 'Project']
-description: "Project guidance for Module 1 focused on Project Instructions I - Complete Pipeline Overview and Step 1."
+categories: ['NLP Foundations', 'SEC Text', 'Language Probability', 'Text Representation', 'Workflow Design', 'Deliverable Design']
+description: "Guides students through project work on Project Instructions I - Complete Pipeline Overview and Step 1, emphasizing reproducible artifacts, validation evidence, interpretation, and business-facing communication."
 ---
 
 # Product Vision

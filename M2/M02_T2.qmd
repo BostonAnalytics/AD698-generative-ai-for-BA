@@ -11,8 +11,8 @@ format:
     code-overflow: wrap
     toc: true
     toc-depth: 3
-categories: ['M02:', 'Tutorial']
-description: "Tutorial for Module 2 focused on semantic text representations over SEC chunks."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Guided Implementation', 'Evaluation']
+description: "Guides students through a hands-on implementation of Semantic Neighbors, Cross-Entropy, and LLM-Style Evaluation, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 execute:
   echo: true
   eval: false

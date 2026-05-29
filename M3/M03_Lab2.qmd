@@ -6,8 +6,8 @@ date: "2026-02-15"
 date-modified: today
 date-format: long
 engine: jupyter
-categories: ['M03:', 'Lab']
-description: "Question-driven lab for Module 3 focused on evidence grounding and retrieval-aware prompt evaluation."
+categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Applied Practice', 'Evaluation']
+description: "Gives students applied practice with Retrieved Evidence and Prompt Grounding, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 execute:
   echo: true
   eval: false

@@ -16,8 +16,8 @@ execute:
   eval: false
   warning: false
   message: false
-categories: ['M02:', 'Lab']
-description: "Question-driven lab for Module 2 focused on comparing sparse and dense semantic representations over SEC chunk data."
+categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 'SEC Corpus', 'Applied Practice', 'Evaluation']
+description: "Gives students applied practice with Sparse vs Dense Semantic Representations for SEC Chunks, requiring intermediate checks, diagnostic outputs, failure analysis, and interpretation of results."
 ---
 
 ## Lab Purpose

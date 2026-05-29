@@ -18,8 +18,8 @@ execute:
     eval: false
     warning: false
     message: false
-categories: ['M04:', 'Transformers', 'Attention', 'Context Windows', 'Lecture Notes']
-description: "Lecture notes for Module 4 covering Transformers, Attention, and Context."
+categories: ['Transformers', 'Attention', 'Context Windows', 'Conceptual Foundations', 'Context']
+description: "Explains Transformers, Attention, and Context with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
 # Transformers, Self-Attention, and Prompt Engineering

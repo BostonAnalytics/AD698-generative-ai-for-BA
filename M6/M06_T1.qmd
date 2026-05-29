@@ -10,8 +10,8 @@ format:
         toc: true
         toc-depth: 3
         code-overflow: wrap
-categories: ["M06:", "Tutorial", "Agentic AI", "LangChain Tools", "SEC Text", "Traceability"]
-description: "Tutorial for building a traceable single-agent SEC research workflow with LangChain retrieval tools, grounded answer synthesis, provenance records, and optional LangSmith tracing."
+categories: ['Agentic AI', 'LangChain Tools', 'SEC Text', 'Traceability', 'Guided Implementation']
+description: "Guides students through a hands-on implementation of Designing a Single-Agent SEC Research Workflow, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 ---
 
 ## Module Learning Objectives

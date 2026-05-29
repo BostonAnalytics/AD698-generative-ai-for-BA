@@ -8,8 +8,8 @@ date-format: long
 execute:
   echo: true
   eval: false
-categories: ['M05:', 'Project', 'RAG', 'Evidence Evaluation', 'Final Packaging', 'Business Reporting']
-description: "Project guidance for Module 5 focused on final packaging of a grounded GenAI analytics workflow, including RAG evidence, evaluation artifacts, limitations, and business reporting."
+categories: ['RAG', 'Evidence Evaluation', 'Final Packaging', 'Business Reporting', 'Workflow Design', 'Deliverable Design']
+description: "Guides students through project work on Project Instructions V - Step 4, Final Packaging, and Report, emphasizing reproducible artifacts, validation evidence, interpretation, and business-facing communication."
 ---
 
 # Step 4 and Final Submission Overview
