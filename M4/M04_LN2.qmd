@@ -24,9 +24,162 @@ description: "Lecture notes for Module 4 covering the prompting paradigm, fine-t
 
 # Transformers, Self-Attention, and Prompt Engineering
 
-At the core of the transformer architecture lies the self-attention mechanism. As described in *Generative AI Foundations in Python*, this mechanism captures complex relationships among different elements within an ordered data sequence. The principle of attention enables a model to focus on certain pivotal aspects of the input data while potentially disregarding less significant parts. 
+At the core of the transformer architecture lies the self-attention mechanism. Self-attention
+turns each token representation into a contextual representation by letting that token compare
+itself with every other token in the sequence. Raschka's from-scratch walkthrough is especially
+useful because it shows the computation one tensor at a time: embeddings become queries, keys,
+and values; query-key dot products become attention weights; attention weights mix value vectors
+into context vectors [@raschka2023selfattentionfromscratch].
 
-The transformer bifurcates into two main segments: the encoder and the decoder. The encoder discerns relationships between different positions in the input sequence, while the decoder focuses on generating outputs, employing masked self-attention to prevent consideration of future outputs. To retain sequence order, the model adopts positional encoding, ensuring it preserves the initial order of data. Multi-head attention allows the model to channel attention toward multiple data points simultaneously, capturing a wider range of information from the same input words. This architecture powers the prompt-based generative tasks we rely on today.
+The original Transformer has two major stacks: an encoder stack and a decoder stack. Modern
+models often use only part of that design. BERT is encoder-only, GPT is decoder-only, and T5/BART
+use an encoder-decoder stack. The encoder discerns relationships between positions in the input
+sequence, while decoder-style models use masked self-attention so generation cannot inspect future
+tokens. To retain sequence order, the model adopts positional encoding, ensuring it preserves the
+initial order of data. Multi-head attention allows the model to channel attention toward multiple
+data points simultaneously, capturing a wider range of information from the same input words. This
+architecture powers the prompt-based generative tasks we rely on today.
+
+## Self-Attention From Scratch
+
+Start with a tokenized sentence and an embedding matrix:
+
+$$
+X \in \mathbb{R}^{T \times d}
+$$
+
+where $T$ is the sequence length and $d$ is the embedding dimension. A single attention head
+uses three learned projection matrices:
+
+$$
+W_Q \in \mathbb{R}^{d \times d_k}, \qquad
+W_K \in \mathbb{R}^{d \times d_k}, \qquad
+W_V \in \mathbb{R}^{d \times d_v}.
+$$
+
+These produce:
+
+$$
+Q=XW_Q,\qquad K=XW_K,\qquad V=XW_V.
+$$
+
+For one token $i$, the model compares its query vector $q_i$ with every key vector $k_j$:
+
+$$
+\omega_{ij}=q_i k_j^\top.
+$$
+
+The raw scores are divided by $\sqrt{d_k}$ and normalized across the row:
+
+$$
+\alpha_{ij} =
+\frac{\exp(\omega_{ij}/\sqrt{d_k})}
+{\sum_{\ell=1}^{T}\exp(\omega_{i\ell}/\sqrt{d_k})}.
+$$
+
+Then the contextual vector for token $i$ is a weighted sum of value vectors:
+
+$$
+z_i=\sum_{j=1}^{T}\alpha_{ij}v_j.
+$$
+
+For all tokens at once, this is the familiar matrix expression:
+
+$$
+Z=\mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d_k}}\right)V.
+$$
+
+Raschka's explanation emphasizes a helpful interpretation: each row of the attention matrix is
+one token's reading plan over the sequence. The token does not simply keep its original embedding;
+it receives a context vector assembled from other token value vectors.
+
+```{python}
+import torch
+import torch.nn.functional as F
+
+torch.manual_seed(123)
+tokens = torch.tensor([0, 4, 5, 2, 1, 3])
+embedding = torch.nn.Embedding(num_embeddings=6, embedding_dim=16)
+X = embedding(tokens)
+
+d_model = X.shape[-1]
+d_k, d_v = 24, 28
+W_Q = torch.randn(d_model, d_k)
+W_K = torch.randn(d_model, d_k)
+W_V = torch.randn(d_model, d_v)
+
+Q = X @ W_Q
+K = X @ W_K
+V = X @ W_V
+
+scores = Q @ K.T
+attention = F.softmax(scores / d_k**0.5, dim=-1)
+Z = attention @ V
+
+print("X:", X.shape)
+print("Q/K/V:", Q.shape, K.shape, V.shape)
+print("attention:", attention.shape)
+print("context vectors:", Z.shape)
+print("row sums:", attention.sum(dim=-1))
+```
+
+## Causal Masking for GPT-Style Models
+
+The formula above is bidirectional: every token can read every other token. GPT-style decoders
+use the same self-attention machinery, but apply a causal mask before softmax. Scores for future
+positions are replaced with a very negative number, so softmax assigns those positions probability
+near zero.
+
+```{python}
+T = scores.shape[0]
+causal_mask = torch.triu(torch.ones(T, T, dtype=torch.bool), diagonal=1)
+masked_scores = scores.masked_fill(causal_mask, float("-inf"))
+causal_attention = F.softmax(masked_scores / d_k**0.5, dim=-1)
+
+print(causal_attention.round(decimals=3))
+```
+
+This is the mathematical reason a decoder can be trained on full sequences while still learning
+the left-to-right behavior it must use at generation time.
+
+## Encoder, Decoder, and Encoder-Decoder Stacks
+
+It is useful to keep two explanations in mind: the technical stack and the modeling behavior.
+
+| Model family | Stack | Attention pattern | What the model is naturally good at |
+|---|---|---|---|
+| BERT | Encoder-only | Bidirectional self-attention | Understanding a complete input |
+| GPT | Decoder-only | Causal masked self-attention | Predicting the next token |
+| T5/BART | Encoder-decoder | Encoder self-attention, decoder self-attention, decoder cross-attention | Mapping one sequence to another |
+
+Technically, an encoder block contains bidirectional self-attention followed by a feed-forward
+network. A GPT-style decoder-only block contains causal self-attention followed by a feed-forward
+network. The original Transformer decoder, and encoder-decoder models such as T5, add one more
+attention sublayer: cross-attention, where decoder queries attend to encoder keys and values.
+
+```text
+BERT-style encoder block
+  hidden states
+    -> bidirectional self-attention
+    -> feed-forward network
+
+GPT-style decoder-only block
+  hidden states
+    -> causal self-attention
+    -> feed-forward network
+
+Encoder-decoder decoder block
+  target hidden states
+    -> causal self-attention
+    -> cross-attention over encoder states
+    -> feed-forward network
+```
+
+Explanatorily, BERT reads the whole sentence before making a representation. That is why it is
+strong for classification, named entity recognition, semantic search, and extractive tasks. GPT
+reads only the prefix available so far. That is why it is strong for generation, chat, and
+completion. Encoder-decoder models first encode a source sequence, then decode a target sequence
+conditioned on that source, which fits translation and summarization.
 
 
 
@@ -233,6 +386,39 @@ The prompting framework naturally accommodates different data regimes [@liu2023p
 | **Full-data supervised** | 1k–100k | Yes (fine-tune) | Standard supervised learning on top of pretrained features |
 
 In-context few-shot is a distinguishing *emergent ability* of large models: GPT-3 (175B) can solve new tasks from 3 examples; GPT-2 (1.5B) largely cannot.
+
+## Tiny Adaptation Examples
+
+The adaptation spectrum becomes easier to see with short business sentences:
+
+| Strategy | Tiny input | Desired behavior |
+|---|---|---|
+| Prompting | "Summarize quarterly risks in two bullets." | Follow the requested format without training. |
+| Few-shot prompting | "Revenue rose despite higher cloud costs." | Match the labeling pattern shown in context. |
+| Fine-tuning | "Classify vendor delays as supply-chain risk." | Learn a stable task-specific label mapping. |
+
+In all three cases, we are using the same broad transformer family. The exact stack may differ:
+BERT-style systems usually adapt an encoder representation, while GPT-style systems adapt the
+decoder-only next-token distribution. What changes within a stack is the control signal: the
+prompt, the in-context examples, or a weight update.
+
+![BERT-style fine-tuning adds a task head on top of pretrained representations.](./M04_lecture02_figures/bert_finetune_classification.svg){width=70% fig-align=center fig-alt="BERT encoder with a classification head for fine-tuning."}
+
+## Section 4.3: GPT, Causal Context, and Prompting
+
+The GPT notebook is the executable companion for this lecture. It starts from the same scaled dot-product attention used in the transformer architecture notebook, then adds a causal mask so each token can only attend to previous tokens. That one constraint turns the transformer decoder into an autoregressive generator.
+
+Short generation example:
+
+| Step | Visible context | Next-token target |
+|---|---|---|
+| 1 | "The analyst expects" | `revenue` |
+| 2 | "The analyst expects revenue" | `growth` |
+| 3 | "The analyst expects revenue growth" | `this` |
+
+This left-to-right training objective is why a decoder-only model can generate fluent text from a prompt. It is also why prompt wording matters: every token in the prompt becomes part of the visible causal context.
+
+![GPT is the decoder-only branch of the transformer family.](./M04_lecture02_figures/elmo_gpt_bert.svg){width=70% fig-align=center fig-alt="Comparison of ELMo, GPT, and BERT architectures."}
 
 
 # Prompting Patterns: Code Demonstrations
@@ -447,8 +633,34 @@ without a separate reward model, dramatically simplifying the training pipeline.
 
 ### The Problem
 
-Full fine-tuning of a 7B-parameter model requires ~56 GB of GPU memory (fp16 + Adam states).
+Full fine-tuning updates every model parameter. That is simple conceptually, but expensive in
+three separate ways:
+
+1. **Training memory**: the GPU must hold weights, gradients, optimizer states, activations,
+   and temporary buffers. Adam-style optimizer states alone can multiply memory needs.
+2. **Storage**: each task produces a full copy of the model checkpoint.
+3. **Operations**: moving, validating, and serving many full checkpoints becomes a platform
+   problem rather than a modeling problem.
+
 PEFT methods freeze the pretrained weights and add a small number of trainable parameters.
+This works because downstream adaptation is often lower-dimensional than the full parameter
+space. Aghajanyan et al. show that fine-tuning can be effective in a much smaller intrinsic
+dimension than the raw parameter count would suggest [@Aghajanyan2020IntrinsicDimensionality].
+LoRA turns that empirical insight into a practical adapter method [@Hu2021LoRA].
+
+### Full Fine-Tuning vs. PEFT
+
+| Question | Full fine-tuning | PEFT / LoRA |
+|---|---|---|
+| What changes? | All model weights | Small adapter weights |
+| What is saved? | Full checkpoint | Adapter checkpoint |
+| Training memory | Highest | Much lower |
+| Inference path | Native model | Load adapter or merge it |
+| Best use | Maximum task accuracy with enough data and compute | Fast domain/task adaptation |
+
+The main tradeoff is control. Full fine-tuning can move the whole model, which may help with
+large domain shifts. PEFT is more constrained, but that constraint is exactly why it is cheap,
+modular, and less prone to destroying general capabilities.
 
 ### LoRA: Low-Rank Adaptation
 
@@ -457,8 +669,33 @@ LoRA (Hu et al., 2021) decomposes weight updates into low-rank matrices:
 $$W' = W + \Delta W = W + B A$$
 
 where $B \in \mathbb{R}^{d \times r}$, $A \in \mathbb{R}^{r \times k}$, and $r \ll \min(d, k)$.
+The original weight $W$ is frozen. During training, gradients update only $A$ and $B$.
+
+For a square projection matrix with $d=k=4096$, a full update has $4096 \times 4096 =
+16,777,216$ trainable values. A rank-8 LoRA update has $8(4096+4096)=65,536$ trainable
+values, only 0.39% of the full update.
+
+LoRA is commonly inserted into attention projection layers:
+
+| Module | Role | Common LoRA choice |
+|---|---|---|
+| `q_proj` | Query projection | Often targeted |
+| `k_proj` | Key projection | Optional |
+| `v_proj` | Value projection | Often targeted |
+| `o_proj` | Output projection | Common for instruction tuning |
+| MLP projections | Feed-forward transformations | Useful for larger behavior shifts |
+
+This module list is easier to interpret after the self-attention derivation. A LoRA adapter on
+`q_proj` changes how a token asks for information. An adapter on `k_proj` changes what other
+tokens look matchable against. An adapter on `v_proj` changes the information that gets blended
+into context vectors. An adapter on `o_proj` changes how head outputs are remixed before the next
+transformer sublayer. This is why attention projection adapters can strongly shift model behavior
+while changing only a small fraction of the full model parameters.
 
 ```{python}
+import torch
+import torch.nn.functional as F
+
 class LoRALinear(nn.Module):
     """Drop-in replacement for nn.Linear with LoRA adaptation."""
     def __init__(self, in_features: int, out_features: int,
@@ -500,6 +737,189 @@ print(f"Full weight: {full_params:,} params")
 print(f"LoRA (r={r}):  {lora_params:,} params  ({lora_params/full_params*100:.1f}%)")
 ```
 
+### Hugging Face PEFT Example
+
+In practice, we rarely hand-edit every layer. The `peft` library wraps a Transformers model and
+inserts LoRA modules for us.
+
+```{python}
+#| eval: false
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import LoraConfig, TaskType, get_peft_model
+
+model_name = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+lora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules=["q_proj", "v_proj"],
+    task_type=TaskType.CAUSAL_LM,
+)
+
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+```
+
+For a finance classification or extraction task, the most important design decision is the text
+format. The model should repeatedly see the same structure at training and inference time.
+
+```{python}
+#| eval: false
+def format_risk_example(sentence: str, label: str | None = None) -> str:
+    response = "" if label is None else label
+    return f"""### Instruction:
+Classify the disclosure sentence as one risk type:
+competition, regulation, supply_chain, macro, cybersecurity, other.
+
+### Input:
+{sentence}
+
+### Response:
+{response}"""
+
+
+example = format_risk_example(
+    "The Company faces intense competition from established and emerging firms.",
+    "competition",
+)
+print(example)
+```
+
+### QLoRA: Quantized LoRA
+
+QLoRA adds one more move: load the frozen base model in 4-bit precision and train LoRA adapters
+through it. Dettmers et al. introduce three memory-saving ingredients [@Dettmers2023QLoRA]:
+
+- **NF4 quantization**: a 4-bit NormalFloat data type designed for normally distributed weights.
+- **Double quantization**: quantize the constants used by quantization itself.
+- **Paged optimizers**: reduce memory spikes during training.
+
+The result is a practical recipe for adapting models that would otherwise be too large for a
+single GPU.
+
+```{python}
+#| eval: false
+import torch
+from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+from peft import LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
+
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.bfloat16,
+    bnb_4bit_use_double_quant=True,
+)
+
+model = AutoModelForCausalLM.from_pretrained(
+    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    quantization_config=bnb_config,
+    device_map="auto",
+)
+model = prepare_model_for_kbit_training(model)
+
+qlora_config = LoraConfig(
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    task_type=TaskType.CAUSAL_LM,
+)
+model = get_peft_model(model, qlora_config)
+```
+
+Use QLoRA when the base model does not fit comfortably in 16-bit precision. Use ordinary LoRA
+when the model already fits and you want simpler training/debugging.
+
+### LoRA/QLoRA Training Loop with `Trainer`
+
+The following skeleton shows the moving parts. The exact dataset can be the Apple 10-K
+classification set in `help-code/4-nlp-finance/data/evaluation/`.
+
+```{python}
+#| eval: false
+from datasets import Dataset
+from transformers import DataCollatorForLanguageModeling, Trainer, TrainingArguments
+
+records = [
+    {
+        "text": format_risk_example(
+            "The Company is subject to complex laws and regulations worldwide.",
+            "regulation",
+        )
+    },
+    {
+        "text": format_risk_example(
+            "Component shortages could delay product shipments.",
+            "supply_chain",
+        )
+    },
+]
+dataset = Dataset.from_list(records)
+
+def tokenize(batch):
+    return tokenizer(batch["text"], truncation=True, max_length=512)
+
+tokenized = dataset.map(tokenize, batched=True, remove_columns=["text"])
+collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
+
+args = TrainingArguments(
+    output_dir="outputs/risk-lora",
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=8,
+    learning_rate=2e-4,
+    num_train_epochs=2,
+    logging_steps=10,
+    save_strategy="epoch",
+    report_to="none",
+)
+
+trainer = Trainer(
+    model=model,
+    args=args,
+    train_dataset=tokenized,
+    data_collator=collator,
+)
+trainer.train()
+model.save_pretrained("outputs/risk-lora-adapter")
+```
+
+This is causal-language-model training: the model learns to produce the response tokens after
+the prompt. For pure classification, a sequence-classification head can be more efficient, but
+the instruction format is useful because it mirrors how chat models are used in business
+workflows.
+
+### Practical Hyperparameters
+
+| Setting | Starting point | What it controls |
+|---|---:|---|
+| LoRA rank `r` | 8 or 16 | Adapter capacity |
+| `lora_alpha` | 2x rank | Update scale |
+| `lora_dropout` | 0.05 | Regularization |
+| Learning rate | `1e-4` to `2e-4` | Speed and stability |
+| Epochs | 1-3 | Exposure to small datasets |
+| Max sequence length | 512-2048 | Disclosure context retained |
+| Gradient accumulation | 4-16 | Effective batch size |
+
+When results are poor, inspect examples before changing rank. In domain fine-tuning, mislabeled
+or inconsistent data is usually more damaging than a suboptimal adapter rank.
+
+### Evaluation for Finance Fine-Tuning
+
+Fine-tuning should be evaluated on behavior, not just training loss:
+
+- **Label accuracy/F1** for risk classification.
+- **Exact format compliance** for JSON or label-only outputs.
+- **Held-out company or held-out section splits** to reduce leakage.
+- **Calibration checks** for high-stakes categories such as cybersecurity or regulation.
+- **Comparison against prompting/RAG baselines** to prove fine-tuning is worth the added workflow.
+
+Fine-tuning is not a good way to inject fresh facts. If the task requires current filings,
+policies, or market information, use retrieval. Fine-tuning is best for stable behavior:
+taxonomy mapping, extraction format, tone, routing rules, and task-specific decision boundaries.
+
 ### Adapter Modules
 
 Adapters (Houlsby et al., 2019) insert small feed-forward bottleneck layers *inside* each
@@ -535,6 +955,7 @@ print(f"Trainable params: {total:,}  vs  768×768 = {768*768:,}")
 | Full fine-tuning | All | ~14 GB (fp16) | Large data, max accuracy |
 | Instruction tuning | All | ~14 GB | Multi-task generalisation |
 | LoRA (r=8) | A, B matrices | ~20 MB | Limited VRAM, fast iteration |
+| QLoRA | LoRA adapters + 4-bit frozen base | Adapter MBs + quantized base | Larger models on smaller GPUs |
 | Adapters | Bottleneck layers | ~50 MB | Modular task plug-ins |
 | Prompt tuning | Soft prompt only | ~1 MB | Very limited compute |
 

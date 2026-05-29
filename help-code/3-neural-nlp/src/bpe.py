@@ -217,7 +217,15 @@ def get_file(local_file, remote_file):
     """ downloads remote_file to local_file if necessary """
     if not os.path.isfile(local_file):
         print(f"downloading {remote_file} to {local_file}")
-        response = requests.get(remote_file)
+        try:
+            response = requests.get(remote_file, timeout=30)
+            response.raise_for_status()
+        except requests.RequestException as exc:
+            raise RuntimeError(
+                "Could not download the GPT-2 BPE files. Connect to the internet "
+                "once to cache them, or use the notebook's built-in simple tokenizer "
+                "fallback for offline demonstrations."
+            ) from exc
         open(local_file, "wb").write(response.content)
 
 def get_encoder():

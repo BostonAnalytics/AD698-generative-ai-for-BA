@@ -65,9 +65,32 @@ The Transformer architecture expanded far beyond NLP, leading to:
 
 The combination of Transformers and large-scale pretraining led to the rise of **foundation models**. The default approach in modern AI is to start with a pretrained Transformer and fine‑tune it for specific downstream tasks. This represents a true architectural shift, not merely the creation of bigger models.
 
+## Help-Code Bridge for Module 4
+
+The three Section 4 notebooks provide an executable spine for this module:
+
+| Notebook | Role in lecture | What students should trace |
+|---|---|---|
+| `Section 4.1 - Transformer (Basic Architecture)` | Builds the transformer from parts. | Embeddings, positional encoding, self-attention, multi-head attention, encoder layers, decoder layers. |
+| `Section 4.2 - Transformer Machine Translation` | Turns the architecture into a translation model. | Source/target tokenization, vocabulary construction, masks, teacher forcing, greedy decoding. |
+| `Section 4.3 - Generative Pretrained Transformer (GPT)` | Shows the decoder-only path to text generation. | Causal attention, transformer blocks, GPT configuration, and next-token sampling. |
+
+The lecture notes should give the conceptual map; the notebooks should let students inspect tensor shapes and implementation details.
+
 # Why Attention? A Human Translation Story
 
 When humans translate a sentence, we do not memorize the entire input at once. Instead, we look back and forth, focusing on the specific words we need at each moment. Early sequence‑to‑sequence models (Sutskever et al., 2014) lacked this capability. In these models, the encoder read the whole sentence once, compressed it into a single vector, and handed that to the decoder. The decoder then attempted to generate the entire translation from that single vector bottleneck.
+
+Two small examples make the motivation concrete:
+
+| Source sentence | Target / task | Attention cue |
+|---|---|---|
+| "The analyst reviewed the quarterly revenue report." | "Der Analyst pruefte den vierteljaehrlichen Umsatzbericht genau." | When generating `Umsatzbericht`, focus on `revenue report`. |
+| "The model attends to earlier context tokens." | Predict the next token from context. | Earlier tokens become retrievable evidence, not just a compressed memory. |
+
+This mirrors the workflow in the machine translation notebook: tokenize source and target sentences, encode the source sequence, then generate the target sequence step by step while using attention to retrieve the relevant source tokens.
+
+![Encoder-decoder translation architecture.](./M04_lecture01_figures/encoder_decoder.svg){width=70% fig-align=center fig-alt="Encoder-decoder architecture for sequence translation."}
 
 ## The Problem With Single‑Vector Encodings
 
@@ -113,13 +136,473 @@ This mechanism possesses several powerful properties:
 
 Once queries, keys, and values are established, recurrence can be dropped entirely. Attention alone can model all relationships in a sequence, leading directly to the Transformer architecture. Q/K/V attention thus becomes the fundamental building block for a wide array of modern architectures.
 
+The basic architecture notebook breaks this into four pieces:
+
+1. Token embeddings convert integer token IDs into dense vectors.
+2. Positional encodings add order information because attention itself is permutation-insensitive.
+3. Self-attention lets every token retrieve information from every other token in the same sequence.
+4. Multi-head attention repeats this operation in parallel so the model can learn different relation types at once.
+
+![Transformer architecture from the help-code image set.](./M04_lecture01_figures/transformer.svg){width=65% fig-align=center fig-alt="Transformer architecture diagram."}
+
+![Self-attention and multi-head attention are the core reusable blocks.](./M04_lecture01_figures/multi_head_attention.svg){width=65% fig-align=center fig-alt="Multi-head attention diagram."}
+
+# Self-Attention in Detail: Q/K/V Generation
+
+The most common student confusion is the origin of the query, key, and value vectors. In
+encoder-decoder attention, it is natural to imagine the decoder asking a question of the
+encoder. In **self-attention**, there is no external question. Every token creates its own
+query, key, and value from the same input representation.
+
+Let the embedded sequence be:
+
+$$
+X \in \mathbb{R}^{T \times d_{\text{model}}}
+$$
+
+where $T$ is sequence length and $d_{\text{model}}$ is embedding/model width. The model learns
+three projection matrices:
+
+$$
+W_Q \in \mathbb{R}^{d_{\text{model}}\times d_k},\quad
+W_K \in \mathbb{R}^{d_{\text{model}}\times d_k},\quad
+W_V \in \mathbb{R}^{d_{\text{model}}\times d_v}.
+$$
+
+The projected sequence views are:
+
+$$
+Q = XW_Q,\qquad K = XW_K,\qquad V = XW_V.
+$$
+
+| Object | Intuition | Question it answers |
+|---|---|---|
+| Query $Q$ | what a token is looking for | "What context would help me?" |
+| Key $K$ | what a token offers for matching | "When should others attend to me?" |
+| Value $V$ | content to be aggregated | "What information do I contribute?" |
+
+This framing is consistent with the UVA Deep Learning tutorial's definition of attention as a
+dynamically weighted average over values based on a query-key score [@lippe2021uvadltransformers].
+It also mirrors the step-by-step coding walkthrough in Raschka's self-attention tutorial
+[@raschka2023selfattention].
+
+## Single-Token Walkthrough
+
+For token $i$, the calculation is:
+
+1. Use $x_i$ to create $q_i$, $k_i$, and $v_i$.
+2. Compare $q_i$ with **every** key $k_j$ in the sequence.
+3. Scale the dot products by $\sqrt{d_k}$.
+4. Apply softmax to produce attention weights.
+5. Return a weighted sum of the value vectors.
+
+$$
+z_i = \sum_{j=1}^{T}
+\underbrace{\mathrm{softmax}\!\left(\frac{q_i k_j^\top}{\sqrt{d_k}}\right)}_{\text{attention weight from token }i\text{ to token }j}
+v_j.
+$$
+
+For all tokens at once:
+
+$$
+Z = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V.
+$$
+
+The matrix $QK^\top \in \mathbb{R}^{T\times T}$ is the token-to-token compatibility matrix.
+Each row is one token's attention distribution over all tokens.
+
+![Single query token self-attention walkthrough.](./M04_lecture01_figures/self_attention_single_query.svg){width=88% fig-align="center" fig-alt="Single query token self-attention walkthrough."}
+
+This visual version follows the same teaching sequence emphasized in Raschka's walkthrough:
+choose one query token, compare it to all keys, normalize those scores, and use the weights to
+blend values [@raschka2023selfattention].
+
+![Attention matrix as query-token reading plans.](./M04_lecture01_figures/attention_matrix_reading_plan.svg){width=88% fig-align="center" fig-alt="Attention matrix as a stack of query-token reading plans."}
+
+The second figure is useful for connecting single-token intuition to the full matrix formula.
+Every row is one token's reading plan over the sequence. DataCamp's explanation uses the same
+distinction between ordinary self-attention, masked self-attention, and cross-attention: the
+formula stays similar, but the visible tokens and the sources of Q/K/V change
+[@datacamp2025selfattention].
+
+```{python}
+#| eval: false
+import torch
+import torch.nn.functional as F
+
+torch.manual_seed(7)
+T, d_model, d_k, d_v = 5, 6, 4, 3
+X = torch.randn(T, d_model)
+W_Q = torch.randn(d_model, d_k)
+W_K = torch.randn(d_model, d_k)
+W_V = torch.randn(d_model, d_v)
+
+Q = X @ W_Q
+K = X @ W_K
+V = X @ W_V
+
+scores = Q @ K.T / (d_k ** 0.5)
+weights = F.softmax(scores, dim=-1)
+Z = weights @ V
+
+print("Q:", Q.shape)
+print("K:", K.shape)
+print("V:", V.shape)
+print("attention weights:", weights.shape)
+print("contextual output:", Z.shape)
+print("row sums:", weights.sum(dim=-1))
+```
+
+The last line should be all ones: softmax makes every query token distribute one unit of
+attention over the available key/value tokens.
+
+## Worked Matrix Calculation
+
+The compact formula can feel abstract until we multiply a small example. The
+Machine Learning Mastery transformer attention tutorial lays out the same sequence:
+compute $QK^\top$, scale by $\sqrt{d_k}$, apply a row-wise softmax, then multiply by
+$V$ [@cristina2023transformerattention].
+
+Use three tokens with two-dimensional queries and keys. Here $d_k=2$, so the scale
+factor is $\sqrt{2}$:
+
+$$
+Q=
+\begin{bmatrix}
+1&0\\
+0&1\\
+1&1
+\end{bmatrix},
+\quad
+K=
+\begin{bmatrix}
+1&0\\
+1&1\\
+0&1
+\end{bmatrix},
+\quad
+V=
+\begin{bmatrix}
+10&0\\
+0&10\\
+5&5
+\end{bmatrix}.
+$$
+
+The first multiplication produces the raw compatibility scores:
+
+$$
+QK^\top =
+\begin{bmatrix}
+1&1&0\\
+0&1&1\\
+1&2&1
+\end{bmatrix}.
+$$
+
+Read row 1 as: token 1's query matches keys 1 and 2 equally, and key 3 less strongly.
+Read row 3 as: token 3's query matches key 2 most strongly.
+
+After scaling:
+
+$$
+\frac{QK^\top}{\sqrt{2}} \approx
+\begin{bmatrix}
+0.707&0.707&0.000\\
+0.000&0.707&0.707\\
+0.707&1.414&0.707
+\end{bmatrix}.
+$$
+
+Apply softmax independently to each row:
+
+$$
+A=\mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{2}}\right)
+\approx
+\begin{bmatrix}
+0.401&0.401&0.198\\
+0.198&0.401&0.401\\
+0.248&0.503&0.248
+\end{bmatrix}.
+$$
+
+Every row sums to 1. Each row is a reading plan: how much this query token should
+read from value token 1, value token 2, and value token 3.
+
+Finally:
+
+$$
+Z=AV \approx
+\begin{bmatrix}
+5.000&5.000\\
+3.983&6.017\\
+3.724&6.276
+\end{bmatrix}.
+$$
+
+The first contextual vector is exactly balanced because its attention weights give
+tokens 1 and 2 equal weight and token 3 contributes a balanced value. The second and
+third contextual vectors lean toward the second value dimension because their attention
+rows put more mass on token 2 and token 3.
+
+```{python}
+#| eval: false
+import torch
+import torch.nn.functional as F
+
+Q = torch.tensor([[1., 0.],
+                  [0., 1.],
+                  [1., 1.]])
+K = torch.tensor([[1., 0.],
+                  [1., 1.],
+                  [0., 1.]])
+V = torch.tensor([[10., 0.],
+                  [0., 10.],
+                  [5., 5.]])
+
+scores = Q @ K.T
+scaled_scores = scores / (Q.shape[-1] ** 0.5)
+attention = F.softmax(scaled_scores, dim=-1)
+Z = attention @ V
+
+print(scores)
+print(scaled_scores.round(decimals=3))
+print(attention.round(decimals=3))
+print(Z.round(decimals=3))
+```
+
+## Why the Scaling Factor Matters
+
+The scale factor $1/\sqrt{d_k}$ is not cosmetic. Suppose $q$ and $k$ have independent
+components with variance near 1. Then the raw dot product
+
+$$
+q^\top k = \sum_{\ell=1}^{d_k} q_\ell k_\ell
+$$
+
+has variance proportional to $d_k$. As $d_k$ grows, raw attention logits can become too large.
+Softmax then saturates: one token receives nearly all probability, gradients shrink, and the
+model learns poorly. Dividing by $\sqrt{d_k}$ keeps logits in a healthier range
+[@Vaswani2017Attention; @lippe2021uvadltransformers].
+
+## Self-Attention, Cross-Attention, and Masked Self-Attention
+
+The same Q/K/V formula covers several attention modes. What changes is where the matrices come
+from and which positions are masked.
+
+| Mode | $Q$ comes from | $K,V$ come from | Mask | Example |
+|---|---|---|---|---|
+| Encoder self-attention | input sequence | input sequence | padding only | BERT-style encoders |
+| Decoder masked self-attention | target prefix | target prefix | causal + padding | GPT-style generation |
+| Cross-attention | decoder states | encoder outputs | source padding | translation decoder |
+
+DataCamp's explanation makes the same distinction: self-attention lets a sequence attend to
+itself, cross-attention lets one sequence attend to another, and masked self-attention prevents
+future-token access during autoregressive prediction [@datacamp2025selfattention].
+
+## Causal Masks and Padding Masks
+
+Two masks appear constantly in transformer code:
+
+1. **Padding mask**: prevents `[PAD]` tokens from contributing to attention.
+2. **Causal mask**: prevents a token from attending to future positions.
+
+For a length-5 decoder sequence, a causal mask blocks the upper triangle:
+
+```{python}
+#| eval: false
+def causal_mask(seq_len: int) -> torch.Tensor:
+    return torch.triu(torch.ones(seq_len, seq_len, dtype=torch.bool), diagonal=1)
+
+print(causal_mask(5).int())
+```
+
+The implementation trick is to add a very negative value to blocked logits before softmax:
+
+```{python}
+#| eval: false
+scores = torch.randn(5, 5)
+mask = causal_mask(5)
+masked_scores = scores.masked_fill(mask, -1e9)
+weights = F.softmax(masked_scores, dim=-1)
+```
+
+After softmax, masked positions receive essentially zero probability.
+
+## Why Position Encodings Are Necessary
+
+Self-attention by itself is **permutation equivariant**. If we shuffle the input tokens, the
+outputs are shuffled in the same way. That property is powerful for sets, but language is not a
+set. Word order changes meaning:
+
+| Sentence | Meaning |
+|---|---|
+| "Analysts questioned executives." | analysts ask questions |
+| "Executives questioned analysts." | executives ask questions |
+
+The original Transformer adds sinusoidal position encodings to token embeddings before
+attention. Modern LLMs often use alternatives such as learned absolute embeddings, relative
+position embeddings, RoPE, or ALiBi. The common principle is the same: inject order information
+so attention can distinguish token identity **and** token position.
+
+```{python}
+#| eval: false
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model: int, max_len: int = 5000):
+        super().__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(
+            torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model)
+        )
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        self.register_buffer("pe", pe.unsqueeze(0), persistent=False)
+
+    def forward(self, x):
+        return x + self.pe[:, : x.size(1)]
+```
+
+## Multi-Head Attention
+
+A single attention head produces one weighted average per token. But a token may need several
+types of evidence at once: nearby syntax, long-range reference, positional rhythm, and
+domain-specific cues. **Multi-head attention** repeats the Q/K/V mechanism in parallel across
+smaller subspaces, then mixes the results.
+
+$$
+\begin{aligned}
+\text{head}_h &= \text{Attention}(QW_h^Q, KW_h^K, VW_h^V)\\
+\text{MHA}(Q,K,V) &= \text{Concat}(\text{head}_1,\ldots,\text{head}_H)W^O.
+\end{aligned}
+$$
+
+If $d_{\text{model}}=768$ and $H=12$, each head usually has width
+$d_{\text{head}}=64$.
+
+Most efficient implementations combine the Q/K/V projections into one linear layer, then
+reshape the result into heads:
+
+```{python}
+#| eval: false
+import math
+from torch import nn
+
+class MultiHeadSelfAttention(nn.Module):
+    def __init__(self, d_model: int, num_heads: int):
+        super().__init__()
+        assert d_model % num_heads == 0
+        self.num_heads = num_heads
+        self.head_dim = d_model // num_heads
+        self.qkv_proj = nn.Linear(d_model, 3 * d_model)
+        self.out_proj = nn.Linear(d_model, d_model)
+
+    def forward(self, x, mask=None):
+        batch_size, seq_len, d_model = x.shape
+        qkv = self.qkv_proj(x)
+        qkv = qkv.reshape(batch_size, seq_len, self.num_heads, 3 * self.head_dim)
+        qkv = qkv.permute(0, 2, 1, 3)
+        q, k, v = qkv.chunk(3, dim=-1)
+
+        scores = q @ k.transpose(-2, -1) / math.sqrt(self.head_dim)
+        if mask is not None:
+            scores = scores.masked_fill(mask == 0, -1e9)
+        weights = F.softmax(scores, dim=-1)
+        context = weights @ v
+
+        context = context.permute(0, 2, 1, 3)
+        context = context.reshape(batch_size, seq_len, d_model)
+        return self.out_proj(context)
+```
+
+This is the key implementation move students should trace in the companion notebook:
+`qkv_proj`, reshape into `[batch, heads, sequence, head_dim]`, run scaled dot-product attention,
+then concatenate heads back to `[batch, sequence, d_model]`.
+
+## Inside a Transformer Block
+
+A transformer block is not just attention. A standard encoder block contains:
+
+1. Multi-head self-attention.
+2. Residual connection and layer normalization.
+3. Position-wise feed-forward network.
+4. Another residual connection and layer normalization.
+
+```text
+x
+ -> multi-head attention
+ -> x + attention_output
+ -> layer norm
+ -> position-wise MLP
+ -> x + mlp_output
+ -> layer norm
+```
+
+Attention moves information **between tokens**. The feed-forward network transforms information
+**within each token position**. The residual paths preserve the original token stream and make
+deep stacks trainable.
+
+```{python}
+#| eval: false
+class TransformerEncoderBlock(nn.Module):
+    def __init__(self, d_model: int, num_heads: int,
+                 d_ff: int, dropout: float = 0.1):
+        super().__init__()
+        self.attn = MultiHeadSelfAttention(d_model, num_heads)
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_ff, d_model),
+        )
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, x, mask=None):
+        x = self.norm1(x + self.dropout(self.attn(x, mask=mask)))
+        x = self.norm2(x + self.dropout(self.ffn(x)))
+        return x
+```
+
+Many modern LLMs use a **pre-norm** variant, where layer normalization happens before attention
+and before the MLP. The concept is the same, but pre-norm improves training stability in very
+deep networks.
+
+## Encoder, Decoder, and Encoder-Decoder Transformers
+
+| Architecture | Attention pattern | Examples | Best suited for |
+|---|---|---|---|
+| Encoder-only | bidirectional self-attention | BERT, RoBERTa | classification, NER, retrieval |
+| Decoder-only | causal self-attention | GPT-style models | generation, chat, agents |
+| Encoder-decoder | encoder self-attn + decoder causal self-attn + cross-attn | original Transformer, T5 | translation, summarization |
+
+The Q/K/V machinery is shared. The mask and the source of Q/K/V determine the model family.
+
+## Why Transformers Replaced RNNs
+
+The CS224n and CS231n materials both emphasize the same motivation: recurrence creates a
+sequential dependency bottleneck. In an RNN, hidden state $h_t$ cannot be computed before
+$h_{t-1}$. In self-attention, every token-to-token score can be computed with matrix
+multiplication.
+
+| Property | RNN/LSTM | Self-attention |
+|---|---|---|
+| Training parallelism | sequential over time | all positions in parallel |
+| Long-range path length | grows with token distance | one attention step |
+| Context storage | compressed hidden state | direct token-token retrieval |
+| Main cost | slow sequence dependency | $O(T^2)$ attention matrix |
+
+This is why transformers became the default architecture for large-scale pretraining: they map
+sequence modeling onto the kind of dense matrix operations GPUs handle extremely well.
+
 # Attention Pooling by Similarity
 
 ## Motivation: Why Attention Pooling?
 
 Before the widespread use of Transformers, attention-like mechanisms existed in classical statistics. Nadaraya–Watson regression is one of the earliest mechanisms, using similarity between a query and keys to compute a weighted average of values. This provides a clean conceptual bridge from classical kernel methods to modern attention.
 
-![Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation.](./M04_lecture01_figures/attention-output.svg){fig-alt="Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation."}
+![Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation.](./M04_lecture01_figures/attention_output.svg){fig-alt="Computing the output of attention pooling as a weighted average of values, where weights are computed with the attention scoring function and the softmax operation."}
 
 ## The Core Idea
 

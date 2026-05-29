@@ -408,6 +408,15 @@ Although both linguistic and computational tokens serve as "units" of text, they
 
 Understanding this distinction is essential for interpreting model outputs, estimating token counts, managing context windows, and reasoning about the statistical foundations of language modeling. It also clarifies why token counts do not align neatly with word counts, why different languages behave differently under the same tokenizer, and why the same sentence may produce different tokenizations depending on subtle formatting differences.
 
+Two small examples are useful in lecture because students can inspect every word:
+
+| English sentence | Translation | What to notice |
+|---|---|---|
+| The model predicts the next token. | El modelo predice el siguiente token. | The semantic units align, but the model still sees tokenizer-specific pieces. |
+| The analyst reviews quarterly revenue trends. | Der Analyst prüft vierteljährliche Umsatztrends. | Business terms and compounds can change the number of subword tokens. |
+
+These examples connect directly to the `help-code/1-foundations/Section 2.2 - Tokenization.ipynb` notebook: the lecture idea is conceptual, while the notebook lets students inspect tokenization behavior procedurally.
+
 # From Discrete Symbols to Distributed Representations
 
 Probability alone is not enough. A language model also needs a numerical representation for the symbols it manipulates. A naïve starting point is to represent each word as a discrete symbol, but this immediately creates a problem: discrete symbols tell us that two words are different, yet they say nothing about whether the words are similar.

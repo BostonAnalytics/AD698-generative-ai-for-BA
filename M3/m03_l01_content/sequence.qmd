@@ -1,16 +1,25 @@
----
-title: "AD698 - Applied Generative AI"
-subtitle: "sequence"
-execute: 
-  freeze: true
-categories: ['M03:', 'Module']
-description: "Module 3 content focused on sequence."
----
-
 ```{python}
 #| echo: false
-#| eval: true
-import seaborn as sns
+#| eval: false
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 import matplotlib.pyplot as plt
 
 def set_economist_theme():
@@ -148,7 +157,7 @@ i.e., $p(\mathbf{x}_1, \ldots, \mathbf{x}_T)$.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 import torch
 from torch import nn
@@ -168,7 +177,7 @@ the price, $x_t$, of the index at that time.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| fig-align: center
 #| fig-alt: "FTSE 100 index over about 30 years."
 #| label: fig-ftse100
@@ -177,7 +186,25 @@ the price, $x_t$, of the index at that time.
 
 import yfinance as yf
 import pandas as pd
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 import matplotlib.pyplot as plt
 
 # 1. Setup Ticker
@@ -486,7 +513,7 @@ each consisting of features and a label.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| code-fold: false
 #| fig-align: center
 import numpy as np
@@ -511,14 +538,32 @@ class Data:
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| fig-align: center
 #| fig-alt: "Plot of the synthetic data, which is a noisy sine wave."
 #| label: fig-synthetic-data
 #| fig-cap: "Plot of the synthetic data, which is a noisy sine wave."
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 
 data = Data()
 
@@ -550,7 +595,7 @@ covering a period of the sin function.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 from torch.utils.data import TensorDataset, DataLoader
 import torch
@@ -592,7 +637,7 @@ In this example our model will be a standard linear regression.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 import torch
 import torch.nn as nn
 
@@ -622,7 +667,7 @@ class LinearRegression(nn.Module):
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 from torch.utils.data import DataLoader
 
 class Trainer:
@@ -677,10 +722,28 @@ class Trainer:
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 
 def plot_train_test_loss(trainer):
     set_economist_theme()
@@ -699,7 +762,7 @@ def plot_train_test_loss(trainer):
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| code-fold: false
 #| fig-align: center
 #| fig-alt: "Plot showing the training and test loss over epochs."
@@ -720,7 +783,7 @@ To evaluate our model, we first check how well it performs at one-step-ahead pre
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 model.eval()
 with torch.no_grad():
     onestep_preds = model(data.features).cpu().numpy()
@@ -732,14 +795,32 @@ time = data.time[data.tau:].cpu().numpy()
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| fig-align: center
 #| fig-alt: "Plot comparing the true labels and the 1-step-ahead predictions."
 #| label: fig-onestep-preds
 #| fig-cap: "Plot comparing the true labels and the 1-step-ahead predictions."
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 
 set_economist_theme()
 
@@ -799,7 +880,7 @@ Let's see how well this goes.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 import torch
 
 def multistep_forecast(model, data):
@@ -821,7 +902,7 @@ def multistep_forecast(model, data):
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 # 1-step predictions (already trained model)
 model.eval()
@@ -837,14 +918,32 @@ multistep_preds = multistep_forecast(model, data).cpu()
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| fig-align: center
 #| fig-alt: "Plot comparing the 1-step-ahead predictions and the multi-step predictions for the future region."
 #| label: fig-multistep-preds
 #| fig-cap: "Plot comparing the 1-step-ahead predictions and the multi-step predictions for the future region."
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 
 set_economist_theme()
 
@@ -909,7 +1008,7 @@ Let's take a closer look at the difficulties in $k$-step-ahead predictions by co
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 def k_step_pred(model, data, k):
     """
@@ -945,7 +1044,7 @@ def k_step_pred(model, data, k):
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 steps = (1, 4, 16, 64)
 pred_rows = k_step_pred(model, data, steps[-1])
 
@@ -953,14 +1052,32 @@ pred_rows = k_step_pred(model, data, steps[-1])
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| fig-align: center
 #| fig-alt: "Plot comparing the k-step-ahead predictions for k=1, k=4, k=16, and k=64."
 #| label: fig-k-step-preds
 #| fig-cap: "Plot comparing the k-step-ahead predictions for k=1, k=4, k=16, and k=64."
 
 import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 
 set_economist_theme()
 plt.figure(figsize=(7, 4.5))

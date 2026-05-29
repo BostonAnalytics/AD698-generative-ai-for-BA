@@ -43,6 +43,63 @@ description: "Presentation slides for Module 3 on Prompting as System Design."
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
+# Why Start With Reasoning Models?
+
+## Reasoning Models as the New User Expectation
+
+Recent LLM systems are often judged not only by whether they answer, but by whether they can:
+
+- break complex tasks into smaller steps
+- explain or expose a defensible path to the answer
+- revise a mistake when challenged
+- call tools when text prediction is not enough
+- separate evidence from speculation
+
+This creates a useful starting question for the course:
+
+> What turns a fluent text generator into a useful reasoning system?
+
+## Reasoning Is More Than Remembering
+
+Reasoning-oriented LLM behavior is not the same as memorization or retrieval.
+
+| Capability | What the model is doing | Example course connection |
+|---|---|---|
+| Remembering | recalling likely facts or patterns | pretraining knowledge |
+| Retrieving | looking up external evidence | RAG and vector search |
+| Reasoning | transforming information across steps | prompting, tools, agents |
+| Verifying | checking whether the output is supported | evaluation and auditability |
+
+The important point: reasoning is a **system behavior**, not just a model property.
+
+## How Reasoning Behavior Is Induced
+
+Reasoning models usually combine several design patterns:
+
+- **chain-of-thought style prompting** for stepwise decomposition
+- **self-consistency** for comparing multiple solution paths
+- **tree or graph search** for exploring alternatives
+- **tool use** for search, calculation, data access, or code execution
+- **post-training feedback** that rewards better final answers or better intermediate steps
+
+Source framing: [Labellerr, "LLMs & Reasoning Models: How They Work and Are Trained"](https://www.labellerr.com/blog/llms-reasoning-models-how-they-work/).
+
+## Why This Belongs Before the Basics
+
+Reasoning models can look magical from the outside.
+
+This module works backward from that experience:
+
+1. prompts steer behavior at inference time
+2. language models generate one token at a time
+3. attention lets context shape each prediction
+4. embeddings make semantic similarity computable
+5. retrieval, tools, and agents extend what the model can do
+
+So we begin with the visible product: **reasoning behavior**.
+
+Then we unpack the machinery that makes it possible.
+
 # The Shift to Prompt-Based Approaches
 
 ## From Training-Centric AI to Inference-Centric AI
@@ -610,6 +667,19 @@ $$
 :::
 ::::
 
+---
+
+## Tiny Translation Walkthrough
+
+| Source | Target | Likely alignment |
+|---|---|---|
+| The small robot opens the red door. | Der kleine Roboter öffnet die rote Tür. | adjective-noun pairs stay close |
+| The analyst reviews the quarterly revenue report. | La analista revisa el informe trimestral de ingresos. | business noun phrase expands |
+
+- The decoder should not use the same source summary for every target word.
+- For *robot* / *Roboter*, attention should concentrate on the noun.
+- For *quarterly revenue report*, attention may spread over a phrase because the target language expresses the concept differently.
+
 ## Attention as Learned Relevance
 
 ![Attention mechanism for sequence-to-sequence decoding](./M03_lecture01_figures/attention_mechanism.png){width=82% fig-align=center fig-alt="Attention mechanism showing encoder states, attention weights, context vector, and decoder update" #fig-attention-mechanism}
@@ -735,6 +805,24 @@ $$
 ## Transformer Models
 
 ![Transformer Architecture](./M03_lecture01_figures/transformer-archicture.jpg){width=80% fig-align=center fig-alt="Transformer architecture diagram" #fig-transformer-architecture}
+
+---
+
+## Transformer Attention Internals
+
+:::: {.columns}
+::: {.column width="50%"}
+![Scaled dot-product attention](./M03_lecture01_figures/transformer-attention.png){width=90% fig-align=center fig-alt="Scaled dot-product attention diagram with query, key, value, softmax, and output."}
+:::
+
+::: {.column width="50%"}
+![Multi-head attention](./M03_lecture01_figures/transformer-mha-01.png){width=90% fig-align=center fig-alt="Multi-head attention diagram showing multiple attention heads and output projection."}
+:::
+::::
+
+- Scaled dot-product attention is the basic operation.
+- Multi-head attention repeats it in several learned representation spaces.
+- The transformer block wraps attention with residuals, normalization, and feedforward layers.
 
 
 # Prompt Engineering as System Design

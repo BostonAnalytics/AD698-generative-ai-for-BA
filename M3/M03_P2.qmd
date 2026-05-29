@@ -44,6 +44,50 @@ description: "Presentation slides for Module 3 on Language Modeling Foundations,
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
+# Reasoning Models Still Start Here
+
+## From "Show Your Work" to Token Prediction
+
+Reasoning models often appear to solve problems by planning, reflecting, and correcting themselves.
+
+Under the hood, they still rely on the same foundation:
+
+- text is split into tokens
+- the model predicts likely next tokens
+- attention determines which context tokens matter
+- training and post-training shape the kinds of sequences the model prefers
+
+The course claim for today:
+
+> Reasoning is built on language modeling, not separate from it.
+
+## What Training Adds to Basic Generation
+
+Reasoning-oriented systems improve basic generation through:
+
+- pretraining on code, math, explanations, and structured arguments
+- instruction tuning on step-by-step tasks
+- examples that teach decomposition patterns
+- feedback loops that reward useful or correct outputs
+- tool-use patterns that delegate search or calculation
+
+This helps explain why we study the basics:
+
+tokenization, sequence probability, embeddings, and attention are the substrate on which richer reasoning behaviors are built.
+
+## Guiding Question for Lecture 2
+
+When a model gives a step-by-step answer, each step is still generated as text.
+
+So we need to understand:
+
+1. how the model represents the current context
+2. how it scores the next token
+3. why attention changes what information is available
+4. how embeddings make similarity and retrieval possible
+
+Once those pieces are clear, later modules can add retrieval, evaluation, and agentic tool use.
+
 # Language Modeling
 
 ## Language Modeling as Next-Token Prediction
@@ -1036,6 +1080,20 @@ $$
 - This gives us a principled architecture for modeling sequential data
 :::
 ::::
+
+---
+
+## Tiny Sequence Examples
+
+| Task | Input | Output |
+|---|---|---|
+| Next-token prediction | The team ships the model before | lunch |
+| Sequence labeling | The analyst reviews quarterly revenue trends | DET NOUN VERB ADJ NOUN NOUN |
+| Translation | The small robot opens the red door | Der kleine Roboter öffnet die rote Tür |
+
+- These are deliberately short so every token can be inspected.
+- The model sees a sequence, maintains or retrieves context, and produces either a token, a label sequence, or another sentence.
+- RNNs carry context through state; transformers retrieve context through attention.
 
 ---
 

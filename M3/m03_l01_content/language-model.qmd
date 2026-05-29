@@ -1,16 +1,25 @@
----
-title: "AD698 - Applied Generative AI"
-subtitle: "language-model"
-execute: 
-  freeze: true
-categories: ['M03:', 'Module']
-description: "Module 3 content focused on language-model."
----
-
 ```{python}
 #| echo: false
-#| eval: true
-import seaborn as sns
+#| eval: false
+try:
+    import seaborn as sns
+except ModuleNotFoundError:
+    class _SeabornFallback:
+        def set_theme(self, context=None, style=None, rc=None):
+            import matplotlib.pyplot as plt
+            if rc:
+                plt.rcParams.update(rc)
+            if style:
+                try:
+                    plt.style.use("seaborn-v0_8-whitegrid")
+                except OSError:
+                    plt.style.use("default")
+        def lineplot(self, data=None, x=None, y=None, color=None, linewidth=None, ax=None, **kwargs):
+            import matplotlib.pyplot as plt
+            ax = ax or plt.gca()
+            ax.plot(data[x], data[y], color=color, linewidth=linewidth, **kwargs)
+            return ax
+    sns = _SeabornFallback()
 import matplotlib.pyplot as plt
 
 def set_economist_theme():
@@ -301,7 +310,7 @@ is $\mathbf x_{t+1}$ with length $n$.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 
 import os
 import re
@@ -382,7 +391,7 @@ and `num_steps` is the subsequence length in tokens.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 def get_timemachine_dataloader(batch_size, num_steps,
                                split="train",
                                num_train=10000, num_val=5000):
@@ -406,7 +415,7 @@ by one token.
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 train_loader = get_timemachine_dataloader(batch_size=2, num_steps=10)
 
 for X, Y in train_loader:

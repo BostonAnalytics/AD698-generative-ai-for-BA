@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1050" height="560" viewBox="0 0 1050 560" role="img" aria-label="Attention matrix as reading plans">
+  <rect width="1050" height="560" fill="#ffffff"/>
+  <style>
+    .title { font: 700 28px Arial, sans-serif; fill: #111827; }
+    .label { font: 600 18px Arial, sans-serif; fill: #111827; }
+    .small { font: 15px Arial, sans-serif; fill: #374151; }
+    .tiny { font: 13px Arial, sans-serif; fill: #4b5563; }
+    .axis { font: 14px Arial, sans-serif; fill: #111827; }
+    .cell { stroke: #ffffff; stroke-width: 2; }
+    .arrow { stroke: #dc2626; stroke-width: 3; marker-end: url(#redarrow); fill: none; }
+  </style>
+  <defs>
+    <marker id="redarrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <text x="40" y="44" class="title">The attention matrix is a stack of reading plans</text>
+  <text x="40" y="80" class="small">Each row is one query token. Each column is a key/value token it can read from.</text>
+
+  <text x="370" y="120" class="label">Keys / values being read</text>
+  <text x="250" y="170" class="axis">The</text>
+  <text x="350" y="170" class="axis">analyst</text>
+  <text x="480" y="170" class="axis">expects</text>
+  <text x="610" y="170" class="axis">revenue</text>
+
+  <text x="55" y="318" class="label" transform="rotate(-90 55 318)">Queries asking</text>
+  <text x="130" y="222" class="axis">The</text>
+  <text x="130" y="306" class="axis">analyst</text>
+  <text x="130" y="390" class="axis">expects</text>
+  <text x="130" y="474" class="axis">revenue</text>
+
+  <g transform="translate(230,190)">
+    <rect x="0" y="0" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="90" y="0" width="90" height="70" class="cell" fill="#fecaca"/>
+    <rect x="180" y="0" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="270" y="0" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="0" y="70" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="90" y="70" width="90" height="70" class="cell" fill="#fecaca"/>
+    <rect x="180" y="70" width="90" height="70" class="cell" fill="#f87171"/>
+    <rect x="270" y="70" width="90" height="70" class="cell" fill="#fecaca"/>
+    <rect x="0" y="140" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="90" y="140" width="90" height="70" class="cell" fill="#fca5a5"/>
+    <rect x="180" y="140" width="90" height="70" class="cell" fill="#fecaca"/>
+    <rect x="270" y="140" width="90" height="70" class="cell" fill="#f87171"/>
+    <rect x="0" y="210" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="90" y="210" width="90" height="70" class="cell" fill="#fee2e2"/>
+    <rect x="180" y="210" width="90" height="70" class="cell" fill="#fca5a5"/>
+    <rect x="270" y="210" width="90" height="70" class="cell" fill="#fecaca"/>
+    <text x="34" y="42" class="small">.22</text>
+    <text x="124" y="42" class="small">.34</text>
+    <text x="214" y="42" class="small">.22</text>
+    <text x="304" y="42" class="small">.22</text>
+    <text x="34" y="112" class="small">.18</text>
+    <text x="124" y="112" class="small">.26</text>
+    <text x="214" y="112" class="small">.38</text>
+    <text x="304" y="112" class="small">.18</text>
+    <text x="34" y="182" class="small">.12</text>
+    <text x="124" y="182" class="small">.28</text>
+    <text x="214" y="182" class="small">.22</text>
+    <text x="304" y="182" class="small">.38</text>
+    <text x="34" y="252" class="small">.16</text>
+    <text x="124" y="252" class="small">.16</text>
+    <text x="214" y="252" class="small">.34</text>
+    <text x="304" y="252" class="small">.34</text>
+  </g>
+
+  <path d="M220 298 L610 298" class="arrow"/>
+  <rect x="690" y="242" width="300" height="120" fill="#f8fafc" stroke="#334155" stroke-width="1.5" rx="10"/>
+  <text x="715" y="275" class="label">One highlighted row</text>
+  <text x="715" y="305" class="small">Query: analyst</text>
+  <text x="715" y="333" class="small">Reading plan: mostly expects, then analyst</text>
+  <text x="715" y="390" class="tiny">Rows sum to 1 after softmax.</text>
+  <text x="715" y="414" class="tiny">Output row = weighted sum of value vectors.</text>
+
+  <rect x="230" y="498" width="35" height="18" fill="#fee2e2" stroke="#ffffff"/>
+  <rect x="270" y="498" width="35" height="18" fill="#fecaca" stroke="#ffffff"/>
+  <rect x="310" y="498" width="35" height="18" fill="#fca5a5" stroke="#ffffff"/>
+  <rect x="350" y="498" width="35" height="18" fill="#f87171" stroke="#ffffff"/>
+  <text x="398" y="512" class="tiny">low to high attention weight</text>
+</svg>

@@ -28,11 +28,19 @@ According to *Generative AI Foundations in Python*, modeling long-range dependen
 
 Concurrently, Convolutional Neural Networks (CNNs) were adapted for NLP to extract hierarchical features using convolutional layers over local n-gram windows. However, the true paradigm shift occurred in 2017 with the introduction of the Transformer architecture by Vaswani et al. The Transformer applied a self-attention mechanism, allowing each element in the input sequence to focus on distinct parts of the sequence, capturing dependencies regardless of their positions. This sequence-to-sequence learning model became the foundation for all modern generative language models.
 
+# Reasoning Models as Motivation
+
+Before going into sequence models, it helps to start with the application behavior students now see in modern LLM products: reasoning models that appear to plan, solve problems step by step, revise mistakes, and call tools. A practical overview is provided by Labellerr's article ["LLMs & Reasoning Models: How They Work and Are Trained"](https://www.labellerr.com/blog/llms-reasoning-models-how-they-work/), which frames reasoning as more than recalling facts. In that framing, reasoning means transforming information across steps, making logical connections, using cause-and-effect structure, and sometimes delegating work to external tools.
+
+This is a useful entry point for Module 3 because it makes prompting concrete. A reasoning model does not stop being a language model. It is still producing text token by token. What changes is the surrounding system design: prompts that ask for decomposition, examples that demonstrate stepwise solutions, self-consistency strategies that compare multiple paths, tool calls for search or calculation, and post-training feedback that rewards better answers or better intermediate processes.
+
+For business analytics, this distinction matters. A model that merely sounds fluent is not enough for financial or operational analysis. We need systems that can show evidence, explain steps, admit uncertainty, and revise when new information appears. The rest of this lecture works backward from that goal: first understanding prompts as inference-time control signals, then understanding the sequence models and transformer mechanisms that make prompt-conditioned generation possible.
+
 
 
 ```{python}
 #| echo: false
-#| eval: true
+#| eval: false
 import matplotlib.pyplot as plt
 
 def set_economist_theme():
@@ -240,6 +248,18 @@ on the source words most relevant to that word.
 What if, instead of compressing history into a single vector, we allowed the model to
 **directly access any past token** when processing the current one?
 
+Consider two deliberately small translation examples:
+
+| Source | Target | Alignment intuition |
+|---|---|---|
+| The small robot opens the red door. | Der kleine Roboter öffnet die rote Tür. | Local adjective-noun structure mostly stays aligned. |
+| The analyst reviews the quarterly revenue report. | La analista revisa el informe trimestral de ingresos. | A compact English noun phrase becomes a longer Spanish phrase. |
+
+The key teaching point is that the decoder should not receive the same source summary at
+every output step. When producing *Roboter*, it should focus on *robot*; when producing
+*de ingresos*, it may need to attend to the phrase *revenue report* rather than a single
+word. This is the intuition behind attention as soft alignment.
+
 This is the attention mechanism. Given a **query** $q$ and a set of **key–value** pairs
 $(k_i, v_i)$, attention computes a weighted sum of values:
 
@@ -362,9 +382,20 @@ multi-head attention:
 - **Masking** — encoder uses full bidirectional attention; decoder uses causal masking to
   prevent attending to future tokens.
 
+The help-code transformer notebooks break this down into two useful visual pieces. First,
+scaled dot-product attention computes a weighted combination of values from query-key
+similarities:
+
+![Scaled dot-product attention](./M03_lecture01_figures/transformer-attention.png){width=70% fig-align=center fig-alt="Scaled dot-product attention diagram with query, key, value, softmax, and output." #fig-ln-transformer-attention}
+
+Second, multi-head attention repeats this operation in several learned subspaces, then
+combines the heads:
+
+![Multi-head attention](./M03_lecture01_figures/transformer-mha-01.png){width=72% fig-align=center fig-alt="Multi-head attention diagram showing multiple attention heads and output projection." #fig-ln-transformer-mha}
+
 ```{python}
 #| echo: false
-#| eval: true
+#| eval: false
 from pathlib import Path
 import sys
 
@@ -499,6 +530,7 @@ rather than relying on one fixed summary vector.
 :::: {.columns}
 ::: {.column width="50%"}
 ```{python}
+#| eval: false
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 
@@ -519,6 +551,7 @@ train_loader = DataLoader(
 
 ::: {.column width="50%"}
 ```{python}
+#| eval: false
 import torch.nn as nn
 
 class MNISTAutoencoder(nn.Module):
@@ -544,6 +577,7 @@ class MNISTAutoencoder(nn.Module):
 :::: {.columns}
 ::: {.column width="55%"}
 ```{python}
+#| eval: false
 model = MNISTAutoencoder()
 criterion = nn.MSELoss()
 

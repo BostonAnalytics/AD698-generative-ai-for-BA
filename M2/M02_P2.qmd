@@ -506,7 +506,7 @@ $$
 
 ```{python}
 #| echo: true
-#| eval: true
+#| eval: false
 #| 
 
 import torch
@@ -636,6 +636,23 @@ $$
 
 ---
 
+## Self-Attention as a Lookup Operation
+
+:::: {.columns}
+::: {.column width="52%"}
+![](./M02_lecture02_figures/self_attention.svg){width="95%" fig-alt="Self-attention diagram showing tokens attending to other token representations."}
+:::
+
+::: {.column width="48%"}
+- Query: what this token is looking for
+- Key: what each token offers for matching
+- Value: the information retrieved if matched
+- Softmax turns scores into a distribution over context
+:::
+::::
+
+---
+
 ## Multi-head attention
 
 - Different heads can learn different relations:
@@ -646,6 +663,23 @@ $$
 - Outputs are concatenated, then projected.
 
 This is why transformer representations are richer than simple recurrent summaries.
+
+---
+
+## Multiple Heads, Multiple Relations
+
+:::: {.columns}
+::: {.column width="52%"}
+![](./M02_lecture02_figures/multi_head_attention.svg){width="96%" fig-alt="Multi-head attention diagram with several attention heads feeding a combined representation."}
+:::
+
+::: {.column width="48%"}
+- One head might connect a pronoun to an entity.
+- Another might track local syntax.
+- Another might follow business-domain terms.
+- The combined vector carries several contextual views at once.
+:::
+::::
 
 ---
 

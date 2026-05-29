@@ -103,6 +103,19 @@ description: "Presentation slides for Module 2 on Mathematical Foundations Throu
 
 ---
 
+## Tiny Tokenization and Translation Examples
+
+| English sentence | Translation | Teaching use |
+|---|---|---|
+| The model predicts the next token. | El modelo predice el siguiente token. | Same meaning, different token sequence |
+| The analyst reviews quarterly revenue trends. | Der Analyst prüft vierteljährliche Umsatztrends. | Domain words may split into subwords |
+
+- Each sentence is short enough to inspect by hand.
+- Tokenization is not translation; it is the model's computational segmentation.
+- Translation changes word order and morphology, so the probability model must learn language-specific sequences.
+
+---
+
 ## Why Model Sequence Probability?
 
 ::: {.columns}

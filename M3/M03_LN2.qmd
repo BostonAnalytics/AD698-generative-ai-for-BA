@@ -28,47 +28,47 @@ According to *Generative AI Foundations in Python*, modeling long-range dependen
 
 Concurrently, Convolutional Neural Networks (CNNs) were adapted for NLP to extract hierarchical features using convolutional layers over local n-gram windows. However, the true paradigm shift occurred in 2017 with the introduction of the Transformer architecture by Vaswani et al. The Transformer applied a self-attention mechanism, allowing each element in the input sequence to focus on distinct parts of the sequence, capturing dependencies regardless of their positions. This sequence-to-sequence learning model became the foundation for all modern generative language models.
 
+# Reasoning Models Still Depend on the Basics
+
+Modern reasoning models can appear to plan, explain, and correct themselves, but those behaviors still depend on the basic mechanics covered in this lecture. A step-by-step answer is still a sequence of generated tokens. The model still has to represent the current context, compute attention over available tokens, and choose likely continuations. Post-training and prompting can make the generated sequence look more like a careful solution path, but the underlying substrate remains language modeling.
+
+This is why tokenization, embeddings, and attention matter for reasoning. Tokenization determines the units the model can condition on. Embeddings determine how tokens and concepts are represented geometrically. Attention determines which parts of the context influence the next prediction. Later modules add retrieval, reranking, evaluation, and agents, but those systems all build on these same representational foundations.
+
 
 
 ```{python}
 #| echo: false
-#| eval: true
-import seaborn as sns
+#| eval: false
 import matplotlib.pyplot as plt
 
 def set_economist_theme():
-    sns.set_theme(
-        context="talk",
-        style="whitegrid",
-        rc={
-            # Fonts
-            "font.family": "serif",
-            "axes.titlesize": 14,
-            "axes.titleweight": "bold",
-            "axes.labelsize": 12,
-            "axes.labelweight": "bold",
-            "xtick.labelsize": 9,
-            "ytick.labelsize": 9,
+    rc = {
+        "font.family": "serif",
+        "axes.titlesize": 14,
+        "axes.titleweight": "bold",
+        "axes.labelsize": 12,
+        "axes.labelweight": "bold",
+        "xtick.labelsize": 9,
+        "ytick.labelsize": 9,
+        "grid.color": "#d9d9d9",
+        "grid.linewidth": 0.6,
+        "axes.edgecolor": "#333333",
+        "axes.linewidth": 0.8,
+        "axes.spines.top": False,
+        "axes.spines.right": False,
+        "lines.linewidth": 1.0,
+        "figure.figsize": (8, 4),
+        "figure.dpi": 120,
+        "legend.frameon": False,
+    }
 
-            # Grid + Spines
-            "grid.color": "#d9d9d9",
-            "grid.linewidth": 0.6,
-            "axes.edgecolor": "#333333",
-            "axes.linewidth": 0.8,
-            "axes.spines.top": False,
-            "axes.spines.right": False,
+    try:
+        import seaborn as sns
+        sns.set_theme(context="talk", style="whitegrid", rc=rc)
+    except ModuleNotFoundError:
+        plt.rcParams.update(rc)
+        plt.style.use("seaborn-v0_8-whitegrid")
 
-            # Lines
-            "lines.linewidth": 1.0,
-
-            # Figure
-            "figure.figsize": (8, 4),
-            "figure.dpi": 120,
-
-            # Legend
-            "legend.frameon": False,
-        }
-    )
 set_economist_theme()
 ```
 
@@ -117,6 +117,7 @@ the most frequent adjacent pair of symbols.
 4. Repeat until vocabulary size reaches the target.
 
 ```{python}
+#| eval: false
 from collections import Counter, defaultdict
 
 def get_pairs(vocab):
@@ -168,7 +169,7 @@ of the training corpus under a unigram language model, rather than raw frequency
 Key convention: subword tokens that continue a word are prefixed with `##`.
 
 ```{python}
-#| eval: true
+#| eval: false
 from tokenizers import BertWordPieceTokenizer
 from pathlib import Path
 
@@ -212,6 +213,18 @@ LLaMA-2 uses 32,000.
 ## Scaled Dot-Product Attention in PyTorch
 
 The core attention operation: each token queries every other token for relevant information.
+
+Keep two short sentences in mind while reading the tensor shapes:
+
+| Sentence | Possible task |
+|---|---|
+| The team ships the model before lunch. | Predict the next token or label each token. |
+| The analyst reviews quarterly revenue trends. | Build contextual representations for business text. |
+
+Both are only six or seven words long, but attention still creates a full token-by-token
+relationship matrix. That matrix is what lets the model connect *model* with *ships*, or
+*revenue* with *trends*, without waiting for a recurrent state to carry the information
+forward.
 
 ```{python}
 #| eval: false

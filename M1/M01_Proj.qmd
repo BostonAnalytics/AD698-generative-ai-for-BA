@@ -190,6 +190,7 @@ for d in [RAW_HTML_DIR, EXTRACTED_ITEMS_DIR, OUTPUTS_DIR]:
 # Required SEC Metadata Fields
 
 Your filing metadata table must contain:
+
 - accession_number
 - form_type
 - filing_date

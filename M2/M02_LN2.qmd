@@ -385,6 +385,8 @@ class SimpleRNNClassifier(nn.Module):
 
 Attention removes the recurrent bottleneck by allowing each token to directly reference other tokens in the sequence. Instead of compressing the past into one vector, the model computes relevance weights over available context.
 
+![](./M02_lecture02_figures/self_attention.svg){width="70%" fig-align="center" fig-alt="Self-attention diagram showing tokens attending to other token representations." fig-cap="Self-attention lets each token retrieve information from the rest of the sequence instead of relying only on a recurrent state."}
+
 ## Scaled Dot-Product Attention
 
 Each token produces a query, key, and value. The attention mechanism computes
@@ -400,6 +402,8 @@ This lets the model decide which tokens matter most for building the next repres
 ## Multi-Head Attention
 
 Multi-head attention learns several attention patterns in parallel. Different heads can specialize in different relationships, giving the model a richer contextual representation than a single attention pattern would provide.
+
+![](./M02_lecture02_figures/multi_head_attention.svg){width="76%" fig-align="center" fig-alt="Multi-head attention diagram with several attention heads feeding a combined representation." fig-cap="Multiple heads let one layer learn several relationships among the same tokens."}
 
 ## Transformer Blocks
 
