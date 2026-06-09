@@ -1,5 +1,5 @@
 ---
-title: "1 - Baseline Multi-Year Tesla 10-K RAG"
+title: "7 - RAGAS Comparison Across Hugging Face Embedding Models"
 jupyter: python3
 execute:
   eval: false
@@ -8,16 +8,16 @@ execute:
   message: false
 ---
 
-# Baseline Multi-Year Tesla 10-K RAG
+# RAGAS Comparison Across Hugging Face Embedding Models
 
-This notebook builds a simple Retrieval-Augmented Generation pipeline over Tesla 10-K filings from 2015 through 2025.
+This notebook compares four Hugging Face embedding models on the same multi-year Tesla 10-K RAG task.
 
-The baseline has one purpose: make the evidence path visible. It downloads or reuses cached SEC filings, chunks the filings with year metadata, embeds the chunks with a Hugging Face sentence-transformer model, retrieves relevant chunks with FAISS, and generates an answer that cites filing years and chunk IDs.
+The corpus, evaluation questions, prompt, generator, and RAGAS metrics stay fixed. The only changing component is the embedding model used to build the FAISS index.
 
 ## Setup
 
 ```{python}
-%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai
+%pip install -q beautifulsoup4 requests pandas numpy matplotlib seaborn faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai ragas datasets
 ```
 
 
@@ -40,12 +40,23 @@ from pathlib import Path
 import os
 import shutil
 import sys
+import time
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_openai import ChatOpenAI
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from ragas import EvaluationDataset, evaluate
+from ragas.metrics import (
+    Faithfulness,
+    ResponseRelevancy,
+    LLMContextPrecisionWithReference,
+    LLMContextRecall,
+    FactualCorrectness,
+)
 
 if (Path.cwd() / "help-code" / "Rag").exists():
     RAG_DIR = Path.cwd() / "help-code" / "Rag"
@@ -342,155 +353,307 @@ def extractive_fallback_answer(question: str, retrieved_docs: list[Document], ma
             f"{doc.page_content[:max_chars_per_doc]}"
         )
     return "\n\n".join(parts)
+
+pd.set_option("display.max_colwidth", 220)
+sns.set_theme(style="whitegrid")
 ```
 
-## Download or Reuse Cached Tesla Filings
-
-The SEC requests use a descriptive user agent. Files are cached under `help-code/secfile/sec-edgar-filings/TSLA/10-K/{year}/`.
+## Load and Chunk Tesla Filings
 
 ```{python}
 records = ensure_tesla_filings(download=True)
-pd.DataFrame(
-    {
-        "year": record.year,
-        "url": record.url,
-        "local_path": str(record.local_path),
-        "cached": record.local_path.exists(),
-    }
-    for record in records
-)
-```
-
-## Load and Chunk the Filings
-
-```{python}
 docs = load_filing_documents(records)
 chunks = chunk_filings(docs, chunk_size=1200, chunk_overlap=180)
 
-audit_df = chunk_audit(chunks)
-audit_df.groupby("filing_year").agg(
+chunk_audit_df = chunk_audit(chunks)
+chunk_audit_df.groupby("filing_year").agg(
     chunks=("chunk_id", "count"),
     avg_chars=("n_chars", "mean"),
-    min_chars=("n_chars", "min"),
-    max_chars=("n_chars", "max"),
 )
 ```
 
-## Build the Baseline Vector Index
+## Four Hugging Face Embedding Options
 
 ```{python}
-embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2",
-    encode_kwargs={"normalize_embeddings": True},
-)
+HF_EMBEDDING_OPTIONS = {
+    "minilm_l6": {
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "notes": "fast lightweight baseline",
+    },
+    "mpnet_base": {
+        "model_name": "sentence-transformers/all-mpnet-base-v2",
+        "notes": "strong general sentence embedding model",
+    },
+    "bge_small": {
+        "model_name": "BAAI/bge-small-en-v1.5",
+        "notes": "compact retrieval-specialized model",
+    },
+    "bge_base": {
+        "model_name": "BAAI/bge-base-en-v1.5",
+        "notes": "larger retrieval-specialized model",
+    },
+}
 
-vector_store = FAISS.from_documents(chunks, embedding_model)
-retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 6})
+pd.DataFrame.from_dict(HF_EMBEDDING_OPTIONS, orient="index")
 ```
 
-## Retrieval Audit
+## Shared Generator
 
 ```{python}
-question = TESLA_EVAL_QUESTIONS[0]["user_input"]
-retrieved_docs = retriever.invoke(question)
+OPENAI_AVAILABLE = "OPENAI_API_KEY" in os.environ
 
-pd.DataFrame(
-    {
-        "rank": rank,
-        "year": doc.metadata["filing_year"],
-        "chunk_id": doc.metadata["chunk_id"],
-        "preview": doc.page_content[:260],
-    }
-    for rank, doc in enumerate(retrieved_docs, start=1)
-)
-```
+if OPENAI_AVAILABLE:
+    generator_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    evaluator_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    evaluator_embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+else:
+    generator_llm = None
+    evaluator_llm = None
+    evaluator_embeddings = None
+    print("OPENAI_API_KEY is not set. Retrieval diagnostics still run; RAGAS cells require a key.")
 
-```{python}
-retrieval_diagnostics(
-    retrieved_docs,
-    reference_keywords=TESLA_EVAL_QUESTIONS[0]["reference_keywords"],
-)
-```
-
-## Generate a Grounded Answer
-
-The generator cell uses OpenAI only if `OPENAI_API_KEY` is set. Without a key, the notebook still returns an extractive evidence summary so the retrieval path can be inspected.
-
-```{python}
-prompt = ChatPromptTemplate.from_messages([
+rag_prompt = ChatPromptTemplate.from_messages([
     (
         "system",
         (
             "Answer using only the retrieved Tesla 10-K context. "
-            "Cite filing years and chunk IDs. "
-            "If the retrieved context is insufficient, say so."
+            "Compare filing years when relevant. "
+            "Cite filing years and chunk IDs."
         ),
     ),
     ("user", "Question:\n{question}\n\nContext:\n{context}"),
 ])
 
-if "OPENAI_API_KEY" in os.environ:
-    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
-    answer_chain = prompt | llm | StrOutputParser()
-    answer = answer_chain.invoke(
-        {"question": question, "context": format_context(retrieved_docs)}
-    )
-else:
-    answer = extractive_fallback_answer(question, retrieved_docs)
-
-print(answer)
+answer_chain = rag_prompt | generator_llm | StrOutputParser() if OPENAI_AVAILABLE else None
 ```
 
-## Run the Baseline Over the Evaluation Questions
+## Run One RAG Variant
 
 ```{python}
-rows = []
-for item in TESLA_EVAL_QUESTIONS:
-    docs_for_q = retriever.invoke(item["user_input"])
-    if "OPENAI_API_KEY" in os.environ:
-        response = answer_chain.invoke(
-            {"question": item["user_input"], "context": format_context(docs_for_q)}
-        )
-        response_mode = "generated"
-    else:
-        response = extractive_fallback_answer(item["user_input"], docs_for_q)
-        response_mode = "extractive_fallback"
-
-    diag = retrieval_diagnostics(docs_for_q, item["reference_keywords"])
-    rows.append(
-        {
-            "qid": item["qid"],
-            "question": item["user_input"],
-            "response": response,
-            "response_mode": response_mode,
-            "retrieved_years": diag["retrieved_years"],
-            "keyword_coverage": diag["keyword_coverage"],
-            "rank_weighted_keyword_score": diag["rank_weighted_keyword_score"],
-        }
+def build_vector_store(model_name: str) -> FAISS:
+    embeddings = HuggingFaceEmbeddings(
+        model_name=model_name,
+        encode_kwargs={"normalize_embeddings": True},
     )
+    return FAISS.from_documents(chunks, embeddings)
 
-baseline_results = pd.DataFrame(rows)
-baseline_results
+def run_rag_for_option(option_name: str, option: dict, k: int = 8) -> pd.DataFrame:
+    started = time.perf_counter()
+    vector_store = build_vector_store(option["model_name"])
+    retriever = vector_store.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": k, "fetch_k": max(32, k * 4)},
+    )
+    build_seconds = time.perf_counter() - started
+
+    rows = []
+    for item in TESLA_EVAL_QUESTIONS:
+        q_started = time.perf_counter()
+        docs_for_q = retriever.invoke(item["user_input"])
+        if answer_chain is not None:
+            response = answer_chain.invoke(
+                {"question": item["user_input"], "context": format_context(docs_for_q)}
+            )
+            response_mode = "generated"
+        else:
+            response = extractive_fallback_answer(item["user_input"], docs_for_q)
+            response_mode = "extractive_fallback"
+
+        diag = retrieval_diagnostics(docs_for_q, item["reference_keywords"])
+        rows.append(
+            {
+                "option": option_name,
+                "hf_model": option["model_name"],
+                "option_notes": option["notes"],
+                "qid": item["qid"],
+                "user_input": item["user_input"],
+                "response": response,
+                "response_mode": response_mode,
+                "retrieved_contexts": [doc.page_content for doc in docs_for_q],
+                "retrieved_chunk_ids": [doc.metadata["chunk_id"] for doc in docs_for_q],
+                "retrieved_years": diag["retrieved_years"],
+                "unique_years_retrieved": diag["unique_years_retrieved"],
+                "keyword_coverage": diag["keyword_coverage"],
+                "rank_weighted_keyword_score": diag["rank_weighted_keyword_score"],
+                "reference": item["reference"],
+                "build_seconds": build_seconds,
+                "query_seconds": time.perf_counter() - q_started,
+            }
+        )
+    return pd.DataFrame(rows)
 ```
 
-## Save Baseline Artifacts
+## Generate Rows for All Four Options
+
+```{python}
+all_rows = []
+
+for option_name, option in HF_EMBEDDING_OPTIONS.items():
+    print(f"Running {option_name}: {option['model_name']}")
+    all_rows.append(run_rag_for_option(option_name, option, k=8))
+
+comparison_df = pd.concat(all_rows, ignore_index=True)
+comparison_df[
+    ["option", "qid", "response_mode", "retrieved_years", "keyword_coverage", "query_seconds"]
+]
+```
+
+## Retrieval-Only Scorecard
+
+```{python}
+retrieval_summary_df = (
+    comparison_df
+    .groupby(["option", "hf_model", "option_notes"], as_index=False)
+    .agg(
+        avg_keyword_coverage=("keyword_coverage", "mean"),
+        avg_rank_weighted_keyword_score=("rank_weighted_keyword_score", "mean"),
+        avg_unique_years_retrieved=("unique_years_retrieved", "mean"),
+        avg_query_seconds=("query_seconds", "mean"),
+        build_seconds=("build_seconds", "first"),
+    )
+    .sort_values(["avg_keyword_coverage", "avg_rank_weighted_keyword_score"], ascending=False)
+)
+
+retrieval_summary_df
+```
+
+```{python}
+fig, ax = plt.subplots(figsize=(10, 5))
+sns.barplot(data=retrieval_summary_df, x="option", y="avg_keyword_coverage", ax=ax)
+ax.set_title("Average Keyword Coverage by Hugging Face Embedding Option")
+ax.set_xlabel("Embedding option")
+ax.set_ylabel("Average keyword coverage")
+plt.xticks(rotation=20)
+plt.tight_layout()
+```
+
+## RAGAS Evaluation
+
+```{python}
+if not OPENAI_AVAILABLE:
+    raise EnvironmentError("Set OPENAI_API_KEY before running RAGAS evaluation.")
+
+ragas_dataset = EvaluationDataset.from_list(
+    comparison_df[["user_input", "response", "retrieved_contexts", "reference"]].to_dict("records")
+)
+
+metrics = [
+    Faithfulness(),
+    ResponseRelevancy(),
+    LLMContextPrecisionWithReference(),
+    LLMContextRecall(),
+    FactualCorrectness(),
+]
+
+ragas_result = evaluate(
+    dataset=ragas_dataset,
+    metrics=metrics,
+    llm=evaluator_llm,
+    embeddings=evaluator_embeddings,
+)
+
+ragas_scores = ragas_result.to_pandas()
+ragas_scores.head()
+```
+
+## Combine and Summarize Scores
+
+```{python}
+scored_df = pd.concat(
+    [comparison_df.reset_index(drop=True), ragas_scores.reset_index(drop=True)],
+    axis=1,
+)
+
+metric_cols = [
+    col
+    for col in [
+        "faithfulness",
+        "answer_relevancy",
+        "context_precision",
+        "context_recall",
+        "factual_correctness",
+    ]
+    if col in scored_df.columns
+]
+
+summary_df = (
+    scored_df
+    .groupby(["option", "hf_model", "option_notes"], as_index=False)
+    .agg(
+        **{col: (col, "mean") for col in metric_cols},
+        avg_keyword_coverage=("keyword_coverage", "mean"),
+        avg_rank_weighted_keyword_score=("rank_weighted_keyword_score", "mean"),
+        avg_query_seconds=("query_seconds", "mean"),
+        build_seconds=("build_seconds", "first"),
+    )
+)
+
+summary_df
+```
+
+```{python}
+summary_long_df = summary_df.melt(
+    id_vars=["option", "hf_model", "option_notes"],
+    value_vars=metric_cols,
+    var_name="metric",
+    value_name="score",
+)
+
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.barplot(data=summary_long_df, x="metric", y="score", hue="option", ax=ax)
+ax.set_ylim(0, 1)
+ax.set_title("RAGAS Metric Averages by Hugging Face Embedding Option")
+ax.set_xlabel("RAGAS metric")
+ax.set_ylabel("Mean score")
+plt.xticks(rotation=25)
+plt.tight_layout()
+```
+
+## Inspect Evidence Differences
+
+```{python}
+QUESTION_TO_INSPECT = TESLA_EVAL_QUESTIONS[0]["qid"]
+
+evidence_rows = []
+for _, row in comparison_df[comparison_df["qid"].eq(QUESTION_TO_INSPECT)].iterrows():
+    for rank, (chunk_id, year, context) in enumerate(
+        zip(row["retrieved_chunk_ids"], row["retrieved_years"], row["retrieved_contexts"]),
+        start=1,
+    ):
+        evidence_rows.append(
+            {
+                "option": row["option"],
+                "rank": rank,
+                "year": year,
+                "chunk_id": chunk_id,
+                "preview": context[:350],
+            }
+        )
+
+pd.DataFrame(evidence_rows)
+```
+
+## Save Artifacts
 
 ```{python}
 output_dir, drive_output_dir = get_output_dirs()
 
-baseline_results.to_csv(output_dir / "tesla_baseline_rag_results.csv", index=False)
-audit_df.to_csv(output_dir / "tesla_chunk_audit.csv", index=False)
+comparison_df.to_csv(output_dir / "tesla_hf_model_comparison_raw.csv", index=False)
+retrieval_summary_df.to_csv(output_dir / "tesla_hf_model_retrieval_summary.csv", index=False)
+scored_df.to_csv(output_dir / "tesla_hf_model_comparison_scored.csv", index=False)
+summary_df.to_csv(output_dir / "tesla_hf_model_comparison_summary.csv", index=False)
 
 mirror_outputs_to_drive(output_dir)
 
 output_dir, drive_output_dir
 ```
 
-## Reading the Baseline
+## Reading the Results
 
-The baseline is intentionally simple. It gives a first view of:
+The strongest embedding model depends on the target:
 
-- which filing years are retrieved for each question
-- whether the retrieved chunks contain expected keywords
-- whether answer generation is faithful to the retrieved context
-- which questions need reranking, decomposition, or evaluation
+- higher keyword coverage means the retriever found more expected evidence
+- higher context precision means useful evidence appears earlier in the ranked chunks
+- higher context recall means the retrieved chunks cover more of the reference answer
+- higher faithfulness means generated claims are better grounded in retrieved context
+- lower latency and build time matter when scores are similar

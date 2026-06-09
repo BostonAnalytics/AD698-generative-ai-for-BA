@@ -18,8 +18,7 @@ format:
         html-math-method: katex
         slide-number: c/t
         toc: true
-        toc-depth: 2
-
+        toc-depth: 1
 self-contained-math: true
 fig-align: center
 title-slide-attributes:
@@ -34,29 +33,9 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 categories: ['RAG Evaluation', 'Reranking', 'RAGAS', 'Production RAG', 'Technical Deep Dive']
-description: "Introduces Generation, Evaluation, and Production RAG through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
+description: "Introduces Generation, Evaluation, and Production RAG through concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
-## How to print Revealjs slides
-
-![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
-
-# Recap and Transition
-
-## Where P1 Ended
-
-- We built retrieval intuition and HNSW search logic
-- We saw that retrieval quality controls answer quality
-- We now focus on generation quality and system reliability
-
----
-
-## This Session
-
-1. Prompt and context assembly patterns
-2. LCEL-based RAG orchestration
-3. Evaluation and diagnostics
-4. Deployment and observability paths
 
 # Building the Generator
 
@@ -74,7 +53,9 @@ Good generation depends on how context is packed:
 ## Prompt Template Pattern
 
 ```{python}
-#| eval: false
+#| echo: true 
+#| eval: true
+#| output-location: column
 from langchain.prompts import ChatPromptTemplate
 
 RAG_PROMPT = ChatPromptTemplate.from_template(
@@ -97,7 +78,7 @@ RAG_PROMPT = ChatPromptTemplate.from_template(
 
 ## Response Contract
 
-Production answer format should include:
+A production answer format typically carries:
 
 - concise claim
 - evidence bullets
@@ -106,18 +87,55 @@ Production answer format should include:
 
 This supports grading, auditing, and stakeholder trust.
 
-# NVIDIA Patterns to Reuse
+# Tesla SEC 10-K RAG Pattern
+
+## Tesla RAG Configuration
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+from pathlib import Path
+
+TESLA_RAG_CONFIG = {
+    "ticker": "TSLA",
+    "filing_years": list(range(2015, 2026)),
+    "chunk_size": 1200,
+    "chunk_overlap": 180,
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "search_type": "similarity",
+    "search_kwargs": {"k": 6},
+}
+
+RAG_DIR = Path("help-code/Rag")
+```
+
+The retrieval configuration fixes the chunking, embedding, and search settings so chunk IDs, retrieved years, and evaluation rows remain comparable across baseline, reranked, decomposed, reflective, and embedding-comparison variants.
+
+---
 
 ## Ingestion and Chunking
 
 ```{python}
-#| eval: false
-from langchain_community.document_loaders import DirectoryLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+#| echo: true 
+#| eval: true
+#| output-location: column
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-docs = DirectoryLoader("./data/corpus", glob="**/*.md").load()
-splitter = RecursiveCharacterTextSplitter(chunk_size=700, chunk_overlap=120)
+records = ensure_tesla_filings(download=True)
+docs = load_filing_documents(records)
+
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=TESLA_RAG_CONFIG["chunk_size"],
+    chunk_overlap=TESLA_RAG_CONFIG["chunk_overlap"],
+    separators=["Item 1A.", "Item 7.", "Item 8.", "\n\n", ". ", " "],
+)
+
 chunks = splitter.split_documents(docs)
+
+for i, doc in enumerate(chunks):
+    year = doc.metadata["filing_year"]
+    doc.metadata["chunk_id"] = f"TSLA-{year}-{i:05d}"
 ```
 
 ---
@@ -125,40 +143,118 @@ chunks = splitter.split_documents(docs)
 ## Embeddings and Vector Store
 
 ```{python}
-#| eval: false
-from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
+#| echo: true 
+#| eval: true
+#| output-location: column
 from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
-embed = NVIDIAEmbeddings(model="nvidia/nv-embedqa-e5-v5")
+embed = HuggingFaceEmbeddings(
+    model_name=TESLA_RAG_CONFIG["embedding_model"],
+    encode_kwargs={"normalize_embeddings": True},
+)
+
 vs = FAISS.from_documents(chunks, embed)
-retriever = vs.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+retriever = vs.as_retriever(
+    search_type=TESLA_RAG_CONFIG["search_type"],
+    search_kwargs=TESLA_RAG_CONFIG["search_kwargs"],
+)
 ```
+
+---
+
+## Tesla Evidence Thread
+
+Tesla's filings make RAG behavior inspectable because the same business themes appear across many years:
+
+- battery supply and cost
+- production ramps and factory capacity
+- Autopilot, AI, and regulatory risk
+- revenue mix across automotive, energy, services, and leasing
+
+Good answers cite both the filing year and the chunk ID, not only the generated conclusion.
+
+---
+
+## Small Tesla Evidence Example
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+from langchain_core.documents import Document
+
+tesla_micro_chunks = [
+    Document(
+        page_content=(
+            "Tesla describes battery technology, battery cell supply, "
+            "manufacturing scale, and cost reduction as important to vehicle "
+            "and energy storage growth."
+        ),
+        metadata={"ticker": "TSLA", "filing_year": 2020, "chunk_id": "TSLA-2020-demo-001"},
+    ),
+    Document(
+        page_content=(
+            "Tesla discusses production ramps, factory capacity, supply chain "
+            "constraints, and execution risk as recurring manufacturing issues."
+        ),
+        metadata={"ticker": "TSLA", "filing_year": 2024, "chunk_id": "TSLA-2024-demo-002"},
+    ),
+]
+
+question = "How did Tesla describe battery supply and production risk?"
+
+retrieved_docs = [
+    doc for doc in tesla_micro_chunks
+    if any(term in doc.page_content.lower() for term in ["battery", "supply", "production"])
+]
+
+assert len(retrieved_docs) == 2
+assert {doc.metadata["filing_year"] for doc in retrieved_docs} == {2020, 2024}
+```
+
+Even a two-chunk example shows the minimum evidence contract: company, filing year, chunk ID, and topic coverage.
 
 ---
 
 ## LCEL RAG Chain
 
 ```{python}
-#| eval: false
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
+#| echo: true 
+#| eval: true
+#| output-location: column
 from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 
-llm = ChatNVIDIA(model="meta/llama-3.1-70b-instruct")
-
 def join_context(docs):
-  return "\n\n".join(d.page_content for d in docs)
+    return "\n\n".join(
+        f"[TSLA {d.metadata.get('filing_year')} {d.metadata.get('chunk_id')}]\n"
+        f"{d.page_content}"
+        for d in docs
+    )
 
-chain = (
-  {
+rag_inputs = {
     "question": RunnableLambda(lambda x: x["question"]),
     "context": RunnableLambda(lambda x: join_context(retriever.invoke(x["question"]))),
-  }
-  | RAG_PROMPT
-  | llm
-  | StrOutputParser()
-)
+}
+
+# chain = rag_inputs | RAG_PROMPT | llm | StrOutputParser()
 ```
+
+---
+
+## RAG Is Not Magic
+
+RAG improves the odds of grounded answers, but it adds new system risks.
+
+| Benefit | New responsibility |
+|---|---|
+| fresher evidence | keep the index current |
+| citations | preserve metadata and source IDs |
+| better factuality | evaluate retrieval and generation separately |
+| domain control | monitor corpus quality and access rules |
+
+The practical question is not "Did we add RAG?" It is "Did retrieval improve the answer enough to justify complexity, latency, and maintenance?"
 
 # Evaluation and Diagnostics
 
@@ -175,10 +271,534 @@ Track both quality and operations:
 
 ---
 
+## Baseline vs RAG Evaluation
+
+For each SEC question, compare:
+
+1. prompt-only answer
+2. RAG answer
+3. retrieved evidence table
+
+Diagnostic questions:
+
+- Did RAG cite better evidence?
+- Did it reduce unsupported claims?
+- Did it introduce irrelevant or stale context?
+- Did the extra latency and complexity produce business value?
+
+---
+
+# From Classification Evaluation to RAG Evaluation
+
+## How We Usually Evaluate Classifiers
+
+For a classifier, evaluation starts with a confusion matrix:
+
+| | predicted positive | predicted negative |
+|---|---:|---:|
+| actual positive | TP | FN |
+| actual negative | FP | TN |
+
+Common metrics:
+
+$$
+\begin{align}
+\text{Accuracy}&=\frac{TP+TN}{TP+TN+FP+FN},\\
+\text{Precision}&=\frac{TP}{TP+FP},\\
+\text{Recall}&=\frac{TP}{TP+FN},\\
+F_1&=\frac{2PR}{P+R}
+\end{align}
+$$
+
+---
+
+## Where Classification Metrics Fail for RAG
+
+Classification assumes:
+
+- fixed label set
+- one prediction per record
+- ground truth labels available
+- correctness can be reduced to match / mismatch
+
+RAG violates those assumptions:
+
+- answers are open-ended text
+- the same answer can be partially correct
+- unsupported true claims are still risky
+- retrieval can fail even when generation looks fluent
+- generation can fail even when retrieval found good evidence
+
+For SEC analysis, "sounds right" is not enough. The claim must be traceable.
+
+---
+
+## RAG Needs Multi-Axis Evaluation
+
+Evaluate the pipeline, not only the final paragraph.
+
+| Layer | Question | Typical failure |
+|---|---|---|
+| Retrieval | Did we fetch useful evidence? | wrong item, wrong year, noisy chunk |
+| Grounding | Is the answer supported? | hallucinated or uncited claim |
+| Relevance | Did it answer the question? | fluent but off-target answer |
+| Operations | Can we run it reliably? | high latency, high cost, brittle index |
+
+RAGAS formalizes the first three quality dimensions for automated review.
+
+---
+
+## Why Text Overlap Is Not Enough
+
+Traditional NLP metrics such as BLEU, ROUGE, and semantic similarity can be useful for summaries or translations, but they miss two questions that matter in RAG:
+
+- did the system retrieve the evidence needed to answer?
+- is every answer claim supported by that evidence?
+
+A response can share many words with a reference and still cite the wrong filing section. A response can also be semantically similar to a reference while adding an unsupported financial claim.
+
+This is why modern RAG evaluation treats the response as a set of claims and the retriever as a ranked evidence system.
+
+---
+
+# RAGAS Evaluation
+
+## RAGAS Paper: Core Idea
+
+RAGAS [@RAGAS2023] began as a reference-free framework for evaluating RAG systems, then evolved into a broader evaluation toolkit for retrieval, generation, agents, and workflows.
+
+Given:
+
+- question: $q$
+- retrieved context: $c(q)$
+- generated answer: $a_s(q)$
+
+The original RAGAS paper focuses on three core ideas:
+
+1. **faithfulness**: is the answer grounded in context?
+2. **answer relevance**: does the answer address the question?
+3. **context relevance**: is the retrieved context focused?
+
+---
+
+## RAGAS Data Model
+
+The current Ragas examples organize each evaluation row around four practical fields:
+
+| Field | Meaning |
+|---|---|
+| `user_input` | the original user question |
+| `response` | the generated answer |
+| `retrieved_contexts` | ranked chunks used by the RAG system |
+| `reference` | optional ground-truth answer or instructor-approved evidence summary |
+
+That schema is useful even without the library. It forces every row to preserve both the final answer and the evidence path.
+
+---
+
+## Metric Map
+
+| Metric | Evaluates | Needs | Reference-free? |
+|---|---|---|---|
+| faithfulness | answer support | user input, response, contexts | yes |
+| answer relevancy | answer-to-question fit | user input, response | yes |
+| context utilization | useful retrieved context | user input, response, contexts | yes |
+| context precision | ranked evidence quality | user input, contexts, reference | usually no |
+| context recall | evidence coverage | user input, contexts, reference | no |
+| answer correctness | answer vs reference | user input, response, reference | no |
+| noise sensitivity | effect of irrelevant context | user input, response, contexts, reference | no |
+
+Generation metrics and retrieval metrics belong together.
+
+High answer quality with poor retrieval may be luck. Good retrieval with poor answer quality is a synthesis problem.
+
+---
+
+## Faithfulness: Math
+
+Break the generated answer into claims:
+
+$$
+S(a_s(q))=\{s_1,s_2,\ldots,s_n\}
+$$
+
+Let $V$ be the subset of claims that can be inferred from retrieved context $c(q)$.
+
+$$
+\text{Faithfulness}=\frac{|V|}{|S(a_s(q))|}
+$$
+
+Example:
+
+- Claim 1: "Tesla discusses battery supply as important to production scale." supported
+- Claim 2: "Tesla says battery costs doubled in 2024." not supported
+
+$$
+\text{Faithfulness}=\frac{1}{2}=0.50
+$$
+
+---
+
+## Faithfulness: Minimal Judge Pattern
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+faithfulness_prompt = """
+Extract factual claims from the answer.
+For each claim, decide if it is supported by the context.
+Return JSON with claim, supported, and reason.
+
+Question: {question}
+Context: {context}
+Answer: {answer}
+"""
+```
+
+Interpretation:
+
+- high score: most claims can be traced to retrieved evidence
+- low score: answer may be hallucinated, overgeneralized, or missing citations
+
+---
+
+## Answer Relevancy: Math
+
+RAGAS estimates whether the answer fits the original question.
+
+Process:
+
+1. Generate synthetic questions from the answer.
+2. Embed each synthetic question and the original question.
+3. Average cosine similarity.
+
+$$
+\text{AnswerRelevance}
+=
+\frac{1}{N}\sum_{i=1}^{N}
+\cos(E_{g_i}, E_q)
+$$
+
+where $g_i$ is a generated question implied by the answer.
+
+The answer can be faithful but still irrelevant if it cites true context that does not answer the user.
+
+---
+
+## Context Recall
+
+Context recall asks whether retrieved context covers the reference answer.
+
+Break ground truth into claims:
+
+$$
+G=\{g_1,g_2,\ldots,g_m\}
+$$
+
+Let $A$ be the subset of ground-truth claims attributable to retrieved context.
+
+$$
+\text{ContextRecall}=\frac{|A|}{|G|}
+$$
+
+Example:
+
+- ground truth claim 1: Tesla discusses production ramp risk supported
+- ground truth claim 2: Tesla connects that risk to specific factory capacity changes not retrieved
+
+$$
+\text{ContextRecall}=\frac{1}{2}=0.50
+$$
+
+---
+
+## Context Precision
+
+Context precision asks whether useful chunks appear early in the ranked retrieval list.
+
+For retrieved chunks ranked $1 \ldots K$:
+
+$$
+P@k=\frac{\text{relevant chunks in top }k}{k}
+$$
+
+Average precision over relevant chunks:
+
+$$
+\text{ContextPrecision@K}
+=
+\frac{1}{R}
+\sum_{k=1}^{K} P@k \cdot rel_k
+$$
+
+where $rel_k=1$ if chunk $k$ is relevant.
+
+This catches the "right evidence buried under noise" problem.
+
+---
+
+## Answer Correctness
+
+Answer correctness compares the generated response with a reference answer.
+
+Ragas combines two ideas:
+
+- **factual similarity**: claim overlap between response and reference
+- **semantic similarity**: embedding similarity between response and reference
+
+For factual overlap:
+
+$$
+\text{Precision}=\frac{TP}{TP+FP}, \quad
+\text{Recall}=\frac{TP}{TP+FN}
+$$
+
+$$
+F_1=\frac{2PR}{P+R}
+$$
+
+In a finance workflow, this becomes useful when a gold evidence summary exists, such as an analyst-approved answer or a curated evaluation set.
+
+---
+
+## Noise Sensitivity
+
+Noise sensitivity asks whether the system is distracted by retrieved content that is related but not actually useful.
+
+$$
+\text{NoiseSensitivity}
+=
+\frac{\text{incorrect claims in response}}{\text{total claims in response}}
+$$
+
+Lower is better.
+
+Example:
+
+- context includes a correct Autopilot regulatory-risk passage and an unrelated energy-storage paragraph
+- answer incorrectly says Autopilot regulation caused energy-storage revenue growth
+- the error is not simply low relevance; it is sensitivity to distracting context
+
+This metric is valuable when comparing baseline RAG with reranking, query decomposition, and reflection.
+
+---
+
+## Sample RAGAS Dataset
+
+RAGAS expects one row per question.
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+from ragas import EvaluationDataset
+
+eval_rows = [{
+    "user_input": "How did Tesla describe battery technology, battery costs, or battery supply across the filings?",
+    "response": rag_answer,
+    "retrieved_contexts": [doc.page_content for doc in retrieved_docs],
+    "reference": (
+        "A strong answer compares multiple years and cites evidence about "
+        "battery technology, battery cost, supply constraints, production "
+        "scale, and energy storage or vehicle battery strategy."
+    ),
+}]
+
+eval_dataset = EvaluationDataset.from_list(eval_rows)
+```
+
+Without `reference`, start with faithfulness, answer relevancy, and context utilization.
+
+---
+
+## Running RAGAS Metrics
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+from ragas import evaluate
+from ragas.metrics import (
+    Faithfulness,
+    ResponseRelevancy,
+    LLMContextPrecisionWithReference,
+    LLMContextRecall,
+    FactualCorrectness,
+    NoiseSensitivity,
+)
+
+scores = evaluate(
+    dataset=eval_dataset,
+    metrics=[
+        Faithfulness(),
+        ResponseRelevancy(),
+        LLMContextPrecisionWithReference(),
+        LLMContextRecall(),
+        FactualCorrectness(),
+        NoiseSensitivity(),
+    ],
+    llm=evaluator_llm,
+    embeddings=evaluator_embeddings,
+)
+
+scores.to_pandas()
+```
+
+---
+
+## Comparing RAG Variants
+
+RAG systems improve by changing one design choice at a time, then measuring the effect on evidence quality, answer quality, and latency.
+
+| Variant | System change | Expected effect |
+|---|---|---|
+| Baseline RAG | retrieve top chunks, then answer | clear evidence path and a simple quality floor |
+| Reranked RAG | reorder candidate chunks before generation | stronger context precision when similarity search returns noisy passages |
+| Query decomposition | split a complex question into focused subqueries | better coverage for multi-year or multi-part questions |
+| Tool-style RAG | route retrieval through explicit search tools | clearer control over all-year, single-year, early-year, and recent-year evidence |
+| Reflective RAG | review and revise the first answer | fewer unsupported claims, with added latency |
+| Embedding comparison | hold the corpus fixed and change embeddings | different tradeoffs among coverage, ranking quality, and speed |
+
+The best design depends on the failure mode: missed evidence, noisy ranking, unsupported synthesis, or excessive latency.
+
+---
+
+## Experiment Harness for Model Variants
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+TESLA_EVAL_QUESTIONS = [
+    {
+        "qid": "q1_battery_technology",
+        "user_input": "How did Tesla describe battery technology, battery costs, or battery supply across the filings?",
+        "reference": (
+            "A strong answer compares multiple years and cites evidence about "
+            "battery technology, battery cost, supply constraints, production "
+            "scale, and energy storage or vehicle battery strategy."
+        ),
+        "reference_keywords": ["battery", "cost", "supply", "technology", "production"],
+    },
+    {
+        "qid": "q2_manufacturing_capacity",
+        "user_input": "How did Tesla's manufacturing capacity and production ramp risks evolve from 2015 through 2025?",
+        "reference": (
+            "A strong answer discusses production ramp, manufacturing capacity, "
+            "factories, scaling risk, delivery volume, and operational execution."
+        ),
+        "reference_keywords": ["manufacturing", "production", "capacity", "factory", "ramp"],
+    },
+]
+
+rag_variants = {
+    "baseline": baseline_rag,
+    "reranker": reranker_rag,
+    "query_decomp": query_decomposer_rag,
+    "react": react_rag,
+    "reflection": reflection_rag,
+}
+
+rows = []
+for name, chain in rag_variants.items():
+    for item in TESLA_EVAL_QUESTIONS:
+        result = chain.invoke({"input": item["user_input"]})
+        rows.append({
+            "variant": name,
+            "qid": item["qid"],
+            "user_input": item["user_input"],
+            "response": result["answer"],
+            "retrieved_contexts": [d.page_content for d in result["context"]],
+            "retrieved_chunk_ids": [d.metadata["chunk_id"] for d in result["context"]],
+            "retrieved_years": [d.metadata["filing_year"] for d in result["context"]],
+            "reference": item["reference"],
+            "latency_ms": result.get("latency_ms"),
+        })
+
+variant_eval_df = pd.DataFrame(rows)
+```
+
+The evaluation table preserves the answer, retrieved evidence, source years, references, and latency for each variant.
+
+---
+
+## Hugging Face Embedding Comparison
+
+The embedding comparison keeps the Tesla corpus, questions, generator, and metrics fixed while changing only the embedding model.
+
+```{python}
+#| echo: true 
+#| eval: true
+#| output-location: column
+HF_EMBEDDING_OPTIONS = {
+    "minilm_l6": "sentence-transformers/all-MiniLM-L6-v2",
+    "mpnet_base": "sentence-transformers/all-mpnet-base-v2",
+    "bge_small": "BAAI/bge-small-en-v1.5",
+    "bge_base": "BAAI/bge-base-en-v1.5",
+}
+
+comparison_rows = []
+for option_name, model_name in HF_EMBEDDING_OPTIONS.items():
+    vector_store = build_vector_store(model_name)
+    retriever = vector_store.as_retriever(
+        search_type="mmr",
+        search_kwargs={"k": 8, "fetch_k": 32},
+    )
+    for item in TESLA_EVAL_QUESTIONS:
+        docs_for_q = retriever.invoke(item["user_input"])
+        comparison_rows.append({
+            "option": option_name,
+            "qid": item["qid"],
+            "retrieved_chunk_ids": [d.metadata["chunk_id"] for d in docs_for_q],
+            "retrieved_years": [d.metadata["filing_year"] for d in docs_for_q],
+            "retrieved_contexts": [d.page_content for d in docs_for_q],
+            "reference": item["reference"],
+        })
+
+comparison_df = pd.DataFrame(comparison_rows)
+```
+
+`retrieved_chunk_ids` and `retrieved_years` make retrieval differences visible before the generated answers are scored.
+
+---
+
+## Interpreting the Evaluation Table
+
+| Pattern | Likely diagnosis | Fix |
+|---|---|---|
+| low context recall | missing evidence | increase $k$, improve chunking, rewrite query |
+| low context precision | noisy ranking | add reranker or metadata filters |
+| low faithfulness | unsupported generation | stricter prompt, citations, lower temperature |
+| low answer relevance | off-target synthesis | rewrite prompt or decompose query |
+| low answer correctness | mismatches reference | improve retrieval coverage or final synthesis |
+| high noise sensitivity | distracted by nearby context | rerank, filter, reduce $k$, compress context |
+| high quality, high latency | costly pipeline | cache, reduce context, simplify chain |
+
+RAGAS-style scores are triage signals. They identify rows that need closer inspection, especially when the answer makes financial claims.
+
+---
+
+## Evaluation Loop
+
+A production RAG workflow improves through repeated measurement:
+
+1. build a small, representative question set
+2. run each RAG variant against the same questions
+3. store responses, retrieved contexts, references, latency, and cost
+4. score retrieval and generation separately
+5. inspect the worst rows before changing the system
+
+Across RAG evaluation implementations, the durable artifact is the evaluation table itself: each row preserves the question, generated response, retrieved evidence, optional reference answer, metric scores, latency, and cost.
+
+---
+
 ## LLM-as-a-Judge Loop
 
 ```{python}
-#| eval: false
+#| echo: true 
+#| eval: true
+#| output-location: column
 judge_prompt = """
 Rate the answer from 1-5 for groundedness and relevance.
 Question: {q}
@@ -188,7 +808,7 @@ Return JSON.
 """
 ```
 
-Use sampled human checks to calibrate the judge and detect drift.
+Sampled human checks calibrate the judge and help detect drift.
 
 ---
 
@@ -197,7 +817,7 @@ Use sampled human checks to calibrate the judge and detect drift.
 - retrieval miss: right info absent
 - retrieval noise: irrelevant chunk dominates
 - synthesis failure: answer conflicts with evidence
-- abstention failure: should have said "insufficient context"
+- abstention failure: answer needed an "insufficient context" response
 
 Each error type implies a different fix path.
 
@@ -206,7 +826,9 @@ Each error type implies a different fix path.
 ## Serving with LangServe + FastAPI
 
 ```{python}
-#| eval: false
+#| echo: true 
+#| eval: true
+#| output-location: column
 from fastapi import FastAPI
 from langserve import add_routes
 
@@ -214,7 +836,7 @@ app = FastAPI(title="AD698-RAG")
 add_routes(app, chain, path="/rag")
 ```
 
-API-first design helps notebook prototypes become reusable services.
+The same chain can be exposed behind an endpoint while preserving the retrieval trace and response contract.
 
 ---
 
@@ -235,26 +857,6 @@ API-first design helps notebook prototypes become reusable services.
 - secret management for model keys
 - PII-safe logging and retention policy
 
-# Assignment 4 Alignment
-
-## What You Should Reuse
-
-For `M05_A.qmd`, your pipeline should include:
-
-- retrieval module with explicit chunking strategy
-- generation prompt template with source-aware instructions
-- evaluation table comparing Prompt-only vs RAG vs Pretraining-only
-- short failure analysis with at least two error categories
-
----
-
-## Suggested Milestones
-
-1. Baseline prompt-only system
-2. Add RAG with FAISS retriever
-3. Build evaluation matrix and analyze failure cases
-4. Package a reproducible notebook/script
-
 # Wrap-Up
 
 ## Key Takeaways
@@ -262,6 +864,6 @@ For `M05_A.qmd`, your pipeline should include:
 - Retrieval quality gates generation quality
 - Evaluation must cover quality and operations
 - Production RAG requires traceability, not just fluency
-- Assignment 4 should demonstrate comparative reasoning, not only code
+- RAGAS-style metrics separate evidence retrieval from answer generation
 
-
+---

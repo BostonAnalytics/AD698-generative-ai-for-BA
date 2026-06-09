@@ -47,13 +47,18 @@ import pandas as pd
 
 eval_set = pd.DataFrame([
     {
-        "question": "How does Company A describe supply chain risk?",
-        "reference": "Answer should cite filing evidence from the relevant risk section.",
+        "question": "What does the filing say about liquidity or capital resources?",
+        "reference": "Answer should cite Item 7 or another management discussion passage when available.",
         "topic": "risk",
     },
     {
-        "question": "What does Company B emphasize in management discussion about growth?",
-        "reference": "Answer should ground claims in Item 7 language.",
+        "question": "What evidence supports or weakens the claim that the company is investing in AI?",
+        "reference": "Answer should identify the exact retrieved passage and distinguish direct evidence from inference.",
+        "topic": "ai_investment",
+    },
+    {
+        "question": "What risk would a business analyst flag for follow-up?",
+        "reference": "Answer should name the risk, cite the filing evidence, and explain why the evidence is decision-relevant.",
         "topic": "md&a",
     },
 ])
@@ -61,35 +66,55 @@ eval_set = pd.DataFrame([
 print(eval_set)
 ```
 
-## Step 2: Build a simple scoring function
+## Step 2: Use a RAGAS-ready row shape
+
+RAG evaluation works best when each row preserves the user question, the generated answer, the ranked retrieved contexts, and an optional reference answer. This mirrors the current Ragas data model and also works for manual review.
+
+```python
+def make_eval_row(question: str, answer: str, retrieved_docs, reference: str, topic: str) -> dict:
+    return {
+        "user_input": question,
+        "response": answer,
+        "retrieved_contexts": [doc.page_content for doc in retrieved_docs],
+        "retrieved_chunk_ids": [doc.metadata.get("chunk_id") for doc in retrieved_docs],
+        "reference": reference,
+        "topic": topic,
+    }
+```
+
+## Step 3: Build simple local scoring hooks
+
+The local scoring functions below are intentionally lightweight. They are not replacements for RAGAS, but they make the evaluation mechanics visible before using an LLM judge.
 
 ```python
 def overlap_relevance(answer: str, reference: str) -> float:
     a = set(answer.lower().split())
     r = set(reference.lower().split())
     return len(a.intersection(r)) / max(1, len(r))
+
+def citation_presence(answer: str) -> int:
+    lower = answer.lower()
+    return int("item" in lower or "chunk" in lower or "according to" in lower)
 ```
 
-## Step 3: Evaluate the RAG Chain
+## Step 4: Evaluate the RAG Chain
 
 ```python
-def evaluate_rag(ask_fn, dataset: pd.DataFrame) -> pd.DataFrame:
+def evaluate_rag(ask_fn, retrieve_fn, dataset: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for _, row in dataset.iterrows():
         q = row["question"]
         ref = row["reference"]
-        ans = ask_fn(q)
-        rows.append({
-            "question": q,
-            "topic": row["topic"],
-            "reference": ref,
-            "answer": ans,
-            "relevance": overlap_relevance(ans, ref),
-        })
+        retrieved_docs = retrieve_fn(q)
+        ans = ask_fn(q, retrieved_docs)
+        eval_row = make_eval_row(q, ans, retrieved_docs, ref, row["topic"])
+        eval_row["reference_overlap"] = overlap_relevance(ans, ref)
+        eval_row["has_citation_signal"] = citation_presence(ans)
+        rows.append(eval_row)
     return pd.DataFrame(rows)
 ```
 
-## Step 4: Log failure cases
+## Step 5: Log failure cases
 
 ```python
 def tag_failure(answer: str) -> str:
@@ -98,12 +123,12 @@ def tag_failure(answer: str) -> str:
         return "abstained"
     if len(answer.strip()) < 30:
         return "under_answered"
-    if "according to" not in lower and "item" not in lower:
+    if "according to" not in lower and "item" not in lower and "chunk" not in lower:
         return "weak_grounding"
     return "needs_review"
 ```
 
-## Step 5: Add a retrieval audit table
+## Step 6: Add a retrieval audit table
 
 ```python
 def build_retrieval_audit(question: str, retrieved_docs) -> pd.DataFrame:
@@ -115,16 +140,62 @@ def build_retrieval_audit(question: str, retrieved_docs) -> pd.DataFrame:
             "ticker": doc.metadata.get("ticker"),
             "year": doc.metadata.get("year"),
             "item": doc.metadata.get("item"),
+            "chunk_id": doc.metadata.get("chunk_id"),
+            "source_file": doc.metadata.get("source_file"),
             "preview": doc.page_content[:180],
         })
     return pd.DataFrame(rows)
 ```
 
-## Step 6: Save outputs for the lab and assignment
+If you are using the Apple companion examples from `help-code/4-nlp-finance`, keep the same audit columns. Set `ticker="AAPL"` and `year=2025` so the Apple walkthrough has the same shape as the Assignment 1 rival-company corpus.
+
+## Step 7: Optional RAGAS evaluation
 
 ```python
-# results = evaluate_rag(ask_rag, eval_set)
-# results["failure_tag"] = results["answer"].apply(tag_failure)
+# from ragas import EvaluationDataset, evaluate
+# from ragas.metrics import (
+#     Faithfulness,
+#     ResponseRelevancy,
+#     LLMContextPrecisionWithReference,
+#     LLMContextRecall,
+#     FactualCorrectness,
+# )
+#
+# ragas_dataset = EvaluationDataset.from_list(
+#     results[["user_input", "response", "retrieved_contexts", "reference"]].to_dict("records")
+# )
+#
+# ragas_scores = evaluate(
+#     dataset=ragas_dataset,
+#     metrics=[
+#         Faithfulness(),
+#         ResponseRelevancy(),
+#         LLMContextPrecisionWithReference(),
+#         LLMContextRecall(),
+#         FactualCorrectness(),
+#     ],
+#     llm=evaluator_llm,
+#     embeddings=evaluator_embeddings,
+# )
+#
+# ragas_scores.to_pandas()
+```
+
+Use the RAGAS scores as diagnostic signals:
+
+| Low score | Interpretation |
+|---|---|
+| context recall | the retriever missed needed evidence |
+| context precision | useful evidence was buried under noise |
+| faithfulness | the answer added unsupported claims |
+| answer relevancy | the answer drifted from the question |
+| factual correctness | the answer disagreed with the reference |
+
+## Step 8: Save outputs for the lab and assignment
+
+```python
+# results = evaluate_rag(ask_rag, retrieve_docs, eval_set)
+# results["failure_tag"] = results["response"].apply(tag_failure)
 # results.to_csv("/content/drive/MyDrive/assignment04/tutorial_eval_results.csv", index=False)
 ```
 
@@ -148,11 +219,10 @@ Reuse these artifacts directly in:
 
 If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+![ChatGPT shared conversation link interface](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center" fig-alt="ChatGPT shared conversation link interface" #fig-t2-chatgpt-share}
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+![Gemini shared conversation link interface](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center" fig-alt="Gemini shared conversation link interface" #fig-t2-gemini-share}
 
 When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
 
 Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-

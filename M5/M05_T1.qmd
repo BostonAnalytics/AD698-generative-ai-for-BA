@@ -32,7 +32,8 @@ Build a minimum viable RAG pipeline over **course-aligned text data** so you can
 Use one of these sources:
 
 - your saved `assignment01/chunks.csv`
-- a small SEC text corpus in `data/SEC-10K-2024`
+- the course SEC starter corpus in `data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv`
+- the Apple finance examples in `help-code/4-nlp-finance/data/`
 - a curated text set in `data/corpora`
 
 ## How This Tutorial Connects
@@ -58,12 +59,36 @@ from pathlib import Path
 import pandas as pd
 
 chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+course_chunks_path = Path("data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv")
+apple_excerpt_path = Path("help-code/4-nlp-finance/data/apple_2025_10k_excerpt.txt")
 
 if chunks_path.exists():
     chunks_df = pd.read_csv(chunks_path)
-    print(chunks_df.head())
+    text_col = "chunk_text"
+    print("Loaded your Assignment 1 chunks")
+elif course_chunks_path.exists():
+    chunks_df = pd.read_csv(course_chunks_path)
+    text_col = "chunk_text"
+    chunks_df = chunks_df.rename(columns={"filing_year": "year", "section_name": "item"})
+    chunks_df["ticker"] = chunks_df.get("ticker", "COURSE_SEC")
+    print("Loaded course SEC starter chunks")
+elif apple_excerpt_path.exists():
+    apple_text = apple_excerpt_path.read_text(encoding="utf-8")
+    chunks_df = pd.DataFrame(
+        {
+            "chunk_id": ["apple_2025_10k_excerpt"],
+            "ticker": ["AAPL"],
+            "year": [2025],
+            "item": ["10-K excerpt"],
+            "chunk_text": [apple_text],
+        }
+    )
+    text_col = "chunk_text"
+    print("Loaded Apple 2025 10-K companion excerpt")
 else:
-    print("Fallback: load a small text corpus from data/corpora or SEC files.")
+    raise FileNotFoundError("Provide assignment01/chunks.csv, the course SEC starter CSV, or the Apple companion excerpt.")
+
+chunks_df[[c for c in ["chunk_id", "ticker", "year", "item", text_col] if c in chunks_df.columns]].head()
 ```
 
 ## Step 2: Build document objects
@@ -73,12 +98,14 @@ from langchain_core.documents import Document
 
 docs = [
     Document(
-        page_content=row["chunk_text"],
+        page_content=row[text_col],
         metadata={
             "ticker": row.get("ticker"),
             "year": row.get("year"),
             "item": row.get("item"),
             "chunk_id": row.get("chunk_id"),
+            "source_file": row.get("file_name"),
+            "retrieval_unit": row.get("retrieval_unit"),
         },
     )
     for _, row in chunks_df.head(500).iterrows()
@@ -91,11 +118,13 @@ print("Documents prepared:", len(docs))
 
 ```python
 from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
-# Replace with your provider or sentence-transformer embedding model.
-# vectorstore = FAISS.from_documents(docs, embed_model)
+embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vectorstore = FAISS.from_documents(docs, embed_model)
+retriever = vectorstore.as_retriever(search_kwargs={"k": 5})
 
-print("Create a FAISS vectorstore from SEC chunk documents.")
+print("FAISS vectors:", vectorstore.index.ntotal)
 ```
 
 ## Step 4: Retriever Interface
@@ -103,7 +132,11 @@ print("Create a FAISS vectorstore from SEC chunk documents.")
 ```python
 def format_docs(retrieved_docs):
     return "\n\n".join(
-        f"[{d.metadata.get('ticker')} {d.metadata.get('year')} Item {d.metadata.get('item')}]\n{d.page_content}"
+        (
+            f"[{d.metadata.get('ticker')} {d.metadata.get('year')} "
+            f"{d.metadata.get('item')} | {d.metadata.get('chunk_id')}]\n"
+            f"{d.page_content}"
+        )
         for d in retrieved_docs
     )
 ```
@@ -132,11 +165,13 @@ print("Wire your chosen chat model to this prompt.")
 
 ```python
 def ask_rag(question: str) -> str:
-    # retrieved = retriever.get_relevant_documents(question)
-    # context = format_docs(retrieved)
+    retrieved = retriever.invoke(question)
+    context = format_docs(retrieved)
     # return chain.invoke({"question": question, "context": context})
-    return "TODO: implement with your retriever and model"
+    return context
 ```
+
+In this tutorial, returning the formatted context is enough to validate retrieval before you connect a chat model. Once retrieval looks reasonable, wire your provider model to the prompt and return the generated answer.
 
 ## Suggested Practice Queries
 
@@ -168,12 +203,10 @@ Export one notebook or script with:
 
 If generative AI materially supports your work for this tutorial, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+![ChatGPT shared conversation link interface](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center" fig-alt="ChatGPT shared conversation link interface" #fig-t1-chatgpt-share}
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+![Gemini shared conversation link interface](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center" fig-alt="Gemini shared conversation link interface" #fig-t1-gemini-share}
 
 When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
 
 Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
-

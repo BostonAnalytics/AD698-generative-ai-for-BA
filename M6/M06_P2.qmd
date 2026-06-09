@@ -122,6 +122,43 @@ description: "Introduces Building Agentic AI through presentation-ready concepts
 
 ---
 
+## Reference Architecture
+
+```{mermaid}
+flowchart LR
+  U["User goal"] --> C["Context loader"]
+  C --> P["Planner"]
+  P --> S["Skill router"]
+  S --> T["Tools and MCP servers"]
+  T --> D["SEC data, vector store, APIs"]
+  D --> R["Retriever"]
+  R --> A["Analyst"]
+  A --> E["Evaluator / critic"]
+  E -->|revise| P
+  E -->|approve| O["Answer + audit artifact"]
+```
+
+---
+
+## The Agent Stack
+
+![Agent skills, MCP servers, subagents, hooks, tools, and project context as an integrated agent stack.](M06_lecture02_figures/agent_skills_architecture.jpg){width=80% fig-align=center}
+
+---
+
+## What the Stack Means
+
+| Layer | Role in the Financial Agent |
+|---|---|
+| Project context | course files, rubric, data schema, domain notes |
+| Skills | reusable SEC comparison procedures |
+| Tools | filing download, parsing, retrieval, export |
+| MCP servers | standardized access to files, databases, APIs |
+| Subagents | planner, researcher, analyst, critic |
+| Hooks | logging, validation, citation checks |
+
+---
+
 ## The Role of OpenAI, Hugging Face, and LangChain
 
 - Each part of the stack serves a different purpose.
@@ -152,6 +189,39 @@ description: "Introduces Building Agentic AI through presentation-ready concepts
   - memory,
   - stateful workflows,
   - and multi-step execution.
+
+---
+
+## Generalized Assistant Ecosystem Ladder
+
+![A product-specific capability ladder generalized into chat, models, connectors, workspace context, skills, and agentic execution.](M06_lecture02_figures/agent_capability_ladder.jpg){width=65% fig-align=center}
+
+---
+
+## From Chat to Agentic Execution
+
+| Level | General Capability | Business Analytics Example |
+|---|---|---|
+| Chat | ask and read | summarize one filing section |
+| Model/runtime access | stronger model and longer context | analyze longer disclosures |
+| Connectors | external data access | read spreadsheets or filing stores |
+| Workspace context | local project files | update a course project folder |
+| Context files | durable rules and style | follow an audit format |
+| Skills | reusable workflows | compare Item 1A risks |
+| Agentic execution | planning and tool use over time | collect filings, extract evidence, report back |
+
+---
+
+## Key Distinction
+
+- Connectors and MCP servers do **not** automatically create agency.
+- They make context and tools available.
+- Agency appears when a controller:
+  - selects actions,
+  - observes results,
+  - revises plans,
+  - handles failure,
+  - and decides when to stop.
 
 ---
 
@@ -415,6 +485,80 @@ def download_sec_filing(ticker: str, year: int) -> str:
 
 ---
 
+## MCP as an Interface Layer
+
+```{mermaid}
+flowchart LR
+  A["Agent controller"] --> D["MCP client"]
+  D --> S1["MCP server: files"]
+  D --> S2["MCP server: database"]
+  D --> S3["MCP server: SEC filings"]
+  S1 --> R1["resources"]
+  S2 --> R2["tools"]
+  S3 --> R3["tools + evidence"]
+```
+
+---
+
+## MCP vs Agentic AI
+
+| Question | MCP Server | Agentic AI System |
+|---|---|---|
+| What is it? | standardized connector | decision-making runtime |
+| What does it expose? | tools, resources, data | goals, plans, actions, memory |
+| What does it decide? | usually very little | which action to take next |
+| Course example | SEC retrieval server | financial analyst agent |
+
+---
+
+## Mathematical View of Runtime State
+
+$$
+x_t = (g, c_t, m_t, e_t, \tau_t, p_t)
+$$
+
+- \(g\): user goal
+- \(c_t\): current context
+- \(m_t\): memory or retrieved knowledge
+- \(e_t\): external environment state
+- \(\tau_t\): execution trace
+- \(p_t\): policy and permissions
+
+---
+
+## Agent Action Space
+
+$$
+\mathcal{A} =
+\{\text{retrieve}, \text{call\_tool}, \text{delegate}, \text{write}, \text{critique}, \text{ask\_human}, \text{stop}\}
+$$
+
+$$
+a_t \sim \pi(a \mid x_t)
+$$
+
+- The agent is a policy over possible next actions.
+- Good design narrows the feasible action set.
+
+---
+
+## Utility Under Constraints
+
+$$
+U(y, \tau) = Q(y) - \lambda_c C(\tau) - \lambda_l L(\tau) - \lambda_r R(y, \tau)
+$$
+
+- \(Q(y)\): answer quality
+- \(C(\tau)\): cost
+- \(L(\tau)\): latency
+- \(R(y,\tau)\): risk
+
+$$
+\Pr(\text{unsafe tool call}) \leq \epsilon
+$$
+
+---
+
 ## Stage 7: Planning Pattern
 
 * Planning is what turns a user goal into a sequence of actionable steps.
@@ -574,6 +718,41 @@ class MasterFinancialAgent:
 
 ---
 
+## Evaluation and Audit Artifact
+
+* The final run should produce both an answer and an audit record.
+* At minimum, capture:
+  * original question,
+  * plan or role sequence,
+  * tool calls,
+  * retrieved evidence,
+  * reviewer findings,
+  * final answer,
+  * and unresolved limitations.
+
+```json
+{
+  "tools_called": ["fetch_sec_filing", "extract_item", "retrieve_chunks"],
+  "evidence_chunks": 18,
+  "unsupported_claims": 0,
+  "limitations": ["Only latest annual filings were used."]
+}
+```
+
+---
+
+## Evaluation Criteria
+
+| Criterion | Question |
+|---|---|
+| Faithfulness | Are claims supported by retrieved evidence? |
+| Coverage | Did we inspect all required firms and sections? |
+| Specificity | Does the answer distinguish concrete disclosure from boilerplate? |
+| Tool correctness | Were tools called with valid arguments? |
+| Safety | Did the system avoid unsupported investment advice? |
+
+---
+
 ## Key Design Principle
 
 * The most important design principle in this system is simple:
@@ -591,7 +770,86 @@ class MasterFinancialAgent:
 
 ---
 
-# #Final Takeaway
+## Harness Engineering
+
+* A **harness** is the engineered environment around the model.
+* It turns raw model capability into reliable work through:
+  * context loading,
+  * tools and MCP servers,
+  * skills,
+  * sandboxes,
+  * hooks,
+  * observability,
+  * evaluators,
+  * and recovery rules.
+
+$$
+\text{Agentic System} = \text{Model} + \text{Harness} + \text{Task Environment}
+$$
+
+---
+
+## Harness Components
+
+| Component | Purpose | SEC Agent Example |
+|---|---|---|
+| Context map | authoritative knowledge | filing schema and rubric |
+| Tools/MCP | bounded action | SEC parser and vector search |
+| Sandbox | limit blast radius | isolated project workspace |
+| Hooks | deterministic checks | require citations before final answer |
+| Evaluator | acceptance criteria | evidence coverage and faithfulness |
+| Handoff artifact | resume long work | compact state file |
+
+---
+
+## Harness as a Policy Modifier
+
+$$
+h = (K, T, S, B, V, L, R)
+$$
+
+- \(K\): context policy
+- \(T\): tool/MCP set
+- \(S\): skill library
+- \(B\): sandbox boundary
+- \(V\): evaluator
+- \(L\): logs and traces
+- \(R\): recovery policy
+
+$$
+\pi_h(a_t \mid x_t)
+$$
+
+---
+
+## Observability-Driven Improvement
+
+```{mermaid}
+flowchart TD
+  F["Observed failure"] --> D["Diagnose harness gap"]
+  D --> P["Patch skill, tool, hook, evaluator, or context map"]
+  P --> T["Run task again"]
+  T --> M["Measure trace and output quality"]
+  M -->|improved| K["Keep rule"]
+  M -->|not improved| D
+```
+
+---
+
+## Harness Engineering for Analytics
+
+| Application | Harness Need |
+|---|---|
+| Financial disclosure analysis | filing cache, evidence retrieval, audit export |
+| HR analytics | privacy boundaries and fairness checks |
+| Marketing intelligence | source freshness and provenance |
+| Operations monitoring | scheduled runs and escalation rules |
+| Compliance review | policy library and immutable trace |
+| Research synthesis | paper metadata and ranking rubric |
+
+---
+
+## Final Takeaway
 
 * A financial agent built on SEC filings is a compelling example of real agentic AI.
 * It works because it combines:
@@ -606,3 +864,4 @@ class MasterFinancialAgent:
 * Together, they turn an SEC downloader into an agentic financial intelligence system.
 
 
+---

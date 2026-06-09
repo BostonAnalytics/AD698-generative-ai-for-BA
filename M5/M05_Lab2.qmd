@@ -34,6 +34,7 @@ Show:
 - the exact questions used
 - outputs from all compared methods
 - one structured evaluation table
+- retrieved context previews or chunk IDs for each RAG answer
 - one failure case per method if possible
 
 ## Questions
@@ -66,14 +67,37 @@ Score each answer on at least three dimensions, such as:
 - grounding
 - specificity
 - usefulness to a business analyst
+- faithfulness to retrieved evidence
+- answer relevancy
 
 Use a compact matrix or rubric table.
 
-### Q4. Analyze One Failure per Method
+### Q4. Add RAGAS-style Diagnostics
+
+For the RAG answers, add columns that make the evaluation row RAGAS-ready:
+
+- `user_input`
+- `response`
+- `retrieved_contexts`
+- `retrieved_chunk_ids`
+- `reference`
+
+Then label the likely metric pattern:
+
+| Pattern | What it means |
+|---|---|
+| low context recall | important evidence was missing |
+| low context precision | retrieved evidence was noisy or poorly ranked |
+| low faithfulness | answer included unsupported claims |
+| low answer relevancy | answer drifted from the question |
+| low answer correctness | answer conflicted with the reference |
+| high noise sensitivity | irrelevant context changed the answer |
+
+### Q5. Analyze One Failure per Method
 
 For each method, identify one failure and explain what caused it.
 
-### Q5. Recommendation
+### Q6. Recommendation
 
 Which method would you trust most for an auditable business workflow, and under what conditions would you switch methods?
 
@@ -82,4 +106,75 @@ Which method would you trust most for an auditable business workflow, and under 
 ```{python}
 #| eval: false
 import pandas as pd
+
+questions = [
+    "What does the filing say about liquidity or capital resources?",
+    "What evidence supports or weakens the claim that the company is investing in AI?",
+    "What risk would a business analyst flag for follow-up?",
+]
+
+comparison_rows = []
+
+for question in questions:
+    comparison_rows.extend(
+        [
+            {
+                "user_input": question,
+                "method": "prompt_only",
+                "response": None,
+                "retrieved_contexts": None,
+                "retrieved_chunk_ids": None,
+                "reference": None,
+            },
+            {
+                "user_input": question,
+                "method": "rag",
+                "response": None,
+                "retrieved_contexts": None,
+                "retrieved_chunk_ids": None,
+                "reference": None,
+            },
+            {
+                "user_input": question,
+                "method": "pretraining_only",
+                "response": None,
+                "retrieved_contexts": None,
+                "retrieved_chunk_ids": None,
+                "reference": None,
+            },
+        ]
+    )
+
+comparison_df = pd.DataFrame(comparison_rows)
+comparison_df
+```
+
+Suggested scoring table:
+
+```{python}
+#| eval: false
+score_df = comparison_df.assign(
+    correctness_1_5=None,
+    grounding_1_5=None,
+    specificity_1_5=None,
+    business_usefulness_1_5=None,
+    faithfulness_1_5=None,
+    answer_relevancy_1_5=None,
+    failure_tag=None,
+    likely_ragas_signal=None,
+)
+
+score_df
+```
+
+Optional RAGAS-ready subset:
+
+```{python}
+#| eval: false
+ragas_ready = score_df.loc[
+    score_df["method"].eq("rag"),
+    ["user_input", "response", "retrieved_contexts", "reference"]
+]
+
+ragas_ready
 ```

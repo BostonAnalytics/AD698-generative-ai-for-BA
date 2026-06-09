@@ -27,6 +27,18 @@ Module 5 shifted generative AI from isolated model behavior to **system architec
 
 This module marks the transition from model-centric thinking to infrastructure-centric thinking.
 
+# Consistency Check Before Submission
+
+Before using your Module 5 work in the assignment or project, confirm that:
+
+* the same corpus source is named throughout the notebook or report
+* each retrieved passage includes company, year, section or item, and chunk ID when available
+* retrieval quality is evaluated separately from answer quality
+* prompt-only, RAG, and pretraining-only answers are compared on the same questions
+* weak or missing evidence triggers abstention rather than unsupported claims
+
+For the classroom walkthrough, the Apple 2025 10-K companion files in `help-code/4-nlp-finance/data/` provide a clean single-company example. For graded work, move the same pattern to your Assignment 1 rival-company corpus.
+
 # Preparing for Module 6
 
 Module 6 explores **adaptation and system optimization**.
@@ -38,4 +50,3 @@ To prepare:
 * Consider cost-performance tradeoffs in enterprise deployments.
 
 Next, we move from retrieval to **efficient model adaptation and semantic analysis at scale**.
-

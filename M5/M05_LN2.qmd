@@ -31,6 +31,8 @@ Retrieving relevant chunks is necessary, but it is not sufficient. A RAG system 
 
 LN1 focused on retrieval design. LN2 shifts to the second half of the problem: generation quality, augmentation strategies, evaluation, and production concerns.
 
+The practitioner literature makes a useful caution explicit: RAG is valuable because it connects a foundation model to external knowledge, but that connection is a production system with its own failure modes. Retrieval can add latency, retrieve stale or low-quality documents, expose access-control risks, or crowd the prompt with distracting context. The right question is not simply whether a workflow uses RAG. The right question is whether retrieval improves answer quality enough to justify the added complexity.
+
 # Generation-Side Design in RAG
 
 Once documents have been retrieved, the next challenge is prompt construction. Passing every retrieved chunk directly to the model often reduces answer quality instead of improving it.
@@ -128,6 +130,8 @@ Adaptive methods are especially relevant to agentic systems, where the model dec
 
 The RAG Hack evaluation slides emphasize a practical truth: users do not care whether your vector search is elegant. They care whether the answer is correct, understandable, grounded, and useful.
 
+For this reason, RAG evaluation is most informative when it includes a baseline foundation-model response. A prompt-only answer is not automatically bad, and a RAG answer is not automatically good. RAG earns its keep when the retrieved evidence improves factuality, specificity, auditability, or business usefulness. In an SEC 10-K workflow, the important comparison is not just between two fluent paragraphs; it is between each answer and the evidence table that produced it.
+
 ## Why Evaluation Is Hard
 
 RAG evaluation is difficult because retrieval quality and answer quality are related but not identical.
@@ -147,6 +151,8 @@ Useful metrics include:
 - normalized discounted cumulative gain (NDCG)
 - precision and recall over relevant chunks
 
+These retrieval metrics are close cousins of classification metrics. They assume that we can identify which chunks are relevant and then ask whether the retriever placed those chunks near the top of the ranked list. That ranking perspective matters because a RAG generator usually sees only the first few chunks, not the full corpus.
+
 ### Generation Quality
 
 This asks whether the final answer is good given the evidence.
@@ -157,6 +163,8 @@ Depending on the task, evaluation may use:
 - ROUGE or BLEU for overlap-based tasks
 - semantic relevance scoring
 - human evaluation of clarity, usefulness, and faithfulness
+
+Overlap metrics such as ROUGE and BLEU can still be useful for constrained summarization or translation tasks. They are much less satisfying for RAG because word overlap does not tell us whether the answer was grounded in the retrieved evidence. In financial analysis, an answer can be lexically close to a reference while still inventing a number, citing the wrong year, or mixing two companies.
 
 ## Three Common Quality Scores
 
@@ -170,7 +178,7 @@ These are more informative than a single task score because they diagnose where 
 
 ## RAGAS-Style Evaluation Language
 
-RAGAS is useful in this course less because students need one specific library, and more because it gives a precise vocabulary for separating retrieval failure from generation failure.
+RAGAS is useful less as a single required library and more as a precise vocabulary for separating retrieval failure from generation failure.
 
 | Evaluation concept | What it asks | Typical evidence needed | Failure it reveals |
 |---|---|---|---|
@@ -179,8 +187,10 @@ RAGAS is useful in this course less because students need one specific library, 
 | Context precision | Are the top retrieved chunks useful, especially near the top? | question + ranked contexts | noisy top-k retrieval |
 | Context recall | Did retrieval find enough evidence to answer completely? | question + ground truth or reference evidence | missing facts or incomplete evidence |
 | Context entity recall | Did retrieval capture the key entities? | expected entities + retrieved context | wrong company, year, item, or entity |
+| Answer correctness | Does the response match a reference answer? | response + reference | fact mismatch or incomplete synthesis |
+| Noise sensitivity | Did distracting context lead to incorrect claims? | response + contexts + reference | overuse of irrelevant retrieved chunks |
 
-The practical classroom workflow is:
+The evaluation flow has a simple structure:
 
 1. create a small test set of representative SEC questions
 2. save the retrieved chunks for each question
@@ -192,10 +202,10 @@ The practical classroom workflow is:
 #| eval: false
 eval_rows = [
     {
-        "question": "How does the company describe inflation risk?",
-        "contexts": [doc.page_content for doc in retrieved_docs],
-        "answer": generated_answer,
-        "ground_truth": "Reference answer or instructor-approved evidence summary",
+        "user_input": "How does the company describe inflation risk?",
+        "retrieved_contexts": [doc.page_content for doc in retrieved_docs],
+        "response": generated_answer,
+        "reference": "Reference answer or instructor-approved evidence summary",
     }
 ]
 
@@ -203,27 +213,72 @@ eval_df = pd.DataFrame(eval_rows)
 eval_df
 ```
 
-If using RAGAS directly, the same table can be converted into the library's expected dataset format and scored with metrics such as faithfulness, answer relevancy, context precision, and context recall. If the library is not available, students can still apply the same rubric manually.
+Current Ragas examples use the same conceptual row structure: `user_input`, `response`, `retrieved_contexts`, and, when available, `reference`. Without a reference answer, faithfulness and answer relevancy can still estimate whether the answer fits the question and is supported by the retrieved context. With a reference answer, context recall, context precision, answer correctness, factual correctness, and noise sensitivity become possible.
 
 ```{python}
 #| eval: false
-from datasets import Dataset
+from ragas import EvaluationDataset
 from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from ragas.metrics import (
+    Faithfulness,
+    ResponseRelevancy,
+    LLMContextPrecisionWithReference,
+    LLMContextRecall,
+    FactualCorrectness,
+    NoiseSensitivity,
+)
 
-ragas_dataset = Dataset.from_pandas(eval_df)
+ragas_dataset = EvaluationDataset.from_list(eval_rows)
 
 ragas_scores = evaluate(
-    ragas_dataset,
-    metrics=[faithfulness, answer_relevancy, context_precision, context_recall],
+    dataset=ragas_dataset,
+    metrics=[
+        Faithfulness(),
+        ResponseRelevancy(),
+        LLMContextPrecisionWithReference(),
+        LLMContextRecall(),
+        FactualCorrectness(),
+        NoiseSensitivity(),
+    ],
+    llm=evaluator_llm,
+    embeddings=evaluator_embeddings,
 )
 
 ragas_scores.to_pandas()
 ```
 
 :::{.callout-note}
-RAGAS-style metrics should not replace human review in financial analysis. Use them as triage signals that tell you which examples deserve closer inspection.
+RAGAS-style metrics do not replace human review in financial analysis. They function as triage signals that identify examples needing closer inspection.
 :::
+
+## RAGAS Metrics in More Detail
+
+Faithfulness treats the generated answer as a set of factual claims. If the answer contains four claims and only three can be inferred from the retrieved context, the faithfulness score is $3/4=0.75$. This makes faithfulness a grounding metric, not a general correctness metric. A faithful answer can still be incomplete or irrelevant.
+
+Answer relevancy asks whether the response actually addresses the user input. Ragas estimates this by generating questions that the answer appears to answer, embedding those generated questions, and comparing them with the original user input. A high score means the answer and question point in the same semantic direction.
+
+Context precision evaluates ranking quality. If the relevant chunk appears first, the generator sees useful evidence immediately. If the same chunk appears fourth behind distracting material, the retrieval result is less useful even though the relevant evidence technically appeared in the top-$k$ set.
+
+Context recall evaluates coverage. It asks whether the retrieved contexts contain enough information to support the reference answer. This matters for SEC analysis because a partial retrieval result can lead to an answer that sounds polished but ignores an important risk factor, segment, or year.
+
+Answer correctness and factual correctness compare the generated response to a reference answer. They are useful when there is an analyst-approved answer, a human-written summary, or a curated gold set. These metrics require careful interpretation because a reference answer may be incomplete or may encode one valid framing among several.
+
+Noise sensitivity is especially useful for comparing RAG variants. A reranker or compressor should reduce the chance that related but irrelevant chunks distract the generator. If a model answers correctly when given clean context but fails when a nearby irrelevant chunk is added, the pipeline is not robust enough for production analytics.
+
+## Reading an Evaluation Table
+
+The value of RAGAS is diagnostic, not ceremonial. A weak score points toward a concrete system change.
+
+| Pattern | Likely cause | Useful next change |
+|---|---|---|
+| low context recall | evidence missing from top-$k$ | increase $k$, improve chunking, add query decomposition |
+| low context precision | noisy ranking | add reranking, metadata filters, or hybrid search |
+| low faithfulness | answer adds unsupported claims | tighten prompt contract, require citations, lower temperature |
+| low answer relevancy | answer drifts from question | rewrite prompt, clarify task, decompose query |
+| low answer correctness | response disagrees with reference | inspect retrieval coverage and synthesis prompt |
+| high noise sensitivity | irrelevant chunks influence the answer | reduce noise through reranking or context compression |
+
+Across RAG evaluation stacks, the stable artifact is the evaluation row: question, response, retrieved evidence, optional reference, metric scores, and operating details. The implementation stack can change, but the evidence-preserving table remains the unit of analysis.
 
 ## Four Abilities Worth Testing
 
@@ -294,7 +349,7 @@ os.environ["LANGSMITH_PROJECT"] = "ad698-m05-rag-evaluation"
 # Inspect the trace for retrieval inputs, retrieved chunks, prompt text, and final answer.
 ```
 
-When writing up results, students should include a compact trace summary rather than screenshots alone:
+A compact trace summary is more informative than screenshots alone:
 
 | Trace field | What to report |
 |---|---|
@@ -369,33 +424,57 @@ The RAG evaluation presentation emphasizes a set of levers that consistently mat
 
 This is useful for class because it moves students away from the idea that "better model" is the only knob.
 
-## NVIDIA Notebook Patterns You Can Reuse
+## Finance Notebook Patterns You Can Reuse
 
-Yes, the notebooks in `Building-RAG-Agents-with-LLMs-NVIDIA` are directly useful for this module. They provide practical, composable patterns that map very cleanly to our AD698 RAG workflow.
+The notebooks in `help-code/4-nlp-finance` are useful bridge material for this module because they connect NLP mechanics to financial filings. The Apple 2025 Form 10-K companion files make the examples concrete before students move to their own rival-company corpus.
 
-The most reusable pieces come from:
+The most reusable pieces are:
 
-- `05_documents.ipynb`: document loading and chunking workflows
-- `06_embeddings.ipynb`: query-vs-document embedding usage
-- `07_vectorstores.ipynb`: FAISS retriever + LCEL composition
-- `08_evaluation.ipynb`: LLM-as-a-judge style evaluation loop
-- `09_langserve.ipynb`: FastAPI + LangServe deployment routes
+- `data/apple_2025_10k_excerpt.txt`: recognizable single-company filing text for a compact walkthrough
+- `data/evaluation/apple_2025_qa.jsonl`: extractive QA examples that can become retrieval test questions
+- `data/evaluation/apple_2025_summarization.jsonl`: source/summary pairs for checking grounded summaries
+- `data/evaluation/apple_2025_keywords_gold.csv`: keyword labels and rationales for relevance discussion
+- `src/finance_nlp_utils.py`: helper functions for loading the Apple evaluation sets
+- `data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv`: larger course SEC starter corpus for retrieval diagnostics
 
-Below are adapted versions of those patterns, rewritten for course use.
+The adapted patterns below connect those files to the Module 5 RAG workflow.
 
 ### Pattern 1: Document Loading and Chunking
 
-Use this to build your retrieval corpus from arXiv or local files.
+This pattern builds a retrieval corpus from the course SEC starter chunks or the Apple companion excerpt.
 
 ```python
-from langchain.document_loaders import ArxivLoader, UnstructuredFileLoader
+from pathlib import Path
+import pandas as pd
+from langchain_core.documents import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# Option A: arXiv paper
-docs = ArxivLoader(query="2404.16130").load()
+course_chunks_path = Path("data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv")
+apple_excerpt_path = Path("help-code/4-nlp-finance/data/apple_2025_10k_excerpt.txt")
 
-# Option B: local PDF
-# docs = UnstructuredFileLoader("./data/my_report.pdf").load()
+if course_chunks_path.exists():
+	chunks_df = pd.read_csv(course_chunks_path).rename(
+		columns={"filing_year": "year", "section_name": "item"}
+	)
+	docs = [
+		Document(
+			page_content=row["chunk_text"],
+			metadata={
+				"chunk_id": row["chunk_id"],
+				"year": row["year"],
+				"item": row["item"],
+				"source_file": row["file_name"],
+			},
+		)
+		for _, row in chunks_df.head(500).iterrows()
+	]
+else:
+	docs = [
+		Document(
+			page_content=apple_excerpt_path.read_text(encoding="utf-8"),
+			metadata={"ticker": "AAPL", "year": 2025, "item": "10-K excerpt"},
+		)
+	]
 
 splitter = RecursiveCharacterTextSplitter(
 	chunk_size=1000,
@@ -410,15 +489,12 @@ print(f"Chunks created: {len(chunks)}")
 Notebook 6 emphasizes that `embed_query` and `embed_documents` serve different roles. Keep that distinction in mind even when the vector store API hides it.
 
 ```python
-from langchain_nvidia_ai_endpoints import NVIDIAEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
-embedder = NVIDIAEmbeddings(
-	model="nvidia/nv-embed-v1",
-	truncate="END"
-)
+embedder = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # Optional explicit usage
-q_vec = embedder.embed_query("How does HNSW improve retrieval?")
+q_vec = embedder.embed_query("What evidence supports AI investment?")
 d_vecs = embedder.embed_documents([c.page_content for c in chunks[:3]])
 ```
 
@@ -435,7 +511,7 @@ retriever = vector_db.as_retriever(
 	search_kwargs={"k": 5}
 )
 
-hits = retriever.invoke("What are the key phases of HNSW search?")
+hits = retriever.invoke("What does the filing say about liquidity or capital resources?")
 print(len(hits), "documents retrieved")
 ```
 
@@ -448,9 +524,9 @@ from operator import itemgetter
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnableAssign
-from langchain_nvidia_ai_endpoints import ChatNVIDIA
 
-llm = ChatNVIDIA(model="meta/llama-3.1-8b-instruct") | StrOutputParser()
+# Connect the selected chat model here.
+# llm = ChatOpenAI(model="gpt-4.1-mini") | StrOutputParser()
 
 prompt = ChatPromptTemplate.from_messages([
 	("system", "Use only the context to answer. If unsure, say you do not know."),
@@ -458,14 +534,18 @@ prompt = ChatPromptTemplate.from_messages([
 ])
 
 def docs_to_str(docs):
-	return "\n\n".join(d.page_content for d in docs)
+	return "\n\n".join(
+		f"[{d.metadata.get('year')} {d.metadata.get('item')} {d.metadata.get('chunk_id')}]\n"
+		f"{d.page_content}"
+		for d in docs
+	)
 
 context_getter = itemgetter("input") | retriever | docs_to_str
 retrieval_chain = {"input": lambda x: x} | RunnableAssign({"context": context_getter})
-generator_chain = prompt | llm
+# generator_chain = prompt | llm
 
-rag_chain = retrieval_chain | generator_chain
-print(rag_chain.invoke("Compare naive RAG and modular RAG."))
+retrieval_inputs = retrieval_chain.invoke("What evidence supports AI investment?")
+print(retrieval_inputs["context"][:500])
 ```
 
 ### Pattern 5: Lightweight LLM-as-a-Judge Evaluation
@@ -482,9 +562,9 @@ judge = judge_prompt | llm
 
 dataset = [
 	{
-		"q": "What is efSearch in HNSW?",
-		"ref": "efSearch controls search breadth at query time.",
-		"cand": rag_chain.invoke("What is efSearch in HNSW?")
+		"q": "What evidence supports AI investment?",
+		"ref": "A strong answer cites retrieved filing text and separates direct evidence from inference.",
+		"cand": "Candidate answer from your RAG chain."
 	}
 ]
 
@@ -507,8 +587,9 @@ from langserve import add_routes
 app = FastAPI(title="AD698 RAG Service")
 
 add_routes(app, retriever, path="/retriever")
-add_routes(app, generator_chain, path="/generator")
-add_routes(app, llm, path="/basic_chat")
+# After connecting the selected chat model:
+# add_routes(app, generator_chain, path="/generator")
+# add_routes(app, llm, path="/basic_chat")
 
 # uvicorn server_app:app --host 0.0.0.0 --port 9012
 ```
@@ -517,7 +598,7 @@ add_routes(app, llm, path="/basic_chat")
 
 To align these notebook patterns with this course repository:
 
-- use `./data/SEC-10K-2024*` and your assignment chunk files as ingestion sources
+- use `data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv`, the Apple companion files, and your assignment chunk files as ingestion sources
 - keep artifact outputs in module-specific artifact folders
 - prefer retrieval + reranking + concise prompting before model fine-tuning
 - evaluate retrieval and generation separately in grading rubrics
@@ -542,7 +623,7 @@ Long context helps, but RAG still offers:
 - lower cost than stuffing everything into the prompt
 - cleaner access control over what the model may use
 
-Long context and RAG should be seen as complements, not opposites.
+Long context and RAG work best as complements, not opposites.
 
 ## Robustness
 
@@ -564,7 +645,7 @@ Scaling laws are well studied for LLMs, but less settled for retrieval-augmented
 
 ## Production-Ready RAG
 
-Production deployment raises concerns that classroom demos often ignore:
+Production deployment raises concerns that small demos often hide:
 
 - retrieval latency
 - index freshness
@@ -595,4 +676,3 @@ That expansion matters for business analytics because enterprise knowledge is al
 - The field is moving toward hybrid, modular, and multimodal systems.
 
 Together, LN1 and LN2 provide a complete Module 5 note set: foundations and retrieval first, then generation, evaluation, and production concerns.
-

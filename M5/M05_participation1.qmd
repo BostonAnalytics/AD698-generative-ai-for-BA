@@ -26,7 +26,7 @@ description: "Connects students' external learning plan to AWS Academy, Foundati
   - Go to your BU email inbox, open the email from AWS Academy, and click on the verification link.
   - After verifying your email, return to the AWS Academy settings page and refresh it. The :warning: icon should now be replaced with a green check mark, indicating that your email has been successfully verified.
 
-![Activating Email address](../M0/M0_lecture01_figures/awsacademy.settings.emails.png){width="90%" fig-align="center"}
+![Activating the AWS Academy email address](../M0/M0_lecture01_figures/awsacademy.settings.emails.png){width="90%" fig-align="center" fig-alt="Activating the AWS Academy email address" #fig-participation1-aws-email-activation}
 
 
 ## Learning Outcomes {.unnumbered}
@@ -77,7 +77,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.01.jpeg){width="90%" fig-align="center"}
+![AWS Academy course welcome and overview module](../M0/M0_lecture01_figures/awsacademy.genai.01.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy course welcome and overview module" #fig-participation1-aws-module-01}
 :::
 :::
 
@@ -97,7 +97,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.02.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 1 welcome to Generative AI Foundations](../M0/M0_lecture01_figures/awsacademy.genai.02.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 1 welcome to Generative AI Foundations" #fig-participation1-aws-module-02}
 :::
 :::
 
@@ -121,7 +121,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.03.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 2 introducing AI](../M0/M0_lecture01_figures/awsacademy.genai.03.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 2 introducing AI" #fig-participation1-aws-module-03}
 :::
 :::
 
@@ -145,7 +145,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.04.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 3 introducing generative AI](../M0/M0_lecture01_figures/awsacademy.genai.04.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 3 introducing generative AI" #fig-participation1-aws-module-04}
 :::
 :::
 
@@ -169,7 +169,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.05.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 4 using prompts and prompt engineering](../M0/M0_lecture01_figures/awsacademy.genai.05.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 4 using prompts and prompt engineering" #fig-participation1-aws-module-05}
 :::
 :::
 
@@ -193,7 +193,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.06.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 5 working with foundation models](../M0/M0_lecture01_figures/awsacademy.genai.06.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 5 working with foundation models" #fig-participation1-aws-module-06}
 :::
 :::
 
@@ -216,7 +216,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.07.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 6 practicing generative AI responsibly](../M0/M0_lecture01_figures/awsacademy.genai.07.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 6 practicing generative AI responsibly" #fig-participation1-aws-module-07}
 :::
 :::
 
@@ -240,7 +240,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.08.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 7 security governance and compliance](../M0/M0_lecture01_figures/awsacademy.genai.08.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 7 security governance and compliance" #fig-participation1-aws-module-08}
 :::
 :::
 
@@ -262,7 +262,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.09.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 8 implementing generative AI applications](../M0/M0_lecture01_figures/awsacademy.genai.09.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 8 implementing generative AI applications" #fig-participation1-aws-module-09}
 :::
 :::
 
@@ -281,7 +281,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.10.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 9 bridging to certification](../M0/M0_lecture01_figures/awsacademy.genai.10.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 9 bridging to certification" #fig-participation1-aws-module-10}
 :::
 :::
 
@@ -300,7 +300,7 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 :::
 ::: {.column width="40%"}
-![](../M0/M0_lecture01_figures/awsacademy.genai.11.jpeg){width="90%" fig-align="center"}
+![AWS Academy Module 10 course completion and certification](../M0/M0_lecture01_figures/awsacademy.genai.11.jpeg){width="90%" fig-align="center" fig-alt="AWS Academy Module 10 course completion and certification" #fig-participation1-aws-module-11}
 :::
 :::
 
@@ -308,12 +308,11 @@ This schedule follows the AWS Academy **Generative AI Foundations** Canvas struc
 
 If generative AI materially supports your work for this participation activity, include an AI disclosure appendix or separate AI disclosure document if your instructor requests one. Include the complete prompt(s), relevant output excerpt(s), validation steps, and direct shared chat link(s) when available.
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+![ChatGPT shared conversation link interface](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center" fig-alt="ChatGPT shared conversation link interface" #fig-participation1-chatgpt-share}
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+![Gemini shared conversation link interface](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center" fig-alt="Gemini shared conversation link interface" #fig-participation1-gemini-share}
 
 When possible, use **one continuous chat** for the activity so the full reasoning trail can be reviewed in one place. If you used multiple chats, share **all chats directly related** to the work.
 
 Tools such as **ChatGPT**, **Claude**, and **Gemini** support direct chat sharing. If sharing or export is not available, include copied prompt/output evidence or screenshots instead. Because shared links may be viewable by anyone with the link, do not include confidential, personal, or restricted information in those chats.
-
 

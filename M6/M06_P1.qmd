@@ -12,9 +12,6 @@ author:
         name: Boston University
         city: Boston
         state: MA
-  - name: Author Two
-    affiliations:
-      - ref: BU
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -64,6 +61,42 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 - **Tool Use:** The ability to interface with external APIs, databases, and filesystems to affect the real world.
 - **Dynamic Routing:** The ability to decide *which* tool or sub-agent to use based on real-time environmental feedback.
 
+## Agency, Autonomy, and Autonomicity
+
+| Concept | Core Question | Example |
+|---|---|---|
+| Agency | Can the system pursue a goal through action? | Retrieve evidence, draft an answer, and check it |
+| Autonomy | How independently can it operate? | Run a multi-step analysis without step-by-step approval |
+| Autonomicity | Can it regulate itself? | Detect failure, retry, revise, or ask for help |
+
+- A useful agent should not merely act.
+- It should monitor whether its actions are working.
+
+## Levels of Agency in Module 6
+
+| Level | Description | Course Example |
+|---|---|---|
+| Assistive | Human drives the workflow | summarize retrieved SEC chunks |
+| Tool-using | Bounded tools are available | retrieve Item 7 passages |
+| Workflow-agentic | Multi-step execution inside constraints | plan, retrieve, answer, and log evidence |
+| Multi-agent | Specialized roles coordinate | researcher, analyst, critic, compliance reviewer |
+
+- More agency means more need for constraints, traces, and review.
+
+## The Agent Loop
+
+```{mermaid}
+flowchart LR
+  P["Perceive"] --> R["Reason"]
+  R --> A["Act"]
+  A --> O["Observe"]
+  O --> V["Revise"]
+  V --> R
+```
+
+- Modern agents repeat this loop until they stop, delegate, fail, or ask for help.
+- Architecture determines what controls each transition.
+
 ## The Problem of Conceptual Retrofitting
 - As generative AI evolved, researchers attempted to describe it using classical computer science terminology.
 - This led to **conceptual retrofitting**: applying rigid, deterministic frameworks to stochastic, generative models.
@@ -112,11 +145,41 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 - The agent knows exactly what state it is in, and calculating the next best action is a matter of maximizing the reward $R$.
 - They are foundational but lack robust reasoning under real-world uncertainty.
 
+## MDP Objective
+
+$$
+\mathcal{M} = (\mathcal{S}, \mathcal{A}, P, R, \gamma)
+$$
+
+$$
+J(\pi)=\mathbb{E}_{\pi}\left[\sum_{t=0}^{T}\gamma^t R(s_t,a_t)\right]
+$$
+
+- \(\mathcal{S}\): possible states of the environment
+- \(\mathcal{A}\): possible actions
+- \(P(s_{t+1}\mid s_t,a_t)\): transition dynamics
+- \(R(s_t,a_t)\): reward or utility
+- \(\gamma\): discount factor for future rewards
+
 ## Partially Observable MDPs (POMDPs)
 - POMDPs extend MDPs for environments with incomplete information.
 - The agent does not know its exact state; instead, it maintains a probabilistic *belief state*.
 - It infers hidden variables based on sensor observations.
 - While powerful, calculating belief states across long time horizons incurs massive computational overhead.
+
+## POMDP Belief State
+
+$$
+\mathcal{P} = (\mathcal{S}, \mathcal{A}, P, R, \Omega, O, \gamma)
+$$
+
+$$
+b_t(s)=\Pr(s_t=s \mid o_{1:t},a_{1:t-1})
+$$
+
+- A POMDP agent acts under uncertainty.
+- The agent maintains a probability distribution over possible hidden states.
+- Modern LLM agents are not literal POMDP solvers, but the language helps us reason about partial context and uncertainty.
 
 ## Symbolic Reasoning in Action
 ![Classical symbolic reasoning: Comparison between a rule-based MDP scheduler and a belief-based POMDP assistant.](./M06_lecture01_figures/TheRobotScheduler.png){#fig-mdp-pomdp-comparison width=90% fig-align=center}
@@ -221,6 +284,47 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 - The LLM evaluates the user prompt and decides if a tool is needed.
 - If needed, the LLM halts its text generation and outputs the tool call payload.
 - The system executes the payload and appends the result to the LLM's context window, prompting it to continue reasoning.
+
+## From Tools to Skills
+
+- A **tool** is an executable capability.
+- A **skill** is reusable procedural knowledge.
+- Tools answer: *what can the system call?*
+- Skills answer: *how should the system perform a class of work?*
+- Skills can include:
+  - instructions,
+  - examples,
+  - templates,
+  - scripts,
+  - validation rules,
+  - and output contracts.
+
+## Agent Skills Architecture
+
+![Agent skills architecture showing skills, MCP, subagents, hooks, tools, filesystem context, and plugins.](M06_lecture02_figures/agent_skills_architecture.jpg){width=80% fig-align=center}
+
+## What Each Layer Provides
+
+| Component | What It Provides | SEC Agent Example |
+|---|---|---|
+| Tool | executable capability | retrieve SEC evidence |
+| Skill | reusable procedure | compare risk disclosures |
+| Memory | durable context | ticker mappings and prior evidence |
+| Policy | action selection rule | retrieve before answering |
+| Trace | process record | tool calls, outputs, source rows |
+
+## MCP Servers Are Not Agents
+
+| Concept | Primary Role | Typical Unit |
+|---|---|---|
+| MCP server | capability boundary | tool, resource, data connector |
+| Tool | executable action | function or API call |
+| Skill | procedural knowledge | reusable workflow |
+| Agent | control policy | loop over state, actions, observations |
+| Multi-agent system | coordinated control | role-specialized agents |
+
+- MCP answers: **How can the agent connect to this capability?**
+- Agentic AI answers: **How should the system act over time?**
 
 ## Creating Robust Tool Schemas
 - The success of an agent depends entirely on how well its tools are defined.
@@ -334,7 +438,7 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 ## Agent Lifecycle Management
 - Agents are treated as software artifacts.
 - They possess a defined lifecycle: Prototyping -> Testing -> CI/CD Deployment -> Production Monitoring -> Deprecation.
-- Updating an agent involves versioning its system prompt, its tool schemas, and its underlying base model simultaneously.
+- Updating an agent involves versioning its agent instructions, tool schemas, and underlying base model simultaneously.
 - A change to any of these three pillars requires rigorous regression testing of the agent's behavior.
 
 ## Long-Running Agents and State
@@ -413,6 +517,31 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 - Observability must answer: *Why* did the agent make this decision? What context did it retrieve?
 - Without this visibility, autonomous systems become unaccountable black boxes.
 
+## Trust Boundaries in Agentic Systems
+
+| Boundary | Risk | Design Response |
+|---|---|---|
+| User input | malicious or ambiguous requests | intent checks and policy gates |
+| Retrieved content | prompt injection or false evidence | treat content as evidence, not authority |
+| Tool calls | unsafe action or invalid parameters | typed schemas and permissions |
+| Memory | stale or sensitive context | retention policy and review |
+| Final answer | unsupported claims | citation and faithfulness checks |
+
+## Evidence Is Not Instruction
+
+- Retrieved content can support an answer.
+- Retrieved content should not control the agent.
+- This distinction matters when agents read:
+  - web pages,
+  - emails,
+  - code repositories,
+  - documents,
+  - and SEC filings.
+- A robust agent separates:
+  - **instructions** from trusted system or course context,
+  - **evidence** from retrieved materials,
+  - **actions** from bounded tools.
+
 ## Tracing Agent Execution
 - High-fidelity application tracing is the core of AgentOps.
 - Traces must capture the entire lifecycle of a request: the initial user prompt, the sub-tasks generated, the vector database queries, the raw LLM responses, and the tool execution results.
@@ -457,4 +586,3 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 - Implement robust AgentOps practices: trace everything, enforce sandboxed execution, and monitor component latency.
 - Utilize standardized protocols like MCP to build scalable, flexible tool networks.
 - The true power of Agentic AI lies in orchestrated, multi-agent workflows operating securely within the Enterprise AI Factory.
-

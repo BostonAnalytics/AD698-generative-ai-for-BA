@@ -140,11 +140,48 @@ The scaffold below is intentionally modular. It gives you a working pattern for 
 
 ```{python}
 #| eval: false
-chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
-chunks_df = pd.read_csv(chunks_path)
+student_chunks_path = Path("/content/drive/MyDrive/assignment01/chunks.csv")
+course_chunks_path = Path("data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv")
+apple_excerpt_path = Path("help-code/4-nlp-finance/data/apple_2025_10k_excerpt.txt")
+
+if student_chunks_path.exists():
+    chunks_df = pd.read_csv(student_chunks_path)
+    print("Loaded Assignment 1 chunks")
+elif course_chunks_path.exists():
+    chunks_df = pd.read_csv(course_chunks_path).rename(
+        columns={"filing_year": "year", "section_name": "item"}
+    )
+    chunks_df["ticker"] = chunks_df.get("ticker", "COURSE_SEC")
+    print("Loaded course SEC starter chunks")
+elif apple_excerpt_path.exists():
+    chunks_df = pd.DataFrame(
+        {
+            "chunk_id": ["apple_2025_10k_excerpt"],
+            "ticker": ["AAPL"],
+            "year": [2025],
+            "item": ["10-K excerpt"],
+            "chunk_text": [apple_excerpt_path.read_text(encoding="utf-8")],
+        }
+    )
+    print("Loaded Apple 2025 10-K companion excerpt")
+else:
+    raise FileNotFoundError("No SEC chunk source found.")
 
 text_col = "chunk_text"
-metadata_cols = [c for c in ["ticker", "company", "year", "item", "source"] if c in chunks_df.columns]
+metadata_cols = [
+    c
+    for c in [
+        "ticker",
+        "company",
+        "year",
+        "item",
+        "source",
+        "chunk_id",
+        "file_name",
+        "retrieval_unit",
+    ]
+    if c in chunks_df.columns
+]
 
 base_docs = []
 for i, row in chunks_df.iterrows():

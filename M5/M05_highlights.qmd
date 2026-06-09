@@ -29,6 +29,14 @@ By the end of this lecture, students will be able to:
 * Design chunking strategies appropriate for different document types.
 * Interpret embedding similarity as a retrieval signal.
 
+## Applied Code Bridge
+
+Use the same example path across the module:
+
+* Start with the Apple 2025 10-K companion files in `help-code/4-nlp-finance/data/` when you want a recognizable single-company walkthrough.
+* Use `data/outputs/sec_10k_sections/sec_10k_2024_retrieval_ready_chunks.csv` for larger retrieval diagnostics.
+* Use your Assignment 1 rival-company `chunks.csv` for graded analysis and project work.
+
 ---
 
 # Lecture 5.2: Designing Retrieval-Augmented Pipelines
@@ -50,3 +58,10 @@ By the end of this lecture, students will be able to:
 * Implement citation-aware prompting structures.
 * Diagnose failure points in retrieval and grounding systems.
 
+## Module Artifact Flow
+
+* `M05_T1`: build a minimum viable SEC RAG retriever.
+* `M05_Lab1`: compare chunking, retrieval, and reranking choices.
+* `M05_T2`: add evaluation, audit tables, and failure labels.
+* `M05_Lab2`: compare prompt-only, RAG, and pretraining-only answers.
+* `M05_A` and `M05_Proj`: package the same workflow into an auditable business recommendation.

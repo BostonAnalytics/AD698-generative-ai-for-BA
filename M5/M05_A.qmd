@@ -453,9 +453,9 @@ When possible, preserve the original interaction using a direct share link or ex
 - If you used multiple chats, share **all chats directly related** to the assignment
 - Do not include confidential, personal, or restricted information in shared chats
 
-![](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center"}
+![ChatGPT shared conversation link interface](../M0/M0_lecture01_figures/chatgpt-share.jpg){width="80%" fig-align="center" fig-alt="ChatGPT shared conversation link interface" #fig-a-chatgpt-share}
 
-![](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center"}
+![Gemini shared conversation link interface](../M0/M0_lecture01_figures/gemini-share-conversation.png){width="80%" fig-align="center" fig-alt="Gemini shared conversation link interface" #fig-a-gemini-share}
 
 Examples include:
 
@@ -478,7 +478,6 @@ Your AI disclosure should include the following fields:
 8. Corrections you made after validation
 
 Submit AI disclosure as a separate document. Generic statements such as "I used AI for help" are not sufficient for full credit.
-
 
 
 

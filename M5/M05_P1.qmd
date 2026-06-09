@@ -18,7 +18,7 @@ format:
     html-math-method: katex
     slide-number: c/t
     toc: true
-    toc-depth: 2
+    toc-depth: 1
 self-contained-math: true
 fig-align: center
 title-slide-attributes:
@@ -32,12 +32,8 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 categories: ['RAG', 'LangChain Splitters', 'Hybrid Retrieval', 'Vector Search', 'HNSW', 'Conceptual Framing']
-description: "Introduces RAG Foundations and Retrieval through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
+description: "Introduces RAG foundations, retrieval design, hybrid search, and vector indexing for grounded generative AI systems."
 ---
-
-## How to print Revealjs slides
-
-![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
 
 # Why RAG Exists
 
@@ -46,6 +42,23 @@ description: "Introduces RAG Foundations and Retrieval through presentation-read
 - Strong on fluent generation
 - Weak on current, domain-specific, auditable facts
 - Can hallucinate under uncertainty [@hallucination]
+
+---
+
+## Foundation Model vs RAG System
+
+Foundation model:
+
+- reusable base trained on broad data
+- strong general language behavior
+- static knowledge after training
+
+RAG system:
+
+- adds a retriever and knowledge store
+- pulls current/domain evidence at query time
+- turns static memory into auditable workflow
+
 
 ---
 
@@ -65,11 +78,26 @@ RAG converts static model memory into dynamic, evidence-aware answering.
 
 ## Standard Pipeline
 
-![](./M05_lecture01_figures/RAG_case.png){width=74% fig-alt="RAG indexing retrieval generation"}
+![Standard RAG pipeline for indexing, retrieval, and generation](./M05_lecture01_figures/RAG_case.png){width=74% fig-align="center" fig-alt="Standard RAG pipeline for indexing, retrieval, and generation" #fig-p1-rag-pipeline}
 
 - Indexing: split, embed, store
 - Retrieval: top-$k$ relevant chunks
 - Generation: answer with context
+
+---
+
+## Prompt-Only vs RAG for 10-K Questions
+
+| Method | What the model sees | What can go wrong |
+|---|---|---|
+| Prompt-only | question + model weights | confident but stale or generic answer |
+| RAG | question + retrieved 10-K chunks | weak answer if retrieval misses evidence |
+
+SEC example:
+
+> "How did Tesla describe battery supply and production risk across its 10-K filings?"
+
+The RAG answer should cite retrieved filing passages. The prompt-only answer can only rely on model memory.
 
 ---
 
@@ -92,7 +120,7 @@ For SEC analysis, a bad retriever can make a strong model look unreliable.
 
 ## Three Paradigms
 
-![](./M05_lecture01_figures/RAG_FrameCompre_eng.png){width=78% fig-alt="Naive advanced modular RAG"}
+![Naive, advanced, and modular RAG paradigms](./M05_lecture01_figures/RAG_FrameCompre_eng.png){width=78% fig-align="center" fig-alt="Naive, advanced, and modular RAG paradigms" #fig-rag-paradigms}
 
 ---
 
@@ -126,7 +154,7 @@ For SEC analysis, a bad retriever can make a strong model look unreliable.
 
 ## RAG vs Fine-Tuning
 
-![](./M05_lecture01_figures/rag_FT.png){width=75% fig-alt="RAG vs fine-tuning"}
+![RAG compared with fine-tuning for model adaptation](./M05_lecture01_figures/rag_FT.png){width=75% fig-align="center" fig-alt="RAG compared with fine-tuning for model adaptation" #fig-p1-rag-vs-finetuning}
 
 - RAG: freshness + traceability
 - Fine-tuning: behavior/style adaptation
@@ -161,7 +189,7 @@ For SEC analysis, a bad retriever can make a strong model look unreliable.
 | `HTMLSectionSplitter` | sectioned HTML | larger document blocks |
 | `HTMLSemanticPreservingSplitter` | tables/lists/media | semantic elements |
 
-Question for students:
+Core diagnostic:
 
 > What information would be lost if this chunk were retrieved without its heading, table, or section label?
 
@@ -173,12 +201,12 @@ Question for students:
 Document(
     page_content=chunk_text,
     metadata={
-        "ticker": "AAPL",
+        "ticker": "TSLA",
         "year": 2024,
         "filing": "10-K",
         "item": "Item 7",
-        "source_row": 137,
-        "chunk_strategy": "recursive_800_150",
+        "chunk_id": "TSLA-2024-00137",
+        "chunk_strategy": "recursive_1200_180",
     },
 )
 ```
@@ -186,6 +214,21 @@ Document(
 - Text supports generation
 - Metadata supports filtering, citations, and evaluation
 - Strategy labels make splitter experiments auditable
+
+---
+
+## Multi-Year SEC Evidence
+
+RAG turns a filing archive into a query-time evidence system.
+
+| Evidence layer | Role in RAG | Failure if missing |
+|---|---|---|
+| filing text | source for generated claims | generic or stale answer |
+| year metadata | comparison across time | weak temporal reasoning |
+| chunk IDs | citation and audit trail | unverifiable answer |
+| retrieval scores | ranking evidence | noisy or buried context |
+
+For Tesla, the same question can retrieve evidence from early production years and recent filings, making change over time visible.
 
 ---
 
@@ -202,8 +245,10 @@ Document(
 Dense similarity:
 
 $$
+\begin{align}
 \operatorname{sim}(q,d)=
 \frac{q \cdot d}{\lVert q\rVert \lVert d\rVert}
+\end{align}
 $$
 
 Sparse retrieval:
@@ -220,15 +265,89 @@ Hybrid retrieval combines both, then reranks.
 
 ---
 
+## Embeddings as Coordinates
+
+An embedding model maps text into a vector space:
+
+$$
+\begin{align}
+E(\text{text}) = [x_1, x_2, \ldots, x_n]
+\end{align}
+$$
+
+Nearby vectors usually mean nearby meaning, not identical words.
+
+| Text | Vector-space signal |
+|---|---|
+| "battery cell supply" | technical EV component language |
+| "manufacturing ramp risk" | production and execution language |
+| "regulatory approval for Autopilot" | safety and compliance language |
+
+The retriever searches this geometry before the language model writes an answer.
+
+---
+
+## Embedding Service Pattern
+
+```python
+from typing import Any, Dict, List
+from langchain_core.embeddings import Embeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+
+class EmbeddingService(Embeddings):
+    def __init__(self, config: Dict[str, Any]):
+        model_name = config.get("embeddingModelName", "Qwen/Qwen3-Embedding-4B")
+        self.hf_embeddings = HuggingFaceEmbeddings(
+            model_name=model_name,
+            model_kwargs={"trust_remote_code": True},
+        )
+
+    def embed_documents(self, texts: list[str]) -> List[List[float]]:
+        return self.hf_embeddings.embed_documents(
+            [text.replace("\n", " ") for text in texts]
+        )
+
+    def embed_query(self, text: str) -> List[float]:
+        return self.hf_embeddings.embed_query(text.replace("\n", " "))
+```
+
+The output vector is not interpretable one dimension at a time. Its value comes from distance comparisons across many dimensions.
+
+---
+
+## Sparse Evidence Is Easy to Miss
+
+If "battery" or "batteries" appears 44 times in a filing with about 62,143 words:
+
+$$
+\begin{align}
+P(\text{battery word}) \approx \frac{44}{62143} \approx 0.00071
+\end{align}
+$$
+
+That is about 0.071% of the words.
+
+Implication:
+
+- a relevant concept can exist in the filing and still be rare
+- top-$k$ retrieval can miss sparse evidence
+- query wording matters when the target evidence is thin
+
+This is why dense retrieval, sparse matching, reranking, and metadata filters often work better together.
+
+---
+
 ## MMR: Relevant But Not Redundant
 
 Maximal Marginal Relevance:
 
 $$
+\begin{align}
 \operatorname{MMR}(d_i)=
 \lambda \operatorname{sim}(d_i,q)
 -
 (1-\lambda)\max_{d_j\in S}\operatorname{sim}(d_i,d_j)
+\end{align}
 $$
 
 - First term: close to the query
@@ -247,7 +366,7 @@ $$
 
 ## HNSW Intuition
 
-![](./M05_lecture01_figures/hnsw_1_explained.png){width=70% fig-alt="HNSW layers"}
+![HNSW layers for coarse-to-fine vector search](./M05_lecture01_figures/hnsw_1_explained.png){width=70% fig-align="center" fig-alt="HNSW layers for coarse-to-fine vector search" #fig-p1-hnsw-layers}
 
 - Top layers: sparse, long-range links
 - Bottom layers: dense, local refinement
@@ -257,7 +376,7 @@ $$
 
 ## Story Map for Search
 
-![](./M05_lecture01_figures/story-mapping.png){width=78% fig-alt="Story mapping for layered navigation"}
+![Story mapping analogy for layered search navigation](./M05_lecture01_figures/story-mapping.png){width=78% fig-align="center" fig-alt="Story mapping analogy for layered search navigation" #fig-p1-story-mapping}
 
 Interpretation:
 
@@ -268,7 +387,7 @@ Interpretation:
 
 ## Similar Stories as Nearby Vectors
 
-![](./M05_lecture01_figures/hsw_starwars_harrypotter_basic.png){width=73% fig-alt="Star Wars and Harry Potter story beats shown as nearby vector regions"}
+![Basic story-beat similarity between Star Wars and Harry Potter](./M05_lecture01_figures/hsw_starwars_harrypotter_basic.png){width=73% fig-align="center" fig-alt="Star Wars and Harry Potter story beats shown as nearby vector regions" #fig-p1-hsw-basic}
 
 - Similarity search does not require exact keyword overlap
 - It can retrieve works with shared structure, archetypes, or themes
@@ -278,7 +397,7 @@ Interpretation:
 
 ## Detailed Similarity Layers
 
-![](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=78% fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers"}
+![Detailed story-beat similarity layers for Star Wars and Harry Potter](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=78% fig-align="center" fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers" #fig-p1-hsw-detailed}
 
 - Upper layers: broad archetypes
 - Middle layers: setting, conflict, mentor patterns
@@ -288,15 +407,15 @@ Interpretation:
 
 ## Voronoi View of Vector Space
 
-![](./M05_lecture01_figures/hsw_voronoi_general.png){width=72% fig-alt="Voronoi-style partition of vector space under HNSW layers"}
+![Voronoi-style vector neighborhoods under HNSW layers](./M05_lecture01_figures/hsw_voronoi_general.png){width=72% fig-align="center" fig-alt="Voronoi-style partition of vector space under HNSW layers" #fig-p1-hsw-voronoi}
 
 Each cell is a neighborhood. HNSW tries to reach the right neighborhood without scanning every point.
 
 ---
 
-## Query Example: Similar to Dune
+## Finding Stories Similar to Dune
 
-![](./M05_lecture01_figures/hsw_dune.png){width=82% fig-alt="Conceptual HNSW search for books similar to Dune"}
+![Conceptual HNSW search for books similar to Dune](./M05_lecture01_figures/hsw_dune.png){width=82% fig-align="center" fig-alt="Conceptual HNSW search for books similar to Dune" #fig-p1-hsw-dune}
 
 The query starts broad, narrows by genre and themes, then refines to local neighbors.
 
@@ -330,6 +449,43 @@ $$
 
 ---
 
+## HNSW Layer Probability
+
+HNSW gives most vectors short-range links and gives a few vectors long-range links.
+
+If layer probability decays exponentially:
+
+$$
+\begin{align}
+P(L \ge \ell) \approx e^{-\ell/m_L}
+\end{align}
+$$
+
+Then higher layers contain fewer points:
+
+| Layer | Role | Intuition |
+|---|---|---|
+| high | long-range navigation | jump near the right region |
+| middle | neighborhood routing | narrow the candidate area |
+| bottom | local search | inspect close neighbors |
+
+The structure acts like a probabilistic shortcut system through vector space.
+
+---
+
+## Search Breadth as a Recall Tradeoff
+
+`efSearch` controls how many candidates remain active during query-time search.
+
+| Setting | Search behavior | Typical effect |
+|---|---|---|
+| low `efSearch` | fewer candidates | lower latency, higher miss risk |
+| high `efSearch` | more candidates | higher recall, higher latency |
+
+For rare Tesla evidence such as battery-specific language, increasing search breadth can recover chunks that a narrower search skips.
+
+---
+
 ## Tuning Knobs
 
 - $M$: graph connectivity (memory-heavy)
@@ -344,22 +500,4 @@ Tradeoff summary:
 
 ---
 
-## Why This Matters for Assignment 4
-
-Assignment 4 requires fair comparison of:
-
-- Prompt-only
-- RAG
-- Pretraining-only
-
-RAG quality depends heavily on retrieval quality. If retrieval fails, generation cannot recover.
-
-# Preview of P2
-
-## Next Lecture
-
-- RAG generation patterns
-- Evaluation matrix design
-- LLM-as-a-judge workflows
-- Deploying retriever/generator endpoints
-
+## References

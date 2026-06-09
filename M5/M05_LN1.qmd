@@ -25,6 +25,10 @@ Large language models (LLMs) are strong general-purpose generators, but they are
 
 In practice, RAG turns a model from a static parametric memory into a system that can look up evidence, reason over it, and produce a response tied to sources. That shift matters in business analytics because most useful applications depend on current documents, internal policies, data catalogs, contracts, filings, manuals, or research updates.
 
+A useful practitioner framing is that a foundation model is a reusable base, while a RAG application is a system wrapped around that base. The Cycle.io Learn Center describes this distinction in approachable terms: foundation models provide broad pretrained capability, but RAG adds a retriever and external knowledge store so the model can consult domain evidence at query time.[^cycle-rag] This is exactly the distinction students should keep in mind for SEC analysis: the language model supplies fluent synthesis, while the retrieval system supplies auditable filing evidence.
+
+[^cycle-rag]: Cycle.io Learn Center, ["Foundation Models and RAG"](https://cycle.io/learn/foundation-models-and-retrieval-augmented-generation).
+
 ![Technology tree of RAG research across pre-training, fine-tuning, and inference.](./M05_lecture01_figures/rag_tech_tree.png){width=80% fig-align="center" #fig-rag-tech-tree fig-alt="Technology tree of RAG research across pre-training, fine-tuning, and inference."}
 
 The research trajectory in @fig-rag-tech-tree shows that retrieval augmentation is no longer only an inference trick. It now appears in three places:
@@ -49,6 +53,8 @@ The simple pipeline in @fig-rag-case is still the right mental model:
 1. index documents by cleaning, chunking, embedding, and storing them
 2. retrieve the most relevant chunks for a user query
 3. generate an answer conditioned on the retrieved evidence
+
+For a 10-K question such as "What evidence supports Apple's AI investment narrative?", a prompt-only answer can only draw from the model's learned memory and whatever appears in the prompt. A RAG answer should retrieve passages from the filing, preserve metadata such as company, year, item, and chunk ID, and then generate a response that cites the retrieved evidence. This side-by-side contrast is the simplest way to explain why RAG is an architecture, not just a longer prompt.
 
 :::{.callout-tip}
 RAG is most useful when the answer should be grounded in information outside the model weights.
@@ -500,7 +506,7 @@ The basic story-beat view in @fig-hsw-story-basic shows why semantic retrieval i
 than keyword lookup. "Orphan hero," "mentor," "special child," and "good versus evil" can be
 nearby even when the names, places, and vocabulary differ.
 
-![Detailed story-beat analogy for layered HNSW search.](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=82% fig-align="center" fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers."}
+![Detailed story-beat analogy for layered HNSW search.](./M05_lecture01_figures/hsw_starwars_harrypotter_detailed.png){width=82% fig-align="center" #fig-hsw-story-detailed fig-alt="Detailed Star Wars and Harry Potter analogy mapped through HNSW layers."}
 
 The detailed version makes the hierarchy easier to explain. Upper levels can be understood as
 coarse abstractions: heroic arc, mentor relationship, hidden heritage, empire versus resistance.
@@ -509,14 +515,14 @@ training versus wand practice, Vader versus Voldemort. HNSW does something analo
 search: it uses sparse upper layers to get into the right semantic region, then dense lower layers
 to refine the final neighbors.
 
-![Voronoi-style partition of vector neighborhoods below HNSW layers.](./M05_lecture01_figures/hsw_voronoi_general.png){width=74% fig-align="center" fig-alt="Voronoi-style partition of vector space under HNSW layers."}
+![Voronoi-style partition of vector neighborhoods below HNSW layers.](./M05_lecture01_figures/hsw_voronoi_general.png){width=74% fig-align="center" #fig-hsw-voronoi-neighborhoods fig-alt="Voronoi-style partition of vector space under HNSW layers."}
 
 The Voronoi-style picture reinforces the idea of neighborhoods. Each cell represents a region of
 space closest to a point. In high-dimensional retrieval systems we do not literally draw these
 cells, but the intuition is valuable: similarity search is about reaching the right neighborhood
 quickly, then comparing local candidates carefully.
 
-![Conceptual HNSW search for books similar to *Dune*.](./M05_lecture01_figures/hsw_dune.png){width=82% fig-align="center" fig-alt="Conceptual HNSW search for books similar to Dune."}
+![Conceptual HNSW search for books similar to *Dune*.](./M05_lecture01_figures/hsw_dune.png){width=82% fig-align="center" #fig-hsw-dune-search fig-alt="Conceptual HNSW search for books similar to Dune."}
 
 The *Dune* example brings the whole mechanism together. At the top layer, the search can make
 coarse jumps toward science fiction and epic-scale stories. In middle layers, it can refine toward
@@ -525,7 +531,7 @@ compares local candidate works and returns the nearest neighbors. This is the sa
 logic used in RAG: avoid scanning everything, but still retrieve the chunks or documents most
 likely to help the generator answer well.
 
-![HNSW layers and navigation intuition.](./M05_lecture01_figures/hnsw_1_explained.png){width=72% fig-align="center" fig-alt="HNSW layers and navigation intuition."}
+![HNSW layers and navigation intuition.](./M05_lecture01_figures/hnsw_1_explained.png){width=72% fig-align="center" #fig-hnsw-layers-navigation fig-alt="HNSW layers and navigation intuition."}
 
 At a high level:
 
@@ -548,7 +554,7 @@ The effect is a two-phase search behavior often described informally as:
 - zoom out to get near the right region quickly
 - zoom in to refine the exact neighborhood
 
-![HNSW search process.](./M05_lecture01_figures/hnsw_2_search.png){width=72% fig-align="center" fig-alt="HNSW search process."}
+![HNSW search process.](./M05_lecture01_figures/hnsw_2_search.png){width=72% fig-align="center" #fig-hnsw-search-process fig-alt="HNSW search process."}
 
 The common analogy is highways and local roads. Higher layers help jump quickly across the space; lower layers help refine the final result.
 
@@ -573,7 +579,7 @@ So the layer-by-layer process is:
 
 This is why HNSW often achieves logarithmic-like behavior in practice. It avoids evaluating the whole dataset and instead performs a structured descent through increasingly detailed neighborhoods.
 
-![HNSW insertion process.](./M05_lecture01_figures/hnsw_3_insertion.png){width=72% fig-align="center" fig-alt="HNSW insertion process."}
+![HNSW insertion process.](./M05_lecture01_figures/hnsw_3_insertion.png){width=72% fig-align="center" #fig-hnsw-insertion-process fig-alt="HNSW insertion process."}
 
 In operational terms, HNSW works well because it preserves enough connectivity to find good candidates without comparing against every vector.
 
