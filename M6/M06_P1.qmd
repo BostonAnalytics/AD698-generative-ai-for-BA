@@ -52,14 +52,14 @@ description: "Introduces Agentic AI Foundations through presentation-ready conce
 
 ## AI Assistants vs AI Agents
 - [AI Assistants:]{.uured-bold} Require continuous human guidance. They respond to immediate prompts and forget the interaction once completed.
-- **AI Agents:** Capable of autonomous operation. They are given a high-level goal, and they independently break it down into steps, execute them, and verify the results.
+- [AI Agents:]{.uured-bold} Capable of autonomous operation. They are given a high-level goal, and they independently break it down into steps, execute them, and verify the results.
 - Agents operate with a "loop" of perception and action, whereas assistants operate on a linear input/output mechanism.
 
 ## What makes a System "Agentic"?
-- **Autonomy:** The ability to execute multi-step tasks without human intervention.
-- **Contextual Memory:** The ability to store, retrieve, and learn from past interactions.
-- **Tool Use:** The ability to interface with external APIs, databases, and filesystems to affect the real world.
-- **Dynamic Routing:** The ability to decide *which* tool or sub-agent to use based on real-time environmental feedback.
+- [Autonomy:]{.uured-bold} The ability to execute multi-step tasks without human intervention.
+- [Contextual Memory:]{.uured-bold} The ability to store, retrieve, and learn from past interactions.
+- [Tool Use:]{.uured-bold} The ability to interface with external APIs, databases, and filesystems to affect the real world.
+- [Dynamic Routing:]{.uured-bold} The ability to decide *which* tool or sub-agent to use based on real-time environmental feedback.
 
 ## Agency, Autonomy, and Autonomicity
 
