@@ -26,62 +26,11 @@ csl: mis-quarterly.csl
 # | echo: false
 # | output: markdown
 
-import pandas as pd
 from IPython.display import display, HTML
-import sys
+from schedules.config import semester, year
+from schedules.generated_schedule import load_generated_schedule
 
-# -------------------------------------------------
-# Clear module cache (important for Quarto reruns)
-# -------------------------------------------------
-for m in list(sys.modules):
-    if m.startswith(("schedules", "bu_calendar")):
-        del sys.modules[m]
-
-from schedules.semester_planner import build_section_schedules
-
-# =================================================
-# USER INPUT (only edit this section)
-# =================================================
-semester = "Summer"
-year = 2026
-modalities = ["o1"]
-
-start_dates_by_semester = {
-    "Spring": {
-        "oncampus": "2026-01-26",
-        "o2": "2026-01-29",
-    },
-    "Summer": {
-        "oncampus": "2026-05-18",
-        "o1": "2026-05-05",
-        "o2": "2026-05-18",
-    },
-    "Fall": {
-        "oncampus": "2026-09-14",
-        "o1": "2026-09-17",
-    },
-}
-
-section_plan = build_section_schedules(
-    semester=semester,
-    year=year,
-    modalities=modalities,
-    start_dates_by_semester=start_dates_by_semester,
-)
-
-weekday_map = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-
-summary = pd.DataFrame([
-    {
-        "Section": section,
-        "Modality": plan.modality,
-        "Class Days": "/".join(weekday_map[d] for d in plan.class_days),
-        "Lectures": plan.lecture_count,
-        "Start Date": pd.to_datetime(plan.start_date).strftime("%d-%b (%a)"),
-        "Module 0 Opens": plan.module0_open.strftime("%d-%b (%a)"),
-    }
-    for section, plan in section_plan.items()
-])
+summary = load_generated_schedule("summary", semester=semester, year=year)
 
 styled = (
     summary
@@ -115,39 +64,11 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 #| echo: false
 #| tbl-colwidths: [10,10,15,15]
 
-import pandas as pd
 from IPython.display import HTML
-from schedules.semester_planner import build_section_schedules
-from schedules.deliverables.online_deliverables import apply_online_deliverables
-from schedules.presentation import format_deliverables_view
+from schedules.config import semester, year
+from schedules.generated_schedule import load_generated_schedule
 
-from schedules.config import semester, year, start_dates_by_semester
-
-modalities = ["O1"]
-
-section_plan = build_section_schedules(
-    semester=semester,
-    year=year,
-    modalities=modalities,
-    start_dates_by_semester=start_dates_by_semester,
-)
-
-frames = []
-for section, plan in section_plan.items():
-    if plan.modality == "oncampus":
-        continue
-    schedule_df = pd.DataFrame({
-        "Date": [d.strftime("%d-%b (%a)") for d in plan.lecture_dates],
-    })
-    schedule_df = apply_online_deliverables(
-        schedule_df,
-        plan.lecture_dates,
-    )
-    schedule_df = format_deliverables_view(schedule_df)
-    schedule_df.insert(0, "Section", section)
-    frames.append(schedule_df)
-
-online_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+online_df = load_generated_schedule("online_deliverables", semester=semester, year=year)
 
 HTML(online_df.to_html(index=False))
 
@@ -159,57 +80,12 @@ HTML(online_df.to_html(index=False))
 ```{python}
 #| echo: false
 #| tbl-colwidths: [10,10,15,15]
-#| eval: false
 
-import pandas as pd
-from schedules.deliverables.oncampus_deliverables import apply_oncampus_deliverables
-from schedules.presentation import format_deliverables_view
 from IPython.display import HTML
-import sys
+from schedules.config import semester, year
+from schedules.generated_schedule import load_generated_schedule
 
-# -------------------------------------------------
-# Clear module cache (important for Quarto re-runs)
-# -------------------------------------------------
-for m in list(sys.modules):
-    if m.startswith(("schedules", "bu_calendar", "schedules.deliverables")):
-        del sys.modules[m]
-
-from schedules.semester_planner import build_section_schedules
-
-# ==================================================
-# USER INPUT
-# ==================================================
-from schedules.config import semester, year, start_dates_by_semester
-
-modalities = ["oncampus"]
-
-section_plan = build_section_schedules(
-    semester=semester,
-    year=year,
-    modalities=modalities,
-    start_dates_by_semester=start_dates_by_semester,
-)
-
-frames = []
-for section, plan in section_plan.items():
-    schedule_df = pd.DataFrame({
-        "Date": [d.strftime("%d-%b (%a)") for d in plan.lecture_dates],
-    })
-    class_day_index = plan.class_days[0]
-
-    schedule_df = apply_oncampus_deliverables(
-        schedule_df,
-        plan.lecture_dates,
-        class_day_index=class_day_index,
-    )
-    schedule_df = format_deliverables_view(schedule_df)
-    schedule_df.insert(0, "Section", section)
-    frames.append(schedule_df)
-
-oncampus_df = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
-
-output_file = f"./data/{semester.lower()}{str(year)[-2:]}_deliverables_oncampus.xlsx"
-oncampus_df.to_excel(output_file, index=False)
+oncampus_df = load_generated_schedule("oncampus_deliverables", semester=semester, year=year)
 
 HTML(oncampus_df.to_html(index=False))
 

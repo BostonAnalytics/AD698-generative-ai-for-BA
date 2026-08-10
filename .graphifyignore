@@ -1,0 +1,41 @@
+# Graphify output and local environments
+graphify-out/
+.venv/
+__pycache__/
+**/__pycache__/
+
+# Quarto/Jupyter generated output
+_site/
+_freeze/
+.quarto/
+.jupyter_cache/
+**/*.quarto_ipynb
+*_site.zip
+_site.zip
+
+# Generated documents and large rendered artifacts
+*.pdf
+*.pptx
+*.docx
+
+# Bulky or generated course data
+data/
+**/outputs/
+data/SEC-10K-2024/
+data/SEC-10K-2024-HTML/
+deliverables-solutions/Assignments/outputs/
+help-code/3-neural-nlp/data/
+help-code/4-nlp-finance/outputs/
+schedules/deliverables/*.json
+~$*
+
+# Local/editor state
+.Rproj.user/
+.vscode/
+*.env
+.env
+
+# Generated/minified static assets
+*.min.js
+bundle.*.js
+*.chunk.js

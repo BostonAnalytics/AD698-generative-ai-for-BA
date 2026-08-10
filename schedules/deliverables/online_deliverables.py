@@ -48,8 +48,7 @@ def apply_online_deliverables(
             2: m_label.format(n=2),
             # 3 is skipped (Catch Up Week)
             4: m_label.format(n=3),
-            5: m_label.format(n=4),
-            6: f_label
+            5: f_label,
         }
 
         for w, text in milestone_schedule.items():

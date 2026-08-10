@@ -22,39 +22,29 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 
 ```{python}
 #| echo: false
-#| eval: false
-#| output: markdown
+#| output: html
 
-from datetime import datetime, timedelta
-import pandas as pd
-from IPython.display import display, Markdown
+from IPython.display import display, HTML
+from schedules.config import semester, year
+from schedules.generated_schedule import load_generated_schedule
 
-# Function to generate the Day 1 - Day 7 list based on a start date
-def generate_days(start_date):
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    start_day_index = days.index(start_date)
-    days_shifted = days[start_day_index:] + days[:start_day_index]
-    return days_shifted
+summary = load_generated_schedule("summary", semester=semester, year=year)
 
-# Start dates for each section
-start_dates = {
-    "A1": "Tuesday",
-    "A2": "Thursday",
-    "A3": "Wednesday"
-}
+styled = (
+    summary
+    .style
+    .hide(axis="index")
+    .set_table_styles([
+        {"selector": "th", "props": [("text-align", "left")]},
+        {"selector": "td", "props": [
+            ("text-align", "left"),
+            ("vertical-align", "top"),
+            ("white-space", "nowrap")
+        ]},
+    ])
+)
 
-# Initialize the combined table data
-combined_data = {"Day": [f"Day {i+1}" for i in range(7)]}
-
-# Generate and add columns for each section
-for section, start_date in start_dates.items():
-    combined_data[section] = generate_days(start_date)
-
-# Create a single DataFrame
-combined_table = pd.DataFrame(combined_data)
-
-# Display the combined table without index
-display(combined_table.style.hide(axis="index"))
+display(HTML(styled.to_html()))
 
 ```
 
@@ -66,105 +56,12 @@ display(combined_table.style.hide(axis="index"))
 # | message: false
 # | output: html
 
-import pandas as pd
 from IPython.display import display, HTML
-import sys
+from schedules.config import semester, year
+from schedules.generated_schedule import load_generated_schedule
 
-# -------------------------------------------------
-# Clear module cache (important for Quarto reruns)
-# -------------------------------------------------
-for m in list(sys.modules):
-    if m.startswith(("schedules", "bu_calendar")):
-        del sys.modules[m]
-
-from schedules.semester_planner import build_section_schedules, get_lecture_catalog
-from schedules.config import semester, year, start_dates_by_semester
-
-# =================================================
-# USER INPUT (only edit this section)
-# =================================================
-modalities = ["oncampus", "o1", "o2"]
-
-section_plan = build_section_schedules(
-    semester=semester,
-    year=year,
-    modalities=modalities,
-    start_dates_by_semester=start_dates_by_semester,
-)
-
-# -------------------------------------------------
-# Load COURSE DESCRIPTION (content only)
-# -------------------------------------------------
-course_table = (
-    pd.read_excel(
-        "data/AD698-Schedule.xlsx",
-        sheet_name="Course Details"
-    )
-)
-
-module0_catalog = (
-    course_table
-    .loc[
-        course_table["Lecture"].astype(str).str.strip().str.upper().str.match(r"^L0\.\d+$", na=False),
-        ["Lecture", "Title", "Description"],
-    ]
-    .reset_index(drop=True)
-)
-
-course_table = course_table.drop(columns=["Modules", "Module Name"], errors="ignore")
-
-# Keep lecture rows only, excluding Module 0
-course_table = get_lecture_catalog(course_table)
-max_lectures = max(p.lecture_count for p in section_plan.values())
-course_table = course_table.head(max_lectures).reset_index(drop=True)
-course_table = course_table[["Lecture", "Title"]]
-# -------------------------------------------------
-# Generate schedules PER SECTION
-# -------------------------------------------------
-section_dates = {
-    section: plan.lecture_dates for section, plan in section_plan.items()
-}
-
-# -------------------------------------------------
-# Attach section columns (ONLINE LAST)
-# -------------------------------------------------
-oncampus_sections = [
-    s for s, p in section_plan.items() if p.modality == "oncampus"
-]
-online_sections = [
-    s for s, p in section_plan.items() if p.modality != "oncampus"
-]
-
-# On-campus first
-for s in oncampus_sections:
-    dates = section_dates[s]
-    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
-
-# Online last
-for s in online_sections:
-    dates = section_dates[s]
-    course_table[s] = dates + [pd.NaT] * (max_lectures - len(dates))
-
-# -------------------------------------------------
-# Date formatting
-# -------------------------------------------------
-
-
-def fmt(d):
-    return "-" if pd.isna(d) else d.strftime("%d-%b")
-
-
-for col in course_table.columns[2:]:
-    course_table[col] = course_table[col].map(fmt)
-
-module0_table = pd.DataFrame([
-    {
-        "Section": section,
-        "Module 0 Opens": plan.module0_open.strftime("%d-%b (%a)"),
-        "First Lecture": plan.lecture_dates[0].strftime("%d-%b (%a)"),
-    }
-    for section, plan in section_plan.items()
-])
+course_table = load_generated_schedule("schedule", semester=semester, year=year)
+module0_catalog = load_generated_schedule("module0_catalog", semester=semester, year=year)
 
 module0_preview_styled = (
     module0_catalog
@@ -177,24 +74,6 @@ module0_preview_styled = (
             ("text-align", "left"),
             ("vertical-align", "top"),
             ("white-space", "normal")
-        ]},
-    ])
-)
-
-# -------------------------------------------------
-# Presentation
-# -------------------------------------------------
-module0_styled = (
-    module0_table
-    .style
-    .hide(axis="index")
-    # .set_caption("Module 0 Release Plan (opens 10 days before first class)")
-    .set_table_styles([
-        {"selector": "th", "props": [("text-align", "left")]},
-        {"selector": "td", "props": [
-            ("text-align", "left"),
-            ("vertical-align", "top"),
-            ("white-space", "nowrap")
         ]},
     ])
 )
@@ -213,9 +92,6 @@ styled = (
     ])
 )
 
-course_table.drop(columns=["A1","O2"], inplace=True)
-module0_table.drop(index=[0,2], inplace=True)
-display(HTML(module0_styled.to_html()))
 display(HTML(module0_preview_styled.to_html()))
 display(HTML(styled.to_html()))
 

@@ -12,6 +12,7 @@ def build(
     year=None,
     lecture_count=14,
     start_date=None,
+    write_output=True,
 ):
     if class_days is None:
         raise ValueError("class_days must be provided")
@@ -22,10 +23,11 @@ def build(
     calendar_df = load_calendar(season, year)
 
     schedule_mod = importlib.import_module(f"schedules.{season.lower()}")
+    output_path = f"data/{season.lower()}_schedule_{year}.xlsx" if write_output else None
 
     return schedule_mod.generate(
         calendar_df,
-        output_path=f"data/{season.lower()}_schedule_{year}.xlsx",
+        output_path=output_path,
         return_dates=return_dates,
         class_days=class_days,
         lecture_count=lecture_count,
