@@ -12,6 +12,7 @@ author:
         name: Boston University
         city: Boston
         state: MA
+jupyter: ad698-venv
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
@@ -54,9 +55,9 @@ Good generation depends on how context is packed:
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 RAG_PROMPT = ChatPromptTemplate.from_template(
   """
@@ -93,7 +94,7 @@ This supports grading, auditing, and stakeholder trust.
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from pathlib import Path
 
@@ -114,11 +115,137 @@ The retrieval configuration fixes the chunking, embedding, and search settings s
 
 ---
 
+
+```{python}
+#| echo: false
+#| eval: false
+
+from dataclasses import dataclass
+from typing import Iterable
+from urllib.parse import urlparse
+import re
+import time
+import requests
+from bs4 import BeautifulSoup
+from langchain_core.documents import Document
+from pathlib import Path
+import os
+
+SEC_USER_AGENT = "AD698-RAG-course/1.0 contact@example.com"
+
+TESLA_10K_URLS = [
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459016013195/tsla-10k_20151231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459017003118/tsla-10k_20161231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459018002956/tsla-10k_20171231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459019003165/tsla-10k_20181231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459020004475/tsla-10k_20191231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459021004599/tsla-10k_20201231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000095017022000796/tsla-20211231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/tsla-20221231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000162828024002390/tsla-20231231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000162828025003063/tsla-20241231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+]
+
+@dataclass(frozen=True)
+class FilingRecord:
+    ticker: str
+    year: int
+    url: str
+    local_path: Path
+
+def find_repo_root(start: Path | None = None) -> Path:
+    start = Path.cwd() if start is None else start
+    for candidate in [start, *start.parents]:
+        if (candidate / "help-code").exists() and (candidate / "M5").exists():
+            return candidate
+    return Path.cwd()
+
+def default_sec_cache_dir() -> Path:
+    repo_root = find_repo_root()
+    if (repo_root / "help-code").exists():
+        return repo_root / "help-code" / "secfile" / "sec-edgar-filings"
+    return Path.cwd() / "sec-cache" / "sec-edgar-filings"
+
+def filing_year_from_url(url: str) -> int:
+    filename = url.split('/')[-1]
+    match = re.search(r"20\d{2}|19\d{2}", filename)
+    if not match:
+        raise ValueError(f"Could not infer year from URL: {url}")
+    return int(match.group(0))
+
+def cache_path_for_url(url: str, cache_dir: Path) -> Path:
+    parsed = urlparse(url)
+    filename = Path(parsed.path).name
+    year = filing_year_from_url(url)
+    return cache_dir / "TSLA" / "10-K" / str(year) / filename
+
+def tesla_filing_records(cache_dir: Path | None = None) -> list[FilingRecord]:
+    root = find_repo_root()
+    cache_dir = default_sec_cache_dir() if cache_dir is None else cache_dir
+    return [
+        FilingRecord(
+            ticker="TSLA",
+            year=filing_year_from_url(url),
+            url=url,
+            local_path=cache_path_for_url(url, cache_dir),
+        )
+        for url in TESLA_10K_URLS
+    ]
+
+def download_filing(record: FilingRecord, user_agent: str = SEC_USER_AGENT, sleep_seconds: float = 0.2) -> Path:
+    record.local_path.parent.mkdir(parents=True, exist_ok=True)
+    if record.local_path.exists() and record.local_path.stat().st_size > 0:
+        return record.local_path
+    response = requests.get(record.url, headers={"User-Agent": user_agent}, timeout=60)
+    response.raise_for_status()
+    record.local_path.write_text(response.text, encoding="utf-8", errors="ignore")
+    time.sleep(sleep_seconds)
+    return record.local_path
+
+def ensure_tesla_filings(download: bool = True, user_agent: str = SEC_USER_AGENT) -> list[FilingRecord]:
+    records = tesla_filing_records()
+    if download:
+        for record in records:
+            download_filing(record, user_agent=user_agent)
+    return records
+
+def html_to_text(html: str) -> str:
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style", "ix:header", "ix:hidden"]):
+        tag.decompose()
+    text = soup.get_text(" ")
+    return re.sub(r"\s+", " ", text).strip()
+
+def load_filing_documents(records: Iterable[FilingRecord], max_chars_per_filing: int | None = None) -> list[Document]:
+    docs = []
+    for record in records:
+        if not record.local_path.exists():
+            raise FileNotFoundError(f"Missing cached filing for {record.year}: {record.local_path}")
+        html = record.local_path.read_text(encoding="utf-8", errors="ignore")
+        text = html_to_text(html)
+        if max_chars_per_filing:
+            text = text[:max_chars_per_filing]
+        docs.append(
+            Document(
+                page_content=text,
+                metadata={
+                    "ticker": record.ticker,
+                    "filing_year": record.year,
+                    "filing_type": "10-K",
+                    "source_url": record.url,
+                    "source_file": str(record.local_path),
+                },
+            )
+        )
+    return docs
+```
+
 ## Ingestion and Chunking
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -144,7 +271,7 @@ for i, doc in enumerate(chunks):
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -180,7 +307,7 @@ Good answers cite both the filing year and the chunk ID, not only the generated 
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from langchain_core.documents import Document
 
@@ -221,7 +348,7 @@ Even a two-chunk example shows the minimum evidence contract: company, filing ye
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from langchain_core.runnables import RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
@@ -238,7 +365,10 @@ rag_inputs = {
     "context": RunnableLambda(lambda x: join_context(retriever.invoke(x["question"]))),
 }
 
-# chain = rag_inputs | RAG_PROMPT | llm | StrOutputParser()
+from langchain_google_vertexai import ChatVertexAI
+llm = ChatVertexAI(model="gemini-1.5-flash")
+chain = rag_inputs | RAG_PROMPT | llm | StrOutputParser()
+rag_answer = chain.invoke({"question": question})
 ```
 
 ---
@@ -443,7 +573,7 @@ $$
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 faithfulness_prompt = """
 Extract factual claims from the answer.
@@ -590,7 +720,7 @@ RAGAS expects one row per question.
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from ragas import EvaluationDataset
 
@@ -612,11 +742,21 @@ Without `reference`, start with faithfulness, answer relevancy, and context util
 
 ---
 
+```{python}
+#| echo: false
+#| eval: false
+
+from langchain_google_vertexai import ChatVertexAI, VertexAIEmbeddings
+
+evaluator_llm = ChatVertexAI(model="gemini-1.5-flash")
+evaluator_embeddings = VertexAIEmbeddings(model="text-embedding-004")
+```
+
 ## Running RAGAS Metrics
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from ragas import evaluate
 from ragas.metrics import (
@@ -668,7 +808,7 @@ The best design depends on the failure mode: missed evidence, noisy ranking, uns
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 TESLA_EVAL_QUESTIONS = [
     {
@@ -729,7 +869,7 @@ The embedding comparison keeps the Tesla corpus, questions, generator, and metri
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 HF_EMBEDDING_OPTIONS = {
     "minilm_l6": "sentence-transformers/all-MiniLM-L6-v2",
@@ -797,7 +937,7 @@ Across RAG evaluation implementations, the durable artifact is the evaluation ta
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 judge_prompt = """
 Rate the answer from 1-5 for groundedness and relevance.
@@ -827,7 +967,7 @@ Each error type implies a different fix path.
 
 ```{python}
 #| echo: true 
-#| eval: true
+#| eval: false
 #| output-location: column
 from fastapi import FastAPI
 from langserve import add_routes
