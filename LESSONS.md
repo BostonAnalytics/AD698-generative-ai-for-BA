@@ -67,3 +67,15 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: git add failed because .git/index.lock already existed; no git process was running and the lock was zero bytes from August 6, 2026, so removing it allowed staging to continue.
 - Why: A stale Git index lock in .git prevents all index writes until it is removed, but removing it is safe only after confirming no active git process owns it.
 - tags: git,windows,stale-lock
+
+## 2026-08-10 -- When AD698 full render fails in a Spark cell with Py4JError getConfs(ArrayList) does not exist, check the active Python with python -m pip show pyspark py4j and list pyspark/jars for mixed Spark versions before editing course content.
+- Expected: The full Quarto render failure would point to a specific current .qmd source cell to fix.
+- Actual: The pasted output failed while executing M05_P1.quarto_ipynb, but current M5/M05_P1.qmd has no executable Spark cell; the active system Python has pyspark 4.2.0 with both 4.1.1 and 4.2.0 Spark JARs installed.
+- Why: Quarto can surface generated notebook names during render, and a dirty global PySpark install can make the Python API call JVM methods missing from older Spark JARs on the classpath.
+- tags: quarto,pyspark,windows,verification
+
+## 2026-08-10 -- For AD698 VS Code render tasks, remove generated *.quarto_ipynb* files before uv run quarto render --execute as well as after it; post-render-only cleanup can leave stale notebooks that surface old Spark/Py4J errors in the next full render.
+- Expected: The Render and Zip Quarto Site task would execute current .qmd source files and then package _site.zip without stale notebook errors.
+- Actual: The pasted full-render log executed an old M05_P1.quarto_ipynb Spark cell even though current M5/M05_P1.qmd renders cleanly and has no such executable Spark cell.
+- Why: The .vscode/tasks.json cleanup ran only after a successful render, so any stale *.quarto_ipynb* files from an earlier run remained present at the start of the next render task.
+- tags: quarto,vscode,cache,render-task,fix-applied
