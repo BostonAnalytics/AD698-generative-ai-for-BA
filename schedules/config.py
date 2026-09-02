@@ -8,6 +8,7 @@
 # Spring = Dec-Mar, Summer = Apr-Jun, Fall = Jul-Nov.
 semester = "Fall"
 year = 2026
+source_workbook = "data/AD698-Schedule.xlsx"
 
 section_configs_by_semester = {
     "Spring": [
