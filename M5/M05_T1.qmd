@@ -144,7 +144,7 @@ def format_docs(retrieved_docs):
 ## Step 5: Prompt + Chain
 
 ```python
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 prompt = ChatPromptTemplate.from_template(
     """
