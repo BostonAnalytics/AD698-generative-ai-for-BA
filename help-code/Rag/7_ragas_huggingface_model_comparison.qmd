@@ -147,7 +147,7 @@ TESLA_10K_URLS = [
     "https://www.sec.gov/Archives/edgar/data/1318605/000156459018002956/tsla-10k_20171231.htm",
     "https://www.sec.gov/Archives/edgar/data/1318605/000156459019003165/tsla-10k_20181231.htm",
     "https://www.sec.gov/Archives/edgar/data/1318605/000156459020004475/tsla-10k_20191231.htm",
-    "https://www.sec.gov/Archives/edgar/data/1318605/000156459021004599/tsla-20201231.htm",
+    "https://www.sec.gov/Archives/edgar/data/1318605/000156459021004599/tsla-10k_20201231.htm",
     "https://www.sec.gov/Archives/edgar/data/1318605/000095017022000796/tsla-20211231.htm",
     "https://www.sec.gov/Archives/edgar/data/1318605/000095017023001409/tsla-20221231.htm",
     "https://www.sec.gov/Archives/edgar/data/1318605/000162828024002390/tsla-20231231.htm",
@@ -211,7 +211,8 @@ def find_repo_root(start: Path | None = None) -> Path:
 
 
 def filing_year_from_url(url: str) -> int:
-    match = re.search(r"20\d{2}|19\d{2}", url)
+    filename = url.split('/')[-1]
+    match = re.search(r"20\d{2}|19\d{2}", filename)
     if not match:
         raise ValueError(f"Could not infer year from URL: {url}")
     return int(match.group(0))
