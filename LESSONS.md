@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-09-17 -- Verify shared Reveal chrome when adapting the advisory theme.
+- The advisory reference points to a separate `advisory-board-mark.png` that was unavailable beside the HTML. Reuse the repository's intact BU wordmark rather than shipping the reference's broken image URL.
+- Reveal's logo and slide-number positioning needs explicit overrides for the advisory layout: logo at top right, counter at bottom right, with a ruled Quarto footer. Check their positions in slideshow mode as well as `?print-pdf`; page-boundary checks alone do not verify shared chrome.
+- `theme/advisory.scss` preserves the Compass layout helpers, so M02_P2 can change themes without rewriting its diagrams or comparison markup. The trial retained 56 slides with no missing images, math errors, page overflow, or vertical code overflow in the browser checks.
+- tags: quarto,revealjs,theme,verification
+
 ## 2026-09-17 -- Keep comparison-card labels out of Reveal.js heading structure.
 - In the Compass presentation trial, Markdown level-three headings inside card divs became nested `section` elements and extra Reveal slides. Use `[Label]{.card-heading}` spans instead, and verify the rendered slide count in the browser.
 - Check `?print-pdf` for both page overflow and inner code scrolling. A code block can fit its page while hiding lines in an inner scrollbar. Split long examples at their existing conceptual boundaries and remove decorative comment separators before shrinking code text.
@@ -102,3 +108,14 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - M5/M05_P2.qmd requested ad698-venv, but the repository .venv exposes only python3. Changed the page to jupyter: python3, matching neighboring pages; Quarto inspection then resolved its kernel successfully.
 - Creating or activating .venv does not register a kernel named ad698-venv. Inspect kernels with .venv/Scripts/python.exe -c "from jupyter_client.kernelspec import KernelSpecManager; print(KernelSpecManager().find_kernel_specs())". Set QUARTO_PYTHON to the resolved .venv/Scripts/python.exe path when explicitly selecting this environment; the unactivated shell otherwise selects system Python on this machine.
 - tags: quarto,jupyter,venv,kernel,windows
+
+## 2026-09-17 -- Verify a shared Reveal.js theme against every deck, including print layout.
+- Apply presentation settings in each deck's revealjs format rather than the website HTML defaults. Explicit renders of excluded M7/M8 and help-code documents write HTML next to their sources; included modules write to _site.
+- In print-pdf view, inspect .pdf-page heights against the configured 16:9 ratio, code scrollHeight versus clientHeight, missing image dimensions, and .katex-error elements. A double-height page identifies a slide that needs splitting or a different layout. Check normal slideshow screenshots too.
+- Use a fresh preview query string after rebuilding: an existing browser URL served an older embedded-resource deck during the rollout. Confirm visible slide titles against the current source before accepting a layout audit.
+- Dense nested lists fit comparison cards or columns; long code examples can be split at top-level statements. Compare the combined Python AST before and after reflow to verify that examples retain their behavior.
+- A passing page-height check does not prove footer clearance or diagram-label legibility. Inspect dense slides in normal slideshow view; split formulas from their explanatory bullets when needed. Quarto's generated Mermaid SVG uses svg.mermaid-js, so a .mermaid svg selector alone can miss it. Use numbered cards for simple workflows whose SVG labels collide.
+- Put a blank line before a new Markdown heading after display math; without it, Pandoc can keep the apparent heading inside the preceding list item. Set fig-height explicitly for shallow Graphviz pipelines to avoid a default 480-pixel canvas dominated by empty space.
+- Check imports again before choosing a render interpreter. On this rollout, system Python had a pydantic/pydantic-core mismatch and lacked svgwrite; the project .venv imported gensim, spacy, and svgwrite successfully. Earlier environment observations are not permanent.
+- tags: quarto,revealjs,theme,layout,verification,python
+- Ignore `*.quarto_ipynb*`, including numbered suffixes; the narrower `*.quarto_ipynb` rule allowed eight temporary notebooks to be tracked. Keep the authored `.qmd` and intentional `.ipynb` files instead.
