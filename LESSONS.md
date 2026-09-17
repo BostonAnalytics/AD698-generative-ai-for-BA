@@ -1,5 +1,11 @@
 # Lessons
 
+## 2026-09-17 -- Keep comparison-card labels out of Reveal.js heading structure.
+- In the Compass presentation trial, Markdown level-three headings inside card divs became nested `section` elements and extra Reveal slides. Use `[Label]{.card-heading}` spans instead, and verify the rendered slide count in the browser.
+- Check `?print-pdf` for both page overflow and inner code scrolling. A code block can fit its page while hiding lines in an inner scrollbar. Split long examples at their existing conceptual boundaries and remove decorative comment separators before shrinking code text.
+- The reusable theme is `theme/compass.scss`; only `M2/M02_P2.qmd` opts into it. Use a separate theme file for design trials to avoid changing all presentations through `theme/presentation.scss`.
+- tags: quarto,revealjs,theme,layout,verification
+
 Written by /aar-loop after each session's After Action Review. Read this file before starting a new task in this project. Every entry should be concrete and checkable, never vague.
 
 ## 2026-08-06 -- For AD698 schedule changes, update schedules/config.py and every Quarto schedule cell modality list together; Fall only supports oncampus and o1, so leaving o2 in index.qmd or schedule.qmd breaks render once semester='Fall'. Always render index.qmd and schedule.qmd and inspect _site dates after the change.
