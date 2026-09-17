@@ -79,3 +79,20 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: The pasted full-render log executed an old M05_P1.quarto_ipynb Spark cell even though current M5/M05_P1.qmd renders cleanly and has no such executable Spark cell.
 - Why: The .vscode/tasks.json cleanup ran only after a successful render, so any stale *.quarto_ipynb* files from an earlier run remained present at the start of the next render task.
 - tags: quarto,vscode,cache,render-task,fix-applied
+
+## 2026-09-17 -- Audit Reveal.js slide bodies separately from teaching notes and execute the displayed examples.
+- In M1/M01_P2.qmd, instructor-facing rationale appeared as visible paragraphs, CBOW/Skip-gram explanations were duplicated, and the global echo: false setting hid instructional code. Use student-facing definitions, worked examples, and limitations; put any necessary presenter guidance in Quarto .notes blocks.
+- Check formulas against the actual vectorizer options: smoothed scikit-learn IDF is log((1 + N)/(1 + df)) + 1, followed by normalization when norm="l2". In Python raw regex strings, use a single backslash in whitespace classes; verify with tabs and repeated spaces.
+- The repository .venv lacks gensim on this machine while system Python has the slide dependencies. Check imports before choosing QUARTO_PYTHON for executable deck verification.
+- tags: quarto,slides,academic-content,verification
+- Verification outcome: all seven cells executed and the generated Reveal.js deck passed browser spot checks with no detected math errors or broken images. Quarto subsequently failed during website indexing because a project input requested the unavailable ad698-venv kernel; distinguish this project-index failure from slide execution or HTML generation.
+
+## 2026-09-17 -- Use sibling-relative edustack wheel sources across Windows drives and regenerate the lockfile.
+- AD698 depends on edustack-classroom and edustack-schedule (not edustack-calendar). With edustack beside this repository, use ../edustack/packages/<package>/dist/<wheel> in tool.uv.sources on either drive; each checkout must contain that package layout.
+- Local version 0.1.1 wheels had different hashes from the old D: wheels. Run uv lock to record the actual artifacts, then uv lock --check --offline; changing only the paths leaves stale hashes. Offline regeneration requires cached registry metadata even when only local sources change.
+- tags: uv,dependencies,windows,verification
+
+## 2026-09-17 -- Match Quarto kernel names to installed Jupyter kernels, independently of the virtual environment name.
+- M5/M05_P2.qmd requested ad698-venv, but the repository .venv exposes only python3. Changed the page to jupyter: python3, matching neighboring pages; Quarto inspection then resolved its kernel successfully.
+- Creating or activating .venv does not register a kernel named ad698-venv. Inspect kernels with .venv/Scripts/python.exe -c "from jupyter_client.kernelspec import KernelSpecManager; print(KernelSpecManager().find_kernel_specs())". Set QUARTO_PYTHON to the resolved .venv/Scripts/python.exe path when explicitly selecting this environment; the unactivated shell otherwise selects system Python on this machine.
+- tags: quarto,jupyter,venv,kernel,windows

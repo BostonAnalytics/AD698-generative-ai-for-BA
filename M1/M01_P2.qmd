@@ -41,27 +41,28 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 categories: ['NLP Foundations', 'SEC Text', 'Language Probability', 'Text Representation', 'Technical Deep Dive']
-description: "Introduces Language, Probability, and Generative Systems through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
+description: "Text representation, n-gram language models, and neural embeddings: definitions, worked examples, and applications to business text analytics."
 ---
 
-## Why This Lecture Matters
+## Learning Objectives
 
-- `M01_Lab1` taught us how to clean and inspect text
-- This lecture explains how cleaned text becomes numbers
-- It also explains why language is modeled probabilistically
-- That sets up early neural NLP and later generative AI
-
----
-
-## The Flow for Today
-
-1. The NLP pipeline
-2. Count-based representations
-3. N-gram language models
-4. Early neural NLP
-5. Why this matters for Module 1 work
+- Construct document vectors using term counts and TF-IDF.
+- Calculate next-word probabilities from n-gram counts.
+- Explain how neural models learn word embeddings.
+- Distinguish CBOW, Skip-gram, and autoregressive prediction.
+- Evaluate representation choices for business text analytics.
 
 ---
+
+## Lecture Outline
+
+1. **Text analytics pipeline:** data, preprocessing, and outputs
+2. **Document representation:** Bag of Words and TF-IDF
+3. **Language modeling:** sequence probabilities and n-grams
+4. **Neural representations:** embeddings and Word2Vec
+5. **Applications:** classification, clustering, and evaluation
+
+# Text Analytics Pipeline
 
 ## The Core NLP Pipeline
 
@@ -71,6 +72,23 @@ description: "Introduces Language, Probability, and Generative Systems through p
 //| fig-alt: "Core NLP pipeline from raw text to output"
 //| file: ./M01_lecture02_figures/m01_core_nlp_pipeline.dot
 ```
+
+- **Preprocessing** defines the units retained for analysis.
+- **Representation** determines what information reaches the model.
+- **Evaluation** measures performance on the intended task.
+
+---
+
+## Structured and Unstructured Business Data
+
+| Data type | Examples | Preparation |
+|---|---|---|
+| Structured | Ratios, returns, filing dates | Validate types, units, and missing values |
+| Unstructured | Risk factors, MD&A, reviews | Extract text, tokenize, and vectorize |
+
+**Unit of analysis:** a filing, section, paragraph, or sentence.
+
+**Linking key:** company identifier and reporting period when combining text with financial variables.
 
 ---
 
@@ -83,150 +101,88 @@ description: "Introduces Language, Probability, and Generative Systems through p
 //| file: ./M01_lecture02_figures/m01_data_to_model_pipeline.dot
 ```
 
----
-
-## What This Means in Practice
-
-- We can download data from the web
-- We can call APIs for structured metadata
-- We can parse HTML or plain text
-- We often combine structured and unstructured data in the same project
-
-This is exactly what later SEC-based assignments will do.
+| Acquisition method | Output | Validation |
+|---|---|---|
+| API request | Filing metadata | Identifier, form, and date |
+| HTML table extraction | Tabular values | Headers, units, and period |
+| HTML text extraction | Document text | Section boundaries and boilerplate |
 
 ---
 
-## Structured and Unstructured Data
+## Preprocessing Decisions
 
-- Structured: ratios, returns, tabular company metadata
-- Unstructured: filings, MD&A text, risk factors, notes
+- **Tokenization:** define words, subwords, or other analysis units.
+- **Normalization:** standardize case and whitespace where appropriate.
+- **Filtering:** retain task-relevant numbers, negation, and terminology.
+- **Segmentation:** preserve document and sentence boundaries.
 
-Typical modeling directions:
+**Example:** removing “not” changes the interpretation of “revenue did not increase.”
 
-- regression on structured variables
-- classification on text
-- clustering or similarity on text embeddings
+# Count-Based Document Representations
 
----
-
-## Example: SEC API Metadata
-
-```python
-import requests
-import pandas as pd
-
-headers = {"User-Agent": "your-email@bu.edu"}
-cik = "0000320193"
-url = f"https://data.sec.gov/submissions/CIK{cik}.json"
-```
-
-```python
-resp = requests.get(url, headers=headers, timeout=30)
-recent = pd.DataFrame(resp.json()["filings"]["recent"])
-recent[["form", "filingDate", "accessionNumber"]].head()
-```
-
----
-
-## Example: HTML Table Extraction
-
-```python
-import pandas as pd
-
-tables = pd.read_html("https://www.macrotrends.net/stocks/charts/AAPL/apple/revenue")
-print("tables found:", len(tables))
-tables[0].head()
-```
-
-This is still text acquisition, but it lands as structured data.
-
----
-
-## Example: Filing Text Extraction
-
-```python
-from bs4 import BeautifulSoup
-
-html = requests.get(filing_url, headers=headers, timeout=30).text
-soup = BeautifulSoup(html, "html.parser")
-text = soup.get_text(" ", strip=True)
-```
-
-That is the raw material for text mining and NLP.
-
----
-
-## What the Pipeline Means in AD698
-
-- Raw text: SEC filings, reviews, business documents
-- Tokenization: split text into usable units
-- Cleaning: normalize text for analysis
-- Representation: convert text to vectors
-- Model: classify, retrieve, or predict
-- Output: label, score, ranking, or next token
-
-The models change across the course, but this flow stays remarkably stable.
-
----
-
-## What We Do With Text-Mined Data
-
-- supervised classification
-- unsupervised clustering
-- retrieval and similarity search
-- dimensionality reduction for exploration
-
-So text mining is not one task. It is an entry point into many analytics workflows.
-
----
-
-## Bag of Words
+## Bag of Words: Definition
 
 ::: {.columns}
+::: {.column width="60%"}
 
-::: {.column}
+For a vocabulary of $V$ terms, represent document $d$ as:
 
-Bag of Words keeps:
+$$
+x_d = [c_{d1}, c_{d2}, \ldots, c_{dV}]
+$$
 
-- which terms appear
-- how often they appear
+$c_{dj}$ is the count of term $j$ in document $d$.
 
-Bag of Words loses:
-
-- word order
-- syntax
-- long-range context
-- semantic similarity
-
+- One feature per vocabulary term
+- A shared feature order across documents
+- No encoding of word order within a document
 
 :::
+::: {.column width="40%"}
 
-::: {.column}
-
-![Bag of Words](./M01_lecture02_figures/bag-of-words.png){width=80% fig-align="center" fig-alt="Bag of Words" #fig-bow}
-
+![Bag of Words](./M01_lecture02_figures/bag-of-words.png){width=90% fig-alt="Words represented as an unordered collection" #fig-bow}
 
 :::
-
 :::
-
 
 ---
 
-## Why Bag of Words Still Matters
+## Worked Example: Document-Term Matrix
 
-- It is easy to compute
-- It is easy to interpret
-- It is a strong baseline for classification
-- It is the cleanest first bridge from language to linear algebra
+- $d_1$: “revenue growth”
+- $d_2$: “revenue risk”
+- $d_3$: “risk risk”
 
-If students do not understand BoW, later embeddings often feel like magic instead of engineering.
+| Document | growth | revenue | risk |
+|---|---:|---:|---:|
+| $d_1$ | 1 | 1 | 0 |
+| $d_2$ | 0 | 1 | 1 |
+| $d_3$ | 0 | 0 | 2 |
+
+**Matrix shape:** $D \times V$ = documents × vocabulary terms.
+
+**Sparsity:** most entries are zero when each document uses only a small fraction of the vocabulary.
+
+---
+
+## Bag of Words: Uses and Limitations
+
+| Uses | Limitations |
+|---|---|
+| Interpretable term-level features | Synonyms occupy separate dimensions |
+| Baseline document classification | A word has the same feature across meanings |
+| Exact-term retrieval | Word order and syntax are discarded |
+| Sparse matrix computation | Vocabulary grows with the corpus |
+
+**Order loss:** “supplier acquires retailer” and “retailer acquires supplier” have identical unigram counts.
 
 ---
 
 ## Preparing Financial Text for Vectorization
 
 ```{python}
+#| echo: true
+#| output: false
 docs = [
     "Revenue increased due to stronger iPhone demand and services growth.",
     "Risk factors include supply chain disruption and foreign exchange volatility.",
@@ -235,199 +191,293 @@ docs = [
 ]
 ```
 
-```{python}
-import re
-def normalize_text(text):
-    text = text.lower()
-    text = re.sub(r"[^a-z\\s]", " ", text)
-    return re.sub(r"\\s+", " ", text).strip()
-```
+**Illustrative corpus:** four short business statements.
+
+The examples demonstrate computation; they are too small for reliable model evaluation.
 
 ---
 
-## Cleaned Text and Tokens
+## Normalization and Tokenization
 
 ```{python}
-clean_docs = [normalize_text(x) for x in docs]
-token_lists = [doc.split() for doc in clean_docs]
+#| echo: true
+import re
 
-print(clean_docs[0])
+def normalize_text(text):
+    text = re.sub(r"[^a-z\s]", " ", text.lower())
+    return re.sub(r"\s+", " ", text).strip()
+
+clean_docs = [normalize_text(doc) for doc in docs]
+token_lists = [doc.split() for doc in clean_docs]
 print(token_lists[0])
 ```
 
-This is the practical handoff from text cleaning to vectorization.
+**Scope:** this simplified normalizer removes numbers and punctuation. Financial applications may need to preserve amounts, percentages, and identifiers.
 
 ---
 
 ## Bag of Words in Python
 
 ```{python}
+#| echo: true
 from sklearn.feature_extraction.text import CountVectorizer
+import pandas as pd
+from IPython.display import HTML
 
 bow = CountVectorizer()
 X_bow = bow.fit_transform(clean_docs)
-
-print(bow.get_feature_names_out())
-print(X_bow.toarray())
+counts = pd.DataFrame(
+    X_bow.toarray(), columns=bow.get_feature_names_out()
+)
+HTML(counts[["revenue", "risk", "growth", "margin"]].to_html())
 ```
+
+**Display:** four selected terms; the fitted matrix contains the full vocabulary.
 
 ---
 
-## TF-IDF
+## TF-IDF: Weighting Distinctive Terms
 
-BoW counts words.
-
-TF-IDF reweights words so that terms common in one document but less common across the corpus receive more emphasis.
+Term frequency–inverse document frequency combines within-document counts with corpus-wide rarity:
 
 $$
-\text{tfidf}(t, d) = \text{tf}(t, d) \cdot \log\left(\frac{N}{1 + \text{df}(t)}\right)
+\operatorname{tfidf}(t,d)=c(t,d)\operatorname{idf}(t)
 $$
 
-Both BoW and TF-IDF are:
+For the smoothed convention used in the next example:
 
-- sparse
-- fixed-length
-- useful for baseline retrieval and classification
+$$
+\operatorname{idf}(t)=\log\left(\frac{1+N}{1+\operatorname{df}(t)}\right)+1
+$$
+
+- $N$: number of documents
+- $\operatorname{df}(t)$: number of documents containing term $t$
+- Terms occurring in fewer documents receive larger IDF weights.
+
+[Source: scikit-learn TF-IDF documentation](https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfTransformer.html)
+
+---
+
+## Worked Example: TF-IDF Weights
+
+Using the three-document corpus:
+
+| Term | Document frequency | Smoothed IDF |
+|---|---:|---:|
+| growth | 1 | $\log(4/2)+1 \approx 1.693$ |
+| revenue | 2 | $\log(4/3)+1 \approx 1.288$ |
+| risk | 2 | $\log(4/3)+1 \approx 1.288$ |
+
+For $d_1$ = “revenue growth,” in vocabulary order:
+
+$$
+x_{d_1}=[1.693,\;1.288,\;0]
+$$
+
+With L2 normalization, divide by $\lVert x_{d_1}\rVert_2$ to obtain approximately $[0.796,\;0.605,\;0]$.
 
 ---
 
 ## TF-IDF in Python
 
 ```{python}
+#| echo: true
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-tfidf = TfidfVectorizer()
+tfidf = TfidfVectorizer(smooth_idf=True, norm="l2")
 X_tfidf = tfidf.fit_transform(clean_docs)
-
-print(tfidf.get_feature_names_out())
-print(X_tfidf.toarray().round(3))
+weights = pd.DataFrame(
+    X_tfidf.toarray(), columns=tfidf.get_feature_names_out()
+)
+HTML(weights[["revenue", "risk", "growth", "margin"]]
+     .to_html(float_format="%.3f"))
 ```
 
----
+**Interpretation:** values combine counts, IDF, and document normalization; they are not probabilities.
 
-## What Count-Based NLP Misses
+# Language Probability and N-grams
 
-- `bank` can mean finance or river edge
-- `risk` and `uncertainty` are related but counted separately
-- `"not good"` and `"good"` can look too similar
-- long-distance dependencies are almost invisible
+## Language Modeling: The Chain Rule
 
-This is where language probability and neural representations become important.
-
----
-
-## A Supervised Use Case
-
-Once we vectorize text, we can classify it.
-
-Examples:
-
-- company vs competitor
-- positive vs negative sentiment
-- risk-heavy vs growth-heavy language
-- industry labels
-
-This is exactly why Module 1 assignments start with representations.
-
----
-
-## Language as a Probability Problem
-
-Language models estimate probabilities over sequences:
+A language model assigns a probability to a token sequence:
 
 $$
-P(w_1, w_2, \dots, w_T)
+P(w_1,\ldots,w_T)=\prod_{t=1}^{T}P(w_t\mid w_1,\ldots,w_{t-1})
 $$
 
-Using the chain rule:
+- $w_t$: token at position $t$
+- $w_{<t}$: all preceding tokens
+- At each step, the conditional probabilities sum to one over the vocabulary.
 
-$$
-P(w_1, \dots, w_T) = \prod_{t=1}^{T} P(w_t \mid w_1, \dots, w_{t-1})
-$$
-
-Modern LLMs still build on this same idea.
+**Autoregressive generation:** predict a distribution, select a token, append it to the context, and repeat.
 
 ---
 
 ## N-gram Language Models
 
-Early practical systems simplified the full context using the Markov assumption:
+Approximate the full history using the previous $n-1$ tokens:
 
 $$
-P(w_t \mid w_1, \dots, w_{t-1}) \approx P(w_t \mid w_{t-n+1}, \dots, w_{t-1})
+P(w_t\mid w_{<t})\approx P(w_t\mid w_{t-n+1},\ldots,w_{t-1})
 $$
 
-That gives us:
+| Model | Context | Example prediction |
+|---|---|---|
+| Unigram | None | $P(\text{growth})$ |
+| Bigram | One token | $P(\text{growth}\mid\text{revenue})$ |
+| Trigram | Two tokens | $P(\text{growth}\mid\text{strong revenue})$ |
 
-- unigram
-- bigram
-- trigram
-- more generally, n-gram models
-
----
-
-## What N-grams Improved
-
-Compared with pure document counts, n-grams introduced:
-
-- local sequence information
-- collocations
-- phrase-level patterns
-- short-range predictability
-
-So they were an important step from static counts toward actual language modeling.
+**Assumption:** tokens outside the fixed window do not affect the prediction.
 
 ---
 
-## Why N-grams Were Not Enough
+## Worked Example: Bigram Estimation
 
-- sparse counts grow quickly
-- unseen phrases are hard to handle
-- similar words do not share meaning
-- context windows remain short
-
-So the next question became:
-
-> Can a model learn a better internal representation of words?
-
----
-
-## Early Neural NLP
-
-Neural Network Language Models changed the representation layer:
-
-1. map words to dense vectors
-2. combine context vectors
-3. transform through hidden layers
-4. predict the next word with softmax
+Maximum-likelihood estimate:
 
 $$
-\hat{y} = \text{softmax}(W_2 \cdot h + b_2)
+\hat P(v\mid u)=\frac{c(u,v)}{\sum_{v'}c(u,v')}
 $$
 
-This is the start of learned embeddings.
+Suppose “revenue” is followed by:
+
+| Next word | Count | Estimated probability |
+|---|---:|---:|
+| increased | 6 | 0.60 |
+| declined | 3 | 0.30 |
+| stabilized | 1 | 0.10 |
+
+An unseen continuation receives probability zero without smoothing.
 
 ---
 
-## Why Embeddings Matter
+## N-gram Features and N-gram Language Models
 
-Dense embeddings let models:
+| | N-gram features | N-gram language model |
+|---|---|---|
+| Representation | Counts of token sequences | Conditional token probabilities |
+| Example | Feature for “not profitable” | $P(\text{profitable}\mid\text{not})$ |
+| Typical use | Classification or retrieval | Sequence scoring or generation |
 
-- place related words near each other
-- generalize better than exact counts
-- learn similarity from context
-- support downstream tasks beyond counting
-
-This is the major conceptual bridge from classical NLP to early neural NLP.
+Including bigrams in a document vector preserves some local phrase information, but does not by itself define a language model.
 
 ---
 
-## Word2Vec as the Transition Model
+## Sparsity and Smoothing
 
-- **CBOW** predicts a word from nearby context
-- **Skip-gram** predicts nearby context from a word
+- The number of possible n-grams grows rapidly with vocabulary size.
+- Many plausible sequences are absent from the training corpus.
+- Larger context windows require more data to estimate probabilities.
 
-These models are simpler than modern LLMs, but they are central historically because they made learned word representations practical and useful.
+One simple remedy is additive smoothing:
+
+$$
+\hat P(v\mid u)=\frac{c(u,v)+\alpha}{\sum_{v'}c(u,v')+\alpha V},\qquad\alpha>0
+$$
+
+**Tradeoff:** smoothing assigns probability to unseen events but does not learn similarity between words.
+
+# Neural Word Representations
+
+## Neural Language Models
+
+A feedforward neural language model learns both word vectors and a next-word predictor. [@Bengio2003NeuralLM]
+
+1. Look up embeddings for the context words.
+2. Combine them into a context vector $x$.
+3. Compute a hidden representation: $h=\tanh(W_1x+b_1)$.
+4. Predict: $P(w_t\mid\text{context})=\operatorname{softmax}(W_2h+b_2)$.
+
+**Training objective:** minimize the negative log-probability of observed next words.
+
+---
+
+## Embeddings: Learned Dense Vectors
+
+An embedding matrix $E\in\mathbb{R}^{V\times k}$ assigns a vector to each vocabulary item, typically with $k\ll V$.
+
+- Vector values are learned from a prediction objective.
+- Shared parameters allow information to transfer across contexts.
+- Similarity reflects patterns in the training corpus.
+
+$$
+\operatorname{cosine}(u,v)=\frac{u^\top v}{\lVert u\rVert_2\lVert v\rVert_2}
+$$
+
+**Limitation:** static embeddings assign one vector to “bank” across its financial and geographic uses.
+
+---
+
+## Word2Vec: Two Prediction Objectives
+
+Word2Vec learns static word embeddings from local context. [@Mikolov2013Efficient]
+
+| Architecture | Input | Prediction |
+|---|---|---|
+| CBOW | Surrounding words | Center word |
+| Skip-gram | Center word | Surrounding words |
+
+For “strong revenue growth,” with a context radius of one:
+
+- **CBOW:** {strong, growth} → revenue
+- **Skip-gram:** revenue → strong; revenue → growth
+
+These objectives learn word representations; neither is a full autoregressive generator.
+
+---
+
+## Continuous Bag of Words (CBOW)
+
+Let $C_t$ be the available context positions around position $t$, excluding $t$.
+
+$$
+\bar v_t=\frac{1}{|C_t|}\sum_{j\in C_t}v(w_j)
+$$
+
+$$
+\max_{\theta}\sum_t\log P_{\theta}(w_t\mid\bar v_t)
+$$
+
+- Aggregate context embeddings by averaging or summing.
+- Predict the center word from the aggregate.
+- Context aggregation discards order within the window.
+
+---
+
+## Skip-gram
+
+Predict each surrounding word from the center word:
+
+$$
+\max_{\theta}\sum_t\sum_{j\in C_t}\log P_{\theta}(w_j\mid w_t)
+$$
+
+- Each center word produces multiple center–context pairs.
+- The center position is excluded from its own context.
+- Each pair contributes a training signal to the embeddings.
+
+**Computation:** negative sampling provides an alternative training objective that avoids a full vocabulary softmax. [@Mikolov2013Word2Vec]
+
+---
+
+## CBOW and Skip-gram Architectures
+
+::: {.columns}
+::: {.column width="50%"}
+
+**CBOW: context → center**
+
+![CBOW architecture](./M01_lecture02_figures/cbow.svg){height=300 fig-alt="Context word inputs combined to predict a center word"}
+
+:::
+::: {.column width="50%"}
+
+**Skip-gram: center → context**
+
+![Skip-gram architecture](./M01_lecture02_figures/skip_gram.svg){height=300 fig-alt="A center word used to predict surrounding context words"}
+
+:::
+:::
 
 ---
 
@@ -435,236 +485,125 @@ These models are simpler than modern LLMs, but they are central historically bec
 
 ```{python}
 #| echo: true
-#| fig-align: center
-#| output-location: column
 from gensim.models import Word2Vec
-from tabulate import tabulate
-import numpy as np
-import pandas as pd
-from IPython.display import HTML
 
-sentences = [doc.split() for doc in clean_docs]
-w2v = Word2Vec(sentences, vector_size=50, window=3, min_count=1, sg=1, epochs=200)
-
-word = "risk"
-similar = pd.DataFrame(w2v.wv.most_similar(word, topn=5),
-                       columns=["Word", "Similarity"])
-
-HTML(similar.to_html(index=False, float_format="%.3f"))
-
-
-# vec = w2v.wv["risk"]
-# df = pd.DataFrame(vec.reshape(5, -1))  # 5×10 block
-# df.style.background_gradient(cmap="Blues")
-
-
+w2v = Word2Vec(
+    token_lists, vector_size=50, window=3, min_count=1,
+    sg=1, epochs=200, seed=42, workers=1
+)
+print("Vector dimensions:", w2v.wv["risk"].shape)
 ```
 
----
+- `sg=1` selects Skip-gram; `sg=0` selects CBOW.
+- `vector_size` controls the embedding dimension.
+- `window` controls the maximum context radius.
 
+**Interpretation limit:** four sentences demonstrate the API, not meaningful semantic neighborhoods.
 
-## Continuous Bag‑of‑Words (CBOW)
-CBOW predicts a **target word** given its **context window**.
-
-Formally:
-
-$$
-\begin{align}
-p(w_t \mid w_{t-m}, \ldots, w_{t-1}, w_{t+1}, \ldots, w_{t+m})
-\end{align}
-$$
-
-- Input: average (or sum) of context word embeddings  
-- Output: probability distribution over vocabulary  
-- Objective: maximize likelihood of the center word  
-- Computationally efficient because context is aggregated  
-- Smooths noisy contexts → stable embeddings  
-- Good for frequent words  
-
----
-
-## Skip‑gram
-Skip‑gram predicts **context words** given a **target word**.
-
-Formally:
-
-$$
-\begin{align}
- \prod_{-m \leq j \leq m, j \neq 0} p(w_{t+j} \mid w_t)
-\end{align}
-$$
-
-- Input: embedding of the center word  
-- Output: multiple predictions (one per context position)  
-- Objective: maximize likelihood of surrounding words  
-- Better for rare words (each rare word generates many training pairs)  
-- Produces richer semantic structure  
-
----
-
-## Continuous Bag‑of‑Words (CBOW)
-
-- Predicts the **center word** from its **context window**  
-- Input representation:  
-  $$
-  v_{context} = \frac{1}{2m} \sum_{j \neq 0} v(w_{t+j})
-  $$
-- Output: softmax over vocabulary  
-- Objective:  
-  $$
-  \max \log p(w_t \mid context)
-  $$
-- Characteristics:  
-  - Fast, stable  
-  - Smooths noisy contexts  
-  - Works well for frequent words  
-- Interpretation: “Given the neighborhood, infer the missing word.”
-
----
-
-## Skip‑gram (Technical + Narrative)
-
-- Predicts **context words** from the **center word**  
-- Objective:  
-  $$
-  \max \sum_{j=-m}^{m} \log p(w_{t+j} \mid w_t)
-  $$
-- Each training example generates multiple (target, context) pairs  
-- Characteristics:  
-  - Excellent for rare words  
-  - Produces richer semantic geometry  
-  - More training pairs → more expressive embeddings  
-- Interpretation: “Given a word, infer its linguistic neighborhood.”
-
-## CBOW and Skip-gram Differences
-
-
-::: {.columns}
-
-::: {.column}
-
-| Aspect | CBOW | Skip‑gram |
-|-------|------|-----------|
-| Direction | context → target | target → context |
-| Training pairs | fewer | many |
-| Good for | frequent words | rare words |
-| Stability | smoother | more expressive |
-| Complexity | lower | higher |
-
-Both use **[negative sampling]{.uublue-bold}** or **[hierarchical softmax]{.uublue-bold}** to approximate the softmax efficiently.
-
-:::
-
-::: {.column}
-
-
-![](./M01_lecture02_figures/cbow.svg){width=35% fig-align="center" fig-alt="CBOW"}
-
-![](./M01_lecture02_figures/skip_gram.svg){width=35% fig-align="center" fig-alt="Skip-gram"}
-
-:::
-
-:::
-
-
-
----
+# Applications and Evaluation
 
 ## From Representation to Classification
 
-A shallow neural classifier already shows the transition:
+For document vector $x$, a shallow neural classifier can compute:
 
 $$
-\begin{align}
-\hat{y} = \text{softmax}(W_2 \cdot \text{ReLU}(W_1 x + b_1) + b_2)
-\end{align}
+\hat y=\operatorname{softmax}\left(W_2\operatorname{ReLU}(W_1x+b_1)+b_2\right)
 $$
 
-The pipeline is still the same:
+- **Input:** BoW, TF-IDF, or an aggregate of word embeddings
+- **Target:** sentiment, industry, or disclosure category
+- **Output:** predicted class probabilities
 
-- text
-- vector representation
-- model
-- output probabilities
-
-What changes is that the model learns a richer mapping than a fixed rule or pure count score.
+**Distinction:** document classification predicts a label; language modeling predicts tokens.
 
 ---
 
-## Unsupervised Use Case
+## Clustering Documents
 
-After vectorization, we can also cluster documents:
+K-means groups document vectors by distance to cluster centroids.
 
 ```{python}
 #| echo: true
-#| fig-align: center
-#| fig-alt: "KMeans clustering of TF-IDF vectors"
-#| 
 from sklearn.cluster import KMeans
 
 kmeans = KMeans(n_clusters=2, random_state=42, n_init=10)
 clusters = kmeans.fit_predict(X_tfidf)
+print("Cluster assignments:", clusters)
 ```
 
-This is useful when labels do not exist yet.
+- Cluster identifiers have no inherent business meaning.
+- Interpretation requires reading representative documents.
+- Four documents illustrate assignment, not validated topic discovery.
 
 ---
 
-## PCA for Exploration
+## Projecting Vectors for Exploration
 
-PCA can project TF-IDF or embedding vectors into 2D:
+PCA finds directions of maximum variance for a low-dimensional projection.
 
-```python
+```{python}
+#| echo: true
+#| output: false
 from sklearn.decomposition import PCA
 
 coords = PCA(n_components=2).fit_transform(X_tfidf.toarray())
 ```
 
-PCA does not replace representation learning. It helps us inspect the geometry of the representation.
+- A 2D projection can conceal distances present in the full feature space.
+- Visible separation does not establish classification accuracy.
+- Dense conversion is suitable here only because the example is small; truncated SVD is an alternative for large sparse matrices.
 
 ---
 
-## Classical, Early Neural, and Modern NLP
+## Representation Choices
 
-| Stage | Main representation | Typical model | Main strength |
-|---|---|---|---|
-| Classical NLP | BoW / TF-IDF | Naive Bayes, logistic regression, SVM | simple and interpretable |
-| Early sequence models | N-grams | probabilistic LMs | local word order |
-| Early neural NLP | embeddings | NNLM, Word2Vec, shallow MLP | semantic generalization |
-| Modern NLP | contextual embeddings | RNN, LSTM, Transformer | richer context and generation |
+| Representation | Encodes | Key limitation |
+|---|---|---|
+| BoW / TF-IDF | Term occurrence and weight | No order with unigram features |
+| N-gram features | Local token sequences | Sparse, limited context |
+| Static embeddings | Learned word-level associations | One vector per vocabulary item |
+| Contextual embeddings | Token meaning conditioned on context | Greater computational cost |
 
----
-
-## How This Connects to Module 1
-
-- `M01_Lab1`: preprocessing and text discipline
-- `M01_Lab2`: learned text representations
-- `M01_A`: SEC-based text classification
-
-So this lecture is not a side topic. It explains the logic behind the full Module 1 build.
+**Selection criterion:** performance on the intended task, given data, interpretability, and computational constraints.
 
 ---
 
-## Key Takeaways
+## Applying the Pipeline in Module 1
 
-- NLP begins with a pipeline, not just a model
-- BoW and TF-IDF are foundational because they make text computable
-- N-grams introduced local sequence probability
-- Early neural models introduced dense embeddings
-- Modern generative AI grows out of these earlier ideas
+1. **Define the task:** select the text unit and target label.
+2. **Prepare the data:** inspect extraction, cleaning, and tokenization.
+3. **Establish a baseline:** fit BoW or TF-IDF with a classifier.
+4. **Compare representations:** evaluate embeddings on the same split.
+5. **Inspect errors:** examine negation, boilerplate, and domain terminology.
 
----
-
-## Looking Ahead
-
-The next major move is from:
-
-- static vectors to context-aware vectors
-- short context windows to richer context modeling
-- document classification to sequence prediction and generation
-
-That is the doorway to modern LLM thinking.
+**Prevent leakage:** split documents before fitting vocabulary or IDF; use company or time grouping when the prediction task requires it.
 
 ---
 
-### References {.unnumbered}
+## Summary
+
+- BoW maps documents to term-count vectors.
+- TF-IDF reweights counts using document frequency.
+- N-gram language models estimate probabilities from limited history.
+- Neural objectives learn dense vectors through shared parameters.
+- CBOW predicts a center word; Skip-gram predicts its context.
+- Representation quality must be evaluated on a defined task.
+
+---
+
+## From Static Embeddings to Generative Models
+
+| Dimension | Static word embeddings | Autoregressive contextual models |
+|---|---|---|
+| Token representation | Fixed per vocabulary item | Depends on preceding context |
+| Training signal | Local context prediction | Next-token prediction |
+| Direct output | Word vectors | Next-token distribution |
+
+**Continuity:** both learn representations from prediction tasks; autoregressive models apply sequence probability to generate text token by token.
+
+---
+
+## References {.unnumbered .smaller}
+
+::: {#refs}
+:::

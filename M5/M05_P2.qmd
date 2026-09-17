@@ -12,7 +12,7 @@ author:
         name: Boston University
         city: Boston
         state: MA
-jupyter: ad698-venv
+jupyter: python3
 format: 
     revealjs:
         theme: [../theme/presentation.scss]
