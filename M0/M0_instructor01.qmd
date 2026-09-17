@@ -4,28 +4,41 @@ subtitle: "M0 instructor01"
 format:
   revealjs: 
     toc: false
+
+    theme: [default, ../theme/advisory.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    center: false
     transition: fade
-    theme: [../theme/instructor.scss]  # Custom styles for sidebar and layout
+    auto-stretch: false
+    footer: "AD 698 - M0 instructor01"
 categories: ['Deep Learning Foundations', 'PyTorch', 'Neural Networks', 'Tensors']
 description: "Supports instruction around deep learning setup, tensor workflows, and early neural-network learning goals."
+title-slide-attributes:
+  data-background-color: "#ffffff"
+logo: "../theme/figures/met_signature_toptier_rgb.png"
 ---
 
-
 ## Nakul R. Padalkar
-::: {.columns}
-::: {.column width="60%"}
+
+:::: {.columns}
+::: {.column width="65%"}
 Hi, I’m Nakul Padalkar, Associate Professor of Practice in Applied Business Analytics at Boston University. With a Ph.D. in Management Information Systems from Texas Tech University and over a decade of experience across industry and academia, my career has explored how technology shapes how we live, work, and understand the world. I am particularly passionate about the intersection of technology, economics, and society—how innovations like blockchain, machine learning, and AI can drive positive change in our communities.
+:::
+::: {.column width="35%"}
+![](./instructor_images/NKN_5029.png){width="85%"}
+:::
+::::
+
+## Research and practice
 
 I’ve been fortunate to work on academically rigorous and practically impactful projects throughout my career. My research often tackles real-world challenges, from improving supply chain transparency using blockchain technology to exploring the societal implications of artificial intelligence. In my work, I aim to blend theoretical insights with actionable strategies, whether through publishing papers on topics like AI in financial markets or designing courses that equip students to thrive in data-driven fields.
 
+## Photography and computer vision
+
 My work has been a combination of my professional and personal interests, which often overlap in surprising ways. For example, I’m a photography enthusiast and love incorporating my photos into my computer vision classes. Capturing a moment in a single frame or exploring the nuances of a new landscape offers me fresh perspectives that I can bring back to the classroom.
 
+## Learning and travel
+
 Beyond teaching and research, I’m a lifelong learner and traveler. Exploring new places, cultures, and cuisines broadens my outlook and brings depth to my work. Travel and technology share something in common: they allow us to cross boundaries, connect with diverse perspectives, and learn continuously.
-
-:::
-
-::: {.column width="40%"}
-![](./instructor_images/NKN_5029.png){width="85%"}
-:::
-:::
-

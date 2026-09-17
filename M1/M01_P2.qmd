@@ -1,7 +1,7 @@
 ---
 title: "AD698 - Applied Generative AI"
 subtitle: "Language, Probability, and Generative Systems"
-logo: "../theme/figures/met_logotype_black.png"
+logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
 date-format: long
@@ -13,25 +13,29 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Language, Probability, and Generative Systems"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
         code-line-numbers: true
         code-block-bg: true
-        code-block-border-left: "#31BAE9"
+        code-block-border-left: "#0f7188"
         syntax-highlighting: github
 from: markdown+emoji
 self-contained-math: true
 code-annotations: below
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -67,6 +71,7 @@ description: "Text representation, n-gram language models, and neural embeddings
 ## The Core NLP Pipeline
 
 ```{dot}
+//| fig-height: 1.5
 //| echo: false
 //| fig-align: center
 //| fig-alt: "Core NLP pipeline from raw text to output"
@@ -95,6 +100,7 @@ description: "Text representation, n-gram language models, and neural embeddings
 ## From Acquisition to Modeling
 
 ```{dot}
+//| fig-height: 1.5
 //| echo: false
 //| fig-align: center
 //| fig-alt: "Data acquisition to modeling pipeline"

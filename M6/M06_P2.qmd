@@ -14,18 +14,23 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Building Agentic AI"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -171,26 +176,39 @@ flowchart LR
 
 ## A Practical Stack Design
 
-- Use **OpenAI** when the task demands:
-  - planning,
-  - structured output,
-  - summarization,
-  - comparison,
-  - critique,
-  - and final synthesis.
-- Use **Hugging Face** when the task demands:
-  - embeddings,
-  - local retrieval infrastructure,
-  - optional reranking,
-  - or experimentation with open models.
-- Use **LangChain/LangGraph** when the task demands:
-  - tool calling,
-  - routing,
-  - memory,
-  - stateful workflows,
-  - and multi-step execution.
+:::: {.compass-cards}
+::: {.compass-card}
+[OpenAI]{.card-heading}
+
+- planning,
+- structured output,
+- summarization,
+- comparison,
+- critique,
+- and final synthesis.
+:::
+::: {.compass-card}
+[Hugging Face]{.card-heading}
+
+- embeddings,
+- local retrieval infrastructure,
+- optional reranking,
+- or experimentation with open models.
+:::
+::: {.compass-card}
+[LangChain/LangGraph]{.card-heading}
+
+- tool calling,
+- routing,
+- memory,
+- stateful workflows,
+- and multi-step execution.
+
+:::
+::::
 
 ---
+
 
 ## Generalized Assistant Ecosystem Ladder
 
@@ -689,6 +707,8 @@ class AgentState(TypedDict):
   * retrieve relevant evidence,
   * and compose a grounded report.
 
+## The Capstone Pipeline: Implementation
+
 ```python
 class MasterFinancialAgent:
     def run(self, vertical: str, topic: str):
@@ -824,17 +844,43 @@ $$
 
 ## Observability-Driven Improvement
 
-```{mermaid}
-flowchart TD
-  F["Observed failure"] --> D["Diagnose harness gap"]
-  D --> P["Patch skill, tool, hook, evaluator, or context map"]
-  P --> T["Run task again"]
-  T --> M["Measure trace and output quality"]
-  M -->|improved| K["Keep rule"]
-  M -->|not improved| D
-```
+:::: {.compass-cards}
+::: {.compass-card}
+[01 / Observe]{.card-heading}
+
+Observed failure
+:::
+::: {.compass-card}
+[02 / Diagnose]{.card-heading}
+
+Diagnose harness gap
+:::
+::: {.compass-card}
+[03 / Patch]{.card-heading}
+
+Patch skill, tool, hook, evaluator, or context map
+:::
+::: {.compass-card}
+[04 / Repeat]{.card-heading}
+
+Run task again
+:::
+::: {.compass-card}
+[05 / Measure]{.card-heading}
+
+Measure trace and output quality
+:::
+::: {.compass-card}
+[06 / Retain]{.card-heading}
+
+If improved: keep rule
+:::
+::::
+
+If **not improved**, return to **Diagnose harness gap**.
 
 ---
+
 
 ## Harness Engineering for Analytics
 

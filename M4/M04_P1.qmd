@@ -14,21 +14,25 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Transformers, Attention, and Context"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
 from: markdown+emoji
 jupyter: python3
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -77,15 +81,16 @@ from IPython.display import SVG, display
 - Allowed models to [focus selectively]{.uugreen-bold} on different input tokens  
 - Replaced the “single compressed vector” bottleneck  
 - Enabled differentiable, learnable weighting over the entire input sequence
-- Transformers: The Architectural Breakthrough
-  - @Vaswani2017Attention: [no recurrence, all attention]{.uublue-bold}  
-  - Rapidly outperformed RNNs across NLP tasks  
-  - Became the foundation for [large-scale pretraining]{.uured-bold} (BERT, RoBERTa, GPT‑2/3)  
-  - Expanded beyond NLP:
-    - [**Vision Transformers**]{.uublue-bold} (image recognition, detection, segmentation)
-    - [**Speech**]{.uublue-bold}, [**reinforcement learning**]{.uublue-bold}, [**graph neural networks**]{.uublue-bold}
+## Transformers: The Architectural Breakthrough
 
-### The New Landscape
+- @Vaswani2017Attention: [no recurrence, all attention]{.uublue-bold}
+- Rapidly outperformed RNNs across NLP tasks
+- Became the foundation for [large-scale pretraining]{.uured-bold} (BERT, RoBERTa, GPT‑2/3)
+- Expanded beyond NLP:
+  - [**Vision Transformers**]{.uublue-bold} (image recognition, detection, segmentation)
+  - [**Speech**]{.uublue-bold}, [**reinforcement learning**]{.uublue-bold}, [**graph neural networks**]{.uublue-bold}
+
+## The New Landscape
 - Transformers + large-scale pretraining → [foundation models]{.uured-bold}  
 - Default approach: start with a pretrained Transformer, fine‑tune for downstream tasks  
 - Represents a true [architectural shift]{.uured-bold}, not just bigger models
@@ -115,6 +120,8 @@ Use these notebooks as the executable version of the lecture: slides explain the
 - The encoder read the whole sentence **once**, compressed it into a single vector, and handed that to the decoder.  
 - The decoder then tried to generate the entire translation from that one vector.
 
+## The Encoder Bottleneck {.figure-only}
+
 ```{python}
 #| echo: false
 #| label: fig-encoder-01
@@ -125,6 +132,7 @@ d = DiagramBuilder(tokens=["Ich", "gehe", "nach", "Hause", "<eos>"])
 image = d.encoder_only(label="encoder01")
 display(SVG(image))
 ```
+
 
 ---
 

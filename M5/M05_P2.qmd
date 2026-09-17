@@ -15,7 +15,14 @@ author:
 jupyter: python3
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Generation, Evaluation, and Production RAG"
         html-math-method: katex
         slide-number: c/t
         toc: true
@@ -23,9 +30,7 @@ format:
 self-contained-math: true
 fig-align: center
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   enabled: false
   echo: false
@@ -303,7 +308,7 @@ Good answers cite both the filing year and the chunk ID, not only the generated 
 
 ---
 
-## Small Tesla Evidence Example
+## Small Tesla Evidence Example {.code-detail}
 
 ```{python}
 #| echo: true 
@@ -329,6 +334,13 @@ tesla_micro_chunks = [
     ),
 ]
 
+```
+
+## Retrieving the Tesla Evidence {.code-detail}
+
+```{python}
+#| echo: true
+#| eval: false
 question = "How did Tesla describe battery supply and production risk?"
 
 retrieved_docs = [
@@ -444,12 +456,18 @@ $$
 
 ## Where Classification Metrics Fail for RAG
 
+:::: {.columns}
+::: {.column width="50%"}
+
 Classification assumes:
 
 - fixed label set
 - one prediction per record
 - ground truth labels available
 - correctness can be reduced to match / mismatch
+
+:::
+::: {.column width="50%"}
 
 RAG violates those assumptions:
 
@@ -458,6 +476,9 @@ RAG violates those assumptions:
 - unsupported true claims are still risky
 - retrieval can fail even when generation looks fluent
 - generation can fail even when retrieval found good evidence
+
+:::
+::::
 
 For SEC analysis, "sounds right" is not enough. The claim must be traceable.
 
@@ -752,7 +773,7 @@ evaluator_llm = ChatVertexAI(model="gemini-1.5-flash")
 evaluator_embeddings = VertexAIEmbeddings(model="text-embedding-004")
 ```
 
-## Running RAGAS Metrics
+## Running RAGAS Metrics {.code-detail}
 
 ```{python}
 #| echo: true 
@@ -768,6 +789,13 @@ from ragas.metrics import (
     NoiseSensitivity,
 )
 
+```
+
+## Evaluating with RAGAS {.code-detail}
+
+```{python}
+#| echo: true
+#| eval: false
 scores = evaluate(
     dataset=eval_dataset,
     metrics=[
@@ -804,7 +832,7 @@ The best design depends on the failure mode: missed evidence, noisy ranking, uns
 
 ---
 
-## Experiment Harness for Model Variants
+## Experiment Harness for Model Variants {.code-detail}
 
 ```{python}
 #| echo: true 
@@ -832,6 +860,13 @@ TESLA_EVAL_QUESTIONS = [
     },
 ]
 
+```
+
+## Configuring Model Variants {.code-detail}
+
+```{python}
+#| echo: true
+#| eval: false
 rag_variants = {
     "baseline": baseline_rag,
     "reranker": reranker_rag,
@@ -840,6 +875,13 @@ rag_variants = {
     "reflection": reflection_rag,
 }
 
+```
+
+## Collecting Variant Results {.code-detail}
+
+```{python}
+#| echo: true
+#| eval: false
 rows = []
 for name, chain in rag_variants.items():
     for item in TESLA_EVAL_QUESTIONS:
@@ -863,7 +905,7 @@ The evaluation table preserves the answer, retrieved evidence, source years, ref
 
 ---
 
-## Hugging Face Embedding Comparison
+## Hugging Face Embedding Comparison {.code-detail}
 
 The embedding comparison keeps the Tesla corpus, questions, generator, and metrics fixed while changing only the embedding model.
 
@@ -878,6 +920,13 @@ HF_EMBEDDING_OPTIONS = {
     "bge_base": "BAAI/bge-base-en-v1.5",
 }
 
+```
+
+## Comparing Embedding Retrieval {.code-detail}
+
+```{python}
+#| echo: true
+#| eval: false
 comparison_rows = []
 for option_name, model_name in HF_EMBEDDING_OPTIONS.items():
     vector_store = build_vector_store(model_name)

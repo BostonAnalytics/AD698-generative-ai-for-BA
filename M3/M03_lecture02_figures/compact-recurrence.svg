@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-label="Current input + previous state → updated state">
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#0f7188"/></marker></defs>
+<rect width="560" height="360" fill="white"/>
+<path d="M150,163 L225,163" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M285,235 L285,186" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M285,140 L285,91" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="20" y="140" width="130" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="85.0" y="169" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">s(i−1)</text>
+<rect x="225" y="140" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="285.0" y="169" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">s(i)</text>
+<rect x="225" y="235" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="285.0" y="264" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">x(i)</text>
+<rect x="225" y="45" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="285.0" y="74" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">y(i)</text>
+<text x="280" y="340" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="17" fill="#a81d2a">Current input + previous state → updated state</text></svg>

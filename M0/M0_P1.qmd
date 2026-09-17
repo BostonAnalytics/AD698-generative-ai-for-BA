@@ -1,7 +1,7 @@
 ---
 title: "AD698 - Applied Generative AI"
 subtitle: "Colab, GPU, and Tensors"
-logo: "../theme/figures/met_logotype_black.png"
+logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
 date-format: long
@@ -14,17 +14,22 @@ author:
         state: MA
 format:
   revealjs:
-    theme: [../theme/presentation.scss]
+    theme: [default, ../theme/advisory.scss]
+    width: 1280
+    height: 720
+    margin: 0.08
+    center: false
+    transition: fade
+    auto-stretch: false
+    footer: "AD 698 - Colab, GPU, and Tensors"
     html-math-method: katex
     slide-number: c/t
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-  data-background-image: "../theme/blank_red.png"
-  data-background-size: 103% auto
-  data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute:
   echo: false
   eval: false

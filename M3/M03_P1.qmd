@@ -14,20 +14,24 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Prompting as System Design"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -104,6 +108,9 @@ Then we unpack the machinery that makes it possible.
 
 ## From Training-Centric AI to Inference-Centric AI
 
+:::: {.columns}
+::: {.column width="50%"}
+
 Traditional ML paradigm:
 
 - Model behavior determined primarily during [training]{.uublue-bold}
@@ -113,6 +120,9 @@ Traditional ML paradigm:
   - fine-tuning
   - feature redesign
 
+:::
+::: {.column width="50%"}
+
 Large Language Model paradigm:
 
 - Model behavior can be **modified at inference time**
@@ -120,6 +130,9 @@ Large Language Model paradigm:
   - prompts
   - context
   - task specification
+
+:::
+::::
 
 This represents a **fundamental architectural shift** in AI systems.
 
@@ -592,6 +605,8 @@ $$
     \end{align}
     $$
 
+## Image Captioning: Parameters and Loss
+
 - **Parameters:**  
   $$
   U_{\text{dec}},\; V,\; W_{\text{dec}},\; W_{\text{conv}},\; b
@@ -947,27 +962,28 @@ $$
 
 Two common forms:
 
+:::: {.columns}
+::: {.column width="50%"}
+
 **Cloze prompts**
 - answer slot inside sentence  
 
 Example:
-
 ```
-
 The movie was [Z].
-
 ```
+:::
+::: {.column width="50%"}
 
 **Prefix prompts**
 - answer follows entire input  
 
 Example:
-
 ```
-
 Translate: [X]
-
 ```
+:::
+::::
 
 Prompts may also:
 

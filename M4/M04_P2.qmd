@@ -8,18 +8,22 @@ date-format: long
 from: markdown+emoji
 format:
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Fine-Tuning Pipelines"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute:
     echo: false
     eval: false

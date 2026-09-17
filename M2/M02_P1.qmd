@@ -14,21 +14,25 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Language Modeling and Neural Networks"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
         code-fold: false
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   eval: true
@@ -356,6 +360,9 @@ $$
 \theta^*=\arg\max_{\theta}\prod_{i=1}^N p_\theta(\mathbf{w}^{(i)})
 \end{align}
 $$
+
+## Token-Level Log-Likelihood
+
 - We can apply the chain rule to factor each sequence probability into token-level probabilities,
 $$
 \begin{align}
@@ -1222,22 +1229,31 @@ This is where vanishing/exploding gradients arise.
 
 ## Putting It All Together
 
-### Feedforward NNLM
+:::: {.compass-cards}
+::: {.compass-card}
+[Feedforward NNLM]{.card-heading}
+
 - Fixed window  
 - Learns embeddings  
-- Limited context  
+- Limited context
+:::
+::: {.compass-card}
+[RNN]{.card-heading}
 
-### RNN
 - Variable‑length context  
 - Hidden state carries memory  
-- Hard to train  
+- Hard to train
+:::
+::: {.compass-card}
+[BPTT]{.card-heading}
 
-### BPTT
 - Computes gradients through time  
 - Suffers from vanishing/exploding gradients  
-- Motivates LSTMs, GRUs, Transformers  
+- Motivates LSTMs, GRUs, Transformers
+:::
+::::
 
-### References
+## References
 
 :::{#ref}
 

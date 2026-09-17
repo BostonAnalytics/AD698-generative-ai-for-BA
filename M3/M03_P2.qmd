@@ -14,20 +14,24 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Transformer Mechanics and Semantic Geometry"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
 from: markdown+emoji
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -294,6 +298,9 @@ That is why later LLM systems require additional control layers such as instruct
 :::
 :::
 
+
+## Fixed-size Images and Word Windows
+
 :::{.columns}
 ::: {.column width="50%"}
 
@@ -308,6 +315,9 @@ That is why later LLM systems require additional control layers such as instruct
 :::
 :::
 
+
+## Independent Inputs
+
 :::{.columns}
 ::: {.column width="50%"}
 
@@ -320,6 +330,9 @@ That is why later LLM systems require additional control layers such as instruct
 
 :::
 :::
+
+
+## Independent Predictions
 
 :::{.columns}
 ::: {.column width="50%"}
@@ -922,7 +935,7 @@ $$
 :::: {.columns}
 ::: {.column width="50%"}
 
-![](modules/Module14/svg/module14_2_parameter_sharing.svg){width=95%}
+![The same function and parameters applied to three sequence inputs](M03_lecture02_figures/shared-parameters.svg){width=95%}
 
 :::
 
@@ -942,7 +955,7 @@ $$
 ::: {.column width="50%"}
 <div style="text-align:center; margin-top: 1.0em;">
 
-![](modules/Module14/svg/module14_2_all_previous_inputs.svg){width=90%}
+![Each successive network receives a growing list of previous inputs](M03_lecture02_figures/all-previous-inputs.svg){width=90%}
 
 </div>
 :::
@@ -973,7 +986,7 @@ $$
 ::: {.column width="50%"}
 <div style="text-align:center; margin-top: 1.0em;">
 
-![](modules/Module14/svg/module14_2_naive_dependence_problem.svg){width=90%}
+![Different input sizes require different functions at successive steps](M03_lecture02_figures/growing-input-functions.svg){width=90%}
 
 </div>
 :::
@@ -1000,15 +1013,15 @@ $$
 ## The Recurrent Solution
 
 :::: {.columns}
-::: {.column width="50%"}
+::: {.column width="40%"}
 <div style="text-align:center; margin-top: 1.0em;">
 
-![](modules/Module14/svg/module14_2_recurrent_solution.svg){width=95%}
+![Inputs, hidden states, and outputs connected across three recurrent steps](M03_lecture02_figures/recurrent-state.svg){width=95%}
 
 </div>
 :::
 
-::: {.column width="50%"}
+::: {.column width="60%"}
 - The solution is to add a **recurrent connection** to the network
 
 $$
@@ -1025,13 +1038,16 @@ $$
 y_i = f(x_i, s_{i-1}, W, U, V, b, c)
 $$
 
+:::
+::::
+
+## Recurrent State and Shared Parameters
+
 - $s_i$ is the **state** of the network at time step $i$
 
 - The parameters $W, U, V, b, c$ are shared across time steps
 
 - The same model can process sequences of length 10, 100, or more
-:::
-::::
 
 
 ---
@@ -1042,7 +1058,7 @@ $$
 ::: {.column width="50%"}
 <div style="text-align:center; margin-top: 1.0em;">
 
-![](modules/Module14/svg/module14_2_compact_rnn.svg){width=70%}
+![The previous state and current input produce the updated state](M03_lecture02_figures/compact-recurrence.svg){width=70%}
 
 </div>
 :::
@@ -1067,7 +1083,7 @@ $$
 ::: {.column width="50%"}
 <div style="text-align:center; margin-top: 1.0em;">
 
-![](modules/Module14/svg/module14_2_sequence_learning_problems.svg){width=92%}
+![Recurrent states carry information across sequence prediction steps](M03_lecture02_figures/recurrent-sequence-tasks.svg){width=92%}
 
 </div>
 :::
@@ -1123,6 +1139,9 @@ but also on:
 
 Two major prompt shapes are commonly used:
 
+:::: {.columns}
+::: {.column width="50%"}
+
 **Cloze prompt**
 - the answer slot appears inside the text
 
@@ -1130,7 +1149,10 @@ Example:
 
 ```text
 I love this movie. Overall, it was a [Z] movie.
-````
+```
+
+:::
+::: {.column width="50%"}
 
 **Prefix prompt**
 
@@ -1143,6 +1165,9 @@ French: Je vous aime.
 English: [Z]
 ```
 
+:::
+::::
+
 Prompt shape affects:
 
 * what the model is asked to do
@@ -1152,11 +1177,17 @@ Prompt shape affects:
 
 ## Manual Template Engineering
 
+:::: {.columns}
+::: {.column width="50%"}
+
 A manually designed prompt template specifies:
 
 - where the input is inserted
 - what linguistic context surrounds it
 - what kind of answer is expected
+
+:::
+::: {.column width="50%"}
 
 Examples:
 
@@ -1177,6 +1208,9 @@ Examples:
   French: [X] English: [Z]
   ```
 
+:::
+::::
+
 Manual template design is intuitive and interpretable, but it is often brittle and task-sensitive. 
 
 ---
@@ -1193,11 +1227,7 @@ Two major approaches:
 
 This shifts prompting from:
 
-> prompt writing
-
-to
-
-> prompt optimization
+> prompt writing → prompt optimization
 
 The central idea is that the prompt itself can become an object of search or training.
 
@@ -1214,17 +1244,26 @@ Examples:
 - searching candidate templates
 - optimizing label words
 
+:::: {.columns}
+::: {.column width="50%"}
+
 Advantages:
 
 - interpretable
 - human-readable
 - easy to inspect
 
+:::
+::: {.column width="50%"}
+
 Limitations:
 
 - combinatorial search space
 - token-level optimization is difficult
 - may remain brittle across tasks.
+:::
+::::
+
 
 ---
 
@@ -1241,17 +1280,26 @@ The movie is [Z].
 
 we learn soft prompt embeddings that steer the model.
 
+:::: {.columns}
+::: {.column width="50%"}
+
 Advantages:
 
 * highly flexible
 * easier to optimize than discrete token search
 * often performs well with frozen language models
 
+:::
+::: {.column width="50%"}
+
 Limitations:
 
 * less interpretable
 * not directly human-readable
 * can behave like hidden task-specific parameters. 
+:::
+::::
+
 
 ---
 
@@ -1373,6 +1421,8 @@ Five major strategies:
 
 5. **Prompt + LM tuning**
    - jointly optimize both prompt and model
+
+## Comparing Parameter Update Strategies
 
 These strategies differ in:
 

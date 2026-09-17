@@ -1,7 +1,7 @@
 ---
 title: "AD698 - Applied Generative AI"
 subtitle: "Early Neural Networks and NLP"
-logo: "../theme/figures/met_logotype_black.png"
+logo: "../theme/figures/met_signature_toptier_rgb.png"
 date: 03/12/2024
 date-modified: today
 date-format: long
@@ -13,20 +13,24 @@ author:
         state: MA
 format: 
     revealjs:
-        theme: [../theme/presentation.scss]
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        transition: fade
+        auto-stretch: false
+        footer: "AD 698 - Early Neural Networks and NLP"
         html-math-method: katex
         slide-number: c/t
         toc: true
         toc-depth: 1
-        auto-stretch: false
         from: markdown+emoji
 self-contained-math: true
 fig-align: center
-monofont: Roboto
+monofont: Consolas
 title-slide-attributes:
-    data-background-image: "../theme/blank_red.png"
-    data-background-size: 103% auto
-    data-background-opacity: "0.95"
+  data-background-color: "#ffffff"
 execute: 
   echo: false
   warning: false
@@ -151,10 +155,7 @@ styled_table
 
 ```
 
-## Course Grading
-
-:::{.columns}
-:::{.column width="60%"}
+## Course Grading {.figure-only}
 
 ```{python}
 #| echo: false
@@ -185,8 +186,8 @@ plt.show()
 
 ```
 
-:::
-:::{.column width="40%"}
+## Course Grading Table {.compact-table}
+
 ```{python}
 #| echo: false
 #| eval: true
@@ -226,9 +227,6 @@ styled = (
 
 styled
 ```
-
-:::
-:::
 
 ---
 
@@ -393,11 +391,17 @@ This course is built around evidence, reproducibility, and clean deliverables ra
 ![](./M01_lecture01_figures/Intelligent-Machines-AI-timeline.jpg){width="70%" fig-align="center"}
 
 ## 1956 - Dartmouth Conference: The Birth of Artificial Intelligence
+
+:::: {.columns}
+::: {.column width="60%"}
 ### Significance
 - The term "[Artificial Intelligence]{.uublue-bold}" was first coined at the Dartmouth Conference, with credit to John McCarthy, one of the event organizers.
 - [Foundational Moment for AI]{.uublue-bold}: This event is often considered the founding moment of AI as a field of study. It was the first time researchers from various disciplines came together to explore the concept of machine intelligence.
-
-![](./M01_lecture01_figures/dartmouth_Fathers_AI.png){width="75%" fig-align="center"}
+:::
+::: {.column width="40%"}
+![](./M01_lecture01_figures/dartmouth_Fathers_AI.png){width="100%" fig-align="center"}
+:::
+::::
 
 ## 1958 - Perceptron by Rosenblatt at Cornell
 
@@ -596,23 +600,34 @@ The 1986 backpropagation work demonstrated that [multi-layer perceptrons (MLPs)]
 
 The [Universal Approximation Theorem]{.uured-bold} provided a formal theoretical justification for neural networks.
 
-- Core result
-  - A feedforward network with:
-    - One hidden layer
-    - Finite neurons
-    - A non-linear activation function
-  - Can approximate **any continuous function** on a compact domain
-- What the theorem does (and does not) say
-  - ✔ Networks are *expressive enough in principle*
-  - ✘ Does not guarantee efficient training
-  - ✘ Does not imply good generalization or data efficiency
-- Why it mattered
-  - Countered claims that neural networks were inherently limited
-  - Legitimated neural networks as universal function learners
-  - Encouraged continued research despite computational constraints
 
+:::: {.compass-cards}
+::: {.compass-card}
+[Core result]{.card-heading}
 
---- 
+- A feedforward network with:
+  - One hidden layer
+  - Finite neurons
+  - A non-linear activation function
+- Can approximate **any continuous function** on a compact domain
+:::
+::: {.compass-card}
+[What the theorem does (and does not) say]{.card-heading}
+
+- ✔ Networks are *expressive enough in principle*
+- ✘ Does not guarantee efficient training
+- ✘ Does not imply good generalization or data efficiency
+:::
+::: {.compass-card}
+[Why it mattered]{.card-heading}
+
+- Countered claims that neural networks were inherently limited
+- Legitimated neural networks as universal function learners
+- Encouraged continued research despite computational constraints
+:::
+::::
+
+---
 
 ## Why Didn’t Neural Networks Take Over Immediately?
 
@@ -657,19 +672,30 @@ Despite strong theoretical foundations, neural networks did **not** dominate AI 
 
 **AlexNet** marked a decisive turning point in modern AI by demonstrating that **deep neural networks scale effectively** when paired with sufficient data and computation.
 
-- **What AlexNet showed**
-  - Deep convolutional networks could vastly outperform classical vision pipelines
-  - End-to-end learning outperformed hand-crafted feature engineering
-  - Performance gains came from **scale**, not new theory alone
 
-- **Why ImageNet mattered**
-  - 1.2M labeled images across 1,000 classes
-  - AlexNet reduced top-5 error by ~10 percentage points
-  - Established benchmarks as a driver of progress
-- **Infrastructure innovation**
-  - Training split across **two GPUs** due to memory limits
-  - GPU acceleration enabled faster iteration and deeper architectures
-  - Marked the beginning of **hardware–model co-design** in AI
+:::: {.compass-cards}
+::: {.compass-card}
+[What AlexNet showed]{.card-heading}
+
+- Deep convolutional networks could vastly outperform classical vision pipelines
+- End-to-end learning outperformed hand-crafted feature engineering
+- Performance gains came from **scale**, not new theory alone
+:::
+::: {.compass-card}
+[Why ImageNet mattered]{.card-heading}
+
+- 1.2M labeled images across 1,000 classes
+- AlexNet reduced top-5 error by ~10 percentage points
+- Established benchmarks as a driver of progress
+:::
+::: {.compass-card}
+[Infrastructure innovation]{.card-heading}
+
+- Training split across **two GPUs** due to memory limits
+- GPU acceleration enabled faster iteration and deeper architectures
+- Marked the beginning of **hardware–model co-design** in AI
+:::
+::::
 
 ---
 
@@ -677,20 +703,31 @@ Despite strong theoretical foundations, neural networks did **not** dominate AI 
 
 The [Transformer architecture]{.uured-bold} revolutionized modern AI by replacing recurrence and convolution with **attention**, fundamentally changing how models process language and sequences.
 
-- **Core innovation**
-  - Self-attention enables global context modeling
-  - Parallelizable training replaces sequential recurrence
-  - Scales efficiently with data and compute
-- **Why this mattered**
-  - Dramatically improved performance on NLP tasks
-  - Enabled large-scale pretraining on unlabeled text
-  - Decoupled sequence modeling from strict ordering constraints
-- **From models to platforms**
-  - Transformers became the backbone of:
-    - Language understanding (e.g., BERT-style models)
-    - Language generation (e.g., GPT-style models)
-  - Established the foundation for **Large Language Models (LLMs)**
 
+:::: {.compass-cards}
+::: {.compass-card}
+[Core innovation]{.card-heading}
+
+- Self-attention enables global context modeling
+- Parallelizable training replaces sequential recurrence
+- Scales efficiently with data and compute
+:::
+::: {.compass-card}
+[Why this mattered]{.card-heading}
+
+- Dramatically improved performance on NLP tasks
+- Enabled large-scale pretraining on unlabeled text
+- Decoupled sequence modeling from strict ordering constraints
+:::
+::: {.compass-card}
+[From models to platforms]{.card-heading}
+
+- Transformers became the backbone of:
+  - Language understanding (e.g., BERT-style models)
+  - Language generation (e.g., GPT-style models)
+- Established the foundation for **Large Language Models (LLMs)**
+:::
+::::
 
 ## Innovations in Modeling
 
@@ -752,19 +789,24 @@ Knowledge production becomes faster, cheaper, and more widely accessible—but l
 
 ## Enablement vs. Erosion of Knowledge Signals
 
+:::: {.columns}
+::: {.column width="50%"}
 ### Enablement and Scale *(Pros)*
 
 - Rapid synthesis across large and complex datasets
 - Broad access to advanced analytical and creative capabilities
 - Accelerated experimentation, learning, and innovation
 * Empowerment of individuals and small teams at scale
-
+:::
+::: {.column width="50%"}
 ### Slop and Misinformation *(Cons)*
 
 - Convincing text, images, audio, and video can be fabricated at scale
 - Expertise can be mimicked without understanding or accountability
 - Automated pipelines bypass editorial review and due process
 - Long-term effects of widespread synthetic content remain uncertain
+:::
+::::
 
 > **Key tension:** Generative AI expands knowledge creation
 > while weakening traditional signals of credibility, expertise, and trust.
@@ -957,8 +999,11 @@ $$
 \end{align}
 $$
 
-![](./M01_lecture01_figures/MLP.png){width="70%" fig-align="center"}
-
+:::: {.columns}
+::: {.column width="55%"}
+![](./M01_lecture01_figures/MLP.png){width="100%" fig-align="center"}
+:::
+::: {.column width="45%"}
 **Architecture**
 
 | Layer | Size | Activation |
@@ -966,6 +1011,8 @@ $$
 | Input | $|V|$ features | — |
 | Hidden | 32–256 neurons | ReLU |
 | Output | $C$ classes | Softmax |
+:::
+::::
 
 ---
 

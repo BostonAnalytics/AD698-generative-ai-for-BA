@@ -1,12 +1,22 @@
 ---
 title: "Timeline"
 format:
-    revealjs: default
+    revealjs:
+        theme: [default, ../theme/advisory.scss]
+        width: 1280
+        height: 720
+        margin: 0.08
+        center: false
+        footer: "AD 698 - Timeline"
+        slide-number: c/t
+logo: "../theme/figures/met_signature_toptier_rgb.png"
+title-slide-attributes:
+    data-background-color: "#ffffff"
 ---
 
 
 ## Neuron Doctrine 
 
 ```{=html} 
-<iframe src="nn1-1.html" width="100%" height="600px" style="border:none;">
+<iframe src="nn1-1.html" width="100%" height="480px" style="border:none;"></iframe>
 ```

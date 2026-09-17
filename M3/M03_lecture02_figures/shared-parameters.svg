@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 360" role="img" aria-label="One function, the same parameters at every step">
+<defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7" fill="#0f7188"/></marker></defs>
+<rect width="560" height="360" fill="white"/>
+<path d="M95,235 L95,186" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M95,140 L95,91" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M280,235 L280,186" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M280,140 L280,91" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M465,235 L465,186" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<path d="M465,140 L465,91" stroke="#0f7188" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+<rect x="35" y="235" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="95.0" y="264" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">x1</text>
+<rect x="35" y="140" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="95.0" y="169" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">f (shared θ)</text>
+<rect x="35" y="45" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="95.0" y="74" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">y1</text>
+<rect x="220" y="235" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="280.0" y="264" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">x2</text>
+<rect x="220" y="140" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="280.0" y="169" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">f (shared θ)</text>
+<rect x="220" y="45" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="280.0" y="74" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">y2</text>
+<rect x="405" y="235" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="465.0" y="264" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">x3</text>
+<rect x="405" y="140" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="465.0" y="169" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">f (shared θ)</text>
+<rect x="405" y="45" width="120" height="46" rx="8" fill="#f7f7f5" stroke="#c5cbd0"/><text x="465.0" y="74" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="18" fill="#151719">y3</text>
+<text x="280" y="340" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="17" fill="#a81d2a">One function, the same parameters at every step</text></svg>
