@@ -119,3 +119,15 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Check imports again before choosing a render interpreter. On this rollout, system Python had a pydantic/pydantic-core mismatch and lacked svgwrite; the project .venv imported gensim, spacy, and svgwrite successfully. Earlier environment observations are not permanent.
 - tags: quarto,revealjs,theme,layout,verification,python
 - Ignore `*.quarto_ipynb*`, including numbered suffixes; the narrower `*.quarto_ipynb` rule allowed eight temporary notebooks to be tracked. Keep the authored `.qmd` and intentional `.ipynb` files instead.
+
+## 2026-09-17 -- For Reveal.js scrollbar fixes in AD698, remove advisory.scss overflow-x:auto overrides and verify both pre.sourceCode and .cell-output pre; code folding still requires code-fold:true in the deck YAML because SCSS cannot create details elements.
+- Expected: The advisory theme would wrap long code and output lines without a horizontal scrollbar, with folding available from the presentation settings.
+- Actual: advisory.scss had a later pre.sourceCode overflow-x:auto rule that reintroduced horizontal scrolling; M2/M02_P1.qmd also explicitly set code-fold:false.
+- Why: CSS controls overflow and wrapping, while Quarto code folding is generated from document metadata; the two mechanisms are independent.
+- tags: quarto,revealjs,theme,verification
+
+## 2026-09-17 -- For AD698 HTML-theme verification on this Windows checkout, direct quarto render currently resolves Deno to a malformed D:/Repositories/AD698-generative-ai-for-BA/Files/Quarto/bin path, while uv run quarto is blocked when the sibling D:/Repositories/edustack wheel source is absent; compile theme SCSS with C:/Program Files/Quarto/bin/tools/x86_64/dart-sass/sass.bat and report page rendering as blocked until either environment issue is fixed.
+- Expected: Representative Module 2 HTML pages would render after the metanalytics.scss update.
+- Actual: Dart Sass compiled theme/metanalytics.scss successfully, but direct Quarto failed before rendering on a malformed Deno path and uv run failed before rendering because D:/Repositories/edustack was missing.
+- Why: The installed Quarto and uv project execution paths depend on different local runtime assumptions; SCSS compilation is independent of Quarto page execution.
+- tags: quarto,scss,windows,verification,environment

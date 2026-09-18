@@ -35,3 +35,5 @@ help-code/secfile/sec-edgar-filings/TSLA/10-K/2022/tsla-20221231.htm
 help-code/secfile/sec-edgar-filings/TSLA/10-K/2023/tsla-20231231.htm
 help-code/secfile/sec-edgar-filings/TSLA/10-K/2024/tsla-20241231.htm
 help-code/secfile/sec-edgar-filings/TSLA/10-K/2025/tsla-20251231.htm
+
+**/*.quarto_ipynb
