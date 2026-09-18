@@ -318,3 +318,224 @@ ul.navbar-nav {
   word-break: break-wor !important;
   white-space: pre-wrap !important;
 }
+
+/* Advisory HTML content layer
+   Keep the Reveal.js implementation in advisory.scss; this layer applies the
+   same visual system to lecture notes, labs, tutorials, assignments, and
+   module support pages rendered as HTML. */
+:root {
+  --advisory-ink: #152238;
+  --advisory-muted: #5d6774;
+  --advisory-teal: #176b85;
+  --advisory-coral: #d45b50;
+  --advisory-surface: #ffffff;
+  --advisory-wash: #ffffff;
+  --advisory-rule: rgba(21, 73, 104, 0.18);
+}
+
+body {
+  background: var(--advisory-wash);
+  color: var(--advisory-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  margin-top: 0;
+}
+
+#quarto-content,
+.page-columns {
+  background: transparent;
+}
+
+#quarto-content {
+  padding-top: 2.5rem;
+  padding-bottom: 4rem;
+}
+
+#title-block-header,
+.quarto-title-block {
+  border-bottom: 1px solid var(--advisory-rule);
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.75rem;
+}
+
+#title-block-header .title,
+.quarto-title h1 {
+  color: var(--advisory-ink) !important;
+  font-size: clamp(2rem, 4vw, 3.2rem) !important;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  margin-bottom: 0.75rem;
+}
+
+#title-block-header .subtitle,
+.quarto-title .subtitle {
+  color: var(--advisory-muted);
+  font-size: 1.25rem;
+  line-height: 1.35;
+}
+
+.quarto-title-meta,
+.quarto-title-meta-heading {
+  color: var(--advisory-muted);
+  font-size: 0.85rem;
+}
+
+#TOC,
+.toc-actions {
+  font-size: 0.88rem;
+}
+
+#TOC a,
+.toc-actions a,
+a {
+  color: var(--advisory-teal);
+}
+
+#TOC a:hover,
+a:hover {
+  color: var(--advisory-coral);
+}
+
+#quarto-content h1,
+#quarto-content h2,
+#quarto-content h3,
+#quarto-content h4,
+#quarto-content h5,
+#quarto-content h6 {
+  color: var(--advisory-ink) !important;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-style: normal;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+#quarto-content h1 {
+  border-bottom: 2px solid var(--advisory-teal);
+  font-size: 1.9rem !important;
+  padding-bottom: 0.45rem;
+}
+
+#quarto-content h2 {
+  color: var(--advisory-teal) !important;
+  font-size: 1.55rem !important;
+  margin-top: 2.5rem;
+}
+
+#quarto-content h3 {
+  color: var(--advisory-coral) !important;
+  font-size: 1.2rem !important;
+  margin-top: 1.8rem;
+}
+
+#quarto-content h4 {
+  color: var(--advisory-teal) !important;
+  font-size: 1.05rem !important;
+}
+
+#quarto-content h5,
+#quarto-content h6 {
+  color: var(--advisory-muted) !important;
+  font-size: 0.98rem !important;
+}
+
+#quarto-content p,
+#quarto-content li {
+  color: var(--advisory-ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 1rem;
+}
+
+#quarto-content blockquote {
+  background: rgba(255, 255, 255, 0.82);
+  border-left: 5px solid var(--advisory-teal);
+  border-radius: 0 12px 12px 0;
+  color: var(--advisory-muted);
+  font-style: normal;
+  margin: 1.5rem 0;
+  padding: 0.8rem 1.25rem;
+}
+
+#quarto-content hr {
+  border-top: 1px solid var(--advisory-rule);
+  opacity: 1;
+}
+
+#quarto-content .callout,
+#quarto-content .panel-tabset,
+#quarto-content .columns > .column > blockquote {
+  background: var(--advisory-surface);
+  border-color: var(--advisory-rule);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(21, 34, 56, 0.06);
+}
+
+#quarto-content .callout .callout-title {
+  color: var(--advisory-teal);
+  font-weight: 750;
+}
+
+#quarto-content pre,
+#quarto-content div.sourceCode {
+  background: var(--advisory-surface);
+  border: 1px solid var(--advisory-rule);
+  border-radius: 10px;
+  box-shadow: none;
+  max-width: 100%;
+}
+
+#quarto-content pre code,
+#quarto-content .cell-output-stdout code,
+#quarto-content .cell-output-stderr code {
+  color: #155e75;
+  font-family: Consolas, "Cascadia Code", monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+#quarto-content table {
+  background: var(--advisory-surface);
+  border: 1px solid var(--advisory-rule);
+  border-radius: 10px;
+  display: table;
+  font-size: 0.95rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+#quarto-content table th {
+  background: var(--advisory-ink);
+  border-bottom: 0;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.7rem 0.8rem;
+}
+
+#quarto-content table td {
+  border-top: 1px solid var(--advisory-rule);
+  padding: 0.65rem 0.8rem;
+}
+
+#quarto-content figure img,
+#quarto-content p > img {
+  border-radius: 8px;
+}
+
+#quarto-content figcaption {
+  color: var(--advisory-muted);
+  font-size: 0.85rem;
+}
+
+.uublue-bold {
+  color: var(--advisory-teal) !important;
+}
+
+.bloodred-bold,
+.uured-bold {
+  color: var(--advisory-coral) !important;
+}
+
+.uugreen-bold {
+  color: #28745d !important;
+}

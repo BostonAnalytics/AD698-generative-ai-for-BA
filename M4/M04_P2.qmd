@@ -24,6 +24,10 @@ fig-align: center
 monofont: Consolas
 title-slide-attributes:
   data-background-color: "#ffffff"
+  data-background-image: "../theme/figures/google-deepmind-jVZ_BKzDOJg-unsplash.jpg"
+  data-background-size: cover
+  data-background-position: center
+  data-background-opacity: "0.22"
 execute:
     echo: false
     eval: false
