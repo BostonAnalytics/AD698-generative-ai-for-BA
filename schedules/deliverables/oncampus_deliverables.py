@@ -20,7 +20,7 @@ def apply_oncampus_deliverables(
 
     col = [""] * n
     for idx, (i, d) in enumerate(selected, start=1):
-        due = d + timedelta(days=1)
+        due = d + timedelta(days=8)
         col[i] = f"A{idx} (Due: {due.strftime('%b %d')})"
 
     schedule_df["Assignments"] = col

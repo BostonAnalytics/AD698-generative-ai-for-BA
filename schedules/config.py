@@ -56,8 +56,9 @@ section_configs_by_semester = {
         {
             "section": "A1",
             "modality": "oncampus",
-            "start_date": "2026-09-14",
-            "class_days": ["Mon"],
+            "start_date": "2026-09-08",
+            "class_days": ["Tue"],
+            "lecture_count": 14,
         },
         {
             "section": "O1",

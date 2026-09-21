@@ -131,3 +131,15 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: Dart Sass compiled theme/metanalytics.scss successfully, but direct Quarto failed before rendering on a malformed Deno path and uv run failed before rendering because D:/Repositories/edustack was missing.
 - Why: The installed Quarto and uv project execution paths depend on different local runtime assumptions; SCSS compilation is independent of Quarto page execution.
 - tags: quarto,scss,windows,verification,environment
+
+## 2026-09-20 -- For AD698 with EduStack 0.1.1, generate through schedules.generated_schedule: the generic CLI omits deliverables hooks. Verify exact A1 dates and nonempty deliverables sheets. Fall 2026 now has 14 Tuesday meetings from September 8 through December 15, superseding the older 12-meeting lesson; skip October 13 because it follows Monday's schedule.
+- Expected: Package migration would preserve course dates and deliverables on the schedule and deliverables pages.
+- Actual: The stored export had empty deliverables sheets and 12 Monday dates. The course wrapper now regenerates with deliverables, and all three pages rendered and passed HTML checks for their intended content.
+- Why: The package loader only reads an export, the generic generator omits course hooks, and its substitution engine applies Monday dates to Tuesday sections. The source workbook also now has one section, so index.qmd's positional row deletion failed and was removed. Regression tests and HTML inspection cover these outcomes.
+- tags: schedule,edustack,calendar,verification,fix-applied
+
+## 2026-09-20 -- For AD698 render startup delays, time quarto inspect before changing caching: the 2026-09-20 checkout took 94.84 seconds versus 4.57 seconds for the same 117 inputs in a source-only copy.
+- Expected: Separate notebook execution time from project startup overhead.
+- Actual: help-code contained 100478 files and data contained 14675 files; source-only discovery was much faster. Full render timing was unavailable after a Sass subprocess Invalid handle error.
+- Why: Quarto 1.11.1 expands recursive render include and exclude globs separately and also scans project YAML files; render exclusions do not eliminate all traversal. Compare effective input sets before attributing latency to caching. No configuration fix applied.
+- tags: quarto,performance,discovery

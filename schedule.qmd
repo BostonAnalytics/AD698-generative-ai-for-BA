@@ -14,7 +14,7 @@ sidebar: false
 html-table-processing: none
 execute: 
   freeze: false
-  cache: true
+  cache: false
 ---
 
 

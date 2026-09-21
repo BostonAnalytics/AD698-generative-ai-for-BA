@@ -14,7 +14,7 @@ format:
 html-table-processing: none
 execute: 
   freeze: false
-  cache: true
+  cache: false
 bibliography: references.bib
 csl: mis-quarterly.csl
 # html-table-processing: none
@@ -24,6 +24,7 @@ csl: mis-quarterly.csl
 
 ```{python}
 # | echo: false
+# | eval: true
 # | output: markdown
 
 from IPython.display import display, HTML
@@ -31,6 +32,9 @@ from schedules.config import semester, year
 from schedules.generated_schedule import load_generated_schedule
 
 summary = load_generated_schedule("summary", semester=semester, year=year)
+
+# Drop O1 row
+summary = summary[summary["Section"] != "O1"]
 
 styled = (
     summary
@@ -58,19 +62,20 @@ Please adhere to the due dates posted on the course website. [Late work is not a
 - All Labs (for online) will open **in the first two weeks** and are ungraded.
 
 
-## Online Deliverables
+<!-- ## Online Deliverables -->
 
 ```{python}
 #| echo: false
+#| eval: false
 #| tbl-colwidths: [10,10,15,15]
 
-from IPython.display import HTML
+from IPython.display import display, HTML
 from schedules.config import semester, year
 from schedules.generated_schedule import load_generated_schedule
 
 online_df = load_generated_schedule("online_deliverables", semester=semester, year=year)
 
-HTML(online_df.to_html(index=False))
+display(HTML(online_df.to_html(index=False)))
 
 ```
 
@@ -79,15 +84,16 @@ HTML(online_df.to_html(index=False))
 
 ```{python}
 #| echo: false
+#| eval: true
 #| tbl-colwidths: [10,10,15,15]
 
-from IPython.display import HTML
+from IPython.display import display, HTML
 from schedules.config import semester, year
 from schedules.generated_schedule import load_generated_schedule
 
 oncampus_df = load_generated_schedule("oncampus_deliverables", semester=semester, year=year)
 
-HTML(oncampus_df.to_html(index=False))
+display(HTML(oncampus_df.to_html(index=False)))
 
 
 ```

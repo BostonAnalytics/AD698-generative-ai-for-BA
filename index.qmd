@@ -27,8 +27,6 @@ from IPython.display import display, Markdown, HTML
 
 sections = pd.read_excel("data/AD698-Schedule.xlsx", sheet_name="Sections")
 
-sections.drop(1, inplace=True)  # Drop the first row which contains the section names
-
 def restrict_width(column):
     return [("max-width", "200px"), ("overflow", "hidden"), ("text-overflow", "ellipsis")]
 
