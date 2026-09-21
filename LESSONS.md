@@ -143,3 +143,9 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: help-code contained 100478 files and data contained 14675 files; source-only discovery was much faster. Full render timing was unavailable after a Sass subprocess Invalid handle error.
 - Why: Quarto 1.11.1 expands recursive render include and exclude globs separately and also scans project YAML files; render exclusions do not eliminate all traversal. Compare effective input sets before attributing latency to caching. No configuration fix applied.
 - tags: quarto,performance,discovery
+
+## 2026-09-20 -- On this Windows managed checkout, schedule tests that write temporary .xlsx files can fail with PermissionError under the sandbox temp directory; rerun the same unittest command with elevated filesystem access before changing test or schedule code.
+- Expected: python -m unittest tests/test_schedule_generation.py completes with 3 tests passing.
+- Actual: The first run failed in two tests when pandas/openpyxl tried to create schedule.xlsx under the Windows Temp directory; the unchanged rerun with elevated access passed all 3 tests.
+- Why: The sandbox denies pandas/openpyxl file creation and cleanup in its managed temporary directories, while the repository and test logic are valid.
+- tags: tests,windows,permissions,schedule
