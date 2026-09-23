@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="460" viewBox="0 0 1120 460" role="img" aria-labelledby="title desc">
+<title id="title">Softmax predicts the next word: She adopted a blank</title>
+<desc id="desc">Illustrative scores for a six-word toy vocabulary: cat 2.1, dog 1.9, rabbit 1.4, kitten 1.2, puppy 1.0, car 0.1. Softmax probabilities are 31.3%, 25.7%, 15.6%, 12.7%, 10.4%, and 4.2%. Rounded labels sum to 99.9%; exact probabilities sum to 100%.</desc>
+<defs>
+<marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9Z" fill="#152238"/></marker>
+<style>text {font-family:Arial,Helvetica,sans-serif;fill:#152238} .label {font-size:22px;font-weight:700} .small {font-size:18px} .value {font-size:21px;font-weight:700} .heading {font-size:23px;font-weight:700;fill:white}</style>
+</defs>
+<rect width="1120" height="460" fill="white"/>
+<rect x="360" y="2" width="400" height="42" rx="10" fill="#fae477" stroke="#152238" stroke-width="2"/>
+<text x="560" y="31" text-anchor="middle" class="label">She adopted a ___</text>
+<text x="560" y="67" text-anchor="middle" class="small">Illustrative scores · six-word toy vocabulary</text>
+<rect x="8" y="96" width="480" height="239" rx="12" fill="#e4effb" stroke="#152238" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="632" y="96" width="480" height="239" rx="12" fill="#fff4d7" stroke="#152238" stroke-width="2" stroke-dasharray="7 6"/>
+<rect x="26" y="83" width="264" height="38" rx="8" fill="#6740ad" stroke="#152238" stroke-width="2"/>
+<text x="158" y="109" text-anchor="middle" class="heading">Raw scores (logits)</text>
+<rect x="650" y="83" width="270" height="38" rx="8" fill="#6740ad" stroke="#152238" stroke-width="2"/>
+<text x="785" y="109" text-anchor="middle" class="heading">Softmax probabilities</text>
+<text x="560" y="193" text-anchor="middle" class="small" font-weight="700">softmax</text>
+<path d="M508 215 H611" stroke="#152238" stroke-width="3" marker-end="url(#arrow)"/>
+<!-- Each panel has its own shared zero baseline and linear scale. -->
+<text x="30" y="151" class="value">cat</text><rect x="125" y="132" width="252.000000" height="23" rx="4" fill="#ef927f" stroke="#152238" stroke-width="1.5"/><text x="455" y="151" text-anchor="end" class="value">2.1</text>
+<text x="654" y="151" class="value">cat</text><rect x="749" y="132" width="250.776460" height="23" rx="4" fill="#ef927f" stroke="#152238" stroke-width="1.5"/><text x="1090" y="151" text-anchor="end" class="value">31.3%</text>
+<text x="30" y="179" class="value">dog</text><rect x="125" y="160" width="228.000000" height="23" rx="4" fill="#64d5ad" stroke="#152238" stroke-width="1.5"/><text x="455" y="179" text-anchor="end" class="value">1.9</text>
+<text x="654" y="179" class="value">dog</text><rect x="749" y="160" width="205.318400" height="23" rx="4" fill="#64d5ad" stroke="#152238" stroke-width="1.5"/><text x="1090" y="179" text-anchor="end" class="value">25.7%</text>
+<text x="30" y="207" class="value">rabbit</text><rect x="125" y="188" width="168.000000" height="23" rx="4" fill="#9bc6ed" stroke="#152238" stroke-width="1.5"/><text x="455" y="207" text-anchor="end" class="value">1.4</text>
+<text x="654" y="207" class="value">rabbit</text><rect x="749" y="188" width="124.531905" height="23" rx="4" fill="#9bc6ed" stroke="#152238" stroke-width="1.5"/><text x="1090" y="207" text-anchor="end" class="value">15.6%</text>
+<text x="30" y="235" class="value">kitten</text><rect x="125" y="216" width="144.000000" height="23" rx="4" fill="#fae477" stroke="#152238" stroke-width="1.5"/><text x="455" y="235" text-anchor="end" class="value">1.2</text>
+<text x="654" y="235" class="value">kitten</text><rect x="749" y="216" width="101.958100" height="23" rx="4" fill="#fae477" stroke="#152238" stroke-width="1.5"/><text x="1090" y="235" text-anchor="end" class="value">12.7%</text>
+<text x="30" y="263" class="value">puppy</text><rect x="125" y="244" width="120.000000" height="23" rx="4" fill="#f5b6ce" stroke="#152238" stroke-width="1.5"/><text x="455" y="263" text-anchor="end" class="value">1.0</text>
+<text x="654" y="263" class="value">puppy</text><rect x="749" y="244" width="83.476232" height="23" rx="4" fill="#f5b6ce" stroke="#152238" stroke-width="1.5"/><text x="1090" y="263" text-anchor="end" class="value">10.4%</text>
+<text x="30" y="291" class="value">car</text><rect x="125" y="272" width="12.000000" height="23" rx="4" fill="#c7adf0" stroke="#152238" stroke-width="1.5"/><text x="455" y="291" text-anchor="end" class="value">0.1</text>
+<text x="654" y="291" class="value">car</text><rect x="749" y="272" width="33.938903" height="23" rx="4" fill="#c7adf0" stroke="#152238" stroke-width="1.5"/><text x="1090" y="291" text-anchor="end" class="value">4.2%</text>
+<text x="248" y="321" text-anchor="middle" class="small">Scores need not sum to 1.</text>
+<text x="872" y="321" text-anchor="middle" class="small">Total = 100% (99.9% with rounded labels)</text>
+<path d="M8 347 H1112" stroke="#152238" stroke-width="2" stroke-dasharray="5 6"/>
+<rect x="8" y="361" width="333" height="60" rx="10" fill="#e4effb" stroke="#152238" stroke-width="2"/>
+<text x="174" y="386" text-anchor="middle" class="label">1. Exponentiate each score</text>
+<text x="174" y="409" text-anchor="middle" class="small">For cat: exp(2.1) ≈ 8.166</text>
+<path d="M353 390 H387" stroke="#152238" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="400" y="361" width="312" height="60" rx="10" fill="#fae477" stroke="#152238" stroke-width="2"/>
+<text x="556" y="386" text-anchor="middle" class="label">2. Add the exponentials</text>
+<text x="556" y="409" text-anchor="middle" class="small">Sum over all six words ≈ 26.051</text>
+<path d="M724 390 H758" stroke="#152238" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="771" y="361" width="341" height="60" rx="10" fill="#fff4d7" stroke="#152238" stroke-width="2"/>
+<text x="941" y="386" text-anchor="middle" class="label">3. Divide by the total</text>
+<text x="941" y="409" text-anchor="middle" class="small">For cat: 8.166 / 26.051 ≈ 31.3%</text>
+<text x="560" y="451" text-anchor="middle" class="label">Several next words are plausible; cat receives the highest probability.</text>
+</svg>
