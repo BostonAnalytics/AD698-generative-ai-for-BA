@@ -264,8 +264,7 @@ $$
 | Language modeling | $P(\mathbf{w})$ or $P(w_t \mid w_{<t})$ | score fluent English sequences |
 | Naive Bayes classification | $P(y \mid \mathbf{x})$ via $P(y)P(\mathbf{x}\mid y)$ | classify text as `product` or `risk` |
 
-- [This continuity matters pedagogically:]{.uublue-bold} same corpus, different probability object.
-- That makes the transition from sequence modeling to classification much easier for students.
+- [Same corpus, different probability object.]{.uublue-bold}
 
 ---
 
@@ -993,7 +992,7 @@ Example:
 - Vocabulary explosion  
 - No continuous representation of meaning  
 
-This sets the stage for neural models.
+Neural models learn embeddings and share parameters across contexts.
 
 ---
 

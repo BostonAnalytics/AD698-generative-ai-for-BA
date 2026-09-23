@@ -408,14 +408,14 @@ Although both linguistic and computational tokens serve as "units" of text, they
 
 Understanding this distinction is essential for interpreting model outputs, estimating token counts, managing context windows, and reasoning about the statistical foundations of language modeling. It also clarifies why token counts do not align neatly with word counts, why different languages behave differently under the same tokenizer, and why the same sentence may produce different tokenizations depending on subtle formatting differences.
 
-Two small examples are useful in lecture because students can inspect every word:
+The following translations preserve meaning while changing word boundaries and token sequences:
 
 | English sentence | Translation | What to notice |
 |---|---|---|
 | The model predicts the next token. | El modelo predice el siguiente token. | The semantic units align, but the model still sees tokenizer-specific pieces. |
 | The analyst reviews quarterly revenue trends. | Der Analyst prüft vierteljährliche Umsatztrends. | Business terms and compounds can change the number of subword tokens. |
 
-These examples connect directly to the `help-code/1-foundations/Section 2.2 - Tokenization.ipynb` notebook: the lecture idea is conceptual, while the notebook lets students inspect tokenization behavior procedurally.
+The `help-code/1-foundations/Section 2.2 - Tokenization.ipynb` notebook compares the token sequences produced from these sentences.
 
 # From Discrete Symbols to Distributed Representations
 
@@ -603,7 +603,7 @@ for start in ["the", "machine", "companies"]:
 
 ## Worked Example: Apple 10-K Business Text and Cross-Lingual Word Order
 
-The `colab_tokenization_demo.ipynb` notebook contains a realistic business-text example drawn from Apple's 10-K. That kind of text is useful pedagogically because it is repetitive enough to make n-gram counting meaningful, but still natural enough to show why token order matters. Consider this English sentence from the filing:
+The `colab_tokenization_demo.ipynb` notebook contains a business-text example drawn from Apple's 10-K. Repeated phrases contribute to n-gram counts, while token order determines which words form each n-gram. Consider this English sentence from the filing:
 
 > *The Company designs, manufactures and markets mobile communication and media devices and personal computers.*
 
