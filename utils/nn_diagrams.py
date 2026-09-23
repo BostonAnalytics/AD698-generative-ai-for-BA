@@ -10,7 +10,6 @@ Public API
 ──────────
     make_backprop_diagram(layers, active_path, ...)
     make_mlp_diagram(layers, layer_labels, ...)
-    compile_tex(tex_path)
 
 Color palette
 ─────────────
@@ -29,7 +28,6 @@ Example usage
         active_path=[2, 1, 1, 0],
         title=r"Gradient descent \\textbar{} partial derivative",
         output="M1/M01_lecture01_figures/backprop_chain_rule.tex",
-        compile_pdf=True,
     )
 
     make_mlp_diagram(
@@ -37,13 +35,11 @@ Example usage
         layer_labels=["Input\\n(features)", "Hidden\\n(learned)", "Output\\n(classes)"],
         title="Multi-Layer Perceptron (MLP)",
         output="M1/M01_lecture01_figures/mlp_architecture.tex",
-        compile_pdf=True,
     )
 """
 
 from __future__ import annotations
 
-import subprocess
 import textwrap
 from pathlib import Path
 from typing import Sequence
@@ -149,7 +145,6 @@ def make_backprop_diagram(
     output: str | Path = "backprop.tex",
     x_spacing: float = 2.3,
     y_spacing: float = 1.2,
-    compile_pdf: bool = False,
 ) -> Path:
     """
     Generate a TikZ backpropagation / chain-rule diagram.
@@ -163,7 +158,6 @@ def make_backprop_diagram(
     output       : destination .tex file; parent dirs are created if needed.
     x_spacing    : horizontal distance between consecutive layers (default 2.3).
     y_spacing    : vertical distance between neurons in a layer (default 1.2).
-    compile_pdf  : if True, invoke latexmk to compile a PDF alongside the .tex.
 
     Returns
     -------
@@ -175,7 +169,6 @@ def make_backprop_diagram(
     ...     layers=[3, 3, 3, 1],
     ...     active_path=[2, 1, 1, 0],
     ...     output="M1/M01_lecture01_figures/backprop.tex",
-    ...     compile_pdf=True,
     ... )
     """
     output    = Path(output)
@@ -356,9 +349,6 @@ def make_backprop_diagram(
     tex_source = "\n".join(lines)
     output.write_text(tex_source, encoding="utf-8")
 
-    if compile_pdf:
-        compile_tex(output)
-
     return output
 
 
@@ -371,7 +361,6 @@ def make_mlp_diagram(
     output: str | Path = "mlp.tex",
     x_spacing: float = 2.5,
     y_spacing: float = 1.2,
-    compile_pdf: bool = False,
 ) -> Path:
     """
     Generate a clean TikZ MLP architecture diagram (no backprop annotations).
@@ -385,7 +374,6 @@ def make_mlp_diagram(
     output        : destination .tex file.
     x_spacing     : horizontal distance between layers (default 2.5).
     y_spacing     : vertical distance between neurons (default 1.2).
-    compile_pdf   : if True, invoke latexmk to compile a PDF.
 
     Returns
     -------
@@ -397,7 +385,6 @@ def make_mlp_diagram(
     ...     layers=[4, 5, 3],
     ...     layer_labels=["Input\\n(TF-IDF)", "Hidden\\n(ReLU)", "Output\\n(Softmax)"],
     ...     output="M1/M01_lecture01_figures/mlp_tfidf.tex",
-    ...     compile_pdf=True,
     ... )
     """
     output = Path(output)
@@ -469,9 +456,6 @@ def make_mlp_diagram(
 
     tex_source = "\n".join(lines)
     output.write_text(tex_source, encoding="utf-8")
-
-    if compile_pdf:
-        compile_tex(output)
 
     return output
 
@@ -711,35 +695,3 @@ def make_mlp_svg(
 
     dwg.save()
     return output
-
-
-# ─── Public: LaTeX compilation helper ─────────────────────────────────────────
-
-def compile_tex(
-    tex_path: str | Path,
-    clean: bool = True,
-) -> bool:
-    """
-    Compile *tex_path* to PDF using latexmk.
-
-    Parameters
-    ----------
-    tex_path : path to the .tex file.
-    clean    : if True, remove latexmk auxiliary files after compilation.
-
-    Returns
-    -------
-    True if compilation succeeded (exit code 0), False otherwise.
-    """
-    tex_path = Path(tex_path)
-    cmd = ["latexmk", "-pdf", "-interaction=nonstopmode", tex_path.name]
-    result = subprocess.run(cmd, cwd=tex_path.parent,
-                            capture_output=True, text=True)
-
-    if clean and result.returncode == 0:
-        subprocess.run(
-            ["latexmk", "-c", tex_path.name],
-            cwd=tex_path.parent, capture_output=True,
-        )
-
-    return result.returncode == 0
