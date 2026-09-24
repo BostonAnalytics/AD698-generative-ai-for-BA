@@ -1,0 +1,46 @@
+[
+  {
+    "sample_id": "battery-supply",
+    "ticker": "TSLA",
+    "fiscal_year": 2023,
+    "filing_year": 2024,
+    "filing_date": "2024-01-29",
+    "item": "1A",
+    "accession": "0001628280-24-002390",
+    "source_file": "20240129_10-K_edgar_data_1318605_0001628280-24-002390.txt",
+    "text": "We are dependent on the continued supply of lithium-ion battery cells for our vehicles and energy storage products, and we will require substantially more cells to grow our business according to our plans. Currently, we rely on suppliers such as Panasonic and Contemporary Amperex Technology Co. Limited (CATL) for these cells. We have to date fully qualified only a very limited number of such suppliers and have limited flexibility in changing suppliers. Any disruption in the supply of battery cells from our suppliers could limit production of our vehicles and energy storage products."
+  },
+  {
+    "sample_id": "production-ramp",
+    "ticker": "TSLA",
+    "fiscal_year": 2023,
+    "filing_year": 2024,
+    "filing_date": "2024-01-29",
+    "item": "1A",
+    "accession": "0001628280-24-002390",
+    "source_file": "20240129_10-K_edgar_data_1318605_0001628280-24-002390.txt",
+    "text": "We have previously experienced and may in the future experience launch and production ramp delays for new products and features. For example, we encountered unanticipated supplier issues that led to delays during the initial ramp of our first Model X and experienced challenges with a supplier and with ramping full automation for certain of our initial Model 3 manufacturing processes. In addition, we may introduce in the future new or unique manufacturing processes and design features for our products."
+  },
+  {
+    "sample_id": "customer-network",
+    "ticker": "TSLA",
+    "fiscal_year": 2023,
+    "filing_year": 2024,
+    "filing_date": "2024-01-29",
+    "item": "1",
+    "accession": "0001628280-24-002390",
+    "source_file": "20240129_10-K_edgar_data_1318605_0001628280-24-002390.txt",
+    "text": "We generally sell our products directly to customers, and continue to grow our customer-facing infrastructure through a global network of vehicle showrooms and service centers, Mobile Service, body shops, Supercharger stations and Destination Chargers to accelerate the widespread adoption of our products."
+  },
+  {
+    "sample_id": "energy-segment",
+    "ticker": "TSLA",
+    "fiscal_year": 2023,
+    "filing_year": 2024,
+    "filing_date": "2024-01-29",
+    "item": "1",
+    "accession": "0001628280-24-002390",
+    "source_file": "20240129_10-K_edgar_data_1318605_0001628280-24-002390.txt",
+    "text": "The energy generation and storage segment includes the design, manufacture, installation, sales and leasing of solar energy generation and energy storage products and related services and sales of solar energy systems incentives."
+  }
+]

@@ -22,7 +22,7 @@ Tool-style RAG is useful when a question needs controlled evidence gathering bef
 ## Setup
 
 ```{python}
-%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai
+%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-core langchain-community langchain-text-splitters langchain-huggingface langchain-openai
 ```
 
 

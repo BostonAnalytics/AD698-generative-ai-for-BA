@@ -21,7 +21,7 @@ The main comparison is:
 ## Setup
 
 ```{python}
-%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai cohere langchain-cohere
+%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-core langchain-classic langchain-community langchain-text-splitters langchain-huggingface langchain-openai cohere langchain-cohere
 ```
 
 ## Inline SEC 10-K Helper Code

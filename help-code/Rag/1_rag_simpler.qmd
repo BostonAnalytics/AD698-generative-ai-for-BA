@@ -17,7 +17,7 @@ The baseline has one purpose: make the evidence path visible. It downloads or re
 ## Setup
 
 ```{python}
-%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai
+%pip install -q beautifulsoup4 requests pandas faiss-cpu sentence-transformers langchain langchain-core langchain-community langchain-text-splitters langchain-huggingface langchain-openai
 ```
 
 
