@@ -17,7 +17,7 @@ The corpus, evaluation questions, prompt, generator, and RAGAS metrics stay fixe
 ## Setup
 
 ```{python}
-%pip install -q beautifulsoup4 requests pandas numpy matplotlib seaborn faiss-cpu sentence-transformers langchain langchain-community langchain-text-splitters langchain-huggingface langchain-openai ragas datasets
+%pip install -q beautifulsoup4 requests pandas numpy matplotlib seaborn faiss-cpu sentence-transformers langchain langchain-core langchain-community langchain-text-splitters langchain-huggingface langchain-openai ragas datasets
 ```
 
 

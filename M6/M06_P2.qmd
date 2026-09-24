@@ -36,6 +36,20 @@ categories: ['Agentic AI', 'LangChain Tools', 'Multi-Agent Orchestration', 'Trac
 description: "Introduces Building Agentic AI through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
 
+## LangChain package setup
+
+Use Python 3.11 or 3.12 for this course. Run the `%pip` cell below in the notebook's active kernel before the examples. After installing or upgrading, restart the kernel (Colab: restart the session), then run the example cells from the top. In a terminal, use `python -m pip install -U` with the same package list.
+
+Install names use hyphens, while Python imports use underscores: install `langchain-core`, then use `from langchain_core.prompts import ChatPromptTemplate`. Text splitters come from `langchain_text_splitters`, loaders/vector stores from `langchain_community`, and provider integrations from their own packages. Installing `langchain` alone does not supply all these integrations.
+
+If an import fails, check the selected kernel with `import sys; print(sys.executable)`, rerun the setup cell there, and restart it. Do not restore old import paths to fix a missing package. See the [LangChain migration guide](https://docs.langchain.com/oss/python/migrate/langchain-v1).
+
+```python
+%pip install -U langchain-core langchain-text-splitters
+```
+
+
+
 ## How to print Revealjs slides
 
 ![](../syllabus-images/Printing_Revealjs_Slides.png){width="80%" fig-align="center"}
@@ -250,7 +264,7 @@ flowchart LR
 
 ```bash
 uv venv
-uv pip install langchain langchain-openai pydantic beautifulsoup4 requests \
+uv pip install langchain langchain-core langchain-openai pydantic beautifulsoup4 requests \
   sec-edgar-downloader python-dotenv psycopg2-binary chromadb \
   sentence-transformers
 ```

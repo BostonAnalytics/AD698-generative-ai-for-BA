@@ -11,6 +11,20 @@ categories: ['RAG', 'LangChain Splitters', 'Chunking', 'Vector Search', 'HNSW', 
 description: "Explains RAG Foundations and Retrieval with the technical concepts, mathematical intuition, implementation patterns, and evaluation mindset needed for applied GenAI analytics."
 ---
 
+## LangChain package setup
+
+Use Python 3.11 or 3.12 for this course. Run the `%pip` cell below in the notebook's active kernel before the examples. After installing or upgrading, restart the kernel (Colab: restart the session), then run the example cells from the top. In a terminal, use `python -m pip install -U` with the same package list.
+
+Install names use hyphens, while Python imports use underscores: install `langchain-core`, then use `from langchain_core.prompts import ChatPromptTemplate`. Text splitters come from `langchain_text_splitters`, loaders/vector stores from `langchain_community`, and provider integrations from their own packages. Installing `langchain` alone does not supply all these integrations.
+
+If an import fails, check the selected kernel with `import sys; print(sys.executable)`, rerun the setup cell there, and restart it. Do not restore old import paths to fix a missing package. See the [LangChain migration guide](https://docs.langchain.com/oss/python/migrate/langchain-v1).
+
+```python
+%pip install -U langchain-core langchain-text-splitters pandas
+```
+
+
+
 # RAG Foundations and Domain Adaptation
 
 Generative models, while powerful, often lack specific domain knowledge or access to up-to-date information. As outlined in *Generative AI Foundations in Python*, adapting a general-purpose LLM without extensive fine-tuning is achievable through prompt engineering and Retrieval-Augmented Generation (RAG). 

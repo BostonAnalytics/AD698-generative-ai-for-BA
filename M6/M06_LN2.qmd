@@ -19,6 +19,20 @@ categories: ['Agentic AI', 'Skills', 'Tools', 'MCP', 'Multi-Agent Orchestration'
 description: "Builds the Module 6 agentic AI stack from skills, tools, MCP servers, subagents, hooks, retrieval, planning, evaluation, and governance."
 ---
 
+## LangChain package setup
+
+Use Python 3.11 or 3.12 for this course. Run the `%pip` cell below in the notebook's active kernel before the examples. After installing or upgrading, restart the kernel (Colab: restart the session), then run the example cells from the top. In a terminal, use `python -m pip install -U` with the same package list.
+
+Install names use hyphens, while Python imports use underscores: install `langchain-core`, then use `from langchain_core.prompts import ChatPromptTemplate`. Text splitters come from `langchain_text_splitters`, loaders/vector stores from `langchain_community`, and provider integrations from their own packages. Installing `langchain` alone does not supply all these integrations.
+
+If an import fails, check the selected kernel with `import sys; print(sys.executable)`, rerun the setup cell there, and restart it. Do not restore old import paths to fix a missing package. See the [LangChain migration guide](https://docs.langchain.com/oss/python/migrate/langchain-v1).
+
+```python
+%pip install -U langchain-core
+```
+
+
+
 # From Foundation to Build
 
 Lecture Note 1 introduced the conceptual shift: an agent is not merely an LLM that produces text. An agentic system couples a model to memory, tools, policies, execution traces, and evaluation. Lecture Note 2 turns that foundation into an implementation architecture.

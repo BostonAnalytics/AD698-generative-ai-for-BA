@@ -37,6 +37,18 @@ description: "Introduces Generation, Evaluation, and Production RAG through conc
 ---
 
 
+## LangChain package setup
+
+Use Python 3.11 or 3.12 for this course. Run the `%pip` cell below in the notebook's active kernel before the examples. After installing or upgrading, restart the kernel (Colab: restart the session), then run the example cells from the top. In a terminal, use `python -m pip install -U` with the same package list.
+
+Install names use hyphens, while Python imports use underscores: install `langchain-core`, then use `from langchain_core.prompts import ChatPromptTemplate`. Text splitters come from `langchain_text_splitters`, loaders/vector stores from `langchain_community`, and provider integrations from their own packages. Installing `langchain` alone does not supply all these integrations.
+
+If an import fails, check the selected kernel with `import sys; print(sys.executable)`, rerun the setup cell there, and restart it. Do not restore old import paths to fix a missing package. See the [LangChain migration guide](https://docs.langchain.com/oss/python/migrate/langchain-v1).
+
+```python
+%pip install -U langchain-core langchain-community langchain-text-splitters langchain-huggingface faiss-cpu sentence-transformers pandas scikit-learn
+```
+
 # Building the Generator
 
 ## Context Construction
@@ -56,7 +68,7 @@ Good generation depends on how context is packed:
 #| echo: true 
 #| eval: true
 #| output-location: column
-from langchain.prompts import ChatPromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 
 RAG_PROMPT = ChatPromptTemplate.from_template(
   """
