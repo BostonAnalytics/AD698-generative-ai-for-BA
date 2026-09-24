@@ -7,7 +7,6 @@ from .nn_diagrams import (
     COLORS,
     make_backprop_diagram,
     make_mlp_diagram,
-    compile_tex,
 )
 from .sequence_diagrams import (
     build_rnn_slice_svg,
@@ -19,7 +18,6 @@ __all__ = [
     "COLORS",
     "make_backprop_diagram",
     "make_mlp_diagram",
-    "compile_tex",
     "draw_rnn_slice",
     "build_rnn_slice_svg",
     "build_rnn_unrolled_cell_svg",

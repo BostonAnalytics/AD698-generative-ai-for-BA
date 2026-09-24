@@ -86,6 +86,11 @@ description: "Introduces Language Modeling and Neural Networks through presentat
   - 1 token $\approx \frac{3}{4}$ of a word  
   - 1–2 sentences $\approx$ 30 tokens  
   - 1 paragraph $\approx$ 100 tokens  
+
+---
+
+## What Are Tokens?
+
 - [Different languages tokenize differently:]{.uublue-bold} e.g., "Cómo estás" → 5 tokens for 10 characters.  
 - Real examples:  
   - "You miss 100% of the shots you don’t take" → 11 tokens  
@@ -106,6 +111,11 @@ description: "Introduces Language Modeling and Neural Networks through presentat
   - [Output tokens]{.uublue-bold} (model’s response)  
   - [Cached tokens]{.uublue-bold} (reused history)  
   - [Reasoning tokens]{.uublue-bold} (internal steps in some models)  
+
+---
+
+## Tokenization and Context
+
 - [Context matters:]{.uured-bold} the *same word* can map to *different tokens* depending on spacing, capitalization, and position.  
 - **Frequent tokens get lower IDs**, rare ones get higher IDs.  
 
@@ -150,7 +160,7 @@ Sequence probability is foundational for:
 
 $$
 \begin{align}
-\mathbb{P}(\text{The company through its retail stores sells its products worldwide}) \\
+\mathbb{P}(\text{The company through its retail stores sells its products worldwide}) \nonumber \\ 
 < \mathbb{P}(\text{The company sells its products worldwide through its retail stores})
 \end{align}
 $$
@@ -175,23 +185,9 @@ $$
 
 $$
 \begin{align}
-P(w_t \mid w_{t-1}) = \frac{\text{count}(w_{t-1}, w_t)}{\text{count}(w_{t-1})}
-\end{align}
-$$
-
-- Example bigram:
-
-$$
-\begin{align}
-P(\text{company} \mid \text{the}) = \frac{\text{count}(\text{the company})}{\text{count}(\text{the})}
-\end{align}
-$$
-
-- Example trigram:
-
-$$
-\begin{align}
-P(\text{operating} \mid \text{financial}, \text{condition}) = \frac{\text{count}(\text{financial condition operating})}{\text{count}(\text{financial condition})}
+P(w_t \mid w_{t-1}) &= \frac{\text{count}(w_{t-1}, w_t)}{\text{count}(w_{t-1})}\\
+P(\text{company} \mid \text{the}) &= \frac{\text{count}(\text{the company})}{\text{count}(\text{the})}\\
+P(\text{operating} \mid \text{financial}, \text{condition}) &= \frac{\text{count}(\text{financial condition operating})}{\text{count}(\text{financial condition})}
 \end{align}
 $$
 
@@ -264,8 +260,7 @@ $$
 | Language modeling | $P(\mathbf{w})$ or $P(w_t \mid w_{<t})$ | score fluent English sequences |
 | Naive Bayes classification | $P(y \mid \mathbf{x})$ via $P(y)P(\mathbf{x}\mid y)$ | classify text as `product` or `risk` |
 
-- [This continuity matters pedagogically:]{.uublue-bold} same corpus, different probability object.
-- That makes the transition from sequence modeling to classification much easier for students.
+- [Same corpus, different probability object.]{.uublue-bold}
 
 ---
 
@@ -572,7 +567,9 @@ documents containing “Boston hotel”
   - Columns = context words  
   - Values = co‑occurrence counts  
 
-Example (toy):
+---
+
+## Toy Example
 
 | word | bank | loan | river | water |
 |------|------|------|-------|--------|
@@ -603,7 +600,7 @@ We compress them using:
 - **SVD (Singular Value Decomposition)**  
 - **PCA**  
 - **Truncated SVD / LSA**  
-- **T SNE / UMAP** (for visualization)
+- **T-SNE / UMAP** (for visualization)
 
 This yields dense, low‑dimensional vectors that capture latent semantic structure.
 
@@ -640,24 +637,17 @@ Distributional vectors are the **conceptual precursor** to modern embeddings.
 - Context window is fixed  
 - No dynamic meaning (unlike contextual embeddings like BERT)
 
----
-
 # Visual Intuition
 
-You can add a scatterplot of PCA‑reduced distributional vectors:
-
-- *hotel, motel, inn* cluster  
-- *bank, loan, credit* cluster  
-- *river, stream, water* cluster  
-
-This visually reinforces the idea of semantic neighborhoods.
 
 ---
 
 ## Building a Co‑Occurrence Matrix
 
 ```{python}
-#| eval: false
+#| eval: true
+#| echo: false
+#| code-fold: true
 from sklearn.feature_extraction.text import CountVectorizer
 import numpy as np
 import pandas as pd
@@ -718,27 +708,20 @@ $$
 
 ---
 
-## Softmax Intuition
+## Softmax Intuition {.figure-only}
 
-- Small differences in scores → meaningful differences in probabilities.
+![](M02_lecture01_figures/softmax-intuition.svg){width="100%" height="460" fig-alt="Complete She adopted a blank. Illustrative logits for cat, dog, rabbit, kitten, puppy, and car are 2.1, 1.9, 1.4, 1.2, 1.0, and 0.1. Softmax gives 31.3%, 25.7%, 15.6%, 12.7%, 10.4%, and 4.2%."}
 
-::: {.columns}
-::: {.column}
-Imagine scores:
+$$
+P(\text{cat}\mid\text{She adopted a})
+= \frac{e^{2.1}}{\sum_{j=1}^{6} e^{z_j}}
+\approx \frac{8.166}{26.051} \approx 0.313
+$$
 
-- cat: 2.1  
-- dog: 1.9  
-- car: 0.1  
+::: {.notes}
+This toy example has six possible next words: cat, dog, rabbit, kitten, puppy, and car. The scores are illustrative, not measured model outputs. Softmax normalizes over all six; in a language model, it normalizes over the full token vocabulary. The bar lengths use separate scales: raw scores on the left and probabilities on the right.
 
-:::
-::: {.column}
-
-Softmax transforms them into:
-
-- cat: 0.46  
-- dog: 0.38  
-- car: 0.02  
-:::
+Compute probabilities using unrounded exponentials; their sum is one. The displayed percentages are rounded to one decimal place and sum to 99.9%. Adding candidate words changes the denominator, so cat and dog receive smaller shares than in the original three-word example even though their logits are unchanged. Softmax preserves the score ranking; it does not choose a single outcome or establish which answer is correct.
 :::
 
 
@@ -868,11 +851,11 @@ This is why softmax + cross‑entropy is so efficient.
 
 ## Visualizing Gradient Descent
 
-![](./M02_lecture02_figures/sgd-convergence.gif){width="70%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+![Gradient Visualization](./M02_lecture02_figures/sgd-convergence.gif){width="80%" fig-align="center" #fig-text-mining-overview fig-alt="Gradient Descent Visualization"}
 
 ## Visualizing Gradient Descent
 
-![](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="70%" fig-align="center" #fig-text-mining-overview fig-alt="Text Mining Overview"}
+![Different paths of gradient descent on a saddle point surface.](./M02_lecture02_figures/Saddle-Point-Imgur.gif){width="70%" fig-align="center" #fig-text-mining-overview fig-alt="Different paths of gradient descent on a saddle point surface."}
 
 
 ## Backpropagation
@@ -993,7 +976,7 @@ Example:
 - Vocabulary explosion  
 - No continuous representation of meaning  
 
-This sets the stage for neural models.
+Neural models learn embeddings and share parameters across contexts.
 
 ---
 

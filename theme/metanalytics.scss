@@ -527,6 +527,12 @@ a:hover {
   font-size: 0.85rem;
 }
 
+#quarto-content figcaption,
+#quarto-content .quarto-float-caption,
+#quarto-content table caption {
+  text-align: center;
+}
+
 .uublue-bold {
   color: var(--advisory-teal) !important;
 }

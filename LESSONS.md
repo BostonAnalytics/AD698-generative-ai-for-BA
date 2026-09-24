@@ -1,5 +1,23 @@
 # Lessons
 
+## 2026-09-22 -- Center native and Quarto float captions with caption-specific theme selectors.
+- Reveal slides inherit left alignment. Cover figcaption, .quarto-float-caption, table caption, and legacy p.caption under .reveal .slides; use #quarto-content for HTML notes. Do not center table cells or all paragraph text.
+- Both themes compiled with Dart Sass; isolated browser fixtures verified centered figure captions, native table captions, and cross-referenced table captions while table cells remained left-aligned. The language check passed all 42 sources.
+- Full M02_P2/M02_LN2 render verification remains incomplete: project discovery failed on missing M0/M0_Lab1_files, then on M0/primers/tokens-and-tokenization_files/figure-pdf during an elevated retry. These are render-discovery failures, not SCSS compilation failures.
+- tags: quarto,captions,scss,verification
+
+## 2026-09-22 -- Treat authoring commentary as a delivery failure, including in lecture and presenter notes.
+- `python scripts/check_course_language.py` scans all 42 top-level presentation/lecture-note sources in M0 through M8 and initially reports six violations across M02_P1, M02_LN1, M02_LN2, M05_LN1, and M05_LN2. The Quarto pre-render hook invokes the same command; a nonzero result blocks rendering until the source wording is corrected.
+- Hidden `.notes`, comments, and image alt text are not safe destinations for authoring rationale. The current AGENTS.md contract supersedes the earlier suggestion to move teaching rationale into presenter notes.
+- Verify detection with `python -m unittest discover -s tests -p test_course_language.py`; regression cases cover the reported examples, wrapped/emphasized text, hidden content, and allowed subject explanations. A passing scan does not prove semantic cleanliness or presentation/notes parity: compare slide coverage, figures, and equations and inspect both rendered outputs.
+- tags: slides,lecture-notes,authoring-language,acceptance,verification
+
+## 2026-09-22 -- Compute softmax examples over the complete stated outcome set before drawing probability bars.
+- For M2/M02_P1.qmd's three scores [2.1, 1.9, 0.1], softmax gives [0.511753, 0.418988, 0.069258]; the prior [0.46, 0.38, 0.02] did not sum to one. Compute with unrounded exponentials and round only the displayed labels.
+- The softmax-intuition.svg diagram uses proportional bars within each panel and the slide's existing figure-only class to allow a 460-pixel image; the shared theme otherwise caps slide images at 350 pixels.
+- The sentence-based revision expands the toy vocabulary to six words with scores [2.1, 1.9, 1.4, 1.2, 1.0, 0.1]. Its exponential sum is 26.050834 and the rounded percentages total 99.9%; label the rounding instead of changing a probability to force 100%. Recompute the denominator whenever candidates change.
+- tags: softmax,quarto,slides,visualization,verification
+
 ## 2026-09-17 -- Verify shared Reveal chrome when adapting the advisory theme.
 - The advisory reference points to a separate `advisory-board-mark.png` that was unavailable beside the HTML. Reuse the repository's intact BU wordmark rather than shipping the reference's broken image URL.
 - Reveal's logo and slide-number positioning needs explicit overrides for the advisory layout: logo at top right, counter at bottom right, with a ruled Quarto footer. Check their positions in slideshow mode as well as `?print-pdf`; page-boundary checks alone do not verify shared chrome.
@@ -149,3 +167,15 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: The first run failed in two tests when pandas/openpyxl tried to create schedule.xlsx under the Windows Temp directory; the unchanged rerun with elevated access passed all 3 tests.
 - Why: The sandbox denies pandas/openpyxl file creation and cleanup in its managed temporary directories, while the repository and test logic are valid.
 - tags: tests,windows,permissions,schedule
+
+## 2026-09-22 -- Extend the language guard with semantic-review findings, then distinguish source checks from render acceptance.
+- Replacing the six originally reported violations exposed additional authoring commentary in M02_LN1, M02_LN2, M05_LN1, and M05_LN2. The checker now also detects classroom narrative, lecture-pause directions, teaching-activation claims, and teaching-oriented story-map rationale; regression examples exercise those phrases.
+- `python scripts/check_course_language.py` and `python -m unittest discover -s tests -p test_course_language.py` verify source patterns and detector behavior only. They do not establish slide/notes coverage or rendered quality.
+- The validation render of M2/M02_P1.qmd failed during project discovery at a missing M0/M0_T2_files/mediabag directory while other full-site and slide renders were active. Avoid adding another render against shared outputs during concurrent work; do not infer a source-content failure from that discovery error.
+- tags: quarto,authoring-language,regression,concurrent-render,verification
+
+## 2026-09-22 -- Audit PDF generation beyond Quarto front matter.
+- The tokenization primer was the only document declaring a PDF output format, but utils/nn_diagrams.py and help-code/cuda_check.ipynb also invoked latexmk. Remove the compiler API, its package export, notebook invocation, and stale compilation outputs together. Keep reference PDF assets and subject-matter uses of PDF separate from generation.
+- Parse document YAML and scan authored code, notebooks, and build configuration for PDF writers; checking only _quarto.yml misses per-document formats and helper commands.
+- Quarto inspection during this change failed in project discovery on the missing M5/M05_LN1_files directory; source-format checks do not establish a successful site render.
+- tags: quarto,pdf,build,verification

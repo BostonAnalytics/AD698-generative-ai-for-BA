@@ -205,8 +205,8 @@ requires-dist = [
     { name = "accelerate", specifier = ">=1.13.0" },
     { name = "beautifulsoup4", specifier = ">=4.14.3" },
     { name = "bottleneck", specifier = ">=1.6.0" },
-    { name = "edustack-classroom", path = "D:/Repositories/edustack/dist/edustack_classroom-0.1.1-py3-none-any.whl" },
-    { name = "edustack-schedule", path = "D:/Repositories/edustack/dist/edustack_schedule-0.1.1-py3-none-any.whl" },
+    { name = "edustack-classroom", path = "../edustack/packages/edustack-classroom/dist/edustack_classroom-0.1.1-py3-none-any.whl" },
+    { name = "edustack-schedule", path = "../edustack/packages/edustack-schedule/dist/edustack_schedule-0.1.1-py3-none-any.whl" },
     { name = "faiss-cpu", specifier = ">=1.13.2" },
     { name = "fastai", specifier = ">=2.1.10" },
     { name = "flask", specifier = ">=3.1.3" },
@@ -1544,7 +1544,7 @@ wheels = [
 [[package]]
 name = "edustack-classroom"
 version = "0.1.1"
-source = { path = "D:/Repositories/edustack/dist/edustack_classroom-0.1.1-py3-none-any.whl" }
+source = { path = "../edustack/packages/edustack-classroom/dist/edustack_classroom-0.1.1-py3-none-any.whl" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "click" },
@@ -1555,7 +1555,7 @@ dependencies = [
     { name = "python-dotenv" },
 ]
 wheels = [
-    { filename = "edustack_classroom-0.1.1-py3-none-any.whl", hash = "sha256:cf3a61fe5de28b17f81948496bb6341ddc486fc53bbb1afb5bc3c4c88baa4654" },
+    { filename = "edustack_classroom-0.1.1-py3-none-any.whl", hash = "sha256:f65f7dfa170759797d5434efb476f6773bdec24d479f339e5dd7bd51205baab4" },
 ]
 
 [package.metadata]
@@ -1572,7 +1572,7 @@ requires-dist = [
 [[package]]
 name = "edustack-schedule"
 version = "0.1.1"
-source = { path = "D:/Repositories/edustack/dist/edustack_schedule-0.1.1-py3-none-any.whl" }
+source = { path = "../edustack/packages/edustack-schedule/dist/edustack_schedule-0.1.1-py3-none-any.whl" }
 dependencies = [
     { name = "beautifulsoup4" },
     { name = "openpyxl" },
@@ -1580,7 +1580,7 @@ dependencies = [
     { name = "requests" },
 ]
 wheels = [
-    { filename = "edustack_schedule-0.1.1-py3-none-any.whl", hash = "sha256:13756c0825daceba9e6cd604859579b6ca6b8989f7bd77ae2f949bfff9e38448" },
+    { filename = "edustack_schedule-0.1.1-py3-none-any.whl", hash = "sha256:5a89a320e86d418c7b57eb203aac7f983a68c80b0f616187b887240b05e6261b" },
 ]
 
 [package.metadata]

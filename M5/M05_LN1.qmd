@@ -200,7 +200,7 @@ The chunk size tradeoff is straightforward:
 
 ### Choosing the Right Splitter
 
-LangChain's splitter integrations are useful because they turn chunking from a hidden preprocessing choice into an explicit design decision. The HTML splitter examples in the LangChain documentation are especially helpful pedagogically: they compare splitters by document structure, metadata behavior, and preservation of semantic elements such as tables and lists.
+Chunking requires decisions about document structure, metadata, and which elements must remain together. LangChain's HTML splitters differ in how they use headings, retain metadata, and preserve semantic elements such as tables and lists.
 
 For SEC filings and business documents, the right splitter depends on what structure must survive into retrieval.
 
@@ -485,7 +485,7 @@ The Pinecone explanation is useful because it frames HNSW as a combination of tw
 
 ![Story mapping view for layered navigation and search refinement.](./M05_lecture01_figures/story-mapping.png){width=78% fig-align="center" #fig-hnsw-story-map fig-alt="Story mapping view for layered navigation and search refinement."}
 
-The story map in @fig-hnsw-story-map is a useful mental model for teaching HNSW. Early steps in the search are broad, exploratory, and coarse. Later steps become local, specific, and refinement-oriented. That is exactly what the hierarchy is doing: upper layers help us move across the space quickly, while lower layers help us make precise nearest-neighbor decisions.
+The story map in @fig-hnsw-story-map illustrates navigation from broad regions to local detail. Early steps in the search are broad, exploratory, and coarse. Later steps become local, specific, and refinement-oriented. That is exactly what the hierarchy is doing: upper layers help us move across the space quickly, while lower layers help us make precise nearest-neighbor decisions.
 
 ### Story Similarity as Vector Neighborhoods
 

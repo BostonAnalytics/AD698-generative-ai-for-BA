@@ -374,7 +374,7 @@ Question answering remains the dominant application, but RAG now extends to many
 - code search
 - fact checking
 
-This spread matters pedagogically because it shows RAG is not one application. It is an architectural pattern.
+RAG is an architectural pattern used across these applications: retrieve relevant evidence, then condition generation on that evidence.
 
 # Production RAG and Application Architecture
 
@@ -422,11 +422,11 @@ The RAG evaluation presentation emphasizes a set of levers that consistently mat
 - model choice
 - grounding and citation handling
 
-This is useful for class because it moves students away from the idea that "better model" is the only knob.
+Answer quality depends on retrieval, context construction, and generation together. Changing the generator alone cannot recover evidence that retrieval omitted.
 
 ## Finance Notebook Patterns You Can Reuse
 
-The notebooks in `help-code/4-nlp-finance` are useful bridge material for this module because they connect NLP mechanics to financial filings. The Apple 2025 Form 10-K companion files make the examples concrete before students move to their own rival-company corpus.
+The notebooks in `help-code/4-nlp-finance` apply document loading, retrieval, and evaluation to financial filings. The Apple 2025 Form 10-K companion files contain filing text and reference examples for question answering and summarization.
 
 The most reusable pieces are:
 

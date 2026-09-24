@@ -26,7 +26,7 @@ description: "Explains From Words to Structured Text with the technical concepts
 
 Module 2 moves from raw words to structured numerical representations that machine-learning models can actually optimize. The central theme is that modern NLP does not replace probabilistic thinking; rather, it scales it. Bag-of-words models, Naive Bayes, and logistic regression introduce the idea of representing text numerically and producing class probabilities. Embeddings, neural networks, and transformers then extend that same logic into richer vector spaces and more expressive conditional distributions.
 
-For students preparing to work with large language models, this module is especially important because it provides the mathematical bridge between classical NLP and contemporary LLM systems. Tokenization, vector semantics, cross-entropy, backpropagation, and attention are not separate topics. They are successive layers of the same modeling story.
+Tokenization defines the input units, vector semantics represents them numerically, cross-entropy measures prediction error, backpropagation computes gradients, and attention combines information across context positions.
 
 # Defining the Word
 
@@ -258,9 +258,7 @@ For business tasks, metrics should be read operationally rather than abstractly.
 
 ## Neural Networks Are Composed, Not Mystical
 
-One of the most helpful narrative corrections for students is to stop introducing neural networks as mysterious black boxes. A feedforward network is simply a composition of repeated operations: weighted sums, bias shifts, activation functions, and a loss function. The fact that the resulting system becomes powerful does not mean the pieces are opaque. It means many simple pieces interact.
-
-That framing matters pedagogically because anxiety drops once students see that a neural network is not performing a fundamentally alien act. It is applying linear algebra, nonlinear transformations, and optimization repeatedly.
+A feedforward network composes weighted sums, bias shifts, and activation functions. A loss function measures prediction error, and optimization adjusts the weights and biases to reduce that loss. Repeated layers combine linear algebra and nonlinear transformations to represent complex relationships in the data.
 
 ## Feedforward Architecture
 
@@ -280,11 +278,11 @@ $$
 
 A helpful visual intuition is that a hidden unit with a nonlinear activation function can create a bend, hinge, or local change in the response curve. When several hidden units are combined, those bends add up into a flexible nonlinear function. This is why a network can model relationships that a straight line cannot.
 
-For classroom narrative, this is much more memorable than saying only that “the model learns nonlinear decision boundaries.” Students can instead imagine building a curve out of several movable pieces.
+Each ReLU unit contributes a piecewise-linear term. Adjusting its weight and bias changes the slopes and the location of its hinge.
 
 ![](./M02_lecture02_figures/relu-squiggle.png){width="74%" fig-alt="Several ReLU-based bends combining into a flexible response curve."}
 
-This story works especially well when teaching business applications such as marketing response, dosage-response, fraud-risk thresholds, or churn propensity, where the relationship between an input and an outcome is often visibly nonlinear.
+Business applications such as marketing response, fraud-risk thresholds, and churn propensity can involve nonlinear relationships between inputs and outcomes.
 
 ## Why ReLU Matters
 
@@ -296,7 +294,7 @@ $$
 \end{align}
 $$
 
-ReLU became popular because it is computationally cheap, easy to optimize, and well suited for deep architectures that need many nonlinear transformations. Conceptually, ReLU is also easy to explain: it keeps positive signal and clips negative signal to zero. This simplicity makes it a strong teaching activation because students can reason visually about what each hidden unit contributes.
+ReLU is computationally cheap: it keeps positive inputs and clips negative inputs to zero. Combinations of ReLU units form piecewise-linear functions, with each unit contributing a change in slope where its input crosses zero.
 
 ## Backpropagation
 
@@ -311,15 +309,15 @@ The key connection to this module is that **cross-entropy provides the learning 
 
 ## Gradient Descent as Progressive Correction
 
-Students often understand backpropagation better when gradient descent is described narratively before it is described formally. We do not search the entire parameter space blindly. Instead, we begin with an initial guess, measure how bad that guess is, compute the local slope of the loss, and step in the downhill direction. Early steps are often coarse, while later steps become smaller corrections near a good solution.
+Gradient descent begins with initial parameter values, computes the gradient of the loss, and updates parameters in the negative gradient direction. With a fixed learning rate, smaller gradients produce smaller updates; the illustrated path shows updates shrinking near a minimum.
 
 ![](./M02_lecture02_figures/gradient-descent-steps.png){width="72%" fig-alt="Gradient descent path showing larger early steps and smaller late corrections."}
 
-This is a useful place to pause in lecture and ask students why smaller corrections near the minimum are desirable. The answer is that a model close to a good solution should not overreact to local slope estimates.
+Smaller updates near a minimum can reduce overshooting. A learning rate that is too large can cause oscillation or divergence.
 
 ## Backpropagation as Repeated Chain Rule
 
-A second narrative improvement is to explicitly say that backpropagation is not a different kind of mathematics. It is the chain rule applied systematically through a computation graph. If a parameter affects a hidden activation, and that activation affects a later activation, and that later activation affects the loss, then the total effect is the product of those local effects.
+Backpropagation applies the chain rule systematically through a computation graph. If a parameter affects a hidden activation, and that activation affects a later activation, and that later activation affects the loss, then the total effect is the product of those local effects.
 
 $$
 \begin{align}
@@ -333,13 +331,13 @@ $$
 \end{align}
 $$
 
-For many students, that sentence alone makes backpropagation less intimidating. It reframes the topic from “a scary deep-learning trick” to “a bookkeeping system for derivatives.”
+When multiple paths connect a parameter to the loss, backpropagation sums their derivative contributions.
 
 ## Argmax for Interpretation, Softmax for Training
 
 Another helpful distinction is between **reading** a model's prediction and **training** a model. Argmax is ideal when we want to read off the winning class label. But argmax is not useful for gradient-based learning because it is not smooth in the way backpropagation needs. Softmax, by contrast, turns logits into differentiable probabilities. Those probabilities can then be compared with the target using cross-entropy.
 
-This distinction is especially valuable when connecting classical classification to LLMs. Students should hear the line explicitly: we use argmax to report a decision, but we use softmax and cross-entropy to teach the network how to improve.
+In both classification and next-token prediction, argmax reports the highest-scoring outcome. Softmax and cross-entropy provide a differentiable training objective.
 
 # Recurrent Neural Networks
 
