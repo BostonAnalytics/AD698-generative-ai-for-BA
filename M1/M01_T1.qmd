@@ -42,7 +42,7 @@ This tutorial is also the first concrete bridge from Module 0 neural-network fou
 
 ## Setup {.unnumbered}
 
-```python
+```{python}
 import re
 from collections import Counter
 
@@ -56,7 +56,7 @@ If you are in Google Colab, PyTorch is already available. Use Colab in the brows
 
 We start with a miniature filing-style corpus so the tensor logic is easy to inspect.
 
-```python
+```{python}
 sec_sentences = [
     "Revenue increased due to higher subscription demand.",
     "Risk factors include supply chain disruption and inflation.",
@@ -71,7 +71,7 @@ print(sec_sentences[0])
 
 Every model input eventually becomes a tensor.
 
-```python
+```{python}
 v = torch.tensor([1.0, 2.0, 3.0])
 M = torch.tensor([[1.0, 2.0], [3.0, 4.0]])
 
@@ -81,7 +81,7 @@ print(M.shape)
 
 ## Clean and Tokenize Text {.unnumbered}
 
-```python
+```{python}
 def tokenize(text: str) -> list[str]:
     text = text.lower()
     text = re.sub(r"[^a-z\\s]", " ", text)
@@ -96,7 +96,7 @@ tokenized[:2]
 
 We map tokens to integer ids so later models can consume them.
 
-```python
+```{python}
 class Vocabulary:
     PAD = "<PAD>"
     UNK = "<UNK>"
@@ -129,7 +129,7 @@ print(vocab.token2idx)
 
 ## Convert Tokens to Tensors {.unnumbered}
 
-```python
+```{python}
 sample_tokens = tokenize(sec_sentences[1])
 sample_ids = vocab.encode(sample_tokens)
 sample_tensor = torch.tensor(sample_ids, dtype=torch.long)
@@ -142,7 +142,7 @@ print(sample_tensor)
 
 Before embeddings, it helps to understand the count-based representation used in Module 1.
 
-```python
+```{python}
 def one_hot(idx: int, vocab_size: int) -> torch.Tensor:
     vec = torch.zeros(vocab_size)
     vec[idx] = 1.0
@@ -163,7 +163,7 @@ print(bow[:12])
 
 This is the first step from raw text features toward the classifier in `M01_A`.
 
-```python
+```{python}
 linear = nn.Linear(len(vocab), 2)
 logits = linear(bow)
 
@@ -174,7 +174,7 @@ print("Logits:", logits)
 
 For text classification or next-token prediction, raw scores are usually converted into probabilities with **softmax**.
 
-```python
+```{python}
 probs = torch.softmax(logits, dim=0)
 print("Probabilities:", probs)
 print("Sum:", probs.sum())
@@ -184,7 +184,7 @@ print("Sum:", probs.sum())
 
 If the correct label were class `1`, a standard loss would be cross-entropy:
 
-```python
+```{python}
 target = torch.tensor([1], dtype=torch.long)
 loss_fn = nn.CrossEntropyLoss()
 loss = loss_fn(logits.unsqueeze(0), target)
