@@ -166,6 +166,7 @@ In Step 1, your team must:
 ## Mount Drive
 
 ```{python}
+#| eval: false
 from google.colab import drive
 drive.mount('/content/drive')
 ```
@@ -241,6 +242,7 @@ Your product will use paid API services (LLMs, embeddings, potentially Yahoo Fin
 Use the Colab Secrets panel (the key icon in the left sidebar) to store keys, then load them at runtime:
 
 ```{python}
+#| eval: false
 from google.colab import userdata
 OPENAI_API_KEY = userdata.get('OPENAI_API_KEY')
 GEMINI_API_KEY = userdata.get('GEMINI_API_KEY')

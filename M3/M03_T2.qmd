@@ -15,7 +15,7 @@ format:
 categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Guided Implementation', 'Evaluation']
 execute:
   echo: true
-  eval: false
+  eval: true
   warning: false
   message: false
 ---
@@ -65,8 +65,8 @@ def make_grounded_prompt(question: str, chunks: list[dict]) -> str:
         context.append(
             f"[Chunk {i} | {c['company']} | Item {c['item']} | {c['chunk_id']}]\n{c['text']}"
         )
-    joined = "\\n\\n".join(context)
-    return f\"\"\"You are a financial analysis assistant.
+    joined = "\n\n".join(context)
+    return f"""You are a financial analysis assistant.
 Use only the retrieved SEC evidence below.
 If the answer is not supported, say that the evidence is insufficient.
 
@@ -76,7 +76,7 @@ Question:
 Retrieved context:
 {joined}
 
-Answer with short citations to the chunk labels.\"\"\"
+Answer with short citations to the chunk labels."""
 
 print(make_grounded_prompt(question, example_chunks))
 ```

@@ -1,5 +1,13 @@
 # Lessons
 
+## 2026-09-28 -- Reconcile restored stashes against their original base before committing.
+- A stash retained after `stash apply` may already be present in the working tree. Compare its changed paths and contents before applying it again.
+- Restoring whole files to resolve stash conflicts can undo newer upstream work. Three-way merge the stash base, current HEAD, and saved changes; preserve the newer slide theme and dependency sources while incorporating the saved examples and added packages.
+- Regenerate `uv.lock` after merging dependency declarations. The local EduStack 0.1.1 wheel sources must exist; build them from the sibling package sources when absent.
+- The seven enabled M05_P2 sample blocks passed sequential execution in the existing project environment after restoring their prompt/configuration prerequisites. JSON, TOML, SQLite integrity, and the course-language scan also passed. These checks do not establish rendered layout or slide/notes parity.
+- `uv lock --check --offline` passed for 383 packages, and `quarto render M5/M05_P2.qmd --to revealjs` completed after allowing access to Quarto's per-user kernel log. All 21 cells completed; visual inspection and companion-note parity remain unverified.
+- tags: git,stash,merge,dependencies,verification
+
 ## 2026-09-22 -- Center native and Quarto float captions with caption-specific theme selectors.
 - Reveal slides inherit left alignment. Cover figcaption, .quarto-float-caption, table caption, and legacy p.caption under .reveal .slides; use #quarto-content for HTML notes. Do not center table cells or all paragraph text.
 - Both themes compiled with Dart Sass; isolated browser fixtures verified centered figure captions, native table captions, and cross-referenced table captions while table cells remained left-aligned. The language check passed all 42 sources.

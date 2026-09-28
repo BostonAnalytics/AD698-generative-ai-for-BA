@@ -46,7 +46,7 @@ By the end of this tutorial, you should be able to:
 ## Step 2: Verify environment
 
 ```{python}
-#| eval: false
+#| eval: true
 import platform
 import torch
 
@@ -105,7 +105,7 @@ If `drive.mount()` is slow or times out, one common cause is that `My Drive` or 
 ## Example A: rank, shape, dtype
 
 ```{python}
-#| eval: false
+#| eval: true
 import torch
 
 scalar = torch.tensor(7)
@@ -120,7 +120,7 @@ print("matrix rank:", matrix.ndim, "shape:", tuple(matrix.shape), "dtype:", matr
 ## Example B: create from raw sequence
 
 ```{python}
-#| eval: false
+#| eval: true
 raw = torch.arange(16)
 rank2 = raw.reshape(2, 8)
 rank3 = raw.reshape(2, 4, 2)
@@ -135,7 +135,7 @@ print(rank3)
 ## Example C: indexing and slicing
 
 ```{python}
-#| eval: false
+#| eval: true
 x = torch.arange(20).reshape(4, 5)
 print("x:\n", x)
 print("row 2:", x[1])
@@ -146,7 +146,7 @@ print("block:\n", x[1:3, 2:5])
 ## Example D: broadcasting and reductions
 
 ```{python}
-#| eval: false
+#| eval: true
 x = torch.arange(12).reshape(3, 4).float()
 bias = torch.tensor([0.1, 0.2, 0.3, 0.4])
 
@@ -161,7 +161,7 @@ print("mean over cols (dim=0):", x.mean(dim=0))
 ## Example E: device transfer
 
 ```{python}
-#| eval: false
+#| eval: true
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 x = torch.arange(12).reshape(3, 4).float()
 x_dev = x.to(device)
@@ -171,7 +171,7 @@ print("device:", x_dev.device)
 ## Example F: matrix multiply timing
 
 ```{python}
-#| eval: false
+#| eval: true
 import time
 
 size = 2000
@@ -237,7 +237,7 @@ The following cells mirror the internal notebook workflow used for preparation.
 They are hidden in rendered output.
 
 ```{python}
-#| eval: false
+#| eval: true
 #| include: false
 import platform
 import torch

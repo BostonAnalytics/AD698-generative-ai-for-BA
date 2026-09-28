@@ -36,7 +36,7 @@ title-slide-attributes:
   data-background-position: center
   data-background-opacity: "0.22"
 execute: 
-  enabled: false
+  eval: false
   echo: false
   warning: false
   message: false
@@ -45,7 +45,6 @@ csl: ../mis-quarterly.csl
 categories: ['RAG Evaluation', 'Reranking', 'RAGAS', 'Production RAG', 'Technical Deep Dive']
 description: "Introduces Generation, Evaluation, and Production RAG through concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
 ---
-
 
 ## LangChain package setup
 
@@ -58,6 +57,29 @@ If an import fails, check the selected kernel with `import sys; print(sys.execut
 ```python
 %pip install -U langchain-core langchain-community langchain-text-splitters langchain-huggingface faiss-cpu sentence-transformers pandas scikit-learn
 ```
+
+
+
+
+## Runnable companion notebooks
+
+This deck executes a small local sample of real Tesla filing excerpts: loading,
+chunking, TF-IDF retrieval, cited extractive answers, and retrieval evaluation.
+Full embedding-model, generation, and RAGAS API examples are displayed with
+`eval: false`; run those in the companion notebooks.
+
+Run the companion notebooks from their setup cells:
+
+- [Baseline ingestion, chunking, retrieval, and generation](../help-code/Rag/1_rag_simpler.ipynb)
+- [Reranking](../help-code/Rag/2_rag_simpler.ipynb), [query decomposition](../help-code/Rag/3_rag_simpler_langsmith.ipynb), [tool-style retrieval](../help-code/Rag/4_rag_simpler_langsmith.ipynb), and [reflection](../help-code/Rag/5_rag_simpler_langsmith.ipynb)
+- [RAGAS evaluation](../help-code/Rag/6_ragas_evaluation.ipynb)
+- [Embedding comparison](../help-code/Rag/7_ragas_huggingface_model_comparison.ipynb)
+
+Helpers such as `ensure_tesla_filings` and `load_filing_documents` are defined
+inline in those notebooks. The comparison and serving snippets below illustrate
+interfaces; they require the corresponding chains and models to be initialized.
+
+---
 
 # Building the Generator
 
@@ -76,7 +98,7 @@ Good generation depends on how context is packed:
 
 ```{python}
 #| echo: true 
-#| eval: false
+#| eval: true
 #| output-location: column
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -115,7 +137,7 @@ This supports grading, auditing, and stakeholder trust.
 
 ```{python}
 #| echo: true 
-#| eval: false
+#| eval: true
 #| output-location: column
 from pathlib import Path
 
@@ -129,7 +151,11 @@ TESLA_RAG_CONFIG = {
     "search_kwargs": {"k": 6},
 }
 
-RAG_DIR = Path("help-code/Rag")
+PROJECT_ROOT = next(
+    folder for folder in (Path.cwd(), *Path.cwd().parents)
+    if (folder / "_quarto.yml").is_file()
+)
+RAG_DIR = PROJECT_ROOT / "help-code/Rag"
 ```
 
 The retrieval configuration fixes the chunking, embedding, and search settings so chunk IDs, retrieved years, and evaluation rows remain comparable across baseline, reranked, decomposed, reflective, and embedding-comparison variants.
@@ -264,26 +290,37 @@ def load_filing_documents(records: Iterable[FilingRecord], max_chars_per_filing:
 
 ## Ingestion and Chunking
 
+Four excerpts from Tesla's 10-K filed **January 29, 2024** (fiscal year 2023).
+The bundled sample preserves source metadata and normalized filing text.
+This is a one-filing teaching sample, not a multi-year comparison.
+
+
 ```{python}
-#| echo: true 
-#| eval: false
+#| echo: true
+#| eval: true
 #| output-location: column
+import json
+import pandas as pd
+from IPython.display import display
+from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-records = ensure_tesla_filings(download=True)
-docs = load_filing_documents(records)
-
-splitter = RecursiveCharacterTextSplitter(
-    chunk_size=TESLA_RAG_CONFIG["chunk_size"],
-    chunk_overlap=TESLA_RAG_CONFIG["chunk_overlap"],
-    separators=["Item 1A.", "Item 7.", "Item 8.", "\n\n", ". ", " "],
+sample_rows = json.loads(
+    (RAG_DIR / "data/tesla_10k_render_sample.json").read_text(encoding="utf-8")
 )
-
+docs = [Document(page_content=row["text"], metadata={
+    key: value for key, value in row.items() if key != "text"
+}) for row in sample_rows]
+splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=60)
 chunks = splitter.split_documents(docs)
-
 for i, doc in enumerate(chunks):
-    year = doc.metadata["filing_year"]
-    doc.metadata["chunk_id"] = f"TSLA-{year}-{i:05d}"
+    doc.metadata["chunk_id"] = f"TSLA-2024-sample-{i:02d}"
+
+print(f"{len(docs)} real excerpts -> {len(chunks)} chunks")
+display(pd.DataFrame([{
+    "chunk_id": d.metadata["chunk_id"], "item": d.metadata["item"],
+    "characters": len(d.page_content), "preview": d.page_content[:90]
+} for d in chunks]))
 ```
 
 ---
@@ -327,77 +364,128 @@ Good answers cite both the filing year and the chunk ID, not only the generated 
 ## Small Tesla Evidence Example {.code-detail}
 
 ```{python}
-#| echo: true 
-#| eval: false
-#| output-location: column
-from langchain_core.documents import Document
-
-tesla_micro_chunks = [
-    Document(
-        page_content=(
-            "Tesla describes battery technology, battery cell supply, "
-            "manufacturing scale, and cost reduction as important to vehicle "
-            "and energy storage growth."
-        ),
-        metadata={"ticker": "TSLA", "filing_year": 2020, "chunk_id": "TSLA-2020-demo-001"},
-    ),
-    Document(
-        page_content=(
-            "Tesla discusses production ramps, factory capacity, supply chain "
-            "constraints, and execution risk as recurring manufacturing issues."
-        ),
-        metadata={"ticker": "TSLA", "filing_year": 2024, "chunk_id": "TSLA-2024-demo-002"},
-    ),
-]
-
-```
-
-## Retrieving the Tesla Evidence {.code-detail}
-
-```{python}
 #| echo: true
-#| eval: false
-question = "How did Tesla describe battery supply and production risk?"
+#| eval: true
+#| output-location: column
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-retrieved_docs = [
-    doc for doc in tesla_micro_chunks
-    if any(term in doc.page_content.lower() for term in ["battery", "supply", "production"])
-]
+vectorizer = TfidfVectorizer(stop_words="english")
+chunk_vectors = vectorizer.fit_transform([d.page_content for d in chunks])
 
-assert len(retrieved_docs) == 2
-assert {doc.metadata["filing_year"] for doc in retrieved_docs} == {2020, 2024}
+def retrieve_sample(question, k=3):
+    scores = cosine_similarity(vectorizer.transform([question]), chunk_vectors)[0]
+    ranked = sorted(range(len(chunks)), key=lambda i: (-scores[i], i))
+    return [(chunks[i], float(scores[i])) for i in ranked[:k] if scores[i] > 0]
+
+question = "How could battery cell supply disruptions limit production?"
+ranked_hits = retrieve_sample(question)
+retrieved_docs = [doc for doc, score in ranked_hits]
+display(pd.DataFrame([{
+    "rank": rank, "chunk_id": d.metadata["chunk_id"],
+    "score": round(score, 3), "text": d.page_content
+} for rank, (d, score) in enumerate(ranked_hits, 1)]))
 ```
 
-Even a two-chunk example shows the minimum evidence contract: company, filing year, chunk ID, and topic coverage.
+This executable baseline uses TF-IDF cosine similarity (lexical overlap).
+Its scores are neither confidence probabilities nor dense embedding scores.
+The preceding FAISS example shows the full notebook alternative.
 
 ---
 
 ## LCEL RAG Chain
 
 ```{python}
-#| echo: true 
-#| eval: false
+#| echo: true
+#| eval: true
 #| output-location: column
 from langchain_core.runnables import RunnableLambda
-from langchain_core.output_parsers import StrOutputParser
 
 def join_context(docs):
     return "\n\n".join(
-        f"[TSLA {d.metadata.get('filing_year')} {d.metadata.get('chunk_id')}]\n"
-        f"{d.page_content}"
+        f"[{d.metadata['chunk_id']} | Item {d.metadata['item']}] {d.page_content}"
         for d in docs
     )
 
-rag_inputs = {
-    "question": RunnableLambda(lambda x: x["question"]),
-    "context": RunnableLambda(lambda x: join_context(retriever.invoke(x["question"]))),
-}
+sample_prompt_chain = RunnableLambda(lambda x: {
+    "question": x["question"],
+    "context": join_context([d for d, _ in retrieve_sample(x["question"])])
+}) | RAG_PROMPT
 
-from langchain_google_vertexai import ChatVertexAI
-llm = ChatVertexAI(model="gemini-1.5-flash")
-chain = rag_inputs | RAG_PROMPT | llm | StrOutputParser()
-rag_answer = chain.invoke({"question": question})
+formatted_prompt = sample_prompt_chain.invoke({"question": question})
+print(formatted_prompt.to_string())
 ```
+
+---
+
+## A Cited Extractive Answer
+
+This output selects an exact sentence from the retrieved evidence. It is an
+extractive answer, not an LLM-generated synthesis.
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+import re
+
+def extract_sample_answer(question):
+    hits = retrieve_sample(question)
+    if not hits:
+        return "The sample contains insufficient evidence."
+    candidates = [(sentence, doc.metadata["chunk_id"])
+                  for doc, _ in hits
+                  for sentence in re.split(r"(?<=[.!?])\s+", doc.page_content)
+                  if sentence.endswith((".", "!", "?"))]
+    if not candidates:
+        return "The sample contains insufficient evidence."
+    scores = cosine_similarity(
+        vectorizer.transform([question]),
+        vectorizer.transform([sentence for sentence, _ in candidates])
+    )[0]
+    best = int(scores.argmax())
+    sentence, citation = candidates[best]
+    return f"{sentence} [{citation}]"
+
+sample_answer = extract_sample_answer(question)
+print(sample_answer)
+```
+
+---
+
+## Evaluate the Sample Retrieval
+
+For each question, mark one excerpt relevant by hand. Precision@3 measures
+relevant chunks among the three returned; recall@3 measures coverage of that
+excerpt's chunks. These are **sample retrieval metrics**, not RAGAS or semantic
+faithfulness scores.
+
+```{python}
+#| echo: true
+#| eval: true
+#| output-location: column
+sample_questions = [
+    ("How could battery cell supply disruptions limit production?", "battery-supply"),
+    ("What launch and production ramp delays were experienced?", "production-ramp"),
+    ("How does Tesla sell directly and support customers?", "customer-network"),
+]
+evaluation_rows = []
+for query, relevant_sample in sample_questions:
+    relevant_ids = {d.metadata["chunk_id"] for d in chunks
+                    if d.metadata["sample_id"] == relevant_sample}
+    found_ids = {d.metadata["chunk_id"] for d, _ in retrieve_sample(query, k=3)}
+    hits = len(found_ids & relevant_ids)
+    evaluation_rows.append({
+        "target_excerpt": relevant_sample,
+        "precision@3": round(hits / 3, 2),
+        "recall@3": round(hits / len(relevant_ids), 2),
+        "retrieved_ids": ", ".join(sorted(found_ids)),
+    })
+display(pd.DataFrame(evaluation_rows))
+```
+
+Try changing `chunk_size`, `chunk_overlap`, or the question wording and inspect
+which evidence moves into or out of the top three.
 
 ---
 

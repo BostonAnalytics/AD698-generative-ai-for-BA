@@ -18,7 +18,7 @@ csl: ../mis-quarterly.csl
 engine: jupyter
 execute:
     echo: true
-    eval: false
+    eval: true
     warning: false
     message: false
 categories: ['SEC HTML', 'Corpus Construction', 'Language Modeling', 'Text Representation', 'Guided Implementation']
@@ -77,6 +77,7 @@ import re
 import random
 import json
 import unicodedata
+from collections import Counter
 from pathlib import Path
 from typing import Optional, Dict, List
 
@@ -90,28 +91,59 @@ from tqdm import tqdm
 
 Use either:
 
-- `../data/SEC-10K-2024-HTML`
+- the repository's `data/SEC-10K-2024` folder (filings saved with `.txt` extensions)
 - a mounted Google Drive folder containing the SEC HTML corpus
 
 ```{python}
-DATA_DIR = Path("../data/SEC-10K-2024-HTML")
-OUTPUT_DIR = Path("../data/outputs/sec_10k_sections")
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-
-ALL_HTML_FILES = sorted(DATA_DIR.rglob("*.html")) + sorted(DATA_DIR.rglob("*.htm"))
-print(f"Total HTML files found: {len(ALL_HTML_FILES)}")
+PROJECT_ROOT = next(
+    (folder for folder in (Path.cwd(), *Path.cwd().parents)
+     if (folder / "_quarto.yml").is_file()),
+    Path.cwd(),
+)
+DATA_DIR = PROJECT_ROOT / "data/SEC-10K-2024"
+OUTPUT_DIR = PROJECT_ROOT / "data/outputs/sec_10k_sections"
 ```
 
 For Google Colab:
 
 ```{python}
+#| eval: false
 from google.colab import drive
 
 drive.mount("/content/drive")
 
-DATA_DIR = Path("/content/drive/MyDrive/Colab Notebooks/data/SEC-10K-2024-HTML")
+DATA_DIR = Path("/content/drive/MyDrive/Colab Notebooks/data/SEC-10K-2024")
 OUTPUT_DIR = Path("/content/drive/MyDrive/Colab Notebooks/data/outputs/sec_10k_sections")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+```
+
+After choosing the local or Google Drive paths, discover the files. The
+`SEC-10K-2024` filings use `.txt` extensions but contain markup, so include
+`.txt` alongside `.html` and `.htm` and pass their contents through the same
+BeautifulSoup cleaning step. There is no need to rename the files.
+
+```{python}
+DATA_DIR = DATA_DIR.expanduser().resolve()
+if not DATA_DIR.is_dir():
+    raise FileNotFoundError(
+        f"HTML corpus directory does not exist: {DATA_DIR}. "
+        "Extract the SEC HTML corpus there or set DATA_DIR to its actual folder, "
+        "then rerun this discovery cell."
+    )
+
+ALL_HTML_FILES = sorted(
+    path for path in DATA_DIR.rglob("*")
+    if path.is_file() and path.suffix.lower() in {".html", ".htm", ".txt"}
+)
+if not ALL_HTML_FILES:
+    raise ValueError(
+        f"No .html, .htm, or .txt filings found in {DATA_DIR}. "
+        "Check that the HTML corpus is extracted and DATA_DIR points to it."
+    )
+
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+print(f"Data directory: {DATA_DIR}")
+print(f"Total filing files found: {len(ALL_HTML_FILES)}")
 ```
 
 ## Select a small sample first
@@ -185,6 +217,9 @@ def extract_sections(clean_text: str) -> Dict[str, Optional[str]]:
 # Build a structured corpus table
 
 ```{python}
+if not html_files:
+    raise ValueError("No filings selected. Rerun file discovery and select a nonempty sample.")
+
 records = []
 
 for path in html_files:

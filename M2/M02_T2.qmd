@@ -15,7 +15,7 @@ categories: ['Language Modeling', 'Text Representation', 'Semantic Similarity', 
 description: "Guides students through a hands-on implementation of Semantic Neighbors, Cross-Entropy, and LLM-Style Evaluation, with reusable code patterns, validation checks, and artifacts for later labs and assignments."
 execute:
   echo: true
-  eval: false
+  eval: true
 ---
 
 ## Module Learning Objectives
@@ -72,7 +72,7 @@ from sentence_transformers import SentenceTransformer
 ## Step 1: Load SEC Chunked Text
 
 ```{python}
-chunks_df = pd.read_csv("../data/assignment01/chunks.csv")
+chunks_df = pd.read_csv("../deliverables-solutions/Assignments/outputs/M01_A_sol/chunks.csv")
 chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(300)
 chunks_df.head()
 ```

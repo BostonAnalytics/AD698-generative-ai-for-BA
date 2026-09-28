@@ -14,7 +14,7 @@ format:
 categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Guided Implementation']
 execute:
   echo: true
-  eval: false
+  eval: true
   warning: false
   message: false
 description: "Guides students through a hands-on implementation of Transformer Classification on Sentence Polarity Text, with reusable code patterns, validation checks, and artifacts for later labs and assignments."

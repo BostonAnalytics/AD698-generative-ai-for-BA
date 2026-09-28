@@ -15,7 +15,7 @@ format:
 categories: ['Prompt Engineering', 'Tokenization', 'Embeddings', 'Semantic Search', 'Guided Implementation']
 execute:
   echo: true
-  eval: false
+  eval: true
   warning: false
   message: false
 ---
@@ -77,7 +77,7 @@ from sentence_transformers import SentenceTransformer
 ## Step 1: Load SEC Chunks
 
 ```{python}
-chunks_df = pd.read_csv("../data/assignment01/chunks.csv")
+chunks_df = pd.read_csv("../deliverables-solutions/Assignments/outputs/M01_A_sol/chunks.csv")
 chunks_df = chunks_df[["chunk_id", "company", "item", "chunk_text"]].dropna().head(300)
 chunks_df.head()
 ```
