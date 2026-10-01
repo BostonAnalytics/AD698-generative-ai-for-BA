@@ -187,3 +187,9 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Parse document YAML and scan authored code, notebooks, and build configuration for PDF writers; checking only _quarto.yml misses per-document formats and helper commands.
 - Quarto inspection during this change failed in project discovery on the missing M5/M05_LN1_files directory; source-format checks do not establish a successful site render.
 - tags: quarto,pdf,build,verification
+
+## 2026-10-01 -- Before clearing a historical AD698 stash, compare its base and changed paths with newer reconciliation commits; preserve it with git bundle create .git/pre-cleanup-stash-YYYYMMDD.bundle refs/stash and require git bundle verify to succeed before git stash drop.
+- Expected: Synchronize branches, remove obsolete artifacts, clear the stash, and push a clean checkout.
+- Actual: Fetched all branches, fast-forwarded main, removed 309 runtime and temporary files plus the stale requirements snapshot, refreshed setup documentation, and pushed two targeted commits. Empty working-tree, untracked, and stash checks passed.
+- Why: The April stash remained after September commit 2dc9e67 reconciled course updates. A clean working tree also concealed 285 tracked runtime cache files and 24 temporary exports/inventories; tracked-file inventory exposed them. The verified bundle preserves the old state locally without reapplying stale whole files. No additional rule or skill fix is proposed.
+- tags: git,stash,cleanup,verification
