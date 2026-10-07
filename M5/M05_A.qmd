@@ -171,7 +171,7 @@ chunks_df.describe(include="all")
 chunks_df.head()
 ```
 
-ðŸ“Š **Required:** Stacked bar chart of chunk counts by company and by year.
+**Required:** Stacked bar chart of chunk counts by company and by year.
 
 ## Load API Key Securely
 

@@ -187,7 +187,7 @@ Save to Drive:
 market_df.to_csv("/content/drive/MyDrive/assignment01/company_context.csv")
 ```
 
-📊 **Required:** Show `market_df` as a table. Include it in your Word document. Briefly justify (1 paragraph) why these two companies are genuine rivals in the same vertical.
+**Required:** Show `market_df` as a table. Include it in your Word document. Briefly justify (1 paragraph) why these two companies are genuine rivals in the same vertical.
 
 # SEC Data Acquisition and Corpus Construction {#sec-data}
 
@@ -241,7 +241,7 @@ corpus_df.describe()
 corpus_df.head()
 ```
 
-📊 **Required:** Bar chart of filing count by company and year.
+**Required:** Bar chart of filing count by company and year.
 
 Save:
 
@@ -277,7 +277,7 @@ chunks_df.describe()
 chunks_df.head()
 ```
 
-📊 **Required:** Histogram of `char_count` by company to compare writing density.
+**Required:** Histogram of `char_count` by company to compare writing density.
 
 Save:
 
@@ -314,7 +314,7 @@ tfidf_df.describe().T.head(20)
 
 Compute the mean TF-IDF weight per term for each company. Report top-20 terms.
 
-📊 **Required:** Side-by-side horizontal bar chart of top-20 terms for Company A and Company B. Include company names in the chart title.
+**Required:** Side-by-side horizontal bar chart of top-20 terms for Company A and Company B. Include company names in the chart title.
 
 Save:
 
@@ -351,7 +351,7 @@ sim_df.describe()
 sim_df.head()
 ```
 
-📊 **Required:** Line chart of cosine similarity over years, with Item 7, Item 7A, and Item 8 as separate lines. Label axes and include a legend.
+**Required:** Line chart of cosine similarity over years, with Item 7, Item 7A, and Item 8 as separate lines. Label axes and include a legend.
 
 # PyTorch BoW Classifier {#sec-classifier}
 
@@ -413,7 +413,7 @@ print(classification_report(y_test.numpy(), preds,
       target_names=[company_b, company_a]))
 ```
 
-📊 **Required:** Confusion matrix as a seaborn heatmap with company names on axes.
+**Required:** Confusion matrix as a seaborn heatmap with company names on axes.
 
 Save weights:
 
@@ -443,7 +443,7 @@ Retrain your PyTorch BoW classifier separately on Item 7 chunks only, Item 7A ch
 | Item 7A – Market Risk Disclosures | |
 | Item 8 – Financial Statements | |
 
-📊 **Required:** Bar chart of accuracy by section.
+**Required:** Bar chart of accuracy by section.
 
 **Answer in your Word document:** Which section produces higher classification accuracy? What does this suggest about where these two companies differentiate their language for financial performance modeling across management discussion, market-risk disclosures, and audited financial statements?
 
@@ -452,7 +452,7 @@ Retrain your PyTorch BoW classifier separately on Item 7 chunks only, Item 7A ch
 
 Report the PyTorch BoW accuracy and the cosine-similarity baseline accuracy in a 2-row results table. Inspect 5 misclassified chunks (wrong-company predictions).
 
-📊 **Required:** Show a table of 5 misclassified chunks with `chunk_text`, `true_company`, and `predicted_company` columns. Show `.head()` of this error table.
+**Required:** Show a table of 5 misclassified chunks with `chunk_text`, `true_company`, and `predicted_company` columns. Show `.head()` of this error table.
 
 **Answer in your Word document:** What does the gap (or lack of gap) between the two methods tell you about whether company language is separated by vocabulary alone, or by something subtler?
 

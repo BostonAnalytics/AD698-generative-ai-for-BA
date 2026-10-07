@@ -308,14 +308,14 @@ for epoch in range(NUM_EPOCHS):
 ### Instructions
 
 1. **Loss curves**: Plot training and validation MSE vs. epoch on a single figure. Add a dashed vertical line at the best epoch.
-2. **RMSE on original scale**: After running predictions on the test set, convert predictions back to dollars using `np.expm1()`. Compute and print RMSE and RÂ².
-3. **True vs. Predicted scatter**: Scatter `y_true` (x-axis) vs. `y_pred` (y-axis), both in original dollars. Add a red dashed diagonal (perfect-prediction line). Annotate with RMSE and RÂ².
+2. **RMSE on original scale**: After running predictions on the test set, convert predictions back to dollars using `np.expm1()`. Compute and print RMSE and R².
+3. **True vs. Predicted scatter**: Scatter `y_true` (x-axis) vs. `y_pred` (y-axis), both in original dollars. Add a red dashed diagonal (perfect-prediction line). Annotate with RMSE and R².
 
 ### Expected Outputs
 
 - Loss curve figure
 - True vs. Predicted scatter plot
-- Printed metrics: `Test RMSE: $XX,XXX` and `RÂ²: 0.XXXX`
+- Printed metrics: `Test RMSE: $XX,XXX` and `R²: 0.XXXX`
 
 :::{.callout-note}
 **Interpret your results in the report**: Does the model underfit or overfit? Are errors larger for expensive or inexpensive houses? What might explain this pattern?
@@ -330,14 +330,14 @@ for epoch in range(NUM_EPOCHS):
 ### Instructions
 
 1. Load MNIST using `torchvision.datasets.MNIST` as shown in the Datasets section.
-2. Report: total training samples, test samples, image shape (C Ã— H Ã— W), number of classes.
-3. **Sample image grid**: Display a 2-row Ã— 10-column grid showing 2 examples per digit class (0–9). Label each image with its class number.
+2. Report: total training samples, test samples, image shape (C × H × W), number of classes.
+3. **Sample image grid**: Display a 2-row × 10-column grid showing 2 examples per digit class (0–9). Label each image with its class number.
 4. **Class distribution**: Bar chart of the number of training examples per digit class. Is the dataset balanced? Comment in your report.
 5. Split the training set into 85% train / 15% validation, and wrap all three splits (train, val, test) in `DataLoader` with `batch_size=128`.
 
 ### Expected Outputs
 
-- 2Ã—10 image grid
+- 2×10 image grid
 - Class distribution bar chart
 - Printed dataset statistics
 
@@ -347,7 +347,7 @@ for epoch in range(NUM_EPOCHS):
 
 Build an MLP classifier by subclassing `nn.Module`. Requirements:
 
-- **`nn.Flatten()`** to convert each 28Ã—28 image to a 784-vector
+- **`nn.Flatten()`** to convert each 28×28 image to a 784-vector
 - At least **3 hidden layers** (suggested: `512 -> 256 -> 128 -> 10`)
 - **`nn.BatchNorm1d`** and **`nn.ReLU`** after each hidden layer
 - **`nn.Dropout`** for regularization
@@ -387,16 +387,16 @@ Accuracy per batch = `(logits.argmax(dim=1) == y_batch).float().mean()`
 ### Instructions
 
 1. **Training curves**: Two side-by-side plots — (a) loss vs. epoch and (b) accuracy vs. epoch — for both train and validation sets.
-2. **Confusion matrix**: Compute and display the 10Ã—10 confusion matrix on the test set using `sklearn.metrics.ConfusionMatrixDisplay`. Which two digits are most frequently confused?
+2. **Confusion matrix**: Compute and display the 10×10 confusion matrix on the test set using `sklearn.metrics.ConfusionMatrixDisplay`. Which two digits are most frequently confused?
 3. **ROC curves + AUC**: Using a **one-vs-rest** strategy, plot all 10 ROC curves on a single figure. Report the AUC for each digit and the macro-average AUC.
-4. **Sample predictions**: Display a 4-row Ã— 8-column grid (32 images) from the test set. Show the true label and predicted label for each image. Color correct predictions **green** and incorrect ones **red**.
+4. **Sample predictions**: Display a 4-row × 8-column grid (32 images) from the test set. Show the true label and predicted label for each image. Color correct predictions **green** and incorrect ones **red**.
 
 ### Expected Outputs
 
 - Loss + accuracy curves figure (2 subplots)
-- 10Ã—10 confusion matrix heatmap
+- 10×10 confusion matrix heatmap
 - ROC curve figure with per-class AUC in the legend
-- 4Ã—8 sample prediction grid
+- 4×8 sample prediction grid
 
 :::{.callout-tip}
 For ROC curves, use `sklearn.preprocessing.label_binarize` and `sklearn.metrics.roc_curve`.
