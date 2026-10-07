@@ -1,5 +1,15 @@
 # Lessons
 
+## 2026-10-01 -- Repair mojibake in source and regenerate Quarto's frozen and rendered copies.
+- Windows-1252 decoding of UTF-8 bytes corrupted chart icons, R-squared labels, and multiplication signs in M0_A, M02_A, and M05_A. Replace exact damaged sequences rather than stripping non-ASCII text; valid mathematical notation, punctuation, and accented words must survive.
+- Use consistent bold requirement labels without decorative chart icons in M01_A, M02_A, and M05_A. Compare fenced code blocks before and after cleanup to confirm that assignment code remains unchanged.
+- `python scripts/check_text_encoding.py` checks authored text, including new untracked sources, before Quarto rendering. Regression cases cover the reported corruption and valid Unicode. Tokenizer vocabularies and downloaded data are excluded because their byte representations can legitimately resemble mojibake.
+- Rebuild changed pages serially and inspect both `_freeze/.../execute-results/html.json` and `_site/...html`; repairing only the QMD leaves stale text in saved outputs. Quarto may require access to its per-user Jupyter log directory.
+- When Jupyter startup fails with `No buffer space available`, assignment pages already declaring `eval: false` can render with `--no-execute`. This does not refresh frozen Markdown: apply the same exact text repairs there while retaining the old execution hash so normal future renders can still invalidate it. Quarto's Sass cache also requires per-user filesystem access.
+- The in-app browser rejects local `file:` URLs. Without a user-requested web server, HTML text/metadata checks do not establish visual layout verification.
+- Verification: all four assignment HTML renders completed serially; parsed HTML and frozen Markdown contained no detected corruption, and UTF-8 metadata was present. The authored-text scan passed 545 files; a separate decoded notebook/JSON scan passed 154 files. All three encoding regression tests and four language-checker tests passed. Browser visual review remains unverified.
+- tags: encoding,quarto,unicode,verification
+
 ## 2026-09-28 -- Reconcile restored stashes against their original base before committing.
 - A stash retained after `stash apply` may already be present in the working tree. Compare its changed paths and contents before applying it again.
 - Restoring whole files to resolve stash conflicts can undo newer upstream work. Three-way merge the stash base, current HEAD, and saved changes; preserve the newer slide theme and dependency sources while incorporating the saved examples and added packages.

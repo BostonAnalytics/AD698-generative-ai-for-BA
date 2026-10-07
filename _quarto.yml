@@ -2,6 +2,7 @@ project:
   type: website
   output-dir: _site
   pre-render:
+    - python scripts/check_text_encoding.py
     - python scripts/check_course_language.py
 
   preview:
