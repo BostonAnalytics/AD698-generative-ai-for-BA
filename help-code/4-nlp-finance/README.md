@@ -1,12 +1,31 @@
 # NLP Finance Companion Notebooks
 
-This folder keeps the full 32-notebook sequence from the original help-code path, but
-renames the notebooks into an `S1.1` through `S12.3` finance-edition sequence.
+This folder adapts the original help-code sequence into an `S1.1` through
+`S12.3` finance edition, followed by the `S13.1` through `S13.3` fine-tuning notebooks.
 
-Each notebook preserves the original text, code, and visual explanations, then adds
-Apple fiscal 2025 Form 10-K bridge cells at the top. The bridge cells load a common
+The notebooks combine the original examples with
+Apple fiscal 2025 Form 10-K bridge cells. The bridge cells load a common
 Apple corpus, key statement metrics, and short labeled finance sentences so the same
 NLP concepts can be discussed in financial-document context.
+
+## Local data and shared helpers
+
+The setup cells select the original `1-foundations`, `2-core-tasks`, or
+`3-neural-nlp` directory for the original examples and their `src` imports.
+Keep those directories alongside this folder. Duplicate neural helper files
+are not needed in this folder's `src/`; it contains the finance-specific helpers.
+Existing setup cells contain a local checkout path; adjust it when using a
+different checkout location.
+
+Use `S9.3 - Data Preparation LM SA.ipynb` for both language-model and
+sentiment preprocessing. It includes sentence segmentation, UTF-8 input,
+and Unicode normalization; the former `S9.3a` working copy is consolidated
+there. Downloaded IMDB corpora and optional pretrained embeddings are local
+artifacts. The small Apple evaluation fixtures remain versioned.
+
+S9.4 can train with randomly initialized embeddings when `model.txt` is
+absent. Loaded vectors must match the embedding layer shape before copying.
+Full corpus preprocessing and model training remain explicit notebook steps.
 
 ## SEC 10-K Evaluation Sets
 
