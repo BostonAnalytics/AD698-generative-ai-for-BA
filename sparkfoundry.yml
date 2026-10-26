@@ -1,0 +1,187 @@
+# Keep lecture IDs stable. Increase course.version when changing a published package.
+schema: sparkfoundry-coursepack-v2
+course:
+  code: ad698-applied-generative-ai
+  version: 2026.10.25-zip1
+  title: AD698 — Applied Generative AI for Business Analytics
+  description: Study language models, transformers, prompting, retrieval-augmented
+    generation and agentic AI through lecture notes, presentations and labs.
+  runtime_instructions: Complete each lab in the environment specified by its handout.
+    Follow its setup, API-key, model and submission instructions.
+  skills:
+  - Language models
+  - Transformers
+  - Prompting
+  - RAG
+  - Agentic AI
+exclude:
+- M0/**
+- M7/**
+- M8/**
+- '**/.env'
+- data/**
+- deliverables-solutions/**
+- delivarables-solutions/**
+modules:
+- id: m1
+  title: M1 · Neural Networks and Language
+  lectures:
+  - id: ad698-lecture-01
+    title: Early Neural Networks and NLP
+    materials:
+    - kind: notes
+      source: M1/M01_LN1.qmd
+      format: html
+    - kind: slides
+      source: M1/M01_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M1/M01_Lab1.qmd
+      format: html
+  - id: ad698-lecture-02
+    title: Language, Probability, and Generative Systems
+    materials:
+    - kind: notes
+      source: M1/M01_LN2.qmd
+      format: html
+    - kind: slides
+      source: M1/M01_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M1/M01_Lab2.qmd
+      format: html
+- id: m2
+  title: M2 · Mathematical and Text Foundations
+  lectures:
+  - id: ad698-lecture-03
+    title: Math for Language Modeling
+    materials:
+    - kind: notes
+      source: M2/M02_LN1.qmd
+      format: html
+    - kind: slides
+      source: M2/M02_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M2/M02_Lab1.qmd
+      format: html
+  - id: ad698-lecture-04
+    title: From Words to Structured Text
+    materials:
+    - kind: notes
+      source: M2/M02_LN2.qmd
+      format: html
+    - kind: slides
+      source: M2/M02_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M2/M02_Lab2.qmd
+      format: html
+- id: m3
+  title: M3 · Sequence Models and Embeddings
+  lectures:
+  - id: ad698-lecture-05
+    title: Sequence Models and Transformers
+    materials:
+    - kind: notes
+      source: M3/M03_LN1.qmd
+      format: html
+    - kind: slides
+      source: M3/M03_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M3/M03_Lab1.qmd
+      format: html
+  - id: ad698-lecture-06
+    title: Tokenization, Embeddings, and Semantic Geometry
+    materials:
+    - kind: notes
+      source: M3/M03_LN2.qmd
+      format: html
+    - kind: slides
+      source: M3/M03_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M3/M03_Lab2.qmd
+      format: html
+- id: m4
+  title: M4 · Transformers and Prompting
+  lectures:
+  - id: ad698-lecture-07
+    title: Transformers, Attention, and Context
+    materials:
+    - kind: notes
+      source: M4/M04_LN1.qmd
+      format: html
+    - kind: slides
+      source: M4/M04_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M4/M04_Lab1.qmd
+      format: html
+  - id: ad698-lecture-08
+    title: Prompting and Prediction
+    materials:
+    - kind: notes
+      source: M4/M04_LN2.qmd
+      format: html
+    - kind: slides
+      source: M4/M04_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M4/M04_Lab2.qmd
+      format: html
+- id: m5
+  title: M5 · Retrieval-Augmented Generation
+  lectures:
+  - id: ad698-lecture-09
+    title: RAG Foundations and Retrieval
+    materials:
+    - kind: notes
+      source: M5/M05_LN1.qmd
+      format: html
+    - kind: slides
+      source: M5/M05_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M5/M05_Lab1.qmd
+      format: html
+  - id: ad698-lecture-10
+    title: Generation, Evaluation, and Production RAG
+    materials:
+    - kind: notes
+      source: M5/M05_LN2.qmd
+      format: html
+    - kind: slides
+      source: M5/M05_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M5/M05_Lab2.qmd
+      format: html
+- id: m6
+  title: M6 · Agentic AI
+  lectures:
+  - id: ad698-lecture-11
+    title: Agentic AI Foundations
+    materials:
+    - kind: notes
+      source: M6/M06_LN1.qmd
+      format: html
+    - kind: slides
+      source: M6/M06_P1.qmd
+      format: revealjs
+    - kind: lab
+      source: M6/M06_Lab1.qmd
+      format: html
+  - id: ad698-lecture-12
+    title: Building Agentic AI
+    materials:
+    - kind: notes
+      source: M6/M06_LN2.qmd
+      format: html
+    - kind: slides
+      source: M6/M06_P2.qmd
+      format: revealjs
+    - kind: lab
+      source: M6/M06_Lab2.qmd
+      format: html

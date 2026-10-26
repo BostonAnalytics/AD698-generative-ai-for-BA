@@ -12,6 +12,13 @@ help-code/3-neural-nlp/data
 help-code/3-neural-nlp/data/corpora/aclImdb_v1.tar.gz
 help-code/3-neural-nlp/data/corpora/imdb-reviews/*
 help-code/3-neural-nlp/data/corpora/imdb-reviews/*.*
+# Downloaded finance notebook corpora; retain small authored data fixtures.
+help-code/4-nlp-finance/data/corpora/aclImdb_v1.tar.gz
+help-code/4-nlp-finance/data/corpora/imdb-reviews/*
+help-code/4-nlp-finance/data/corpora/imdb-reviews/*.*
+help-code/4-nlp-finance/data/embeddings/
+deliverables-solutions/Assignments/mlp_graph
+deliverables-solutions/Assignments/mlp_graph.png
 *.env
 .env
 deliverables-solutions/Assignments/outputs/M01_A_sol/tfidf_matrix.csv
@@ -44,3 +51,6 @@ __pycache__/
 .venv/
 .vdoc.*
 graphify-out/
+
+# Spark Foundry rendered course packages
+/_sparkfoundry/
