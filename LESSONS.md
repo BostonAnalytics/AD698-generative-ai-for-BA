@@ -203,3 +203,15 @@ Written by /aar-loop after each session's After Action Review. Read this file be
 - Actual: Fetched all branches, fast-forwarded main, removed 309 runtime and temporary files plus the stale requirements snapshot, refreshed setup documentation, and pushed two targeted commits. Empty working-tree, untracked, and stash checks passed.
 - Why: The April stash remained after September commit 2dc9e67 reconciled course updates. A clean working tree also concealed 285 tracked runtime cache files and 24 temporary exports/inventories; tracked-file inventory exposed them. The verified bundle preserves the old state locally without reapplying stale whole files. No additional rule or skill fix is proposed.
 - tags: git,stash,cleanup,verification
+
+## 2026-10-25 -- In S9.4 RNN Sentiment Analysis, guard both vector lookup and weight installation when optional pretrained_vectors is None; reset pretrained_embedding before lookup so reruns cannot reuse stale vectors. Check missing, loaded, and mismatched-shape cases using actual notebook cells.
+- Expected: Missing optional model.txt leaves random trainable embeddings available.
+- Actual: Loader skipped the missing file but unconditional get_vecs_by_tokens failed. Guarded cells passed focused PyTorch execution checks; full training was not run.
+- Why: The optional-resource guard covered only loading, not downstream consumers. Weight copy under no_grad preserves the optimizer parameter reference.
+- tags: notebook,embeddings,fix-applied
+
+## 2026-10-25 -- Before removing untracked finance notebook copies, compare bytes with the original help-code folders and inspect notebook setup plus Markdown image paths. Finance notebooks import helpers after switching to the original folder, while Markdown figures still need assets beside the finance notebook.
+- Expected: Reconcile all branches and local work into targeted commits, clear stashes and untracked files, refresh documentation, and push.
+- Actual: Remote tracking branches were already synchronized and stashes were empty. Consolidated S9.3a into S9.3, removed nine identical helper copies and 34 corpus copies plus one unused duplicate image, and retained 22 image assets referenced by notebooks. Focused notebook and packager checks passed; full rendering and training were not run.
+- Why: A broad finance data ignore rule hid both downloaded corpora and required figures. Byte comparison alone cannot decide whether a duplicate is redundant because Python imports and Markdown image resolution use different paths. Narrowed the ignore scope as part of the requested cleanup; no additional skill or rule fix is proposed.
+- tags: cleanup,notebooks,paths,verification

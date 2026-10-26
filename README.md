@@ -33,6 +33,8 @@ and rendered together when changed.
 ```powershell
 uv run python scripts/check_course_language.py
 uv run python -m unittest discover -s tests -p test_course_language.py
+uv run python scripts/check_text_encoding.py
+uv run python -m unittest discover -s tests -p test_text_encoding.py
 uv run quarto render --execute
 ```
 
@@ -41,11 +43,20 @@ The VS Code task `Render and Zip Quarto Site` builds and packages `_site.zip`.
 No server is needed for these commands. Follow [schedules/README.md](schedules/README.md)
 for schedule generation and its focused checks.
 
+## Course packages
+
+[SPARKFOUNDRY.md](SPARKFOUNDRY.md) documents the optional course ZIP workflow.
+Its manifest selects 12 lectures from M1 through M6. Run the source check
+before rendering; publishing requires a compatible Spark Foundry deployment.
+The packager needs PyYAML, supplied by the documented `uv run --with pyyaml`
+command. Generated packages stay in the ignored `_sparkfoundry/` directory.
+
 ## Maintenance status
 
 [GATES.md](GATES.md) records the phases, tasks, acceptance requirements, and
-evidence for the October 2026 repository cleanup. No separate repository
-phase, plan, or task documents existed at the start of that cleanup.
+evidence for the October 25, 2026 repository reconciliation. The October 1
+cleanup record remains in Git history. There are no separate repository
+phase, plan, or task documents to maintain.
 The reusable [conversion](agent-rulebooks/ad698-course-conversion-rulebook.md)
 and [review](agent-rulebooks/ad698-course-review-update-rulebook.md) rulebooks
 remain maintained references, subject to AGENTS.md.
