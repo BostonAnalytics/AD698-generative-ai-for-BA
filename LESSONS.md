@@ -1,5 +1,40 @@
 # Lessons
 
+## 2026-11-03 -- Separate substantive changes from generated cleanup noise before committing.
+- The schedule workbook differed only in `docProps/core.xml`; restore the committed bytes when no worksheet or schedule data changed. A new `**/*.quarto_ipynb` ignore rule was redundant with the existing `**/*.quarto_ipynb*` rule.
+- Remove the unused iris comparison plot from the new primer's frozen assets only after checking that neither the source nor frozen Markdown references it; retain the penguin comparison plot and fitted-model assets.
+- Cleanup verification passed both source scans, all nine checker tests, both primer cells, the dataset checksum and saved probabilities, the attention calculation, and JSON/SVG parsing. Prior render records still leave full-page visual review and full M4 slide/notes parity unverified.
+
+## 2026-11-03 -- Derive toy attention vectors from explicit projection matrices.
+- For the Sales/rose/sharply example, choose `X = I_3` and three 3-by-2 projection matrices to reproduce the existing Q, K, and V exactly. Label these as hand-chosen weights, omit biases/position explicitly, and distinguish fixed inference weights from the attention distributions computed for each input.
+- Recomputing softmax from unrounded scaled scores reproduces output rows `[5, 5]`, `[3.983318610, 6.016681390]`, and `[3.723826174, 6.276173826]`. Rounded attention rows need not sum to exactly one.
+- Add the numerical construction, token table, weight-learning update, and assumptions to the companion notes in the same order. A full-pair audit must also check older sections: this pair has pre-existing topic-order and plotted-output coverage differences, so the local addition alone does not certify full parity.
+- The language checker now has regression cases for notes-authoring instructions and figure-teaching rationale found in the surrounding material. All four checker tests and both pre-render scans passed. Both slides and notes rendered serially; all 14 slide cells executed. The four added sections and local image targets were verified in both HTML files. Browser inspection of the local output timed out, leaving visual layout and browser math review unverified.
+
+## 2026-11-03 -- Filter deleted working-tree files from encoding-check discovery.
+- `git ls-files --cached --others --exclude-standard` includes tracked paths that no longer exist on disk. Quarto can remove generated figure files before its pre-render check, causing `read_text` to fail on an indexed SVG.
+- Filter automatic discovery with `is_file()`; explicitly requested missing paths still fail with a readable diagnostic. Do not restore obsolete generated figures to make the checker pass.
+- Verification: all five encoding-checker tests passed, including deleted-path discovery, continued detection in existing new sources, and explicit missing-path failure. The repository encoding check passed 547 files and the course-language check passed 42 files. No preview server was started; full slide rendering was not part of this checker-only verification.
+
+## 2026-11-03 -- Verify explicit equation numbers in the math renderer, not only in Quarto source.
+- The penguin primer uses 21 display-math `align` groups with explicit sequential tags. Multiline derivations retain inner `aligned` groups so each displayed group receives one number. KaTeX 0.19.1 rendered all 21 without errors, and the generated tag text contains numbers (1)-(21); the rebuilt HTML retains all 21 groups.
+- Recomputing from the stored training indices gives measurement sums [11292.4, 4387.6] and centered squared sums [7797.469375, 1062.769375]. Dividing by N=256 reproduces the saved StandardScaler means and ddof=0 standard deviations. Explain these as preprocessing statistics separately from fitted neural weights.
+- Source and renderer checks passed; full-page browser layout remains unverified because local-file URLs are blocked.
+- tags: equations,katex,standardization,verification
+
+## 2026-11-03 -- Tie a neural-network diagram to a saved fitted model and verify the complete forward pass.
+- The penguin primer uses a 2-2-3 ReLU MLP fitted on 256 rows, with train-only standardization and 86 held-out rows. `scripts/build_penguin_softmax_example.py` stores the dataset checksum, exact split indices, library versions, scaler, weights, biases, and example in `model.json`; both diagram formats are generated from those parameters.
+- Matrix orientation is row-vector convention: input-to-hidden is 2x2 and hidden-to-output is 2x3. Manual probabilities match `predict_proba` for all 86 test rows, not only the pictured observation; the full softmax Jacobian also passes central finite differences. Direct execution confirms both primer cells reproduce the saved example. Network and comparison images were visually inspected.
+- A two-ReLU fit can leave one unit inactive; the documented initialization seed 7 produces two active units for the selected held-out example. Do not fabricate edge weights or reuse logits from an unrelated dataset to fill the diagram.
+- The revised HTML rendered with both cells executed; both images and all three downloadable files exist in the site output. Graphify's code update completed. Full-page visual and browser math review remain unverified under the local-file URL restriction.
+- tags: neural-networks,penguins,diagrams,reproducibility,verification
+
+## 2026-11-03 -- Recompute transcript examples from their stated logits and check primer sources explicitly.
+- For the iris logits [1.43, -0.40, 0.23], softmax is [0.684178077, 0.109751446, 0.206070477]. Use unrounded values for derivatives: the setosa row is [0.216078436, -0.075089533, -0.140988902]. The transcript's displayed approximations should not be reused as exact calculations.
+- The course-language CLI covers top-level presentation/lecture-note pairs, not M0/primers. Call its violations function on a new primer as well as running the required CLI. Direct execution of both new primer cells passed; the full Jacobian matched central finite differences with step 1e-5 and absolute tolerance 1e-9. The generated comparison figure was visually inspected.
+- tags: softmax,primers,numerical-verification,language-check
+- HTML render completed with `--execute-daemon 0` outside the sandbox after the first attempt stalled at kernel startup. Both cells executed and the HTML image target exists. Full-page visual and browser math inspection remain unverified because browser policy blocks local file URLs; no local server was started.
+
 ## 2026-10-01 -- Repair mojibake in source and regenerate Quarto's frozen and rendered copies.
 - Windows-1252 decoding of UTF-8 bytes corrupted chart icons, R-squared labels, and multiplication signs in M0_A, M02_A, and M05_A. Replace exact damaged sequences rather than stripping non-ASCII text; valid mathematical notation, punctuation, and accented words must survive.
 - Use consistent bold requirement labels without decorative chart icons in M01_A, M02_A, and M05_A. Compare fenced code blocks before and after cleanup to confirm that assignment code remains unchanged.
