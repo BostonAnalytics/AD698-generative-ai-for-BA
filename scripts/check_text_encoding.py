@@ -30,9 +30,12 @@ def source_files():
     paths = subprocess.check_output(
         ["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=ROOT
     ).decode("utf-8").split("\0")
+    # The index includes tracked files deleted from the working tree (including
+    # figures Quarto removes before regenerating them).
     return [ROOT / name for name in paths
             if name and Path(name).suffix in SOURCE_SUFFIXES
-            and not set(Path(name).parts) & {"_site", "_freeze", "site_libs", "data", "outputs", "graphify-out"}]
+            and not set(Path(name).parts) & {"_site", "_freeze", "site_libs", "data", "outputs", "graphify-out"}
+            and (ROOT / name).is_file()]
 
 
 def main():
@@ -43,6 +46,10 @@ def main():
             text = path.read_text(encoding="utf-8-sig")
         except UnicodeDecodeError as exc:
             print(f"{path}: invalid UTF-8 at byte {exc.start}")
+            errors += 1
+            continue
+        except OSError as exc:
+            print(f"{path}: cannot read file: {exc.strerror}")
             errors += 1
             continue
         for line, excerpt in violations(text):
