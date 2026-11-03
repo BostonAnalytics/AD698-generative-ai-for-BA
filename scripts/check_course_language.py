@@ -12,6 +12,8 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 RULES = {
+    "notes authoring instruction": r"\bthe\s+lecture\s+notes\s+should\s+give\b",
+    "figure teaching rationale": r"\b(?:the\s+\w+\s+figure|this\s+figure)\s+is\s+useful\s+for\s+connecting\b",
     "authoring transition": r"\bthis\s+(?:(?:will|should)\s+)?sets?\s+the\s+stage\b",
     "teaching intuition": r"\b(?:set|sets|build|builds|establish|establishes)\s+(?:the\s+)?intuition\s+for\s+students\b",
     "example planning": r"\b(?:this|it)\s+(?:will|would|should)\s+make\s+(?:a\s+)?(?:good|great|useful)\s+example\b",

@@ -69,13 +69,13 @@ The combination of Transformers and large-scale pretraining led to the rise of *
 
 The three Section 4 notebooks provide an executable spine for this module:
 
-| Notebook | Role in lecture | What students should trace |
+| Notebook | Topics | Implementation details |
 |---|---|---|
 | `Section 4.1 - Transformer (Basic Architecture)` | Builds the transformer from parts. | Embeddings, positional encoding, self-attention, multi-head attention, encoder layers, decoder layers. |
 | `Section 4.2 - Transformer Machine Translation` | Turns the architecture into a translation model. | Source/target tokenization, vocabulary construction, masks, teacher forcing, greedy decoding. |
 | `Section 4.3 - Generative Pretrained Transformer (GPT)` | Shows the decoder-only path to text generation. | Causal attention, transformer blocks, GPT configuration, and next-token sampling. |
 
-The lecture notes should give the conceptual map; the notebooks should let students inspect tensor shapes and implementation details.
+The notebooks contain executable examples of tensor shapes, attention projections, and translation models.
 
 # Why Attention? A Human Translation Story
 
@@ -213,14 +213,12 @@ Each row is one token's attention distribution over all tokens.
 
 ![Single query token self-attention walkthrough.](./M04_lecture01_figures/self_attention_single_query.svg){width=88% fig-align="center" fig-alt="Single query token self-attention walkthrough."}
 
-This visual version follows the same teaching sequence emphasized in Raschka's walkthrough:
-choose one query token, compare it to all keys, normalize those scores, and use the weights to
+For one query token, compare its query to all keys, normalize those scores, and use the weights to
 blend values [@raschka2023selfattention].
 
 ![Attention matrix as query-token reading plans.](./M04_lecture01_figures/attention_matrix_reading_plan.svg){width=88% fig-align="center" fig-alt="Attention matrix as a stack of query-token reading plans."}
 
-The second figure is useful for connecting single-token intuition to the full matrix formula.
-Every row is one token's reading plan over the sequence. DataCamp's explanation uses the same
+The attention matrix stacks one reading plan per query token. Every row distributes attention over the sequence. DataCamp's explanation uses the same
 distinction between ordinary self-attention, masked self-attention, and cross-attention: the
 formula stays similar, but the visible tokens and the sources of Q/K/V change
 [@datacamp2025selfattention].
@@ -258,12 +256,11 @@ attention over the available key/value tokens.
 
 ## Worked Matrix Calculation
 
-The compact formula can feel abstract until we multiply a small example. The
-Machine Learning Mastery transformer attention tutorial lays out the same sequence:
+The scaled dot-product calculation follows this sequence:
 compute $QK^\top$, scale by $\sqrt{d_k}$, apply a row-wise softmax, then multiply by
 $V$ [@cristina2023transformerattention].
 
-Use three tokens with two-dimensional queries and keys. Here $d_k=2$, so the scale
+Use **Sales rose sharply**, with one token per word and punctuation omitted. Rows follow sentence order: **Sales**, **rose**, **sharply**. The vectors are hand-chosen, with two-dimensional queries and keys. Here $d_k=2$, so the scale
 factor is $\sqrt{2}$:
 
 $$
@@ -300,8 +297,7 @@ QK^\top =
 \end{bmatrix}.
 $$
 
-Read row 1 as: token 1's query matches keys 1 and 2 equally, and key 3 less strongly.
-Read row 3 as: token 3's query matches key 2 most strongly.
+Read row 1 as: Sales matches the keys for Sales and rose equally, and sharply less strongly. In row 3, sharply has its largest score for rose, the verb it modifies. This relationship is illustrated by the chosen numbers; it is not evidence of a learned linguistic pattern.
 
 After scaling:
 
@@ -313,6 +309,75 @@ $$
 0.707&1.414&0.707
 \end{bmatrix}.
 $$
+
+### Give the Rows Words
+
+Use **Sales rose sharply**, with one token per word and punctuation omitted.
+Rows always follow this order: **Sales**, **rose**, **sharply**.
+
+| Token | Query $q_i$ | Key $k_i$ | Value $v_i$ |
+|---|---|---|---|
+| Sales | $[1,0]$ | $[1,0]$ | $[10,0]$ |
+| rose | $[0,1]$ | $[1,1]$ | $[0,10]$ |
+| sharply | $[1,1]$ | $[0,1]$ | $[5,5]$ |
+
+These are hand-chosen vectors, not measurements from a trained model. A token does not have a unique numerical key or value independent of the model and its context.
+Neither $1$ nor $10$ means "Sales": the row identifies the token.
+Keys determine compatibility; values supply the information being combined.
+
+### Input and Projection Weights
+
+Choose toy input representations with $T=3$ and $d_{\text{model}}=3$:
+
+$$
+X=\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}.
+$$
+
+Choose $W_Q,W_K,W_V\in\mathbb{R}^{3\times2}$, with $d_k=d_v=2$:
+
+$$
+W_Q=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix},\quad
+W_K=\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix},\quad
+W_V=\begin{bmatrix}10&0\\0&10\\5&5\end{bmatrix}.
+$$
+
+The identity input makes each multiplication select one row of its weight matrix. This is one explicit construction, not a way to recover unique weights from the sentence. Since $X=I_3$, $Q=XW_Q$, $K=XW_K$, and $V=XW_V$ reproduce the preceding matrices.
+We omit biases and position information in this toy calculation.
+
+### One Word, Different Projections
+
+For **Sales**, the same input $x_{\text{Sales}}=[1,0,0]$ produces:
+
+$$
+\begin{aligned}
+q_{\text{Sales}}&=[1,0,0]W_Q=[1,0],\\
+k_{\text{Sales}}&=[1,0,0]W_K=[1,0],\\
+v_{\text{Sales}}&=[1,0,0]W_V=[10,0].
+\end{aligned}
+$$
+
+The key $[1,0]$ and value $[10,0]$ differ because they result from different matrices, not because Sales has two numerical meanings. Each projection matrix is shared across all token positions.
+Its entries mix and scale input coordinates; these rectangular matrices are not rotations.
+Real transformers use dense input representations and incorporate position information.
+
+### How the Weights Are Learned
+
+1. Initialize projection weights with small random values.
+2. Compute attention and the model's prediction; evaluate loss $L$.
+3. Backpropagate the loss to obtain gradients for the projection weights.
+4. Update the weights with an optimizer; repeat across training batches.
+
+A gradient-descent update for any $W\in\{W_Q,W_K,W_V\}$ is:
+
+$$
+W^{\text{new}}=W^{\text{old}}-\eta\frac{\partial L}{\partial W},
+$$
+
+where $\eta$ is the learning rate. Adam uses gradients with adaptive updates.
+Our numerical weights were chosen manually, not obtained by this training process.
+At inference, weights stay fixed while new text changes $X$, $Q$, $K$, and $V$.
+
+### Softmax Then Values
 
 Apply softmax independently to each row:
 
@@ -326,7 +391,7 @@ A=\mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{2}}\right)
 \end{bmatrix}.
 $$
 
-Every row sums to 1. Each row is a reading plan: how much this query token should
+Before rounding, every row sums to 1; displayed rows can differ slightly from 1. Each row is a reading plan: how much this query token should
 read from value token 1, value token 2, and value token 3.
 
 Finally:
@@ -515,7 +580,7 @@ class MultiHeadSelfAttention(nn.Module):
         return self.out_proj(context)
 ```
 
-This is the key implementation move students should trace in the companion notebook:
+Trace the following reshape operations in the companion notebook:
 `qkv_proj`, reshape into `[batch, heads, sequence, head_dim]`, run scaled dot-product attention,
 then concatenate heads back to `[batch, sequence, d_model]`.
 

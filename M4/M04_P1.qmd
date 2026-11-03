@@ -44,7 +44,7 @@ execute:
 bibliography: ../references.bib
 csl: ../mis-quarterly.csl
 categories: ['Transformers', 'Attention', 'Fine-Tuning', 'Model Architecture', 'Conceptual Framing']
-description: "Introduces Transformers, Attention, and Context through presentation-ready concepts, technical intuition, diagrams, and applied connections to the course analytics workflow."
+description: "Introduces Transformers, Attention, and Context through concepts, calculations, diagrams, and applied connections to the course analytics workflow."
 ---
 
 ## How to print Revealjs slides
@@ -85,6 +85,8 @@ from IPython.display import SVG, display
 - Allowed models to [focus selectively]{.uugreen-bold} on different input tokens  
 - Replaced the “single compressed vector” bottleneck  
 - Enabled differentiable, learnable weighting over the entire input sequence
+
+
 ## Transformers: The Architectural Breakthrough
 
 - @Vaswani2017Attention: [no recurrence, all attention]{.uublue-bold}
@@ -94,7 +96,9 @@ from IPython.display import SVG, display
   - [**Vision Transformers**]{.uublue-bold} (image recognition, detection, segmentation)
   - [**Speech**]{.uublue-bold}, [**reinforcement learning**]{.uublue-bold}, [**graph neural networks**]{.uublue-bold}
 
+
 ## The New Landscape
+
 - Transformers + large-scale pretraining → [foundation models]{.uured-bold}  
 - Default approach: start with a pretrained Transformer, fine‑tune for downstream tasks  
 - Represents a true [architectural shift]{.uured-bold}, not just bigger models
@@ -103,15 +107,11 @@ from IPython.display import SVG, display
 
 ## Help-Code Bridge for Module 4
 
-| Notebook | Best classroom use | Module 4 connection |
+| Notebook | Computation | Module 4 connection |
 |---|---|---|
 | `Section 4.1` | Build the transformer from parts | embeddings, self-attention, heads, encoder/decoder, positional encoding |
 | `Section 4.2` | Train translation end-to-end | encoder-decoder attention and teacher forcing |
 | `Section 4.3` | Inspect GPT-2 components | decoder-only blocks, causal masks, next-token generation |
-
-::: {.callout-note}
-Use these notebooks as the executable version of the lecture: slides explain the idea, notebooks let students trace tensors.
-:::
 
 
 # Why Attention? A Human Translation Story
@@ -154,7 +154,7 @@ display(SVG(image))
 
 ---
 
-## Section 4.2: Translation as the Test Case
+## Translation as the Test Case
 
 ::: {.columns}
 ::: {.column}
@@ -311,7 +311,7 @@ plt.show()
 
 ---
 
-## Section 4.1: Transformer Parts
+## Transformer Parts
 
 ::: {.columns}
 ::: {.column}
@@ -380,7 +380,7 @@ $$
 
 ![](M04_lecture01_figures/self_attention_single_query.svg){width="96%" fig-alt="Single query token self-attention walkthrough."}
 
-Raschka's examples are useful because they separate the computation into three teachable moves: project to Q/K/V, compute scores, then mix values [@raschka2023selfattention].
+Self-attention projects inputs to Q/K/V, computes compatibility scores, then mixes values [@raschka2023selfattention].
 
 ## All Tokens at Once
 
@@ -404,11 +404,11 @@ Each row of the attention matrix answers: "for this query token, which source to
 
 ![](M04_lecture01_figures/attention_matrix_reading_plan.svg){width="92%" fig-alt="Attention matrix as a stack of query-token reading plans."}
 
-DataCamp's framing is helpful here: self-attention lets a sequence look back at itself, while masks decide which positions are visible [@datacamp2025selfattention].
+Self-attention compares positions within the same sequence; masks decide which positions are visible [@datacamp2025selfattention].
 
 ## Matrix Calculation: Tiny Example
 
-Following the scaled dot-product sequence in @cristina2023transformerattention:
+Following the scaled dot-product sequence in @cristina2023transformerattention ("*Sales Rose Sharply*"):
 
 $$
 Q=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix},\quad
@@ -431,6 +431,71 @@ QK^\top =
 0.71&1.41&0.71
 \end{bmatrix}
 $$
+
+## Matrix Calculation: Give the Rows Words
+
+Use **Sales rose sharply**, with one token per word and punctuation omitted.
+Rows always follow this order: **Sales**, **rose**, **sharply**.
+
+| Token | Query $q_i$ | Key $k_i$ | Value $v_i$ |
+|---|---|---|---|
+| Sales | $[1,0]$ | $[1,0]$ | $[10,0]$ |
+| rose | $[0,1]$ | $[1,1]$ | $[0,10]$ |
+| sharply | $[1,1]$ | $[0,1]$ | $[5,5]$ |
+
+
+
+## Matrix Calculation: Input and Projection Weights
+
+Choose toy input representations with $T=3$ and $d_{\text{model}}=3$:
+
+$$
+X=\begin{bmatrix}1&0&0\\0&1&0\\0&0&1\end{bmatrix}.
+$$
+
+Choose $W_Q,W_K,W_V\in\mathbb{R}^{3\times2}$, with $d_k=d_v=2$:
+
+$$
+W_Q=\begin{bmatrix}1&0\\0&1\\1&1\end{bmatrix},\quad
+W_K=\begin{bmatrix}1&0\\1&1\\0&1\end{bmatrix},\quad
+W_V=\begin{bmatrix}10&0\\0&10\\5&5\end{bmatrix}.
+$$
+
+Since $X=I_3$, $Q=XW_Q$, $K=XW_K$, and $V=XW_V$ reproduce the preceding matrices.
+We omit biases and position information in this toy calculation.
+
+## Matrix Calculation: One Word, Different Projections
+
+For **Sales**, the same input $x_{\text{Sales}}=[1,0,0]$ produces:
+
+$$
+\begin{aligned}
+q_{\text{Sales}}&=[1,0,0]W_Q=[1,0],\\
+k_{\text{Sales}}&=[1,0,0]W_K=[1,0],\\
+v_{\text{Sales}}&=[1,0,0]W_V=[10,0].
+\end{aligned}
+$$
+
+Each projection matrix is shared across all token positions.
+Its entries mix and scale input coordinates; these rectangular matrices are not rotations.
+Real transformers use dense input representations and incorporate position information.
+
+## Matrix Calculation: How the Weights Are Learned
+
+1. Initialize projection weights with small random values.
+2. Compute attention and the model's prediction; evaluate loss $L$.
+3. Backpropagate the loss to obtain gradients for the projection weights.
+4. Update the weights with an optimizer; repeat across training batches.
+
+A gradient-descent update for any $W\in\{W_Q,W_K,W_V\}$ is:
+
+$$
+W^{\text{new}}=W^{\text{old}}-\eta\frac{\partial L}{\partial W},
+$$
+
+where $\eta$ is the learning rate. Adam uses gradients with adaptive updates.
+Our numerical weights were chosen manually, not obtained by this training process.
+At inference, weights stay fixed while new text changes $X$, $Q$, $K$, and $V$.
 
 ## Matrix Calculation: Softmax Then Values
 

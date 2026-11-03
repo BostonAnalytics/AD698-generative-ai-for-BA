@@ -12,6 +12,8 @@ SPEC.loader.exec_module(checker)
 class CourseLanguageTests(unittest.TestCase):
     def test_reported_leaks_and_wrapped_variants_fail(self):
         for text in (
+            "The lecture notes should give the conceptual map.",
+            "The second figure is useful for connecting single-token intuition to the full matrix formula.",
             "This sets the stage for neural models.",
             "This will set the intuition for students.",
             "It will make a good example.",
