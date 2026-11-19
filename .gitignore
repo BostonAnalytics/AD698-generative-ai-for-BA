@@ -48,9 +48,12 @@ __pycache__/
 *.py[cod]
 .jupyter_cache/
 .Rproj.user/
+.Rhistory
 .venv/
 .vdoc.*
 graphify-out/
+artifacts/
+staging/
 
 # Spark Foundry rendered course packages
 /_sparkfoundry/
