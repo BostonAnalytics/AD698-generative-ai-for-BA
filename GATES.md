@@ -1,16 +1,30 @@
-# Gates: repository reconciliation, 2026-10-25
+# Gates: repository pull, reconciliation, targeted commits, and working tree cleanup
 
-Scope: fetch all remote branches, preserve and validate useful local changes in targeted commits, remove confirmed debris, refresh maintenance documentation, and push a clean checkout.
+OWNS: GATES.md, LESSONS.md, help-code/Employability-rag/**, scripts/build_employability_rag.py, scripts/employability_rag_common.py, scripts/test_employability_rag.py, scripts/validate_employability_rag.py, .gitignore
 
-OWNS: existing modified and untracked files, GATES.md, README.md, help-code/4-nlp-finance/README.md, tests/test_sparkfoundry_pack.py, tests/test_finance_notebook_fallbacks.py, deliverables-solutions/README.md
+Scope: Pull latest remote changes, make targeted commits for Employability RAG and lessons, clear working tree, stashes, redundant links, and ensure untracked section is completely empty.
 
-- [x] G1: All remotes fetched and local tracking branches reconciled; stashes inventoried.
-  EVIDENCE: PowerShell at repository root: git fetch --all --prune exited 0. main...origin/main and Spring2026...origin/Spring2026 both measured 0/0 before local commits; main..Summer2026 measured 0. gh-pages fetched as deployment output. No stashes existed. Historical branches retained without rewriting or merging deployment output into source.
-- [x] G2: Notebook and helper changes reviewed, useful work retained, duplicate/generated artifacts removed.
-  EVIDENCE: Reviewed semantic notebook diffs and existing setup/import paths. Consolidated S9.3a into S9.3; removed nine byte-identical helper copies, 34 corpus copies, one unused duplicate image, and two generated graph files. Retained 22 figure assets referenced by finance notebooks. Cleaned duplicated assignment setup, unused torchview import, stale error outputs, and mislabeled training plots. Missing comparison results are explicit. Narrowed finance data ignores. No tracked shortcuts, symlinks, old app entry points, or separate plan/phase/task documents found.
-- [x] G3: Course pack tooling and current documentation verified with non-server checks.
-  EVIDENCE: Source manifest check passed: six modules, 12 lectures, 36 QMD sources. Three packager tests passed, covering fixture ZIP build/validation, tampering, stale sources, unsafe paths/resources, and duplicate lecture IDs. Updated setup requirements and current README links; retained historical lessons and reusable rulebooks. Full course package rendering/upload not performed.
-- [x] G4: Focused checks pass; diff reviewed; Graphify refreshed and AAR recorded with validation limits.
-  EVIDENCE: Reviewed diff and whitespace checks. 49 notebooks validated; 934 transformed code cells compiled (existing invalid-escape SyntaxWarnings remain). Actual A2 MLP cells also passed 30 synthetic-data epochs and correctly reported missing baseline/GloVe results. Four finance fallback tests, three packager tests, four language tests, and three encoding tests passed. Language guard passed 42 sources; authored UTF-8 scan passed 550 files. Local documentation links checked. Graphify update exited 0: 6115 nodes and 6796 edges; code index refreshed, no semantic re-extraction claimed. AAR recorded in LESSONS.md. Full notebook training/downloads, slide/notes rendering and visual parity, and deployment are outside this cleanup verification. A2 baseline and GloVe experiments remain explicit prerequisites for its comparison table.
-- [x] G5: Targeted commits pushed; tracked/untracked status and stash list empty; local and remote main agree.
-  EVIDENCE: Four targeted commits (71c2e24, b9c7dd5, 7851375, 1aa3e48) pushed successfully to origin/main. git ls-remote independently confirmed main at 1aa3e489b80cae833ee175866025a6c21a1ede58; Spring2026 and gh-pages remain unchanged. git status --porcelain, git ls-files --others --exclude-standard, and git stash list produced no output. This final evidence-only commit is followed by another push and equality/clean-state checks.
+- [x] G1: Remote changes pulled and local branch is fast-forwarded to include origin/main.
+  CHECK: python -c "import subprocess; res = subprocess.run(['git', 'merge-base', '--is-ancestor', 'origin/main', 'HEAD']); assert res.returncode == 0; print('REMOTE_PULLED_AND_INTEGRATED')"
+  EXPECT: REMOTE_PULLED_AND_INTEGRATED
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=D:\Repositories\AD698-generative-ai-for-BA; path=e82e10f6254c/53 entries; output=REMOTE_PULLED_AND_INTEGRATED
+
+- [x] G2: Employability RAG contract tests pass.
+  CHECK: python scripts/test_employability_rag.py
+  EXPECT: EMPLOYABILITY_RAG_CHECKS_PASSED
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=D:\Repositories\AD698-generative-ai-for-BA; path=e82e10f6254c/53 entries; output=Ran 6 tests in 0.119s | OK
+
+- [x] G3: Course language checks pass across repository.
+  CHECK: python scripts/check_course_language.py
+  EXPECT: PASS: known authoring-language patterns absent in 42 files.
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=D:\Repositories\AD698-generative-ai-for-BA; path=e82e10f6254c/53 entries; output=PASS: known authoring-language patterns absent in 42 files. Semantic review, slide/notes parity, and rendered inspection still required.
+
+- [x] G4: Text encoding check passes across repository.
+  CHECK: python scripts/check_text_encoding.py
+  EXPECT: 0 encoding issue(s).
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=D:\Repositories\AD698-generative-ai-for-BA; path=e82e10f6254c/53 entries; output=PASS: 565 text files checked; 0 encoding issue(s).
+
+- [x] G5: Untracked files list is empty, working tree is clean, and stash list is empty.
+  CHECK: python -c "import subprocess; s = [l for l in subprocess.run(['git', 'status', '--porcelain'], capture_output=True, text=True).stdout.splitlines() if not l.endswith('GATES.md')]; st = subprocess.run(['git', 'stash', 'list'], capture_output=True, text=True).stdout.strip(); assert not s, f'Dirty tree: {s}'; assert not st, f'Stashes exist: {st}'; print('TREE_CLEAN_AND_EMPTY')"
+  EXPECT: TREE_CLEAN_AND_EMPTY
+  EVIDENCE: exit=0; shell=C:\WINDOWS\system32\cmd.exe; cwd=D:\Repositories\AD698-generative-ai-for-BA; path=e82e10f6254c/53 entries; output=TREE_CLEAN_AND_EMPTY
