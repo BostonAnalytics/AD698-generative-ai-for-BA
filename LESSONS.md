@@ -1,5 +1,17 @@
 # Lessons
 
+## 2026-11-14 -- For the SEC 5132 cohort, cross-check DocumentFiscalYearFocus against filing cover pages: accession 0000814547-20-000012 tags 2019 but covers FY2020, and 0001108524-26-000060 tags 2025 but covers FY2026. Keep accession-specific evidence-checked corrections in config/fiscal_year_overrides.json and retain the original DEI value.
+- Expected: Collect one original 10-K per company for fiscal years 2020-2025 using DEI year tags.
+- Actual: Initial collection covered 89 of 90 company-years and duplicated Salesforce FY2025; cover-page inspection identified two incorrect tags.
+- Why: Issuer-supplied XBRL year tags can disagree with the filing cover. Explicit corrections preserve both provenance and the intended fiscal-year scope; no additional rule or skill change is proposed.
+- tags: sec,rag,fiscal-year,verification
+
+## 2026-11-14 -- When extracting SEC 10-K HTML, preserve contiguous inline text and add separators only at block and table-cell boundaries. BeautifulSoup.get_text(' ') split Manhattan Associates headings into 'It em', causing all 18 required sections to match only table-of-contents entries; a split-span heading regression now checks this case.
+- Expected: Extract Items 1, 1A and 7 for all 90 filings.
+- Actual: The initial extractor returned short TOC sections for all six Manhattan Associates filings; preserving inline text restored the 2025 sample and triggered a full re-extraction.
+- Why: A separator between every HTML text node changes words split by formatting spans. Use block-aware boundaries and keep section review separate from extraction success; no additional rule or skill change is proposed.
+- tags: sec,rag,html,extraction,verification
+
 ## 2026-11-03 -- Separate substantive changes from generated cleanup noise before committing.
 - The schedule workbook differed only in `docProps/core.xml`; restore the committed bytes when no worksheet or schedule data changed. A new `**/*.quarto_ipynb` ignore rule was redundant with the existing `**/*.quarto_ipynb*` rule.
 - Remove the unused iris comparison plot from the new primer's frozen assets only after checking that neither the source nor frozen Markdown references it; retain the penguin comparison plot and fitted-model assets.
@@ -34,6 +46,12 @@
 - The course-language CLI covers top-level presentation/lecture-note pairs, not M0/primers. Call its violations function on a new primer as well as running the required CLI. Direct execution of both new primer cells passed; the full Jacobian matched central finite differences with step 1e-5 and absolute tolerance 1e-9. The generated comparison figure was visually inspected.
 - tags: softmax,primers,numerical-verification,language-check
 - HTML render completed with `--execute-daemon 0` outside the sandbox after the first attempt stalled at kernel startup. Both cells executed and the HTML image target exists. Full-page visual and browser math inspection remain unverified because browser policy blocks local file URLs; no local server was started.
+
+## 2026-11-01 -- For help-code/Employability-rag, reuse descriptions in student jobs collection results and fetch jobs/{job_id}/ only when description is absent; collection payloads use results/meta and details use result. Keep synthetic evaluation IDs separate from live evaluation_questions.json, and execute all seven notebooks with network connections blocked before claiming offline support.
+- Expected: Build seven employability RAG notebook and QMD pairs against the actual student API contract.
+- Actual: Seven notebooks and matching QMDs were created; six contract tests and 46 offline code cells passed. Live API and optional external model stages were not executed.
+- Why: The API serializer supports both compact summaries and full collection records with descriptions; synthetic relevance labels are valid only for the embedded corpus. No rule or skill fix is needed.
+- tags: employability,rag,notebooks,api,verification
 
 ## 2026-10-01 -- Repair mojibake in source and regenerate Quarto's frozen and rendered copies.
 - Windows-1252 decoding of UTF-8 bytes corrupted chart icons, R-squared labels, and multiplication signs in M0_A, M02_A, and M05_A. Replace exact damaged sequences rather than stripping non-ASCII text; valid mathematical notation, punctuation, and accented words must survive.
